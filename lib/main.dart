@@ -1,13 +1,15 @@
+import 'dart:developer' as developer;
 import 'dart:math';
 
 import 'package:confetti/confetti.dart';
+import 'package:dartapp/dartboard/models/turn.dart';
+import 'package:dartapp/helpers/turn_helper.dart';
 import 'package:touchable/touchable.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-
-import 'DartboardPainter.dart';
-import 'DartboardPart.dart';
+import 'dartboard/dartboard_painter.dart';
+import 'dartboard/dartboard_part.dart';
+import 'dartboard/models/dart_throw.dart';
 
 void main() {
   runApp(MyApp());
@@ -40,8 +42,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late ConfettiController _controllerCenter;
   int _score = 501;
+  Turn _currentTurn = Turn();
+  List<Turn> _turns = [];
   bool _isTurn = false;
-  int _dartsThrown = 0;
+  Offset _touchOffset = Offset(0, 0);
 
   @override
   void initState() {
@@ -56,52 +60,43 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  void onClickHandler(DartboardScoreType type, int score) {
+  void onClickHandler(
+      DartboardScoreType type, int score, TapDownDetails details) {
     if (!_isTurn) return;
+    DartThrow currentThrow = DartThrow(type, score);
+    _touchOffset = details.globalPosition;
+
     setState(() {
-      int newScore = _score;
-      switch (type) {
-        case DartboardScoreType.bull:
-          newScore -= score;
-          break;
-        case DartboardScoreType.triple:
-          newScore -= score * 3;
-          break;
-        case DartboardScoreType.double:
-          newScore -= score * 2;
-          break;
-        case DartboardScoreType.single:
-          newScore -= score;
-          break;
-      }
+      _currentTurn.addThrow(currentThrow);
+    });
 
-      _dartsThrown++;
-      if (_dartsThrown == 3) {
-        _dartsThrown = 0;
-        _isTurn = false;
-      }
+    int turnScore = 0;
+    _currentTurn.throws.forEach((element) {
+      turnScore += ScoreHelper.calculateScore(element);
+    });
+    if (!ScoreHelper.isValidThrow(_score - turnScore, currentThrow)) {
+      _finishTurn(false);
+      return;
+    }
 
-      // Check for invalid score
-      // -> Can't finish below 0 and not at 1
-      // -> must finish on a double or bullseye
-      if ((newScore != 0 && newScore <= 1) ||
-          (newScore == 0 &&
-              (type != DartboardScoreType.double ||
-                  (type == DartboardScoreType.bull && score == 25)))) {
-        // Out
-        _isTurn = false;
-        _dartsThrown = 0;
-        return;
-        // Message
-      }
+    if (_score - turnScore == 0) {
+      _controllerCenter.play();
+      _finishTurn(true);
+    }
+    if (_currentTurn.throws.length == 3) {
+      _finishTurn(true);
+    }
+  }
 
-      if (newScore == 0) {
-        _isTurn = false;
-        _dartsThrown = 0;
-        _controllerCenter.play();
+  _finishTurn(bool updateScore) {
+    setState(() {
+      _isTurn = false;
+      _turns.add(_currentTurn);
+      if (updateScore) {
+        _currentTurn.throws.forEach(
+            (dartThrow) => {_score -= ScoreHelper.calculateScore(dartThrow)});
       }
-
-      _score = newScore;
+      _currentTurn = Turn();
     });
   }
 
@@ -131,59 +126,104 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Column(children: [
-        AspectRatio(
-          aspectRatio: 1,
-          child: Container(
-            width: double.infinity,
-            child: CanvasTouchDetector(
-              builder: (context) => CustomPaint(
-                painter: DartboardPainter(context, onClickHandler),
+    return Stack(children: [
+      Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+        ),
+        body: Column(children: [
+          AspectRatio(
+            aspectRatio: 1,
+            child: Container(
+              width: double.infinity,
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: CanvasTouchDetector(
+                  builder: (context) => CustomPaint(
+                    painter: DartboardPainter(context, onClickHandler),
+                    child: Container(),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-        Text("Current score: ${_score}${_isTurn ? ", Darts left: ${3 - _dartsThrown}" : ""}"),
-        Center(
-            child: ButtonBar(children: [
-          ElevatedButton(
-              child: Text("Reset score"),
-              onPressed: () => {
-                    setState(() {
-                      _score = 501;
+          Text("Current score: ${_score}"),
+          Text((_isTurn
+              ? "Your turn, Darts left: ${3 - _currentTurn.throws.length}, Turn score: ${_currentTurn.throws.fold<int>(0, (previousValue, element) => previousValue + ScoreHelper.calculateScore(element))}"
+              : "Not your turn")),
+          Text((_isTurn
+              ? "Turn score: ${_currentTurn.throws.fold<int>(0, (previousValue, element) => previousValue + ScoreHelper.calculateScore(element))}"
+              : "")),
+          Text((_isTurn
+              ? "New score: ${_score - _currentTurn.throws.fold<int>(0, (previousValue, element) => previousValue + ScoreHelper.calculateScore(element))}"
+              : "")),
+          Text("Turns: ${_turns.length}"),
+          Center(
+              child: ButtonBar(children: [
+            ElevatedButton(
+                child: Text("Reset"),
+                onPressed: () => {
+                      setState(() {
+                        _isTurn = true;
+                        _score = 501;
+                        _turns = [];
+                        _currentTurn = Turn();
+                        _controllerCenter.stop();
+                      })
+                    }),
+            ElevatedButton(
+                child: Text("My turn"),
+                onPressed: () => {
+                      setState(() {
+                        _isTurn = !_isTurn;
+                      })
                     })
-                  }),
-          ElevatedButton(
-              child: Text("My turn"),
-              onPressed: () => {
-                    setState(() {
-                      _isTurn = true;
-                    })
-                  })
-        ])),
-        Align(
-          alignment: Alignment.center,
-          child: ConfettiWidget(
-            confettiController: _controllerCenter,
-            blastDirectionality: BlastDirectionality
-                .explosive, // don't specify a direction, blast randomly
-            shouldLoop:
-            true, // start again as soon as the animation is finished
-            colors: const [
-              Colors.green,
-              Colors.blue,
-              Colors.pink,
-              Colors.orange,
-              Colors.purple
-            ], // manually specify the colors to be used
-            createParticlePath: drawStar, // define a custom shape/path.
-          ),
+          ])),
+        ]),
+        // Positioned(
+        //   right: 0.0,
+        //   top: -100.0,
+        //   child: ConfettiWidget(
+        //     numberOfParticles: 1,
+        //     emissionFrequency: 1,
+        //     blastDirection: pi,
+        //     confettiController: _controllerCenter,
+        //     blastDirectionality: BlastDirectionality.directional,
+        //     // don't specify a direction, blast randomly
+        //     shouldLoop: true,
+        //     // start again as soon as the animation is finished
+        //     colors: const [
+        //       Colors.green,
+        //       Colors.blue,
+        //       Colors.pink,
+        //       Colors.orange,
+        //       Colors.purple
+        //     ],
+        //     // manually specify the colors to be used
+        //     createParticlePath: drawStar, // define a custom shape/path.
+        //   ),
+        // )
+      ),
+      Positioned(
+        top: _touchOffset.dy - 15,
+        left: _touchOffset.dx - 15,
+        child: ConfettiWidget(
+          numberOfParticles: 50,
+          blastDirection: pi * 2,
+          confettiController: _controllerCenter,
+          blastDirectionality: BlastDirectionality.explosive,
+          shouldLoop: true,
+          colors: const [
+            Colors.green,
+            Colors.blue,
+            Colors.pink,
+            Colors.orange,
+            Colors.purple
+          ],
+          // manually specify the colors to be used
+          createParticlePath: drawStar, // define a custom shape/path.
         ),
-      ]),
-    );
+      )
+    ]);
   }
 }

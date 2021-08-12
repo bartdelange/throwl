@@ -5,6 +5,7 @@ enum DartboardScoreType {
   triple,
   double,
   single,
+  out,
 }
 
 class DartboardPart {
