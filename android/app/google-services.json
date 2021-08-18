@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "642102893004",
+    "project_id": "pijlgooi-app",
+    "storage_bucket": "pijlgooi-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:642102893004:android:90067f4863f90851c7a569",
+        "android_client_info": {
+          "package_name": "nl.pijlgooi_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "642102893004-591qnoid6s5la3a8qk5vsr63ou8rqvi6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "nl.pijlgooi_app",
+            "certificate_hash": "bda9ecbc178d445237cbd1f65a3b6039519a4a7a"
+          }
+        },
+        {
+          "client_id": "642102893004-8ev0t51qckksi8v0vsl9nsnro62eqcg3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNNHbcfP7qDePqb5fcpy81DY9y3irv0BU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "642102893004-8ev0t51qckksi8v0vsl9nsnro62eqcg3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "642102893004-bq1ss3apudl4f6cf9a895uf7oldsjut8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "nl.pijlgooi-app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

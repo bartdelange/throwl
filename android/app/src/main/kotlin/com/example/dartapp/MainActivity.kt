@@ -1,4 +1,4 @@
-package com.example.dartapp
+package nl.pijlgooi_app
 
 import io.flutter.embedding.android.FlutterActivity
 
