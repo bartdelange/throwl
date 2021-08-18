@@ -1,5 +1,4 @@
-import 'package:dartapp/dartboard/dartboard_part.dart';
-import 'package:dartapp/dartboard/models/dart_throw.dart';
+import 'package:dartapp/models/dart_throw.dart';
 
 class ScoreHelper {
   static int calculateScore(DartThrow currentThrow) {
@@ -12,7 +11,7 @@ class ScoreHelper {
         return currentThrow.score * 2;
       case DartboardScoreType.single:
         return currentThrow.score;
-      case DartboardScoreType.out:
+      default:
         return 0;
     }
   }
