@@ -16,7 +16,7 @@ class PijlgooiApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'PeePeePooPoo',
+      title: 'Pijlgooi App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

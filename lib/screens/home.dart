@@ -20,9 +20,7 @@ class HomeState extends State<HomeScreen> {
   CollectionReference _gamesCollection =
       FirebaseFirestore.instance.collection('games');
 
-  List<userModel.User> shuffle(List<userModel.User> items) {
-    var random = new Random();
-
+  List<userModel.User> shuffle(List<userModel.User> items, Random random) {
     for (var i = items.length - 1; i > 0; i--) {
       var n = random.nextInt(i + 1);
 
@@ -103,7 +101,7 @@ class HomeState extends State<HomeScreen> {
                     'started': DateTime.now(),
                     'turns': []
                   });
-                  var game = Game(gameDocument.id, _selectedUsers);
+                  var game = Game(gameDocument.id, shuffle(_selectedUsers, Random()));
 
                   Navigator.push(
                     context,

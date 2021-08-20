@@ -22,7 +22,7 @@ class GameScreen extends StatefulWidget {
 class GameState extends State<GameScreen> {
   CollectionReference games = FirebaseFirestore.instance.collection('games');
   CollectionReference users = FirebaseFirestore.instance.collection('users');
-  FlutterTts flutterTts = FlutterTts();
+  FlutterTts _flutterTts = FlutterTts();
 
   late ConfettiController _controllerCenter;
   String _currentUserId = "";
@@ -31,15 +31,15 @@ class GameState extends State<GameScreen> {
   bool _locked = false;
 
   @override
-  void initState()  {
+  void initState() {
     _currentUserId = widget.game.players.first.userId;
     _currentTurn = Turn(widget.game.players
         .firstWhere((user) => user.userId == _currentUserId)
         .userId);
     _controllerCenter =
         ConfettiController(duration: const Duration(seconds: 10));
-    flutterTts.setLanguage('en');
-    flutterTts.setSpeechRate(0.45);
+    _flutterTts.setLanguage('en');
+    _flutterTts.setSpeechRate(0.45);
     super.initState();
   }
 
@@ -132,7 +132,8 @@ class GameState extends State<GameScreen> {
     _controllerCenter.play();
     widget.game.turns.add(_currentTurn);
     _persist(finish: true);
-    flutterTts.speak("${widget.game.players.firstWhere((user) => user.userId == _currentUserId).name} has won!");
+    _flutterTts.speak(
+        "${widget.game.players.firstWhere((user) => user.userId == _currentUserId).name} has won!");
 
     switch (await showDialog<bool>(
       context: context,
@@ -167,9 +168,11 @@ class GameState extends State<GameScreen> {
       turnScore += ScoreHelper.calculateScore(element);
     });
     if (turnScore == 69) {
-      flutterTts.speak("sheeeeesh");
+      _flutterTts.speak("sheeeeesh");
+    } else if (!_currentTurn.isValid || turnScore == 0) {
+      _flutterTts.speak("No score");
     } else {
-      flutterTts.speak("${turnScore}");
+      _flutterTts.speak("${turnScore}");
     }
     setState(() {
       // Save state
@@ -187,23 +190,31 @@ class GameState extends State<GameScreen> {
       _currentTurn = Turn(widget.game.players
           .firstWhere((user) => user.userId == _currentUserId)
           .userId);
+
+
+      int scoreLeft = 501 - _calculateScore(widget.game.turns
+          .where((user) => user.userId == _currentUserId)
+          .toList());
+      if (scoreLeft <= 180) {
+        _flutterTts.speak("You need ${scoreLeft}");
+      }
     });
   }
 
   _persist({bool finish = false}) {
     games.doc(widget.game.gameId).update({
-      'finished': finish ? DateTime.now(): null,
+      'finished': finish ? DateTime.now() : null,
       'turns': widget.game.turns
           .map<Map<String, dynamic>>((turn) => {
-        'throws': turn.throws
-            .map<Map<String, dynamic>>((currentThrow) => {
-          'type': currentThrow.type.toShortString(),
-          'score': currentThrow.score,
-        })
-            .toList(),
-        'isValid': turn.isValid,
-        'userId': users.doc(turn.userId)
-      })
+                'throws': turn.throws
+                    .map<Map<String, dynamic>>((currentThrow) => {
+                          'type': currentThrow.type.toShortString(),
+                          'score': currentThrow.score,
+                        })
+                    .toList(),
+                'isValid': turn.isValid,
+                'userId': users.doc(turn.userId)
+              })
           .toList()
     });
   }
@@ -232,17 +243,26 @@ class GameState extends State<GameScreen> {
   }
 
   _GetDartboard() {
-    return Padding(
-      padding: EdgeInsets.all(16),
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: Container(
-          width: double.infinity,
-          child: CanvasTouchDetector(
-            builder: (context) => CustomPaint(
-              painter: DartboardPainter(context, onClickHandler),
-              child: Container(),
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+            bottom: BorderSide(color: Theme.of(context).hintColor, width: 3),
+        ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: Container(
+            width: double.infinity,
+            child: Stack(children: [
+              CanvasTouchDetector(
+                builder: (context) => CustomPaint(
+                  painter: DartboardPainter(context, onClickHandler),
+                  child: Container(),
+                ),
+              ),
+            ]),
           ),
         ),
       ),
@@ -289,7 +309,7 @@ class GameState extends State<GameScreen> {
           ]),
         ),
         Divider(
-          thickness: 5,
+          thickness: 3,
           color: Colors.black54,
         ),
       ],
@@ -366,7 +386,7 @@ class GameState extends State<GameScreen> {
             ),
           ),
           Divider(
-            thickness: 5,
+            thickness: 3,
             color: Colors.black54,
           ),
           Expanded(
