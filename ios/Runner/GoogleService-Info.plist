@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>642102893004-bq1ss3apudl4f6cf9a895uf7oldsjut8.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.642102893004-bq1ss3apudl4f6cf9a895uf7oldsjut8</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>642102893004-591qnoid6s5la3a8qk5vsr63ou8rqvi6.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyANUwJwRIsP5kEh-b4HjWXEHheJVhfSyTI</string>
+	<key>GCM_SENDER_ID</key>
+	<string>642102893004</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>nl.pijlgooi-app</string>
+	<key>PROJECT_ID</key>
+	<string>pijlgooi-app</string>
+	<key>STORAGE_BUCKET</key>
+	<string>pijlgooi-app.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:642102893004:ios:3d95bb8ac54fce71c7a569</string>
+</dict>
+</plist>
