@@ -5,6 +5,7 @@ import 'package:dartapp/models/dart_throw.dart';
 import 'package:dartapp/models/game.dart';
 import 'package:dartapp/models/turn.dart';
 import 'package:dartapp/models/user.dart' as userModel;
+import 'package:dartapp/screens/game_detail.dart';
 import 'package:dartapp/screens/play_game.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -40,7 +41,7 @@ class GamesState extends State<GamesScreen> {
 
   void populate() async {
     QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collection('games').get();
+        await FirebaseFirestore.instance.collection('games').orderBy('started', descending: true).get();
 
     int oldSize = _games.length;
     _games.addAll(querySnapshot.docs);
@@ -136,6 +137,7 @@ class GamesState extends State<GamesScreen> {
                     var document = snapshot.data![index];
                     Map<String, dynamic> data =
                         document.data()! as Map<String, dynamic>;
+
                     return Dismissible(
                       key: UniqueKey(),
                       direction: DismissDirection.endToStart,
@@ -164,6 +166,17 @@ class GamesState extends State<GamesScreen> {
                       child: Container(
                         child: ListTile(
                           leading: data['finished'] == null ? Icon(Icons.pause) : Icon(Icons.done),
+                          onTap: () async {
+                            var game = await _getGame(data, document);
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                                return GameDetailScreen(
+                                    game: game);
+                              }),
+                            );
+                          },
                           trailing: data['finished'] == null
                               ? ElevatedButton(
                                   child: Icon(Icons.play_arrow_rounded),
@@ -172,50 +185,12 @@ class GamesState extends State<GamesScreen> {
                                       return;
                                     }
 
-                                    var id = document.id;
-                                    List<userModel.User> players =
-                                        await Future.wait(data['players']
-                                            .map<Future<userModel.User>>(
-                                                (reference) async {
-                                      var user = await reference.get();
-                                      return userModel.User(
-                                          reference.id, user['name']);
-                                    }).toList());
-                                    var turns = data['turns']
-                                        .map<Turn>(
-                                          (turn) => Turn.initAll(
-                                              turn['userId'].id,
-                                              turn['throws']
-                                                  .map<DartThrow>(
-                                                    (dartThrow) => DartThrow(
-                                                        DartboardScoreType
-                                                            .values
-                                                            .firstWhere((e) =>
-                                                                e.toShortString() ==
-                                                                dartThrow[
-                                                                    'type']),
-                                                        dartThrow['score']),
-                                                  )
-                                                  .toList(),
-                                              turn['isValid']),
-                                        )
-                                        .toList();
-                                    var started = null;
-                                    if (data['finished'] != null)
-                                      started =
-                                        (data['started'] as Timestamp).toDate();
-                                    var finished = null;
-                                    if (data['finished'] != null)
-                                      finished =
-                                        (data['finished'] as Timestamp)
-                                            .toDate();
-
+                                    var game = await _getGame(data, document);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(builder: (context) {
                                         return PlayGameScreen(
-                                            game: Game.initAll(id, players,
-                                                turns, started, finished));
+                                            game: game);
                                       }),
                                     );
                                   },
@@ -238,5 +213,48 @@ class GamesState extends State<GamesScreen> {
         ],
       ),
     );
+  }
+
+  _getGame(Map<String, dynamic> data, DocumentSnapshot<Object?> document) async {
+    var id = document.id;
+    List<userModel.User> players =
+    await Future.wait(data['players']
+        .map<Future<userModel.User>>(
+            (reference) async {
+          var user = await reference.get();
+          return userModel.User(
+              reference.id, user['name']);
+        }).toList());
+    var turns = data['turns']
+        .map<Turn>(
+          (turn) => Turn.initAll(
+          turn['userId'].id,
+          turn['throws']
+              .map<DartThrow>(
+                (dartThrow) => DartThrow(
+                DartboardScoreType
+                    .values
+                    .firstWhere((e) =>
+                e.toShortString() ==
+                    dartThrow[
+                    'type']),
+                dartThrow['score']),
+          )
+              .toList(),
+          turn['isValid']),
+    )
+        .toList();
+    var started = null;
+    if (data['finished'] != null)
+      started =
+          (data['started'] as Timestamp).toDate();
+    var finished = null;
+    if (data['finished'] != null)
+      finished =
+          (data['finished'] as Timestamp)
+              .toDate();
+
+    return Game.initAll(id, players,
+        turns, started, finished);
   }
 }

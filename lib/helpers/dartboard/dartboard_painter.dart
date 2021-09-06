@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dartapp/helpers/dartboard/dartboard_part.dart';
 import 'package:dartapp/helpers/dartboard/number_part.dart';
 import 'package:dartapp/models/dart_throw.dart';
@@ -5,19 +7,35 @@ import 'package:svg_path_parser/svg_path_parser.dart';
 import 'package:flutter/material.dart';
 import 'package:touchable/touchable.dart';
 
-class DartboardPainter extends CustomPainter {
-  final BuildContext context;
-  final Function(DartboardScoreType type, int score, Offset tapPosition)
-      onClickHandler;
-  static const _DESIGN_WIDTH = 6946;
-  static const _DESIGN_HEIGHT = 6946;
+class DartboardScoreTuple {
+  DartboardScoreType type;
+  int score;
 
-  DartboardPainter(this.context, this.onClickHandler);
+  DartboardScoreTuple(this.type, this.score);
+
+  bool operator == (Object other) {
+    return (other is DartboardScoreTuple)
+        && other.type == type
+        && other.score == score;
+  }
 
   @override
-  void paint(Canvas canvas, Size size) {
-    var myCanvas = TouchyCanvas(context, canvas);
-    List<DartboardPart> partsList = [
+  // TODO: implement hashCode
+  int get hashCode => hashValues(type, score);
+}
+
+class DartboardPainter extends CustomPainter {
+  final BuildContext context;
+  final Function(DartboardScoreType type, int score, Offset tapPosition)?
+      onClickHandler;
+  final Map<DartboardScoreTuple, double>? heatMap;
+  final bool background;
+  static const _DESIGN_SIZE = 6946;
+
+  DartboardPainter(this.context, [this.onClickHandler, this.heatMap, this.background = true]);
+
+  List<DartboardPart> getPartsList() {
+    return [
       DartboardPart(
           DartboardScoreType.single,
           20,
@@ -329,11 +347,12 @@ class DartboardPainter extends CustomPainter {
           "m3434.2,3232.16c131.692,-20.858 257.229,70.35 278.083,202.042c20.859,131.692 -70.346,257.229 -202.037,278.083c-131.692,20.859 -257.229,-70.345 -278.088,-202.037c-20.858,-131.692 70.35,-257.229 202.042,-278.088z",
           Color(0xffff0201)),
     ];
+  }
 
-    List<NumberPart> numbers = [
-      NumberPart(
-          "M2929.05,42.75c359.871,-57 726.483,-57.004 1086.34,0.008l-54.313,342.942c-323.887,-51.3 -653.833,-51.3 -977.712,-0.004l-54.317,-342.946Z",
-          Color(0xff000000)),
+  List<NumberPart> getNumbersList() {
+    return [NumberPart(
+        "M2929.05,42.75c359.871,-57 726.483,-57.004 1086.34,0.008l-54.313,342.942c-323.887,-51.3 -653.833,-51.3 -977.712,-0.004l-54.317,-342.946Z",
+        Color(0xff000000)),
       NumberPart(
           "M3483.76,148.474c0,-23.51 2.419,-42.431 7.257,-56.763c4.837,-14.332 12.026,-25.386 21.566,-33.163c9.539,-7.776 21.543,-11.664 36.011,-11.664c10.669,-0 20.028,2.147 28.076,6.442c8.047,4.295 14.694,10.489 19.938,18.582c5.245,8.093 9.359,17.949 12.343,29.569c2.984,11.619 4.476,27.285 4.476,46.997c-0,23.329 -2.396,42.16 -7.189,56.492c-4.792,14.332 -11.958,25.408 -21.498,33.23c-9.54,7.822 -21.588,11.732 -36.146,11.732c-19.17,0 -34.226,-6.872 -45.167,-20.616c-13.111,-16.547 -19.667,-43.493 -19.667,-80.838Zm-26.177,74.599l-0,23.465l-131.43,-0c-0.181,-5.878 0.769,-11.529 2.848,-16.955c3.346,-8.952 8.704,-17.768 16.073,-26.448c7.37,-8.681 18.017,-18.718 31.942,-30.111c21.611,-17.723 36.214,-31.761 43.81,-42.115c7.595,-10.353 11.393,-20.141 11.393,-29.365c0,-9.675 -3.458,-17.836 -10.376,-24.482c-6.917,-6.646 -15.937,-9.969 -27.059,-9.969c-11.755,0 -21.159,3.527 -28.212,10.58c-7.053,7.053 -10.624,16.818 -10.715,29.297l-25.092,-2.577c1.718,-18.718 8.183,-32.982 19.395,-42.793c11.213,-9.811 26.268,-14.716 45.167,-14.716c19.079,-0 34.18,5.289 45.302,15.869c11.122,10.579 16.683,23.691 16.683,39.334c-0,7.957 -1.628,15.779 -4.883,23.465c-3.255,7.686 -8.658,15.778 -16.209,24.278c-7.55,8.5 -20.096,20.165 -37.638,34.994c-14.649,12.297 -24.053,20.639 -28.212,25.024c-4.159,4.386 -7.596,8.794 -10.308,13.225l97.521,-0Zm51.27,-74.599c-0,32.643 3.82,54.367 11.461,65.172c7.64,10.806 17.067,16.208 28.28,16.208c11.212,0 20.639,-5.425 28.279,-16.276c7.641,-10.85 11.461,-32.552 11.461,-65.104c0,-32.733 -3.82,-54.48 -11.461,-65.24c-7.64,-10.761 -17.157,-16.141 -28.551,-16.141c-11.212,0 -20.164,4.747 -26.855,14.242c-8.41,12.117 -12.614,34.496 -12.614,67.139Z",
           Color(0xffffffff)),
@@ -452,44 +471,65 @@ class DartboardPainter extends CustomPainter {
           "M2396.84,375.186l23.709,-9.986c5.662,11.281 12.754,18.841 21.274,22.68c8.521,3.84 17.425,4.25 26.713,1.233c11.18,-3.633 19.27,-10.92 24.272,-21.863c5.001,-10.943 5.239,-23.38 0.712,-37.311c-4.303,-13.244 -11.417,-22.484 -21.343,-27.721c-9.926,-5.236 -20.908,-5.899 -32.948,-1.987c-7.482,2.431 -13.681,6.323 -18.597,11.676c-4.916,5.353 -8.214,11.297 -9.893,17.832l-22.723,4.246l-13.243,-103.086l94.038,-30.555l7.209,22.188l-75.462,24.519l6.323,54.135c8.781,-11.6 19.406,-19.426 31.876,-23.477c16.511,-5.365 32.301,-4.173 47.369,3.576c15.068,7.75 25.522,20.611 31.362,38.585c5.56,17.113 5.378,33.525 -0.546,49.236c-7.152,19.247 -21.219,32.28 -42.203,39.098c-17.199,5.588 -32.803,5.334 -46.811,-0.763c-14.008,-6.097 -24.371,-16.849 -31.088,-32.255Z",
           Color(0xffffffff)),
     ];
+  }
+
+  void onClick(DartboardScoreType type, int score, Offset tapPosition) {
+    if (onClickHandler != null) {
+      onClickHandler!(type, score, tapPosition);
+    }
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    var touchCanvas = TouchyCanvas(context, canvas);
+    var partsList = getPartsList();
+    var numbers = getNumbersList();
 
     Paint paint = Paint()
       ..style = PaintingStyle.fill
       ..strokeWidth = 8.0;
 
     // Scale each path to match canvas size
-    var xScale = size.width / _DESIGN_WIDTH;
-    var yScale = size.height / _DESIGN_HEIGHT;
+    var scale = (size.width > size.height ? size.height : size.width) /
+        _DESIGN_SIZE;
     final Matrix4 matrix4 = Matrix4.identity();
 
-    matrix4.scale(xScale, yScale);
-
+    matrix4.scale(scale, scale);
     paint.color = Color.fromARGB(25, 0, 0, 0);
-    myCanvas.drawRect(
-      Offset(-16, -48) & Size(size.width + 32, size.height + 64),
-      paint,
-      onLongPressEnd: (details) {
-        onClickHandler(DartboardScoreType.out, 0, details.globalPosition);
-      },
-      onTapUp: (details) {
-        onClickHandler(DartboardScoreType.out, 0, details.globalPosition);
-      },
-    );
+
+    if (background) {
+      touchCanvas.drawRect(
+        Offset(-16, -48) & Size(size.width + 32, size.height + 64),
+        paint,
+        onLongPressEnd: (details) {
+          onClick(DartboardScoreType.out, 0, details.globalPosition);
+        },
+        onTapUp: (details) {
+          onClick(DartboardScoreType.out, 0, details.globalPosition);
+        },
+      );
+    }
 
     partsList.forEach((part) {
       Path path = parseSvgPath(part.path);
       paint.color = part.color;
 
+      var scoreTuple = DartboardScoreTuple(part.type, part.score);
+      if (this.heatMap != null && this.heatMap!.containsKey(scoreTuple)) {
+        double percentage = this.heatMap![scoreTuple]!;
+        paint.color = Color.lerp(Colors.yellow, Colors.red, percentage)!;
+      }
+
       path.transform(matrix4.storage);
 
-      myCanvas.drawPath(
+      touchCanvas.drawPath(
         path.transform(matrix4.storage),
         paint,
         onLongPressEnd: (details) {
-          onClickHandler(part.type, part.score, details.globalPosition);
+          onClick(part.type, part.score, details.globalPosition);
         },
         onTapUp: (details) {
-          onClickHandler(part.type, part.score, details.globalPosition);
+          onClick(part.type, part.score, details.globalPosition);
         },
       );
     });
@@ -500,14 +540,14 @@ class DartboardPainter extends CustomPainter {
 
       path.transform(matrix4.storage);
 
-      myCanvas.drawPath(
+      touchCanvas.drawPath(
         path.transform(matrix4.storage),
         paint,
         onLongPressEnd: (details) {
-          onClickHandler(DartboardScoreType.out, 0, details.globalPosition);
+          onClick(DartboardScoreType.out, 0, details.globalPosition);
         },
         onTapUp: (details) {
-          onClickHandler(DartboardScoreType.out, 0, details.globalPosition);
+          onClick(DartboardScoreType.out, 0, details.globalPosition);
         },
       );
     });
