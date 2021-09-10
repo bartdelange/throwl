@@ -8,6 +8,8 @@ import 'package:dartapp/helpers/turn_helper.dart';
 import 'package:dartapp/models/dart_throw.dart';
 import 'package:dartapp/models/game.dart';
 import 'package:dartapp/models/turn.dart';
+import 'package:dartapp/screens/game_detail.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:measured_size/measured_size.dart';
@@ -71,13 +73,7 @@ class PlayGameState extends State<PlayGameScreen> {
       Scaffold(
         body: SafeArea(
           bottom: false,
-          child: Column(
-            children: [
-              _GetDartboard(),
-              _GetCurrentTurnScore(),
-              _GetScoreTable()
-            ],
-          ),
+          child: _LayoutHelper(),
         ),
       ),
       _GetConfettiWidget(),
@@ -151,7 +147,7 @@ class PlayGameState extends State<PlayGameScreen> {
     speak(
         "${widget.game.players.firstWhere((user) => user.userId == _currentUserId).name} has won!");
 
-    switch (await showDialog<bool>(
+    switch (await showDialog<int>(
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
@@ -159,20 +155,32 @@ class PlayGameState extends State<PlayGameScreen> {
               "${widget.game.players.firstWhere((user) => user.userId == _currentUserId).name} has won"),
           children: <Widget>[
             SimpleDialogOption(
-              onPressed: () => Navigator.pop(context, true),
+              onPressed: () => Navigator.pop(context, 1),
               child: Text("Finish game"),
             ),
             SimpleDialogOption(
-              onPressed: () => Navigator.pop(context, false),
+              onPressed: () => Navigator.pop(context, 2),
               child: Text("Look at the score"),
+            ),
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(context, 2),
+              child: Text("Undo last move"),
             ),
           ],
         );
       },
     )) {
-      case true:
+      case 1:
         return Navigator.pop(context);
-      case false:
+      case 2:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) {
+            return GameDetailScreen(game: widget.game);
+          }),
+        );
+        break;
+      case 3:
         _locked = true;
         break;
     }
@@ -288,11 +296,44 @@ class PlayGameState extends State<PlayGameScreen> {
     return path;
   }
 
-  _GetDartboard() {
+  Widget _LayoutHelper() {
+    Orientation orientation = MediaQuery.of(context).orientation;
+
+    if (orientation == Orientation.portrait) {
+      return Column(
+        children: [_GetDartboard(orientation), _GetCurrentTurnScore(orientation), _GetScoreTable()],
+      );
+    } else {
+      return Row(
+        children: [
+          AspectRatio(
+            aspectRatio: 1,
+            child: Container(
+                height: double.infinity, child: _GetDartboard(orientation)),
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                _GetCurrentTurnScore(orientation),
+                _GetScoreTable(),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+  }
+
+  Widget _GetDartboard([Orientation orientation = Orientation.portrait]) {
     return Container(
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: Theme.of(context).hintColor, width: 3),
+          bottom: orientation == Orientation.portrait
+              ? BorderSide(color: Theme.of(context).hintColor, width: 3)
+              : BorderSide.none,
+          right: orientation == Orientation.landscape
+              ? BorderSide(color: Theme.of(context).hintColor, width: 3)
+              : BorderSide.none,
         ),
       ),
       child: Padding(
@@ -315,54 +356,60 @@ class PlayGameState extends State<PlayGameScreen> {
     );
   }
 
-  _GetCurrentTurnScore() {
+  Widget _GetCurrentTurnScore(
+      [Orientation orientation = Orientation.portrait]) {
+    var children = [
+      Text(
+          '1st: ${_currentTurn.throws.length > 0 ? "${_currentTurn.throws[0].type.toShortString()} ${_currentTurn.throws[0].score} (${ScoreHelper.calculateScore(_currentTurn.throws[0])})" : 0}',
+          style: TextStyle(
+              decoration: _currentTurn.throws.length == 0
+                  ? TextDecoration.underline
+                  : TextDecoration.none,
+              fontWeight: _currentTurn.throws.length == 0
+                  ? FontWeight.bold
+                  : FontWeight.normal,
+              fontSize: 32)),
+      Text(
+          '2nd: ${_currentTurn.throws.length > 1 ? "${_currentTurn.throws[1].type.toShortString()} ${_currentTurn.throws[1].score} (${ScoreHelper.calculateScore(_currentTurn.throws[1])})" : 0}',
+          style: TextStyle(
+              decoration: _currentTurn.throws.length == 1
+                  ? TextDecoration.underline
+                  : TextDecoration.none,
+              fontWeight: _currentTurn.throws.length == 1
+                  ? FontWeight.bold
+                  : FontWeight.normal,
+              fontSize: 32)),
+      Text(
+          '3rd: ${_currentTurn.throws.length > 2 ? "${_currentTurn.throws[2].type.toShortString()} ${_currentTurn.throws[2].score} (${ScoreHelper.calculateScore(_currentTurn.throws[2])})" : 0}',
+          style: TextStyle(
+              decoration: _currentTurn.throws.length == 2
+                  ? TextDecoration.underline
+                  : TextDecoration.none,
+              fontWeight: _currentTurn.throws.length == 2
+                  ? FontWeight.bold
+                  : FontWeight.normal,
+              fontSize: 32)),
+    ];
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.only(top: 5),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text(
-                        '1st: ${_currentTurn.throws.length > 0 ? "${_currentTurn.throws[0].type.toShortString()} ${_currentTurn.throws[0].score} (${ScoreHelper.calculateScore(_currentTurn.throws[0])})" : 0}',
-                        style: TextStyle(
-                            decoration: _currentTurn.throws.length == 0
-                                ? TextDecoration.underline
-                                : TextDecoration.none,
-                            fontWeight: _currentTurn.throws.length == 0
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                            fontSize: 32)),
-                    Text(
-                        '2nd: ${_currentTurn.throws.length > 1 ? "${_currentTurn.throws[1].type.toShortString()} ${_currentTurn.throws[1].score} (${ScoreHelper.calculateScore(_currentTurn.throws[1])})" : 0}',
-                        style: TextStyle(
-                            decoration: _currentTurn.throws.length == 1
-                                ? TextDecoration.underline
-                                : TextDecoration.none,
-                            fontWeight: _currentTurn.throws.length == 1
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                            fontSize: 32)),
-                    Text(
-                        '3rd: ${_currentTurn.throws.length > 2 ? "${_currentTurn.throws[2].type.toShortString()} ${_currentTurn.throws[2].score} (${ScoreHelper.calculateScore(_currentTurn.throws[2])})" : 0}',
-                        style: TextStyle(
-                            decoration: _currentTurn.throws.length == 2
-                                ? TextDecoration.underline
-                                : TextDecoration.none,
-                            fontWeight: _currentTurn.throws.length == 2
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                            fontSize: 32)),
-                  ],
-                ),
-              ),
-              _GetButtonBar(),
-            ],
-          ),
+          padding: EdgeInsets.only(top: 5, left: orientation == Orientation.portrait ? 0 : 20),
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Expanded(
+              child: ((orientation == Orientation.portrait)
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: children,
+                    )
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: children,
+                    )),
+            ),
+            _GetButtonBar()
+          ]),
         ),
         Divider(
           thickness: 3,
@@ -372,7 +419,7 @@ class PlayGameState extends State<PlayGameScreen> {
     );
   }
 
-  _GetScoreTable() {
+  Widget _GetScoreTable() {
     return Expanded(
       child: Column(
         children: [
@@ -381,14 +428,14 @@ class PlayGameState extends State<PlayGameScreen> {
             child: Row(
               children: [
                 Expanded(
-                  flex: 5,
+                  flex: 4,
                   child: Padding(
                     padding: EdgeInsets.all(5),
                     child: Text(
                       "Name",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 24,
+                        fontSize: 18,
                       ),
                     ),
                   ),
@@ -402,7 +449,7 @@ class PlayGameState extends State<PlayGameScreen> {
                         "Last",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 24,
+                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -417,7 +464,7 @@ class PlayGameState extends State<PlayGameScreen> {
                         "Avg",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 24,
+                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -432,7 +479,7 @@ class PlayGameState extends State<PlayGameScreen> {
                         "Valid Avg",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 24,
+                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -447,7 +494,7 @@ class PlayGameState extends State<PlayGameScreen> {
                         "Score",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 24,
+                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -480,7 +527,7 @@ class PlayGameState extends State<PlayGameScreen> {
                           child: Row(
                             children: [
                               Expanded(
-                                flex: 5,
+                                flex: 4,
                                 child: Padding(
                                   padding: EdgeInsets.all(5),
                                   child: Text(
@@ -489,7 +536,7 @@ class PlayGameState extends State<PlayGameScreen> {
                                       fontWeight: user.userId == _currentUserId
                                           ? FontWeight.bold
                                           : FontWeight.normal,
-                                      fontSize: 24,
+                                      fontSize: 18,
                                     ),
                                   ),
                                 ),
@@ -517,7 +564,7 @@ class PlayGameState extends State<PlayGameScreen> {
                                             user.userId == _currentUserId
                                                 ? FontWeight.bold
                                                 : FontWeight.normal,
-                                        fontSize: 24,
+                                        fontSize: 18,
                                       ),
                                     ),
                                   ),
@@ -538,7 +585,7 @@ class PlayGameState extends State<PlayGameScreen> {
                                             user.userId == _currentUserId
                                                 ? FontWeight.bold
                                                 : FontWeight.normal,
-                                        fontSize: 24,
+                                        fontSize: 18,
                                       ),
                                     ),
                                   ),
@@ -560,7 +607,7 @@ class PlayGameState extends State<PlayGameScreen> {
                                             user.userId == _currentUserId
                                                 ? FontWeight.bold
                                                 : FontWeight.normal,
-                                        fontSize: 24,
+                                        fontSize: 18,
                                       ),
                                     ),
                                   ),
@@ -593,7 +640,7 @@ class PlayGameState extends State<PlayGameScreen> {
                                             user.userId == _currentUserId
                                                 ? FontWeight.bold
                                                 : FontWeight.normal,
-                                        fontSize: 24,
+                                        fontSize: 18,
                                       ),
                                     ),
                                   ),
@@ -614,7 +661,7 @@ class PlayGameState extends State<PlayGameScreen> {
     );
   }
 
-  _GetButtonBar() {
+  Widget _GetButtonBar() {
     return ButtonBar(
       children: [
         ElevatedButton(
@@ -647,7 +694,7 @@ class PlayGameState extends State<PlayGameScreen> {
     );
   }
 
-  _GetConfettiWidget() {
+  Widget _GetConfettiWidget() {
     return Positioned(
       top: _touchOffset.dy - 15,
       left: _touchOffset.dx - 15,
