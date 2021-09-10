@@ -186,6 +186,7 @@ class GamesState extends State<GamesScreen> {
                                     }
 
                                     var game = await _getGame(data, document);
+
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(builder: (context) {

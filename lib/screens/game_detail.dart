@@ -26,36 +26,52 @@ class GameDetailState extends State<GameDetailScreen> {
     var throws = widget.game.turns
         .where((turn) => turn.userId == _selectedUserId)
         .expand((element) => element.throws)
+        .where((element) => element.score != 0)
         .toList();
-    Map<DartboardScoreTuple, double> heatMap = Map();
+    Map<DartboardScoreTuple, num> throwCountMap = Map();
     throws.forEach((thrw) {
       var tuple = DartboardScoreTuple(thrw.type, thrw.score);
-      if (heatMap.containsKey(tuple)) {
-        heatMap[tuple] = heatMap[tuple]! + 1 / throws.length;
+      if (throwCountMap.containsKey(tuple)) {
+        throwCountMap[tuple] = throwCountMap[tuple]! + 1;
       } else {
-        heatMap[tuple] = 1 / throws.length;
+        throwCountMap[tuple] = 1;
       }
+    });
+
+    var throwCount = throwCountMap.entries.toList();
+    throwCount.sort((a, b) => a.value.compareTo(b.value));
+    var min = throwCount.first.value;
+    var max = throwCount.last.value;
+
+    Map<DartboardScoreTuple, double> heatMap = Map();
+    throwCount.forEach((element) {
+      heatMap[element.key] = (element.value - min) / (max - min);
     });
 
     return Scaffold(
       body: Column(
         children: [
           _GetDartboard(context, heatMap),
-          SafeArea(
-            top: false,
-            child: Column(
-              children: [
-                ...widget.game.players.map(
-                  (user) => ListTile(
-                    onTap: () {
-                      setState(() {
-                        _selectedUserId = user.userId;
-                      });
-                    },
-                    title: Text(user.name),
-                  ),
+          Expanded(
+            child: SingleChildScrollView(
+              child: SafeArea(
+                top: false,
+                child: Column(
+                  children: [
+                    ...widget.game.players.map(
+                      (user) => ListTile(
+                        selected: _selectedUserId == user.userId,
+                        onTap: () {
+                          setState(() {
+                            _selectedUserId = user.userId;
+                          });
+                        },
+                        title: Text(user.name),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ],

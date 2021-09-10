@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:dartapp/helpers/dartboard/dartboard_part.dart';
 import 'package:dartapp/helpers/dartboard/number_part.dart';
+import 'package:dartapp/helpers/lerpGradient.dart';
 import 'package:dartapp/models/dart_throw.dart';
 import 'package:svg_path_parser/svg_path_parser.dart';
 import 'package:flutter/material.dart';
@@ -511,17 +512,10 @@ class DartboardPainter extends CustomPainter {
     }
 
     partsList.forEach((part) {
+      var scoreTuple = DartboardScoreTuple(part.type, part.score);
       Path path = parseSvgPath(part.path);
       paint.color = part.color;
-
-      var scoreTuple = DartboardScoreTuple(part.type, part.score);
-      if (this.heatMap != null && this.heatMap!.containsKey(scoreTuple)) {
-        double percentage = this.heatMap![scoreTuple]!;
-        paint.color = Color.lerp(Colors.yellow, Colors.red, percentage)!;
-      }
-
       path.transform(matrix4.storage);
-
       touchCanvas.drawPath(
         path.transform(matrix4.storage),
         paint,
@@ -532,6 +526,12 @@ class DartboardPainter extends CustomPainter {
           onClick(part.type, part.score, details.globalPosition);
         },
       );
+
+      if (this.heatMap != null && this.heatMap!.containsKey(scoreTuple)) {
+        double percentage = this.heatMap![scoreTuple]!;
+        paint.color = Color.lerp(Colors.cyan[200], Colors.blue[900], percentage)!;
+        touchCanvas.drawPath(path.transform(matrix4.storage), paint);
+      }
     });
 
     numbers.forEach((part) {
