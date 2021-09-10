@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:wakelock/wakelock.dart';
 import 'package:confetti/confetti.dart';
 import 'package:dartapp/helpers/dartboard/dartboard_painter.dart';
 import 'package:dartapp/helpers/turn_helper.dart';
@@ -54,12 +55,14 @@ class PlayGameState extends State<PlayGameScreen> {
     if (Platform.isAndroid) {
       _flutterTts.setQueueMode(1);
     }
+    Wakelock.enable();
     super.initState();
   }
 
   @override
   void dispose() {
     _controllerCenter.dispose();
+    Wakelock.disable();
     super.dispose();
   }
 

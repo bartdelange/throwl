@@ -23,6 +23,7 @@ dependencies:
   flutter_tts: ^3.2.2
   intl: ^0.17.0
   measured_size: ^1.0.0
+  wakelock: ^0.5.4
 
 dev_dependencies:
   flutter_test:
