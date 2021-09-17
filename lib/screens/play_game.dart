@@ -166,7 +166,7 @@ class PlayGameState extends State<PlayGameScreen> {
               child: Text("Look at the score"),
             ),
             SimpleDialogOption(
-              onPressed: () => Navigator.pop(context, 2),
+              onPressed: () => Navigator.pop(context, 3),
               child: Text("Undo last move"),
             ),
           ],
@@ -176,11 +176,12 @@ class PlayGameState extends State<PlayGameScreen> {
       case 1:
         return Navigator.pop(context);
       case 2:
-        Navigator.push(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) {
             return GameDetailScreen(game: widget.game);
           }),
+          (route) => false,
         );
         break;
       case 3:
@@ -248,13 +249,16 @@ class PlayGameState extends State<PlayGameScreen> {
               (_scoreItemHeight / 2) -
               (listBox.size.height / 2));
       double maxScrollPos = (_scoreItemHeight * scrollableItems) -
-          listBox.size.height +
+          _scrollController.position.viewportDimension +
           bottomPadding;
       if (scrollPos > maxScrollPos) {
         scrollPos = maxScrollPos;
       }
-      _scrollController.animateTo(scrollPos,
-          duration: Duration(seconds: 2), curve: Curves.fastOutSlowIn);
+      scrollPos = max(scrollPos, 0);
+      if (_scrollController.position.pixels != scrollPos) {
+        _scrollController.animateTo(scrollPos,
+            duration: Duration(seconds: 2), curve: Curves.fastOutSlowIn);
+      }
     }
   }
 
