@@ -74,7 +74,9 @@ class GamesState extends State<GamesScreen> {
     });
 
     if (isChange) {
-      _streamController.add(_games);
+      if (!_streamController.isClosed) {
+        _streamController.add(_games);
+      }
     }
   }
 
@@ -201,7 +203,7 @@ class GamesState extends State<GamesScreen> {
                               ? 'Unfinished game'
                               : 'Finished game'),
                           subtitle: Text(
-                              'Started on: ${DateFormat('dd-MM-yyyy – hh:mm').format((data['started'] as Timestamp).toDate())}'),
+                              'Started on: ${DateFormat('dd-MM-yyyy – HH:mm').format((data['started'] as Timestamp).toDate())}'),
                           // subtitle: Text(document.id.toString()),
                         ),
                       ),

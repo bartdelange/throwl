@@ -37,85 +37,94 @@ class NewGameState extends State<NewGameScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                width: 500,
-                height: 500,
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: _usersStream,
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasError) {
-                      return Text('Something went wrong');
-                    }
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: _usersStream,
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasError) {
+                          return Text('Something went wrong');
+                        }
 
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text("Loading");
-                    }
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Text("Loading");
+                        }
 
-                    if (snapshot.data == null) {
-                      return Text('Something went wrong');
-                    }
+                        if (snapshot.data == null) {
+                          return Text('No data');
+                        }
 
-                    return ListView(
-                      children:
-                          snapshot.data!.docs.map((DocumentSnapshot document) {
-                        Map<String, dynamic> data =
-                            document.data()! as Map<String, dynamic>;
-                        return CheckboxListTile(
+                        return ListView(
+                          children: snapshot.data!.docs
+                              .map((DocumentSnapshot document) {
+                            Map<String, dynamic> data =
+                                document.data()! as Map<String, dynamic>;
+                            return CheckboxListTile(
                           title: Text(data['name']),
-                          value: _selectedUsers
-                              .any((user) => user.userId == document.id),
-                          onChanged: (bool? value) {
-                            setState(() {
-                              if (value!) {
-                                _selectedUsers.add(
-                                    userModel.User(document.id, data['name']));
-                              } else {
-                                _selectedUsers.removeWhere(
-                                    (user) => user.userId == document.id);
-                              }
-                            });
-                          },
-                          // subtitle: Text(document.id.toString()),
+                              value: _selectedUsers
+                                  .any((user) => user.userId == document.id),
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  if (value!) {
+                                    _selectedUsers.add(userModel.User(
+                                        document.id, data['name']));
+                                  } else {
+                                    _selectedUsers.removeWhere(
+                                        (user) => user.userId == document.id);
+                                  }
+                                });
+                              },
+                              // subtitle: Text(document.id.toString()),
+                            );
+                          }).toList(),
                         );
-                      }).toList(),
-                    );
-                  },
+                      },
+                    ),
+                  ),
                 ),
-              ),
-              ElevatedButton(
-                child: Text('Start Game'),
-                style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
-                    textStyle:
-                        TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                onPressed: () async {
-                  var gameDocument = await _gamesCollection.add({
-                    'players': _selectedUsers
-                        .map((user) => FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(user.userId))
-                        .toList(),
-                    'started': DateTime.now(),
-                    'turns': []
-                  });
-                  var game =
-                      Game(gameDocument.id, shuffle(_selectedUsers, Random()));
+                Padding(
+                  padding: EdgeInsets.all(20),
+                  child: ElevatedButton(
+                    child: Text('Start Game'),
+                    style: ElevatedButton.styleFrom(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+                        textStyle: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold)),
+                    onPressed: () async {
+                      var gameDocument = await _gamesCollection.add({
+                        'players': _selectedUsers
+                            .map((user) => FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(user.userId))
+                            .toList(),
+                        'started': DateTime.now(),
+                        'turns': []
+                      });
+                      var game = Game(
+                          gameDocument.id, shuffle(_selectedUsers, Random()));
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) {
-                      return PlayGameScreen(game: game);
-                    }),
-                  );
-                },
-              ),
-            ],
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) {
+                          return PlayGameScreen(game: game);
+                        }),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
