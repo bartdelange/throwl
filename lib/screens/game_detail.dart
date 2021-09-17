@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:dartapp/extensions/capitalize.dart';
 import 'package:dartapp/helpers/dartboard/dartboard_painter.dart';
 import 'package:dartapp/helpers/turn_helper.dart';
 import 'package:dartapp/models/dart_throw.dart';
@@ -9,6 +10,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
 
 class GameDetailScreen extends StatefulWidget {
   const GameDetailScreen({Key? key, required this.game}) : super(key: key);
@@ -158,7 +160,6 @@ class GameDetailState extends State<GameDetailScreen> {
     }
 
     var throws = turns.expand((element) => element.throws);
-    // Calculate highest count of throws
     var doubleCount = throws.fold<double>(
         0,
         (previousValue, element) =>
@@ -329,7 +330,20 @@ class GameDetailState extends State<GameDetailScreen> {
                       style: rowStyle,
                     ),
                     Text(
-                      "${throwCount.last.key.type.toShortString()} ${throwCount.last.value.toString()} (${throwCount.last.value}x)",
+                      "${throwCount.last.key.type.toShortString().capitalize()} ${throwCount.last.value.toString()} (${throwCount.last.value}x)",
+                      style: rowStyle,
+                    ),
+                  ]),
+
+
+                  TableRow(children: [
+                    Text(
+                      score == 0 ?  'Winning throw' : "",
+                      textAlign: TextAlign.start,
+                      style: rowStyle,
+                    ),
+                    Text(
+                      score == 0 ? "${turns.last.throws.last.type.toShortString().capitalize()} ${turns.last.throws.last.score.toString()}" : "",
                       style: rowStyle,
                     ),
                   ]),
@@ -380,98 +394,123 @@ class GameDetailState extends State<GameDetailScreen> {
       fontSize: 18,
     );
 
-    return LineChart(
-      LineChartData(
-        lineTouchData: LineTouchData(
-          touchTooltipData: LineTouchTooltipData(
-              fitInsideHorizontally: true,
-              fitInsideVertically: true,
-              maxContentWidth: 100,
-              tooltipBgColor: Colors.white70,
-              getTooltipItems: (touchedSpots) {
-                return touchedSpots.map((LineBarSpot touchedSpot) {
-                  final textStyle = TextStyle(
-                    color: touchedSpot.bar.colors[0],
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  );
-                  return LineTooltipItem(
-                      '${touchedSpot.x}, ${touchedSpot.y.toStringAsFixed(2)}',
-                      textStyle);
-                }).toList();
-              }),
-          handleBuiltInTouches: true,
-          getTouchLineStart: (data, index) => 0,
-        ),
-        axisTitleData: FlAxisTitleData(
-          leftTitle: AxisTitle(
-              showTitle: true,
-              titleText: 'Score',
-              margin: 0,
-              textStyle: grayTextStyle),
-          bottomTitle: AxisTitle(
-              showTitle: true,
-              titleText: 'Turn',
-              margin: 24,
-              textStyle: grayTextStyle),
-        ),
-        lineBarsData: [
-          LineChartBarData(
-            colors: [
-              Colors.lightGreen,
-            ],
-            spots: averageData,
-            isCurved: true,
-            isStrokeCapRound: true,
-            barWidth: 3,
-            belowBarData: BarAreaData(
-              show: false,
+    return Padding(
+      padding: const EdgeInsets.all(50),
+      child: Column(
+        children: [
+          Expanded(
+            child: LineChart(
+              LineChartData(
+                lineTouchData: LineTouchData(
+                  touchTooltipData: LineTouchTooltipData(
+                      fitInsideHorizontally: true,
+                      fitInsideVertically: true,
+                      maxContentWidth: 100,
+                      tooltipBgColor: Colors.white70,
+                      getTooltipItems: (touchedSpots) {
+                        return touchedSpots.map((LineBarSpot touchedSpot) {
+                          final textStyle = TextStyle(
+                            color: touchedSpot.bar.colors[0],
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          );
+                          return LineTooltipItem(
+                              '${touchedSpot.x}, ${touchedSpot.y.toStringAsFixed(2)}',
+                              textStyle);
+                        }).toList();
+                      }),
+                  handleBuiltInTouches: true,
+                  getTouchLineStart: (data, index) => 0,
+                ),
+                axisTitleData: FlAxisTitleData(
+                  leftTitle: AxisTitle(
+                      showTitle: true,
+                      titleText: 'Score',
+                      margin: 0,
+                      textStyle: grayTextStyle),
+                  bottomTitle: AxisTitle(
+                      showTitle: true,
+                      titleText: 'Turn',
+                      margin: 24,
+                      textStyle: grayTextStyle),
+                ),
+                lineBarsData: [
+                  LineChartBarData(
+                    colors: [
+                      Colors.lightGreen,
+                    ],
+                    spots: averageData,
+                    isCurved: true,
+                    isStrokeCapRound: true,
+                    barWidth: 3,
+                    belowBarData: BarAreaData(
+                      show: false,
+                    ),
+                    dotData: FlDotData(show: false),
+                  ),
+                  LineChartBarData(
+                    colors: [
+                      Colors.lightBlue,
+                    ],
+                    spots: scoreData,
+                    isCurved: true,
+                    isStrokeCapRound: true,
+                    barWidth: 3,
+                    belowBarData: BarAreaData(
+                      show: false,
+                    ),
+                    dotData: FlDotData(show: false),
+                  ),
+                ],
+                minY: minY,
+                maxY: maxY,
+                titlesData: FlTitlesData(
+                  leftTitles: SideTitles(
+                      showTitles: true,
+                      getTextStyles: (context, value) => grayTextStyle,
+                      margin: 16,
+                      reservedSize: 40),
+                  rightTitles: SideTitles(showTitles: false),
+                  bottomTitles: SideTitles(
+                      showTitles: true,
+                      getTextStyles: (context, value) => grayTextStyle,
+                      margin: 16,
+                      reservedSize: 6),
+                  topTitles: SideTitles(showTitles: false),
+                ),
+                gridData: FlGridData(
+                  show: true,
+                  drawHorizontalLine: true,
+                  drawVerticalLine: true,
+                  horizontalInterval: 1,
+                  verticalInterval: maxY / minY,
+                  checkToShowHorizontalLine: (value) {
+                    return value == 1 || value % 10 == 0;
+                  },
+                ),
+                borderData: FlBorderData(
+                  show: false,
+                ),
+              ),
             ),
-            dotData: FlDotData(show: false),
           ),
-          LineChartBarData(
-            colors: [
-              Colors.lightBlue,
-            ],
-            spots: scoreData,
-            isCurved: true,
-            isStrokeCapRound: true,
-            barWidth: 3,
-            belowBarData: BarAreaData(
-              show: false,
-            ),
-            dotData: FlDotData(show: false),
-          ),
+          Row(children: const [
+            Padding(
+                padding: EdgeInsets.all(15),
+                child: Text("Average",
+                    style: TextStyle(
+                        color: Colors.lightGreen,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w300))),
+            Padding(
+                padding: EdgeInsets.all(15),
+                child: Text("Score",
+                    style: TextStyle(
+                        color: Colors.lightBlue,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w300))),
+          ])
         ],
-        minY: minY,
-        maxY: maxY,
-        titlesData: FlTitlesData(
-          leftTitles: SideTitles(
-              showTitles: true,
-              getTextStyles: (context, value) => grayTextStyle,
-              margin: 16,
-              reservedSize: 40),
-          rightTitles: SideTitles(showTitles: false),
-          bottomTitles: SideTitles(
-              showTitles: true,
-              getTextStyles: (context, value) => grayTextStyle,
-              margin: 16,
-              reservedSize: 6),
-          topTitles: SideTitles(showTitles: false),
-        ),
-        gridData: FlGridData(
-          show: true,
-          drawHorizontalLine: true,
-          drawVerticalLine: true,
-          horizontalInterval: 1,
-          verticalInterval: maxY / minY,
-          checkToShowHorizontalLine: (value) {
-            return value == 1 || value % 10 == 0;
-          },
-        ),
-        borderData: FlBorderData(
-          show: false,
-        ),
       ),
     );
   }
