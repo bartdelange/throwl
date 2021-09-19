@@ -22,9 +22,9 @@ class _DropDownState<T> extends State<DropDown<T>> {
   Widget build(BuildContext context) {
     return DropdownButtonHideUnderline(
       child: Container(
-        padding: EdgeInsets.only(
+        padding: const EdgeInsets.only(
             left: 10.0, right: 10.0),
-        decoration: ShapeDecoration(
+        decoration: const ShapeDecoration(
           shape: RoundedRectangleBorder(
             side: BorderSide(width: 1.0, style: BorderStyle.solid),
             borderRadius: BorderRadius.all(Radius.circular(5.0)),
@@ -34,14 +34,14 @@ class _DropDownState<T> extends State<DropDown<T>> {
           isExpanded: true,
           value: _chosenValue,
           //elevation: 5,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.black,
           ),
 
           items: widget.options,
           hint: Text(
             widget.helperText,
-            style: TextStyle(
+            style: const TextStyle(
                 color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
           ),
           onChanged: (T? value) {

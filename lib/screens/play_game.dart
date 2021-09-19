@@ -40,7 +40,7 @@ class PlayGameState extends State<PlayGameScreen> {
   late Turn _currentTurn;
   bool _locked = false;
 
-  Offset _touchOffset = Offset(0, 0);
+  Offset _touchOffset = const Offset(0, 0);
 
   @override
   void initState() {
@@ -76,10 +76,10 @@ class PlayGameState extends State<PlayGameScreen> {
       Scaffold(
         body: SafeArea(
           bottom: false,
-          child: _LayoutHelper(),
+          child: _layoutHelper(),
         ),
       ),
-      _GetConfettiWidget(),
+      _getConfettiWidget(),
     ]);
   }
 
@@ -87,9 +87,9 @@ class PlayGameState extends State<PlayGameScreen> {
     return turns.fold<int>(0, (previousValue, currentTurn) {
       int turnScore = 0;
       if (!currentTurn.isValid) return previousValue;
-      currentTurn.throws.forEach((currentThrow) {
+      for (var currentThrow in currentTurn.throws) {
         turnScore += ScoreHelper.calculateScore(currentThrow);
-      });
+      }
 
       return previousValue + turnScore;
     });
@@ -117,9 +117,9 @@ class PlayGameState extends State<PlayGameScreen> {
     });
 
     int turnScore = 0;
-    _currentTurn.throws.forEach((element) {
+    for (var element in _currentTurn.throws) {
       turnScore += ScoreHelper.calculateScore(element);
-    });
+    }
     int currentUserScore = _calculateScore(widget.game.turns
         .where((user) => user.userId == _currentUserId)
         .toList());
@@ -130,15 +130,11 @@ class PlayGameState extends State<PlayGameScreen> {
     });
 
     if (!_currentTurn.isValid) {
-      return _finishTurn();
-    }
-
-    if (501 - currentUserScore - turnScore == 0) {
-      return _finishGame();
-    }
-
-    if (_currentTurn.throws.length == 3) {
-      return _finishTurn();
+      _finishTurn();
+    } else if (501 - currentUserScore - turnScore == 0) {
+      _finishGame();
+    } else if (_currentTurn.throws.length == 3) {
+      _finishTurn();
     }
   }
 
@@ -159,29 +155,33 @@ class PlayGameState extends State<PlayGameScreen> {
           children: <Widget>[
             SimpleDialogOption(
               onPressed: () => Navigator.pop(context, 1),
-              child: Text("Finish game"),
+              child: const Text("Finish game"),
             ),
             SimpleDialogOption(
               onPressed: () => Navigator.pop(context, 2),
-              child: Text("Look at the score"),
+              child: const Text("Look at the score"),
             ),
             SimpleDialogOption(
               onPressed: () => Navigator.pop(context, 3),
-              child: Text("Undo last move"),
+              child: const Text("Undo last move"),
             ),
           ],
         );
       },
     )) {
       case 1:
-        return Navigator.pop(context);
+        Navigator.popUntil(
+          context,
+          (route) => route.isFirst,
+        );
+        break;
       case 2:
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) {
             return GameDetailScreen(game: widget.game);
           }),
-          (route) => false,
+          (route) => route.isFirst,
         );
         break;
       case 3:
@@ -192,15 +192,15 @@ class PlayGameState extends State<PlayGameScreen> {
 
   _finishTurn() {
     int turnScore = 0;
-    _currentTurn.throws.forEach((element) {
+    for (var element in _currentTurn.throws) {
       turnScore += ScoreHelper.calculateScore(element);
-    });
+    }
     if (turnScore == 69) {
       speak("sheeeeesh");
     } else if (!_currentTurn.isValid) {
       speak("No score");
     } else {
-      speak("${turnScore}");
+      speak("$turnScore");
     }
     setState(() {
       // Save state
@@ -227,7 +227,7 @@ class PlayGameState extends State<PlayGameScreen> {
               .where((user) => user.userId == _currentUserId)
               .toList());
       if (scoreLeft <= 170) {
-        speak("You need ${scoreLeft}");
+        speak("You need $scoreLeft");
       }
     });
   }
@@ -257,7 +257,7 @@ class PlayGameState extends State<PlayGameScreen> {
       scrollPos = max(scrollPos, 0);
       if (_scrollController.position.pixels != scrollPos) {
         _scrollController.animateTo(scrollPos,
-            duration: Duration(seconds: 2), curve: Curves.fastOutSlowIn);
+            duration: const Duration(seconds: 2), curve: Curves.fastOutSlowIn);
       }
     }
   }
@@ -303,26 +303,26 @@ class PlayGameState extends State<PlayGameScreen> {
     return path;
   }
 
-  Widget _LayoutHelper() {
+  Widget _layoutHelper() {
     Orientation orientation = MediaQuery.of(context).orientation;
 
     if (orientation == Orientation.portrait) {
       return Column(
-        children: [_GetDartboard(orientation), _GetCurrentTurnScore(orientation), _GetScoreTable()],
+        children: [_getDartboard(orientation), _getCurrentTurnScore(orientation), _getScoreTable()],
       );
     } else {
       return Row(
         children: [
           AspectRatio(
             aspectRatio: 1,
-            child: Container(
-                height: double.infinity, child: _GetDartboard(orientation)),
+            child: SizedBox(
+                height: double.infinity, child: _getDartboard(orientation)),
           ),
           Expanded(
             child: Column(
               children: [
-                _GetCurrentTurnScore(orientation),
-                _GetScoreTable(),
+                _getCurrentTurnScore(orientation),
+                _getScoreTable(),
               ],
             ),
           ),
@@ -331,7 +331,7 @@ class PlayGameState extends State<PlayGameScreen> {
     }
   }
 
-  Widget _GetDartboard([Orientation orientation = Orientation.portrait]) {
+  Widget _getDartboard([Orientation orientation = Orientation.portrait]) {
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -344,10 +344,10 @@ class PlayGameState extends State<PlayGameScreen> {
         ),
       ),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: AspectRatio(
           aspectRatio: 1,
-          child: Container(
+          child: SizedBox(
             width: double.infinity,
             child: Stack(children: [
               CanvasTouchDetector(
@@ -363,16 +363,16 @@ class PlayGameState extends State<PlayGameScreen> {
     );
   }
 
-  Widget _GetCurrentTurnScore(
+  Widget _getCurrentTurnScore(
       [Orientation orientation = Orientation.portrait]) {
     var children = [
       Text(
-          '1st: ${_currentTurn.throws.length > 0 ? "${_currentTurn.throws[0].type.toShortString()} ${_currentTurn.throws[0].score} (${ScoreHelper.calculateScore(_currentTurn.throws[0])})" : 0}',
+          '1st: ${_currentTurn.throws.isNotEmpty ? "${_currentTurn.throws[0].type.toShortString()} ${_currentTurn.throws[0].score} (${ScoreHelper.calculateScore(_currentTurn.throws[0])})" : 0}',
           style: TextStyle(
-              decoration: _currentTurn.throws.length == 0
+              decoration: _currentTurn.throws.isEmpty
                   ? TextDecoration.underline
                   : TextDecoration.none,
-              fontWeight: _currentTurn.throws.length == 0
+              fontWeight: _currentTurn.throws.isEmpty
                   ? FontWeight.bold
                   : FontWeight.normal,
               fontSize: 32)),
@@ -415,10 +415,10 @@ class PlayGameState extends State<PlayGameScreen> {
                       children: children,
                     )),
             ),
-            _GetButtonBar()
+            _getButtonBar()
           ]),
         ),
-        Divider(
+        const Divider(
           thickness: 3,
           color: Colors.black54,
         ),
@@ -426,14 +426,14 @@ class PlayGameState extends State<PlayGameScreen> {
     );
   }
 
-  Widget _GetScoreTable() {
+  Widget _getScoreTable() {
     return Expanded(
       child: Column(
         children: [
           Padding(
-            padding: EdgeInsets.only(left: 16, right: 16),
+            padding: const EdgeInsets.only(left: 16, right: 16),
             child: Row(
-              children: [
+              children: const [
                 Expanded(
                   flex: 4,
                   child: Padding(
@@ -510,7 +510,7 @@ class PlayGameState extends State<PlayGameScreen> {
               ],
             ),
           ),
-          Divider(
+          const Divider(
             thickness: 3,
             color: Colors.black54,
           ),
@@ -521,7 +521,7 @@ class PlayGameState extends State<PlayGameScreen> {
               child: SafeArea(
                 top: false,
                 child: Padding(
-                  padding: EdgeInsets.only(left: 16, right: 16),
+                  padding: const EdgeInsets.only(left: 16, right: 16),
                   child: Column(
                     children: [
                       ...widget.game.players.map(
@@ -536,7 +536,7 @@ class PlayGameState extends State<PlayGameScreen> {
                               Expanded(
                                 flex: 4,
                                 child: Padding(
-                                  padding: EdgeInsets.all(5),
+                                  padding: const EdgeInsets.all(5),
                                   child: Text(
                                     user.name,
                                     style: TextStyle(
@@ -552,7 +552,7 @@ class PlayGameState extends State<PlayGameScreen> {
                                 flex: 1,
                                 child: Center(
                                   child: Padding(
-                                    padding: EdgeInsets.all(2),
+                                    padding: const EdgeInsets.all(2),
                                     child: Text(
                                       _calculateScore(widget.game.turns.any(
                                                   (turn) =>
@@ -581,7 +581,7 @@ class PlayGameState extends State<PlayGameScreen> {
                                 flex: 1,
                                 child: Center(
                                   child: Padding(
-                                    padding: EdgeInsets.all(2),
+                                    padding: const EdgeInsets.all(2),
                                     child: Text(
                                       ((_calculateAverage(user.userId) * 100)
                                                   .round() /
@@ -602,7 +602,7 @@ class PlayGameState extends State<PlayGameScreen> {
                                 flex: 2,
                                 child: Center(
                                   child: Padding(
-                                    padding: EdgeInsets.all(2),
+                                    padding: const EdgeInsets.all(2),
                                     child: Text(
                                       ((_calculateAverage(user.userId, true) *
                                                       100)
@@ -624,7 +624,7 @@ class PlayGameState extends State<PlayGameScreen> {
                                 flex: 1,
                                 child: Center(
                                   child: Padding(
-                                    padding: EdgeInsets.all(2),
+                                    padding: const EdgeInsets.all(2),
                                     child: Text(
                                       (501 -
                                               _calculateScore(widget.game.turns
@@ -668,24 +668,24 @@ class PlayGameState extends State<PlayGameScreen> {
     );
   }
 
-  Widget _GetButtonBar() {
+  Widget _getButtonBar() {
     return ButtonBar(
       children: [
         ElevatedButton(
-          child: Text("Undo"),
+          child: const Text("Undo"),
           style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
-              textStyle: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+              textStyle: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           onPressed: () => {
             setState(() {
-              if (_currentTurn.throws.length == 0) {
-                if (widget.game.turns.length != 0) {
+              if (_currentTurn.throws.isEmpty) {
+                if (widget.game.turns.isNotEmpty) {
                   Turn lastTurn = widget.game.turns.removeLast();
                   _currentUserId = lastTurn.userId;
                   _currentTurn = lastTurn;
                 }
               }
-              if (_currentTurn.throws.length > 0) {
+              if (_currentTurn.throws.isNotEmpty) {
                 _currentTurn.throws.removeLast();
               }
               // Save state
@@ -701,7 +701,7 @@ class PlayGameState extends State<PlayGameScreen> {
     );
   }
 
-  Widget _GetConfettiWidget() {
+  Widget _getConfettiWidget() {
     return Positioned(
       top: _touchOffset.dy - 15,
       left: _touchOffset.dx - 15,
