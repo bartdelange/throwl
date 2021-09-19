@@ -26,6 +26,7 @@ dependencies:
   wakelock: ^0.5.6
   fl_chart: ^0.40.0
   pull_to_refresh: ^2.0.0
+  flutter_signin_button: ^2.0.0
 
 dev_dependencies:
   flutter_test:

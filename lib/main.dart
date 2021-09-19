@@ -1,4 +1,4 @@
-import 'package:dartapp/screens/home.dart';
+import 'package:dartapp/screens/login.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -6,7 +6,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  runApp(PijlgooiApp());
+  runApp(const PijlgooiApp());
 }
 
 class PijlgooiApp extends StatelessWidget {
@@ -20,7 +20,7 @@ class PijlgooiApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomeScreen(),
+      home: const LoginScreen(),
     );
   }
 }

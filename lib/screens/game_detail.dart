@@ -330,7 +330,7 @@ class GameDetailState extends State<GameDetailScreen> {
                       style: rowStyle,
                     ),
                     Text(
-                      "${throwCount.last.key.type.toShortString().capitalize()} ${throwCount.last.value.toString()} (${throwCount.last.value}x)",
+                      "${throwCount.last.key.type.toShortString().capitalize()} ${throwCount.last.key.score.toString()} (${throwCount.last.value}x)",
                       style: rowStyle,
                     ),
                   ]),
@@ -397,6 +397,7 @@ class GameDetailState extends State<GameDetailScreen> {
     return Padding(
       padding: const EdgeInsets.all(50),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             child: LineChart(
@@ -494,22 +495,25 @@ class GameDetailState extends State<GameDetailScreen> {
               ),
             ),
           ),
-          Row(children: const [
-            Padding(
-                padding: EdgeInsets.all(15),
-                child: Text("Average",
-                    style: TextStyle(
-                        color: Colors.lightGreen,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w300))),
-            Padding(
-                padding: EdgeInsets.all(15),
-                child: Text("Score",
-                    style: TextStyle(
-                        color: Colors.lightBlue,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w300))),
-          ])
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              Padding(
+                  padding: EdgeInsets.all(5),
+                  child: Text("—— Average",
+                      style: TextStyle(
+                          color: Colors.lightGreen,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w300))),
+              Padding(
+                  padding: EdgeInsets.all(5),
+                  child: Text("—— Score",
+                      style: TextStyle(
+                          color: Colors.lightBlue,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w300))),
+            ],
+          )
         ],
       ),
     );

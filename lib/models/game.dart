@@ -10,7 +10,7 @@ class Game {
 
   Game(this.gameId, this.players);
   Game.initAll(this.gameId, this.players, this.turns, this.started, this.finished);
-  void AddTurn(Turn turn) {
+  void addTurn(Turn turn) {
     turns.add(turn);
   }
 }

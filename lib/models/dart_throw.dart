@@ -8,7 +8,7 @@ enum DartboardScoreType {
 
 extension ParseToString on DartboardScoreType {
   String toShortString() {
-    return this.toString().split('.').last;
+    return toString().split('.').last;
   }
 }
 

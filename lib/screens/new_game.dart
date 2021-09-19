@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartapp/models/game.dart';
-import 'package:dartapp/models/user.dart' as userModel;
+import 'package:dartapp/models/user.dart' as user_model;
 import 'package:dartapp/screens/play_game.dart';
 import 'package:flutter/material.dart';
 
@@ -16,10 +16,10 @@ class NewGameScreen extends StatefulWidget {
 class NewGameState extends State<NewGameScreen> {
   final Stream<QuerySnapshot> _usersStream =
       FirebaseFirestore.instance.collection('users').snapshots();
-  CollectionReference _gamesCollection =
+  final CollectionReference _gamesCollection =
       FirebaseFirestore.instance.collection('games');
 
-  List<userModel.User> shuffle(List<userModel.User> items, Random random) {
+  List<user_model.User> shuffle(List<user_model.User> items, Random random) {
     for (var i = items.length - 1; i > 0; i--) {
       var n = random.nextInt(i + 1);
 
@@ -31,7 +31,7 @@ class NewGameState extends State<NewGameScreen> {
     return items;
   }
 
-  List<userModel.User> _selectedUsers = [];
+  final List<user_model.User> _selectedUsers = [];
 
   @override
   Widget build(BuildContext context) {
@@ -39,29 +39,29 @@ class NewGameState extends State<NewGameScreen> {
       body: Center(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     width: double.infinity,
                     child: StreamBuilder<QuerySnapshot>(
                       stream: _usersStream,
                       builder: (BuildContext context,
                           AsyncSnapshot<QuerySnapshot> snapshot) {
                         if (snapshot.hasError) {
-                          return Text('Something went wrong');
+                          return const Text("Something went wrong");
                         }
 
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return Text("Loading");
+                          return const Text("Loading");
                         }
 
                         if (snapshot.data == null) {
-                          return Text('No data');
+                          return const Text('No data');
                         }
 
                         return ListView(
@@ -76,7 +76,7 @@ class NewGameState extends State<NewGameScreen> {
                               onChanged: (bool? value) {
                                 setState(() {
                                   if (value!) {
-                                    _selectedUsers.add(userModel.User(
+                                    _selectedUsers.add(user_model.User(
                                         document.id, data['name']));
                                   } else {
                                     _selectedUsers.removeWhere(
@@ -93,14 +93,16 @@ class NewGameState extends State<NewGameScreen> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   child: ElevatedButton(
-                    child: Text('Start Game'),
+                    child: const Text('Start Game'),
                     style: ElevatedButton.styleFrom(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 25, vertical: 15),
-                        textStyle: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold)),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 25, vertical: 15),
+                        textStyle: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        )),
                     onPressed: () async {
                       var gameDocument = await _gamesCollection.add({
                         'players': _selectedUsers
