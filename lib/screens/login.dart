@@ -1,8 +1,10 @@
-import 'package:dartapp/screens/home.dart';
+import 'package:dartapp/screens/home/home.dart';
 import 'package:dartapp/services/auth_service.dart';
+import 'package:dartapp/services/service_locator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,45 +16,81 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = false;
-  final AuthService _service = AuthService();
+  final _authService = locator<AuthService>();
   final emailFieldController = TextEditingController();
   final passwordFieldController = TextEditingController();
+  final fullNameFieldController = TextEditingController();
+
+  @override
+  void initState() {
+    isLoading = true;
+    try {
+      _authService.setup().then((_) {
+        isLoading = false;
+        if (_authService.isLoggedIn()) {
+          SchedulerBinding.instance!.addPostFrameCallback((_) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) {
+                return const HomeScreen();
+              }),
+              (route) => false,
+            );
+          });
+        }
+      });
+    } catch (e) {
+      rethrow;
+    }
+    isLoading = false;
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    Size size = MediaQuery
+        .of(context)
+        .size;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Pijlen Gooien Applicatie"),
-          bottom: const TabBar(
-            tabs: [
-              Tab(icon: Icon(Icons.login_rounded), text: "Sign In"),
-              Tab(icon: Icon(Icons.assignment_rounded), text: "Sign Up"),
-            ],
-          ),
-        ),
         body: Stack(
+          fit: StackFit.expand,
           children: [
-            TabBarView(
-              children: [
-                _formWrapper(_getSignInForm(), size.width),
-                _formWrapper(_getSignUpForm(), size.width)
-              ],
+            DefaultTextStyle(
+              style: const TextStyle(color: Colors.white),
+              child: Container(
+                decoration:
+                    BoxDecoration(color: Theme.of(context).primaryColor),
+                child: Column(
+                  children: [
+                    const TabBar(
+                      tabs: [
+                        Tab(icon: Icon(Icons.login_rounded), text: "Sign In"),
+                        Tab(
+                            icon: Icon(Icons.assignment_rounded),
+                            text: "Sign Up"),
+                      ],
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          _formWrapper(_getSignInForm(), size.width),
+                          _formWrapper(_getSignUpForm(), size.width)
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            Positioned(
-              left: 0,
-              top: 0,
-              child: isLoading
-                  ? Container(
-                      width: double.infinity,
-                      height: double.infinity,
-                      decoration: const BoxDecoration(color: Colors.black26),
-                      child: const CircularProgressIndicator(),
-                    )
-                  : Container(),
-            ),
+            isLoading
+                ? Container(
+                    decoration: const BoxDecoration(color: Colors.black26),
+                    child: const Center(child: CircularProgressIndicator()),
+                  )
+                : Container(),
           ],
         ),
       ),
@@ -80,15 +118,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _formWrapper(List<Widget> child, double width) {
     return Center(
-      child: !isLoading
-          ? SizedBox(
-              width: width * 0.6,
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: child),
-            )
-          : const CircularProgressIndicator(),
+      child: SizedBox(
+        width: width * 0.6,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: child,
+        ),
+      ),
     );
   }
 
@@ -98,7 +135,8 @@ class _LoginScreenState extends State<LoginScreen> {
         padding: EdgeInsets.only(bottom: 100),
         child: Text(
           "Sign In",
-          style: TextStyle(fontWeight: FontWeight.w100, fontSize: 72),
+          style: TextStyle(
+              fontWeight: FontWeight.w100, fontSize: 72),
         ),
       ),
       Padding(
@@ -133,30 +171,34 @@ class _LoginScreenState extends State<LoginScreen> {
               isLoading = true;
             });
             try {
-              await _service.signInWithEmailAndPassword(
+              await _authService.signInWithEmailAndPassword(
                 email: emailFieldController.text,
                 password: passwordFieldController.text,
               );
-              Navigator.pushAndRemoveUntil(context,
-                  MaterialPageRoute(builder: (context) {
-                return const HomeScreen();
-              }), (route) => false);
-            } catch (e) {
-              if (e is FirebaseAuthException) {
-                _showMessage(e.message!);
-              }
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) {
+                  return const HomeScreen();
+                }),
+                (route) => false,
+              );
+            } on FirebaseAuthException catch (e) {
+              _showMessage(e.message!);
+            } on Exception catch (_) {
+              _showMessage("Something went wrong, please try again");
+            } finally {
+              setState(() {
+                isLoading = false;
+              });
             }
-            setState(() {
-              isLoading = false;
-            });
           },
           text: "Sign in",
         ),
       ),
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        child: _getGoogleButton("Sign in with Google"),
-      ),
+      // Padding(
+      //   padding: const EdgeInsets.symmetric(vertical: 5),
+      //   child: _getGoogleButton("Sign in with Google"),
+      // ),
     ];
   }
 
@@ -191,6 +233,16 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
       Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: TextField(
+          controller: fullNameFieldController,
+          decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'John Doe',
+              labelText: "Full name"),
+        ),
+      ),
+      Padding(
         padding: const EdgeInsets.symmetric(vertical: 5),
         child: SignInButton(
           Buttons.Email,
@@ -201,14 +253,18 @@ class _LoginScreenState extends State<LoginScreen> {
               isLoading = true;
             });
             try {
-              await _service.signUp(
+              await _authService.signUp(
                 email: emailFieldController.text,
                 password: passwordFieldController.text,
+                fullName: fullNameFieldController.text,
               );
-              Navigator.pushAndRemoveUntil(context,
-                  MaterialPageRoute(builder: (context) {
-                return const HomeScreen();
-              }), (route) => false);
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) {
+                  return const HomeScreen();
+                }),
+                (route) => false,
+              );
             } catch (e) {
               if (e is FirebaseAuthException) {
                 _showMessage(e.message!);
@@ -221,10 +277,10 @@ class _LoginScreenState extends State<LoginScreen> {
           text: "Sign up",
         ),
       ),
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        child: _getGoogleButton("Sign up with Google"),
-      ),
+      // Padding(
+      //   padding: const EdgeInsets.symmetric(vertical: 5),
+      //   child: _getGoogleButton("Sign up with Google"),
+      // ),
     ];
   }
 
@@ -239,11 +295,7 @@ class _LoginScreenState extends State<LoginScreen> {
           isLoading = true;
         });
         try {
-          await _service.signInWithGoogle();
-          Navigator.pushAndRemoveUntil(context,
-              MaterialPageRoute(builder: (context) {
-            return const HomeScreen();
-          }), (route) => false);
+          await _authService.signInWithGoogle();
         } catch (e) {
           if (e is FirebaseAuthException) {
             _showMessage(e.message!);

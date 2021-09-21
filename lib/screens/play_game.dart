@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:wakelock/wakelock.dart';
 import 'package:confetti/confetti.dart';
 import 'package:dartapp/helpers/dartboard/dartboard_painter.dart';
 import 'package:dartapp/helpers/turn_helper.dart';
@@ -15,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:measured_size/measured_size.dart';
 import 'package:touchable/touchable.dart';
+import 'package:wakelock/wakelock.dart';
 
 class PlayGameScreen extends StatefulWidget {
   const PlayGameScreen({Key? key, required this.game}) : super(key: key);
@@ -138,6 +138,48 @@ class PlayGameState extends State<PlayGameScreen> {
     }
   }
 
+  _finishTurn() {
+    int turnScore = 0;
+    for (var element in _currentTurn.throws) {
+      turnScore += ScoreHelper.calculateScore(element);
+    }
+    if (turnScore == 69) {
+      speak("sheeeeesh");
+    } else if (!_currentTurn.isValid) {
+      speak("No score");
+    } else {
+      speak("$turnScore");
+    }
+    setState(() {
+      // Save state
+      widget.game.turns.add(_currentTurn);
+      _persist();
+
+      // prepare next moves
+      int currentUserIndex = 1 +
+          widget.game.players.indexWhere(
+                (user) => user.userId == _currentUserId,
+          );
+      if (currentUserIndex == widget.game.players.length) {
+        currentUserIndex = 0;
+      }
+      _currentUserId = widget.game.players[currentUserIndex].userId;
+      _currentTurn = Turn(widget.game.players
+          .firstWhere((user) => user.userId == _currentUserId)
+          .userId);
+
+      _scrollScore();
+
+      int scoreLeft = 501 -
+          _calculateScore(widget.game.turns
+              .where((user) => user.userId == _currentUserId)
+              .toList());
+      if (scoreLeft <= 170) {
+        speak("${widget.game.players[currentUserIndex].name.split(' ')[0]} you need $scoreLeft");
+      }
+    });
+  }
+
   _finishGame() async {
     _controllerCenter.play();
     widget.game.turns.add(_currentTurn);
@@ -190,52 +232,56 @@ class PlayGameState extends State<PlayGameScreen> {
     }
   }
 
-  _finishTurn() {
-    int turnScore = 0;
-    for (var element in _currentTurn.throws) {
-      turnScore += ScoreHelper.calculateScore(element);
-    }
-    if (turnScore == 69) {
-      speak("sheeeeesh");
-    } else if (!_currentTurn.isValid) {
-      speak("No score");
-    } else {
-      speak("$turnScore");
-    }
+  Future<bool> _dropOut(String userId) async {
+    bool returnVal = false;
     setState(() {
-      // Save state
-      widget.game.turns.add(_currentTurn);
-      _persist();
-
-      // prepare next moves
-      int currentUserIndex = 1 +
-          widget.game.players.indexWhere(
-            (user) => user.userId == _currentUserId,
-          );
-      if (currentUserIndex == widget.game.players.length) {
-        currentUserIndex = 0;
+      if (widget.game.players.length != 2) {
+        widget.game.turns.removeWhere((turn) => turn.userId == userId);
+        widget.game.players.removeWhere((player) => player.userId == userId);
+        _persist();
       }
-      _currentUserId = widget.game.players[currentUserIndex].userId;
-      _currentTurn = Turn(widget.game.players
-          .firstWhere((user) => user.userId == _currentUserId)
-          .userId);
 
-      _scrollScore();
+      if (_currentUserId == userId) {
+        int currentUserIndex = 1 +
+            widget.game.players.indexWhere(
+                  (user) => user.userId == _currentUserId,
+            );
+        if (currentUserIndex == widget.game.players.length) {
+          currentUserIndex = 0;
+        }
+        _currentUserId = widget.game.players[currentUserIndex].userId;
+        _currentTurn = Turn(widget.game.players
+            .firstWhere((user) => user.userId == _currentUserId)
+            .userId);
 
-      int scoreLeft = 501 -
-          _calculateScore(widget.game.turns
-              .where((user) => user.userId == _currentUserId)
-              .toList());
-      if (scoreLeft <= 170) {
-        speak("You need $scoreLeft");
+        _scrollScore();
+
+        // prepare next moves
+        if (widget.game.players.length == 2) {
+          _finishGame();
+          returnVal = false;
+          return;
+        }
+
+        int scoreLeft = 501 -
+            _calculateScore(widget.game.turns
+                .where((user) => user.userId == _currentUserId)
+                .toList());
+        if (scoreLeft <= 170) {
+          speak(
+              "${widget.game.players[currentUserIndex].name.split(
+                  ' ')[0]} you need $scoreLeft");
+        }
       }
+      returnVal = true;
     });
+    return returnVal;
   }
 
   _scrollScore() {
     var scrollIndex = widget.game.players.indexWhere(
           (element) => element.userId == _currentUserId,
-        ) +
+    ) +
         1;
     var scrollableItems = widget.game.players.length;
 
@@ -262,16 +308,19 @@ class PlayGameState extends State<PlayGameScreen> {
     }
   }
 
-  _persist({bool finish = false}) {
-    games.doc(widget.game.gameId).update({
+  _persist({bool finish = false}) async {
+    await games.doc(widget.game.gameId).update({
       'finished': finish ? DateTime.now() : null,
+      'players': widget.game.players.map((player) => users.doc(player.userId)).toList(),
       'turns': widget.game.turns
-          .map<Map<String, dynamic>>((turn) => {
-                'throws': turn.throws
-                    .map<Map<String, dynamic>>((currentThrow) => {
-                          'type': currentThrow.type.toShortString(),
-                          'score': currentThrow.score,
-                        })
+          .map<Map<String, dynamic>>((turn) =>
+      {
+        'throws': turn.throws
+            .map<Map<String, dynamic>>((currentThrow) =>
+        {
+          'type': currentThrow.type.toShortString(),
+          'score': currentThrow.score,
+        })
             .toList(),
         'isValid': turn.isValid,
         'userId': users.doc(turn.userId)
@@ -520,61 +569,115 @@ class PlayGameState extends State<PlayGameScreen> {
               controller: _scrollController,
               child: SafeArea(
                 top: false,
+                left: false,
+                right: false,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16, right: 16),
                   child: Column(
                     children: [
                       ...widget.game.players.map(
-                        (user) => MeasuredSize(
-                          onChange: (Size size) {
-                            setState(() {
-                              _scoreItemHeight = size.height;
-                            });
-                          },
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 4,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(5),
-                                  child: Text(
-                                    user.name,
-                                    style: TextStyle(
-                                      fontWeight: user.userId == _currentUserId
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                      fontSize: 18,
+                            (user) =>
+                            ClipRect(
+                              child: MeasuredSize(
+                                onChange: (Size size) {
+                                  setState(() {
+                                    _scoreItemHeight = size.height;
+                                  });
+                                },
+                                child: Dismissible(
+                                  key: UniqueKey(),
+                                  direction: DismissDirection.endToStart,
+                                  background: Container(
+                                    padding: const EdgeInsets.only(right: 20.0),
+                                    color: Colors.red,
+                                    child: const Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Text('Drop Out',
+                                          textAlign: TextAlign.right,
+                                          style: TextStyle(
+                                              color: Colors.white)),
                                     ),
                                   ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(2),
-                                    child: Text(
-                                      _calculateScore(widget.game.turns.any(
-                                                  (turn) =>
-                                                      turn.userId ==
-                                                      user.userId)
-                                              ? [
-                                                  widget.game.turns.lastWhere(
-                                                      (turn) =>
-                                                          turn.userId ==
-                                                          user.userId)
-                                                ]
-                                              : [])
-                                          .toString(),
-                                      style: TextStyle(
-                                        fontWeight:
-                                            user.userId == _currentUserId
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
-                                        fontSize: 18,
+                                  confirmDismiss: (direction) async {
+                                    switch (await showDialog<bool>(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return SimpleDialog(
+                                          title: const Text(
+                                              "Do you wish to drop out?"),
+                                          children: <Widget>[
+                                            SimpleDialogOption(
+                                              onPressed: () =>
+                                                  Navigator.pop(context, true),
+                                              child: const Text("Drop out"),
+                                            ),
+                                            SimpleDialogOption(
+                                              onPressed: () =>
+                                                  Navigator.pop(context, false),
+                                              child:
+                                              const Text("Keep playing"),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    )) {
+                                      case true:
+                                        return _dropOut(user.userId);
+                                        break;
+                                      case false:
+                                        return false;
+                                        break;
+                                    }
+                                  },
+                                  onDismissed: (direction) {
+                                    _dropOut(user.userId);
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 4,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(5),
+                                          child: Text(
+                                            user.name,
+                                            style: TextStyle(
+                                              fontWeight:
+                                              user.userId == _currentUserId
+                                                  ? FontWeight.bold
+                                                  : FontWeight.normal,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Center(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(2),
+                                            child: Text(
+                                              _calculateScore(
+                                                  widget.game.turns.any(
+                                                          (turn) =>
+                                                      turn.userId ==
+                                                          user.userId)
+                                                  ? [
+                                                  widget.game.turns
+                                                      .lastWhere((turn) =>
+                                                  turn.userId ==
+                                                      user.userId)
+                                                  ]
+                                                      : [])
+                                                  .toString(),
+                                              style: TextStyle(
+                                                fontWeight:
+                                                user.userId == _currentUserId
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal,
+                                                fontSize: 18,
+                                              ),
+                                            ),
+                                          ),
                                 ),
                               ),
                               Expanded(
@@ -620,40 +723,43 @@ class PlayGameState extends State<PlayGameScreen> {
                                   ),
                                 ),
                               ),
-                              Expanded(
-                                flex: 1,
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(2),
-                                    child: Text(
-                                      (501 -
-                                              _calculateScore(widget.game.turns
+                                      Expanded(
+                                        flex: 1,
+                                        child: Center(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(2),
+                                            child: Text(
+                                              (501 -
+                                                  _calculateScore(widget
+                                                      .game.turns
                                                       .any((turn) =>
-                                                          turn.userId ==
-                                                          user.userId)
-                                                  ? widget.game.turns
+                                                  turn.userId ==
+                                                      user.userId)
+                                                      ? widget.game.turns
                                                       .where((turn) =>
-                                                          turn.userId ==
-                                                          user.userId)
+                                                  turn.userId ==
+                                                      user.userId)
                                                       .toList()
-                                                  : []) -
-                                              (user.userId == _currentUserId
-                                                  ? _calculateScore(
+                                                      : []) -
+                                                  (user.userId == _currentUserId
+                                                      ? _calculateScore(
                                                       [_currentTurn])
-                                                  : 0))
-                                          .toString(),
-                                      style: TextStyle(
-                                        fontWeight:
-                                            user.userId == _currentUserId
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
-                                        fontSize: 18,
+                                                      : 0))
+                                                  .toString(),
+                                              style: TextStyle(
+                                                fontWeight:
+                                                user.userId == _currentUserId
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal,
+                                                fontSize: 18,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
                                 ),
-                              ),
-                            ],
                           ),
                         ),
                       ),
