@@ -7,6 +7,8 @@ import 'package:dartapp/models/turn.dart';
 import 'package:dartapp/models/user.dart' as user_model;
 import 'package:dartapp/screens/game_detail.dart';
 import 'package:dartapp/screens/play_game.dart';
+import 'package:dartapp/services/auth_service.dart';
+import 'package:dartapp/services/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -19,10 +21,24 @@ class GamesScreen extends StatefulWidget {
 
 class GamesState extends State<GamesScreen> {
   final _gamesCollection = FirebaseFirestore.instance.collection('games');
-  var _gamesCollectionSnapshots = FirebaseFirestore.instance.collection('games').orderBy('started', descending: true).snapshots();
+  final _authService = locator<AuthService>();
+  var _gamesCollectionSnapshots = FirebaseFirestore.instance
+      .collection('games')
+      .where('players',
+          arrayContains: FirebaseFirestore.instance
+              .collection('users')
+              .doc(locator<AuthService>().currentUser!.userId))
+      .orderBy('started', descending: true)
+      .snapshots();
 
   void refresh() async {
-    _gamesCollectionSnapshots = _gamesCollection.orderBy('started', descending: true).snapshots();
+    _gamesCollectionSnapshots = _gamesCollection
+        .where('players',
+            arrayContains: FirebaseFirestore.instance
+                .collection('users')
+                .doc(_authService.currentUser!.userId))
+        .orderBy('started', descending: true)
+        .snapshots();
   }
 
   @override
@@ -53,8 +69,10 @@ class GamesState extends State<GamesScreen> {
               stream: _gamesCollectionSnapshots,
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) {
-                  return const Text('Something went wrong',
-                      style: TextStyle(fontSize: 24));
+                  return const Text(
+                    'Something went wrong',
+                    style: TextStyle(fontSize: 24),
+                  );
                 }
 
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -112,6 +130,7 @@ class GamesState extends State<GamesScreen> {
                               : const Icon(Icons.done),
                           onTap: () async {
                             var game = await _getGame(data, document);
+                            if (game.finished == null) return;
 
                             Navigator.push(
                               context,
@@ -163,34 +182,32 @@ class GamesState extends State<GamesScreen> {
     );
   }
 
-  _getGame(Map<String, dynamic> data, DocumentSnapshot<Object?> document) async {
+  Future<Game> _getGame(Map<String, dynamic> data, DocumentSnapshot<Object?> document) async {
     var id = document.id;
     List<user_model.User> players = await Future.wait(
         data['players'].map<Future<user_model.User>>((reference) async {
       var user = await reference.get();
-      return user_model.User(reference.id, user['name']);
+      return user_model.User(reference.id, user['name'], user['email']);
     }).toList());
     var turns = data['turns']
-        .map<Turn>(
-          (turn) => Turn.initAll(
-          turn['userId'].id,
-          turn['throws']
-              .map<DartThrow>(
-                (dartThrow) => DartThrow(
-                DartboardScoreType
-                    .values.firstWhere(
+        .map<Turn>((turn) => Turn.initAll(
+              turn['userId'].id,
+              turn['throws']
+                  .map<DartThrow>(
+                    (dartThrow) => DartThrow(
+                        DartboardScoreType.values.firstWhere(
                             (e) => e.toShortString() == dartThrow['type']),
                         dartThrow['score']),
                   )
                   .toList(),
-              turn['isValid']),
-        )
+              turn['isValid'],
+            ))
         .toList();
-    DateTime? started = null;
+    DateTime? started;
     if (data['finished'] != null) {
       started = (data['started'] as Timestamp).toDate();
     }
-    DateTime? finished = null;
+    DateTime? finished;
     if (data['finished'] != null) {
       finished = (data['finished'] as Timestamp).toDate();
     }
