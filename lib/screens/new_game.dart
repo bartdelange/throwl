@@ -7,6 +7,7 @@ import 'package:dartapp/screens/play_game.dart';
 import 'package:dartapp/services/auth_service.dart';
 import 'package:dartapp/services/service_locator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class NewGameScreen extends StatefulWidget {
   const NewGameScreen({Key? key}) : super(key: key);
@@ -19,6 +20,7 @@ class NewGameState extends State<NewGameScreen> {
   final CollectionReference _gamesCollection =
       FirebaseFirestore.instance.collection('games');
   final _authService = locator<AuthService>();
+  final String dartboardIcon = 'assets/dartboard_white.svg';
 
   List<user_model.User> shuffle(List<user_model.User> items, Random random) {
     for (var i = items.length - 1; i > 0; i--) {
@@ -41,18 +43,45 @@ class NewGameState extends State<NewGameScreen> {
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: SizedBox(
-                    width: double.infinity,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * .8,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 25, top: 125),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "THE PLAYERS",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 55,
+                            fontWeight: FontWeight.w900),
+                      ),
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 75),
+                    child: Divider(
+                      thickness: 3,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Expanded(
                     child: ListView(
                       children: _authService.currentUser!.friends.isEmpty
                           ? [
                               const ListTile(
-                                  title: Text('No friends added yet'))
+                                title: Text(
+                                  "You don't have any friends yet",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.w900),
+                                ),
+                              ),
                             ]
                           : [
                               _authService.currentUser!,
@@ -61,66 +90,106 @@ class NewGameState extends State<NewGameScreen> {
                                   .map<user_model.User>((friend) => friend.user)
                                   .toList()
                             ].map((user_model.User friend) {
-                              return CheckboxListTile(
-                                title: Text(friend.name),
-                                value: _selectedUsers.any((selectedUser) =>
-                                    selectedUser.userId == friend.userId),
-                                onChanged: (bool? value) {
-                                  setState(() {
-                                    if (value!) {
-                                      _selectedUsers.add(friend);
-                                    } else {
-                                      _selectedUsers.removeWhere(
-                                          (selectedUser) =>
-                                              selectedUser.userId ==
-                                              friend.userId);
-                                    }
-                                  });
-                                },
-                                // subtitle: Text(document.id.toString()),
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 25),
+                                child: Row(
+                                  children: <Widget>[
+                                    Expanded(
+                                        child: Text(friend.name,
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 32,
+                                                fontWeight: FontWeight.w900))),
+                                    Transform.scale(
+                                      scale: 1.25,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(right: 5),
+                                        child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(3),
+                                        ),
+                                        width: 24,
+                                        height: 24,
+                                        child: Checkbox(
+                                            // shape: const CircleBorder(),
+                                            side: const BorderSide(
+                                                width: 0, color: Colors.white),
+                                            tristate: false,
+                                            // checkColor:
+                                            //     Theme.of(context).primaryColor,
+                                            activeColor:
+                                                Theme.of(context).primaryColor,
+                                            value: _selectedUsers.any(
+                                                (selectedUser) =>
+                                                    selectedUser.userId ==
+                                                    friend.userId),
+                                            onChanged: (bool? value) {
+                                              setState(() {
+                                                if (value!) {
+                                                  _selectedUsers.add(friend);
+                                                } else {
+                                                  _selectedUsers.removeWhere(
+                                                      (selectedUser) =>
+                                                          selectedUser.userId ==
+                                                          friend.userId);
+                                                }
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               );
                             }).toList(),
                     ),
                   ),
-                ),
                 _authService.currentUser!.friends.isEmpty
                     ? Container()
                     : Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: ElevatedButton(
-                          child: const Text('Start Game'),
-                          style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 25, vertical: 15),
-                              textStyle: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              )),
-                          onPressed: () async {
-                            var gameDocument = await _gamesCollection.add({
-                              'players': _selectedUsers
-                                  .map((user) => FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(user.userId))
-                                  .toList(),
-                              'started': DateTime.now(),
-                              'turns': []
-                            });
-                            var game = Game(
-                              gameDocument.id,
-                              shuffle(_selectedUsers, Random()),
-                            );
+                          padding: const EdgeInsets.only(
+                              top: 20, right: 20, bottom: 100, left: 20),
+                          child: GestureDetector(
+                            child: Hero(
+                              tag: 'logo',
+                              child: SizedBox(
+                                width: 150,
+                                height: 150,
+                                child: SvgPicture.asset(
+                                  dartboardIcon,
+                                ),
+                              ),
+                            ),
+                            onTap: () async {
+                              var gameDocument = await _gamesCollection.add({
+                                'players': _selectedUsers
+                                    .map((user) => FirebaseFirestore.instance
+                                        .collection('users')
+                                        .doc(user.userId))
+                                    .toList(),
+                                'started': DateTime.now(),
+                                'turns': []
+                              });
+                              var game = Game(
+                                gameDocument.id,
+                                shuffle(_selectedUsers, Random()),
+                              );
 
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) {
-                                return PlayGameScreen(game: game);
-                              }),
-                            );
-                          },
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) {
+                                  return PlayGameScreen(game: game);
+                                }),
+                              );
+                            },
+                          ),
                         ),
-                      ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

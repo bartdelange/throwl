@@ -1,5 +1,6 @@
 import 'dart:io';
-import 'dart:math';
+import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:confetti/confetti.dart';
@@ -11,6 +12,10 @@ import 'package:dartapp/models/turn.dart';
 import 'package:dartapp/screens/game_detail.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:measured_size/measured_size.dart';
 import 'package:touchable/touchable.dart';
@@ -30,6 +35,7 @@ class PlayGameState extends State<PlayGameScreen> {
   final CollectionReference users =
       FirebaseFirestore.instance.collection('users');
   final FlutterTts _flutterTts = FlutterTts();
+  final crownIcon = "assets/crown.svg";
 
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _scoreListKey = GlobalKey();
@@ -56,6 +62,7 @@ class PlayGameState extends State<PlayGameScreen> {
       _flutterTts.setQueueMode(1);
     }
     Wakelock.enable();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     super.initState();
   }
 
@@ -63,6 +70,8 @@ class PlayGameState extends State<PlayGameScreen> {
   void dispose() {
     _controllerCenter.dispose();
     Wakelock.disable();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values);
     super.dispose();
   }
 
@@ -72,15 +81,25 @@ class PlayGameState extends State<PlayGameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      Scaffold(
-        body: SafeArea(
-          bottom: false,
-          child: _layoutHelper(),
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: MediaQuery.of(context).orientation == Orientation.landscape
+              ? null
+              : AppBar(
+                  toolbarHeight: 10,
+                  elevation: 0,
+                  backgroundColor: const Color.fromARGB(255, 225, 225, 225),
+                  systemOverlayStyle: SystemUiOverlayStyle.dark, // 1
+                ),
+          body: DefaultTextStyle(
+            style: const TextStyle(color: Colors.white),
+            child: _layoutHelper(),
+          ),
         ),
-      ),
-      _getConfettiWidget(),
-    ]);
+        _getConfettiWidget(),
+      ],
+    );
   }
 
   int _calculateScore(List<Turn> turns) {
@@ -181,36 +200,107 @@ class PlayGameState extends State<PlayGameScreen> {
   }
 
   _finishGame() async {
-    _controllerCenter.play();
-    widget.game.turns.add(_currentTurn);
-    _currentTurn = Turn(_currentUserId);
+    setState(() {
+      _locked = true;
+      _controllerCenter.play();
+      widget.game.turns.add(_currentTurn);
+      _currentTurn = Turn(_currentUserId);
+    });
+
     _persist(finish: true);
     speak(
         "${widget.game.players.firstWhere((user) => user.userId == _currentUserId).name} has won!");
 
     switch (await showDialog<int>(
-      context: context,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          title: Text(
-              "${widget.game.players.firstWhere((user) => user.userId == _currentUserId).name} has won"),
-          children: <Widget>[
-            SimpleDialogOption(
-              onPressed: () => Navigator.pop(context, 1),
-              child: const Text("Finish game"),
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(20.0),
+              ),
             ),
-            SimpleDialogOption(
-              onPressed: () => Navigator.pop(context, 2),
-              child: const Text("Look at the score"),
+            child: IntrinsicHeight(
+              child: SizedBox(
+                width: 350,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 14, right: 16),
+                                child: SvgPicture.asset(
+                                  crownIcon,
+                                  height: 55,
+                                  width: 5,
+                                  color: const Color(0xff008000),
+                                ),
+                              ),
+                              const Text(
+                                "WINNER",
+                                style: TextStyle(
+                                    fontSize: 55,
+                                    color: Color(0xff008000),
+                                    fontWeight: FontWeight.w900),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: Text(
+                            widget.game.players
+                                .firstWhere(
+                                    (user) => user.userId == _currentUserId)
+                                .name,
+                            style: TextStyle(
+                                fontSize: 32,
+                                color: Theme.of(context).primaryColor,
+                                fontWeight: FontWeight.w900),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            IconButton(
+                              color: const Color(0xfff20500),
+                              iconSize: 60,
+                              icon: const Icon(Icons.exit_to_app_rounded),
+                              onPressed: () => Navigator.pop(context, 1),
+                            ),
+                            IconButton(
+                              color: Theme.of(context).primaryColor,
+                              iconSize: 60,
+                              icon: const Icon(Icons.trending_up_rounded),
+                              onPressed: () => Navigator.pop(context, 2),
+                            ),
+                            IconButton(
+                              color: Theme.of(context).primaryColor,
+                              iconSize: 60,
+                              icon: Transform(
+                                alignment: Alignment.center,
+                                transform: Matrix4.rotationZ(-math.pi / 4),
+                                child: const Icon(Icons.replay_rounded),
+                              ),
+                              onPressed: () => Navigator.pop(context, 3),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
-            SimpleDialogOption(
-              onPressed: () => Navigator.pop(context, 3),
-              child: const Text("Undo last move"),
-            ),
-          ],
-        );
-      },
-    )) {
+          );
+        })) {
       case 1:
         Navigator.popUntil(
           context,
@@ -227,7 +317,25 @@ class PlayGameState extends State<PlayGameScreen> {
         );
         break;
       case 3:
-        _locked = true;
+        setState(() {
+          _locked=false;
+          if (_currentTurn.throws.isEmpty) {
+            if (widget.game.turns.isNotEmpty) {
+              Turn lastTurn = widget.game.turns.removeLast();
+              _currentUserId = lastTurn.userId;
+              _currentTurn = lastTurn;
+            }
+          }
+          if (_currentTurn.throws.isNotEmpty) {
+            _currentTurn.throws.removeLast();
+          }
+          // Save state
+          _persist();
+          _scrollScore();
+
+          // Stop animation if undo
+          _controllerCenter.stop();
+        });
         break;
     }
   }
@@ -289,7 +397,7 @@ class PlayGameState extends State<PlayGameScreen> {
     if (listKeyContext != null) {
       var listBox = listKeyContext.findRenderObject() as RenderBox;
       final bottomPadding = MediaQuery.of(context).padding.bottom;
-      double scrollPos = max(
+      double scrollPos = math.max(
           0,
           ((scrollIndex - 1) * _scoreItemHeight) +
               (_scoreItemHeight / 2) -
@@ -300,7 +408,7 @@ class PlayGameState extends State<PlayGameScreen> {
       if (scrollPos > maxScrollPos) {
         scrollPos = maxScrollPos;
       }
-      scrollPos = max(scrollPos, 0);
+      scrollPos = math.max(scrollPos, 0);
       if (_scrollController.position.pixels != scrollPos) {
         _scrollController.animateTo(scrollPos,
             duration: const Duration(seconds: 2), curve: Curves.fastOutSlowIn);
@@ -330,7 +438,7 @@ class PlayGameState extends State<PlayGameScreen> {
   }
 
   Path _drawStar(Size size) {
-    double degToRad(double deg) => deg * (pi / 180.0);
+    double degToRad(double deg) => deg * (math.pi / 180.0);
 
     const numberOfPoints = 5;
     final halfWidth = size.width / 2;
@@ -343,10 +451,11 @@ class PlayGameState extends State<PlayGameScreen> {
     path.moveTo(size.width, halfWidth);
 
     for (double step = 0; step < fullAngle; step += degreesPerStep) {
-      path.lineTo(halfWidth + externalRadius * cos(step),
-          halfWidth + externalRadius * sin(step));
-      path.lineTo(halfWidth + internalRadius * cos(step + halfDegreesPerStep),
-          halfWidth + internalRadius * sin(step + halfDegreesPerStep));
+      path.lineTo(halfWidth + externalRadius * math.cos(step),
+          halfWidth + externalRadius * math.sin(step));
+      path.lineTo(
+          halfWidth + internalRadius * math.cos(step + halfDegreesPerStep),
+          halfWidth + internalRadius * math.sin(step + halfDegreesPerStep));
     }
     path.close();
     return path;
@@ -357,7 +466,40 @@ class PlayGameState extends State<PlayGameScreen> {
 
     if (orientation == Orientation.portrait) {
       return Column(
-        children: [_getDartboard(orientation), _getCurrentTurnScore(orientation), _getScoreTable()],
+        children: [
+          _getDartboard(orientation),
+          Expanded(
+            child: Stack(
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Color.fromARGB(255, 225, 225, 225),
+                  ),
+                ),
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(25),
+                    ),
+                  ),
+                  child: Center(
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * .8,
+                      child: Column(
+                        children: [
+                          _getCurrentTurnScore(orientation),
+                          _getScoreTable()
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       );
     } else {
       return Row(
@@ -368,10 +510,28 @@ class PlayGameState extends State<PlayGameScreen> {
                 height: double.infinity, child: _getDartboard(orientation)),
           ),
           Expanded(
-            child: Column(
+            child: Stack(
               children: [
-                _getCurrentTurnScore(orientation),
-                _getScoreTable(),
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Color.fromARGB(255, 225, 225, 225),
+                  ),
+                ),
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: const BorderRadius.horizontal(
+                      left: Radius.circular(25),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      _getCurrentTurnScore(orientation),
+                      _getScoreTable(),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -382,18 +542,12 @@ class PlayGameState extends State<PlayGameScreen> {
 
   Widget _getDartboard([Orientation orientation = Orientation.portrait]) {
     return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: orientation == Orientation.portrait
-              ? BorderSide(color: Theme.of(context).hintColor, width: 3)
-              : BorderSide.none,
-          right: orientation == Orientation.landscape
-              ? BorderSide(color: Theme.of(context).hintColor, width: 3)
-              : BorderSide.none,
-        ),
+      decoration: const BoxDecoration(
+        color: Color.fromARGB(255, 225, 225, 225),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(
+            32, orientation == Orientation.landscape ? 32 : 16, 32, 32),
         child: AspectRatio(
           aspectRatio: 1,
           child: SizedBox(
@@ -412,64 +566,113 @@ class PlayGameState extends State<PlayGameScreen> {
     );
   }
 
-  Widget _getCurrentTurnScore(
-      [Orientation orientation = Orientation.portrait]) {
+  Widget _renderThrowScore(
+    bool active,
+    String score,
+    String position,
+    String superscript,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 15),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              //                   <--- left side
+              color: active ? Colors.white : Colors.transparent,
+              width: 3.0,
+            ),
+          ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(position),
+            Text(
+              superscript,
+              style:
+                  const TextStyle(fontFeatures: [FontFeature.superscripts()]),
+            ),
+            const Padding(padding: EdgeInsets.all(5)),
+            Text(
+              score,
+              style: const TextStyle(
+                  fontSize: 48,
+                  height: 0.75,
+                  fontWeight: FontWeight.w900,
+                  textBaseline: TextBaseline.alphabetic),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _getCurrentTurnScore([
+    Orientation orientation = Orientation.portrait,
+  ]) {
     var children = [
-      Text(
-          '1st: ${_currentTurn.throws.isNotEmpty ? "${_currentTurn.throws[0].type.toShortString()} ${_currentTurn.throws[0].score} (${ScoreHelper.calculateScore(_currentTurn.throws[0])})" : 0}',
-          style: TextStyle(
-              decoration: _currentTurn.throws.isEmpty
-                  ? TextDecoration.underline
-                  : TextDecoration.none,
-              fontWeight: _currentTurn.throws.isEmpty
-                  ? FontWeight.bold
-                  : FontWeight.normal,
-              fontSize: 32)),
-      Text(
-          '2nd: ${_currentTurn.throws.length > 1 ? "${_currentTurn.throws[1].type.toShortString()} ${_currentTurn.throws[1].score} (${ScoreHelper.calculateScore(_currentTurn.throws[1])})" : 0}',
-          style: TextStyle(
-              decoration: _currentTurn.throws.length == 1
-                  ? TextDecoration.underline
-                  : TextDecoration.none,
-              fontWeight: _currentTurn.throws.length == 1
-                  ? FontWeight.bold
-                  : FontWeight.normal,
-              fontSize: 32)),
-      Text(
-          '3rd: ${_currentTurn.throws.length > 2 ? "${_currentTurn.throws[2].type.toShortString()} ${_currentTurn.throws[2].score} (${ScoreHelper.calculateScore(_currentTurn.throws[2])})" : 0}',
-          style: TextStyle(
-              decoration: _currentTurn.throws.length == 2
-                  ? TextDecoration.underline
-                  : TextDecoration.none,
-              fontWeight: _currentTurn.throws.length == 2
-                  ? FontWeight.bold
-                  : FontWeight.normal,
-              fontSize: 32)),
+      _renderThrowScore(
+        _currentTurn.throws.isEmpty,
+        _currentTurn.throws.isNotEmpty
+            ? _currentTurn.throws[0].type == DartboardScoreType.out
+                ? "Out"
+                : "${_currentTurn.throws[0].type.toShortString()[0].toUpperCase()}${_currentTurn.throws[0].score}"
+            : "-",
+        '1',
+        'st',
+      ),
+      _renderThrowScore(
+        _currentTurn.throws.length == 1,
+        _currentTurn.throws.length > 1
+            ? _currentTurn.throws[0].type == DartboardScoreType.out
+                ? "Out"
+                : "${_currentTurn.throws[1].type.toShortString()[0].toUpperCase()}${_currentTurn.throws[1].score}"
+            : "-",
+        '2',
+        'nd',
+      ),
+      _renderThrowScore(
+        _currentTurn.throws.length == 2,
+        _currentTurn.throws.length > 2
+            ? _currentTurn.throws[0].type == DartboardScoreType.out
+                ? "Out"
+                : "${_currentTurn.throws[2].type.toShortString()[0].toUpperCase()}${_currentTurn.throws[2].score}"
+            : "-",
+        '3',
+        'rd',
+      ),
     ];
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.only(top: 5, left: orientation == Orientation.portrait ? 0 : 20),
-          child:
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Expanded(
-              child: ((orientation == Orientation.portrait)
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: children,
-                    )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: children,
-                    )),
-            ),
-            _getButtonBar()
-          ]),
+          padding: EdgeInsets.only(
+              top: 5, left: orientation == Orientation.portrait ? 0 : 20),
+          child: DefaultTextStyle(
+            style: const TextStyle(fontSize: 24),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: ((orientation == Orientation.portrait)
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: children,
+                          )
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: children,
+                          )),
+                  ),
+                  _getButtonBar()
+                ]),
+          ),
         ),
         const Divider(
-          thickness: 3,
-          color: Colors.black54,
+          thickness: 1,
+          height: 8,
+          color: Colors.white54,
         ),
       ],
     );
@@ -504,7 +707,6 @@ class PlayGameState extends State<PlayGameScreen> {
                       child: Text(
                         "Last",
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
                       ),
@@ -519,7 +721,6 @@ class PlayGameState extends State<PlayGameScreen> {
                       child: Text(
                         "Avg",
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
                       ),
@@ -534,7 +735,6 @@ class PlayGameState extends State<PlayGameScreen> {
                       child: Text(
                         "Valid Avg",
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
                       ),
@@ -559,212 +759,191 @@ class PlayGameState extends State<PlayGameScreen> {
               ],
             ),
           ),
-          const Divider(
-            thickness: 3,
-            color: Colors.black54,
+          const Padding(
+            padding: EdgeInsets.only(bottom: 10),
+            child: Divider(
+              height: 8,
+              thickness: 1,
+              color: Colors.white54,
+            ),
           ),
           Expanded(
             key: _scoreListKey,
             child: SingleChildScrollView(
               controller: _scrollController,
-              child: SafeArea(
-                top: false,
-                left: false,
-                right: false,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16),
-                  child: Column(
-                    children: [
-                      ...widget.game.players.map(
-                            (user) =>
-                            ClipRect(
-                              child: MeasuredSize(
-                                onChange: (Size size) {
-                                  setState(() {
-                                    _scoreItemHeight = size.height;
-                                  });
-                                },
-                                child: Dismissible(
-                                  key: UniqueKey(),
-                                  direction: DismissDirection.endToStart,
-                                  background: Container(
-                                    padding: const EdgeInsets.only(right: 20.0),
-                                    color: Colors.red,
-                                    child: const Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Text('Drop Out',
-                                          textAlign: TextAlign.right,
-                                          style: TextStyle(
-                                              color: Colors.white)),
-                                    ),
-                                  ),
-                                  confirmDismiss: (direction) async {
-                                    switch (await showDialog<bool>(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return SimpleDialog(
-                                          title: const Text(
-                                              "Do you wish to drop out?"),
-                                          children: <Widget>[
-                                            SimpleDialogOption(
-                                              onPressed: () =>
-                                                  Navigator.pop(context, true),
-                                              child: const Text("Drop out"),
-                                            ),
-                                            SimpleDialogOption(
-                                              onPressed: () =>
-                                                  Navigator.pop(context, false),
-                                              child:
-                                              const Text("Keep playing"),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    )) {
-                                      case true:
-                                        return _dropOut(user.userId);
-                                        break;
-                                      case false:
-                                        return false;
-                                        break;
-                                    }
-                                  },
-                                  onDismissed: (direction) {
-                                    _dropOut(user.userId);
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        flex: 4,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(5),
-                                          child: Text(
-                                            user.name,
-                                            style: TextStyle(
-                                              fontWeight:
-                                              user.userId == _currentUserId
-                                                  ? FontWeight.bold
-                                                  : FontWeight.normal,
-                                              fontSize: 18,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Center(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(2),
-                                            child: Text(
-                                              _calculateScore(
-                                                  widget.game.turns.any(
-                                                          (turn) =>
-                                                      turn.userId ==
-                                                          user.userId)
-                                                  ? [
-                                                  widget.game.turns
-                                                      .lastWhere((turn) =>
-                                                  turn.userId ==
-                                                      user.userId)
-                                                  ]
-                                                      : [])
-                                                  .toString(),
-                                              style: TextStyle(
-                                                fontWeight:
-                                                user.userId == _currentUserId
-                                                    ? FontWeight.bold
-                                                    : FontWeight.normal,
-                                                fontSize: 18,
-                                              ),
-                                            ),
-                                          ),
-                                ),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16),
+                child: Column(
+                  children: [
+                    ...widget.game.players.map((user) {
+                      return ClipRect(
+                        child: MeasuredSize(
+                          onChange: (Size size) {
+                            setState(() {
+                              _scoreItemHeight = size.height;
+                            });
+                          },
+                          child: Dismissible(
+                            key: UniqueKey(),
+                            direction: DismissDirection.endToStart,
+                            background: Container(
+                              padding: const EdgeInsets.only(right: 20.0),
+                              color: Colors.red,
+                              child: const Align(
+                                alignment: Alignment.centerRight,
+                                child: Text('Drop Out',
+                                    textAlign: TextAlign.right,
+                                    style: TextStyle(color: Colors.white)),
                               ),
-                              Expanded(
-                                flex: 1,
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(2),
-                                    child: Text(
-                                      ((_calculateAverage(user.userId) * 100)
-                                                  .round() /
-                                              100)
-                                          .toString(),
-                                      style: TextStyle(
-                                        fontWeight:
-                                            user.userId == _currentUserId
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
-                                        fontSize: 18,
+                            ),
+                            confirmDismiss: (direction) async {
+                              switch (await showDialog<bool>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return SimpleDialog(
+                                    title:
+                                        const Text("Do you wish to drop out?"),
+                                    children: <Widget>[
+                                      SimpleDialogOption(
+                                        onPressed: () =>
+                                            Navigator.pop(context, true),
+                                        child: const Text("Drop out"),
                                       ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(2),
-                                    child: Text(
-                                      ((_calculateAverage(user.userId, true) *
-                                                      100)
-                                                  .round() /
-                                              100)
-                                          .toString(),
-                                      style: TextStyle(
-                                        fontWeight:
-                                            user.userId == _currentUserId
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
-                                        fontSize: 18,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Center(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(2),
-                                            child: Text(
-                                              (501 -
-                                                  _calculateScore(widget
-                                                      .game.turns
-                                                      .any((turn) =>
-                                                  turn.userId ==
-                                                      user.userId)
-                                                      ? widget.game.turns
-                                                      .where((turn) =>
-                                                  turn.userId ==
-                                                      user.userId)
-                                                      .toList()
-                                                      : []) -
-                                                  (user.userId == _currentUserId
-                                                      ? _calculateScore(
-                                                      [_currentTurn])
-                                                      : 0))
-                                                  .toString(),
-                                              style: TextStyle(
-                                                fontWeight:
-                                                user.userId == _currentUserId
-                                                    ? FontWeight.bold
-                                                    : FontWeight.normal,
-                                                fontSize: 18,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
+                                      SimpleDialogOption(
+                                        onPressed: () =>
+                                            Navigator.pop(context, false),
+                                        child: const Text("Keep playing"),
                                       ),
                                     ],
+                                  );
+                                },
+                              )) {
+                                case true:
+                                  return _dropOut(user.userId);
+                                case false:
+                                  return false;
+                              }
+                            },
+                            onDismissed: (direction) {
+                              _dropOut(user.userId);
+                            },
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 4,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(5),
+                                    child: Text(
+                                      user.name,
+                                      style: TextStyle(
+                                        decoration:
+                                            user.userId == _currentUserId
+                                                ? TextDecoration.underline
+                                                : TextDecoration.none,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                      ),
+                                    ),
                                   ),
                                 ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(2),
+                                      child: Text(
+                                        _calculateScore(widget.game.turns.any(
+                                                    (turn) =>
+                                                        turn.userId ==
+                                                        user.userId)
+                                                ? [
+                                                    widget.game.turns.lastWhere(
+                                                        (turn) =>
+                                                            turn.userId ==
+                                                            user.userId)
+                                                  ]
+                                                : [])
+                                            .toString(),
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(2),
+                                      child: Text(
+                                        ((_calculateAverage(user.userId) * 100)
+                                                    .round() /
+                                                100)
+                                            .toString(),
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(2),
+                                      child: Text(
+                                        ((_calculateAverage(user.userId, true) *
+                                                        100)
+                                                    .round() /
+                                                100)
+                                            .toString(),
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(2),
+                                      child: Text(
+                                        (501 -
+                                                _calculateScore(widget
+                                                        .game.turns
+                                                        .any((turn) =>
+                                                            turn.userId ==
+                                                            user.userId)
+                                                    ? widget.game.turns
+                                                        .where((turn) =>
+                                                            turn.userId ==
+                                                            user.userId)
+                                                        .toList()
+                                                    : []) -
+                                                (user.userId == _currentUserId
+                                                    ? _calculateScore(
+                                                        [_currentTurn])
+                                                    : 0))
+                                            .toString(),
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      );
+                    }),
+                  ],
                 ),
               ),
             ),
@@ -777,13 +956,18 @@ class PlayGameState extends State<PlayGameScreen> {
   Widget _getButtonBar() {
     return ButtonBar(
       children: [
-        ElevatedButton(
-          child: const Text("Undo"),
-          style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
-              textStyle: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        IconButton(
+          color: Colors.white,
+          iconSize: 60,
+          icon: Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.rotationZ(-math.pi / 4),
+            child: const Icon(Icons.replay_circle_filled),
+          ),
           onPressed: () => {
             setState(() {
+              _locked=false;
+
               if (_currentTurn.throws.isEmpty) {
                 if (widget.game.turns.isNotEmpty) {
                   Turn lastTurn = widget.game.turns.removeLast();
@@ -813,7 +997,7 @@ class PlayGameState extends State<PlayGameScreen> {
       left: _touchOffset.dx - 15,
       child: ConfettiWidget(
         numberOfParticles: 50,
-        blastDirection: pi * 2,
+        blastDirection: math.pi * 2,
         confettiController: _controllerCenter,
         blastDirectionality: BlastDirectionality.explosive,
         shouldLoop: true,
