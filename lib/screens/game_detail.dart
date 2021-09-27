@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:dartapp/components/collapse_tile.dart';
 import 'package:dartapp/extensions/capitalize.dart';
 import 'package:dartapp/helpers/dartboard/dartboard_painter.dart';
 import 'package:dartapp/helpers/turn_helper.dart';
@@ -21,13 +22,13 @@ class GameDetailScreen extends StatefulWidget {
 }
 
 class GameDetailState extends State<GameDetailScreen> {
-  String _selectedUserId = '';
+  String? _selectedUserId = '';
+  late Map<String, GlobalKey<CollapseTileState>> expansionTiles = {};
 
   @override
   void initState() {
-    // TODO: implement initState
-    // 'PdwKGEVUiUW9pz2sSDiC'
     _selectedUserId = widget.game.players[0].userId;
+    expansionTiles = {for (var e in widget.game.players) e.userId: GlobalKey()};
     super.initState();
   }
 
@@ -50,12 +51,18 @@ class GameDetailState extends State<GameDetailScreen> {
 
     var throwCount = throwCountMap.entries.toList();
     throwCount.sort((a, b) => a.value.compareTo(b.value));
-    var min = throwCount.first.value;
-    var max = throwCount.last.value;
+    num? min;
+    num? max;
+    if (throwCount.isNotEmpty) {
+      min = throwCount.first.value;
+      max = throwCount.last.value;
+    }
 
     Map<DartboardScoreTuple, double> heatMap = {};
-    for (var element in throwCount) {
-      heatMap[element.key] = (element.value - min) / (max - min);
+    if (throwCount.isNotEmpty && min != null && max != null) {
+      for (var element in throwCount) {
+        heatMap[element.key] = (element.value - min) / (max - min);
+      }
     }
 
     return Scaffold(
@@ -65,30 +72,51 @@ class GameDetailState extends State<GameDetailScreen> {
           Expanded(
             child: SafeArea(
               top: false,
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: <Widget>[
-                  ExpansionPanelList(
-                    expansionCallback: (int index, bool value) {
-                      setState(() {
-                        _selectedUserId = widget.game.players[index].userId;
-                      });
-                    },
-                    children: [
-                      ...widget.game.players
-                          .map(
-                            (user) => _scoreDetailDropdown(
-                              user.name,
-                              user.userId,
-                              widget.game.turns
-                                  .where((element) =>
-                                      element.userId == user.userId)
-                                  .toList(),
-                              throwCount,
+              child: Stack(
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 225, 225, 225),
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(25),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 50),
+                      child: Center(
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width * .8,
+                          child: Column(children: [
+                            ListView.separated(
+                              shrinkWrap: true,
+                              padding: EdgeInsets.zero,
+                              separatorBuilder:
+                                  (BuildContext context, int index) =>
+                                      const Divider(color: Colors.white),
+                              itemCount: widget.game.players.length,
+                              itemBuilder: (context, index) {
+                                var user = widget.game.players[index];
+                                return _scoreDetailDropdown(
+                                  user.name,
+                                  user.userId,
+                                  widget.game.turns
+                                      .where((element) =>
+                                          element.userId == user.userId)
+                                      .toList(),
+                                  throwCount,
+                                );
+                              },
                             ),
-                          )
-                          .toList(),
-                    ],
+                            const Divider(color: Colors.white),
+                          ]),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -100,15 +128,13 @@ class GameDetailState extends State<GameDetailScreen> {
   }
 
   Container _getDartboard(
-      BuildContext context, Map<DartboardScoreTuple, double>? heatMap) {
+    BuildContext context,
+    Map<DartboardScoreTuple, double>? heatMap,
+  ) {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(25, 0, 0, 0),
-        border: Border(
-          bottom: BorderSide(color: Theme.of(context).hintColor, width: 3),
-        ),
-      ),
+      decoration:
+          const BoxDecoration(color: Color.fromARGB(255, 225, 225, 225)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Center(
@@ -127,8 +153,12 @@ class GameDetailState extends State<GameDetailScreen> {
     );
   }
 
-  ExpansionPanel _scoreDetailDropdown(String title, String userId,
-      List<Turn> turns, List<MapEntry<DartboardScoreTuple, num>> throwCount) {
+  Widget _scoreDetailDropdown(
+    String title,
+    String userId,
+    List<Turn> turns,
+    List<MapEntry<DartboardScoreTuple, num>> throwCount,
+  ) {
     var score = 501;
     var spendUnder170 = 0;
     var spendUnder100 = 0;
@@ -166,201 +196,300 @@ class GameDetailState extends State<GameDetailScreen> {
             previousValue +
             ((element.type == DartboardScoreType.double) ? 1 : 0));
     var tripleCount = throws.fold<double>(
-        0,
-        (previousValue, element) =>
-            previousValue +
-            ((element.type == DartboardScoreType.triple) ? 1 : 0));
+      0,
+      (previousValue, element) =>
+          previousValue + ((element.type == DartboardScoreType.triple) ? 1 : 0),
+    );
     var outCount = throws.fold<double>(
         0,
         (previousValue, element) =>
             previousValue + ((element.type == DartboardScoreType.out) ? 1 : 0));
 
-    var headerStyle = const TextStyle(fontSize: 22, fontWeight: FontWeight.bold);
-    var rowStyle = const TextStyle(fontSize: 18);
+    var headerStyle = const TextStyle(
+        fontSize: 32, fontWeight: FontWeight.w900, color: Colors.white);
+    var rowStyle = const TextStyle(
+      fontSize: 18,
+      color: Colors.white,
+    );
 
-    return ExpansionPanel(
-      isExpanded: userId == _selectedUserId,
-      canTapOnHeader: true,
-      headerBuilder: (BuildContext context, bool isExpanded) => ListTile(
-        title: Text(
-          title,
-          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w300),
-        ),
-        trailing: Text(
-          score > 0 ? "Remaining score $score" : "Winner",
-          style: const TextStyle(fontSize: 16),
-        ),
+    return CollapseTile(
+      key: expansionTiles[userId],
+      initiallyExpanded: userId == _selectedUserId,
+      backgroundColor: Theme.of(context).primaryColor,
+      onExpansionChanged: (bool value) {
+        setState(() {
+          if (value) {
+            expansionTiles.forEach((key, val) {
+              if (key != userId) {
+                val.currentState!.collapse();
+              } else {
+                val.currentState!.expand();
+              }
+            });
+            _selectedUserId = userId;
+          } else {
+            expansionTiles[_selectedUserId]!.currentState!.collapse();
+            _selectedUserId = null;
+          }
+        });
+      },
+      title: Text(
+        title,
+        style: TextStyle(
+            fontSize: userId == _selectedUserId ? 48 : 24,
+            fontWeight: FontWeight.w900,
+            color: Colors.white),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(25),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              flex: 2,
-              child: Table(
-                columnWidths: const {
-                  0: FlexColumnWidth(1),
-                  1: FixedColumnWidth(180.0)
-                },
-                defaultColumnWidth: const FixedColumnWidth(120.0),
-                children: [
-                  TableRow(children: [
-                    Text(
-                      'Turn stats',
-                      textAlign: TextAlign.start,
-                      style: headerStyle,
-                    ),
-                    const Text(""),
-                  ]), // Header
-                  TableRow(children: [
-                    Text(
-                      'Total turns taken',
-                      textAlign: TextAlign.start,
-                      style: rowStyle,
-                    ),
-                    Text(
-                      turns.length.toString(),
-                      style: rowStyle,
-                    ),
-                  ]),
-                  TableRow(children: [
-                    Text(
-                      'Turns spend under 170',
-                      textAlign: TextAlign.start,
-                      style: rowStyle,
-                    ),
-                    Text(
-                      spendUnder170.toString(),
-                      style: rowStyle,
-                    ),
-                  ]),
-                  TableRow(children: [
-                    Text(
-                      'Turns spend under 100',
-                      textAlign: TextAlign.start,
-                      style: rowStyle,
-                    ),
-                    Text(
-                      spendUnder100.toString(),
-                      style: rowStyle,
-                    ),
-                  ]),
-                  TableRow(children: [
-                    Text(
-                      'Turns thrown higher than 30',
-                      textAlign: TextAlign.start,
-                      style: rowStyle,
-                    ),
-                    Text(
-                      throwAbove30.toString(),
-                      style: rowStyle,
-                    ),
-                  ]),
-                  TableRow(children: [
-                    Text(
-                      'Turns thrown higher than 50',
-                      textAlign: TextAlign.start,
-                      style: rowStyle,
-                    ),
-                    Text(
-                      throwAbove50.toString(),
-                      style: rowStyle,
-                    ),
-                  ]),
-                  TableRow(children: [
-                    Text(
-                      'Turns thrown higher than 100',
-                      textAlign: TextAlign.start,
-                      style: rowStyle,
-                    ),
-                    Text(
-                      throwAbove100.toString(),
-                      style: rowStyle,
-                    ),
-                  ]),
-
-                  const TableRow(children: [Text(""), Text("")]), // Spacer
-
-                  TableRow(children: [
-                    Text(
-                      'Throw stats',
-                      textAlign: TextAlign.start,
-                      style: headerStyle,
-                    ),
-                    const Text(""),
-                  ]), // Header
-                  TableRow(children: [
-                    Text(
-                      'Amount of triples',
-                      textAlign: TextAlign.start,
-                      style: rowStyle,
-                    ),
-                    Text(
-                      tripleCount.toInt().toString(),
-                      style: rowStyle,
-                    ),
-                  ]),
-                  TableRow(children: [
-                    Text(
-                      'Amount of doubles',
-                      textAlign: TextAlign.start,
-                      style: rowStyle,
-                    ),
-                    Text(
-                      doubleCount.toInt().toString(),
-                      style: rowStyle,
-                    ),
-                  ]),
-                  TableRow(children: [
-                    Text(
-                      'Amount thrown out',
-                      textAlign: TextAlign.start,
-                      style: rowStyle,
-                    ),
-                    Text(
-                      outCount.toInt().toString(),
-                      style: rowStyle,
-                    ),
-                  ]),
-                  TableRow(children: [
-                    Text(
-                      'Most thrown',
-                      textAlign: TextAlign.start,
-                      style: rowStyle,
-                    ),
-                    Text(
-                      "${throwCount.last.key.type.toShortString().capitalize()} ${throwCount.last.key.score.toString()} (${throwCount.last.value}x)",
-                      style: rowStyle,
-                    ),
-                  ]),
-
-
-                  TableRow(children: [
-                    Text(
-                      score == 0 ?  'Winning throw' : "",
-                      textAlign: TextAlign.start,
-                      style: rowStyle,
-                    ),
-                    Text(
-                      score == 0 ? "${turns.last.throws.last.type.toShortString().capitalize()} ${turns.last.throws.last.score.toString()}" : "",
-                      style: rowStyle,
-                    ),
-                  ]),
-                ],
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            score > 0 ? "Remaining score $score" : "Winner",
+            style: TextStyle(
+              fontSize: userId == _selectedUserId ? 32 : 24,
+              color: Colors.white,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 50),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                color: Colors.white,
+              ),
+              child: Icon(
+                userId == _selectedUserId
+                    ? Icons.keyboard_arrow_up_rounded
+                    : Icons.keyboard_arrow_down_rounded,
+                color: Theme.of(context).primaryColor,
+                size: 32,
               ),
             ),
-            Expanded(
-              flex: 2,
-              child: SizedBox(
-                width: 400,
-                height: 400,
-                child: _getThrowGraph(turns),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 0, 20),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 4,
+                child: Table(
+                  columnWidths: const {
+                    0: FlexColumnWidth(1),
+                    1: FixedColumnWidth(75.0)
+                  },
+                  defaultColumnWidth: const FixedColumnWidth(120.0),
+                  children: [
+                    TableRow(children: [
+                      Text(
+                        'Turn stats',
+                        textAlign: TextAlign.start,
+                        style: headerStyle,
+                      ),
+                      const Text(""),
+                    ]), // Header
+                    TableRow(children: [
+                      Text(
+                        'Total turns taken',
+                        textAlign: TextAlign.start,
+                        style: rowStyle,
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          turns.length.toString(),
+                          style: rowStyle,
+                        ),
+                      ),
+                    ]),
+                    TableRow(children: [
+                      Text(
+                        'Turns spend under 170',
+                        textAlign: TextAlign.start,
+                        style: rowStyle,
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          spendUnder170.toString(),
+                          style: rowStyle,
+                        ),
+                      ),
+                    ]),
+                    TableRow(children: [
+                      Text(
+                        'Turns spend under 100',
+                        textAlign: TextAlign.start,
+                        style: rowStyle,
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          spendUnder100.toString(),
+                          style: rowStyle,
+                        ),
+                      ),
+                    ]),
+                    TableRow(children: [
+                      Text(
+                        'Turns thrown higher than 30',
+                        textAlign: TextAlign.start,
+                        style: rowStyle,
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          throwAbove30.toString(),
+                          style: rowStyle,
+                        ),
+                      ),
+                    ]),
+                    TableRow(children: [
+                      Text(
+                        'Turns thrown higher than 50',
+                        textAlign: TextAlign.start,
+                        style: rowStyle,
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          throwAbove50.toString(),
+                          style: rowStyle,
+                        ),
+                      ),
+                    ]),
+                    TableRow(children: [
+                      Text(
+                        'Turns thrown higher than 100',
+                        textAlign: TextAlign.start,
+                        style: rowStyle,
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          throwAbove100.toString(),
+                          style: rowStyle,
+                        ),
+                      ),
+                    ]),
+
+                    const TableRow(children: [Text(""), Text("")]), // Spacer
+                    const TableRow(children: [Text(""), Text("")]), // Spacer
+                    const TableRow(children: [Text(""), Text("")]), // Spacer
+                    const TableRow(children: [Text(""), Text("")]), // Spacer
+
+                    TableRow(children: [
+                      Text(
+                        'Throw stats',
+                        textAlign: TextAlign.start,
+                        style: headerStyle,
+                      ),
+                      const Text(""),
+                    ]), // Header
+                    TableRow(children: [
+                      Text(
+                        'Amount of triples',
+                        textAlign: TextAlign.start,
+                        style: rowStyle,
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          tripleCount.toInt().toString(),
+                          style: rowStyle,
+                        ),
+                      ),
+                    ]),
+                    TableRow(children: [
+                      Text(
+                        'Amount of doubles',
+                        textAlign: TextAlign.start,
+                        style: rowStyle,
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          doubleCount.toInt().toString(),
+                          style: rowStyle,
+                        ),
+                      ),
+                    ]),
+                    TableRow(children: [
+                      Text(
+                        'Amount thrown out',
+                        textAlign: TextAlign.start,
+                        style: rowStyle,
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          outCount.toInt().toString(),
+                          style: rowStyle,
+                        ),
+                      ),
+                    ]),
+                    TableRow(children: [
+                      Text(
+                        'Most thrown',
+                        textAlign: TextAlign.start,
+                        style: rowStyle,
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: throwCount.isNotEmpty
+                            ? Text(
+                                "${throwCount.last.key.type.toShortString()[0].toUpperCase()}${throwCount.last.key.score.toString()} (${throwCount.last.value}x)",
+                                style: rowStyle,
+                              )
+                            : const Text(""),
+                      ),
+                    ]),
+
+                    TableRow(children: [
+                      Text(
+                        score == 0 ? 'Winning throw' : "",
+                        textAlign: TextAlign.start,
+                        style: rowStyle,
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          score == 0
+                              ? "${turns.last.throws.last.type.toShortString().capitalize()} ${turns.last.throws.last.score.toString()}"
+                              : "",
+                          style: rowStyle,
+                        ),
+                      ),
+                    ]),
+                  ],
+                ),
+              ),
+              Expanded(
+                flex: 7,
+                child:  Padding(
+                  padding: const EdgeInsets.only(left: 50),
+                  child: Container(
+                  width: double.infinity,
+                  height: 400,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child:Padding(
+                      padding: const EdgeInsets.fromLTRB(25, 25, 25, 12.5),
+                      child: _getThrowGraph(turns),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -394,20 +523,18 @@ class GameDetailState extends State<GameDetailScreen> {
       fontSize: 18,
     );
 
-    return Padding(
-      padding: const EdgeInsets.all(50),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: LineChart(
-              LineChartData(
-                lineTouchData: LineTouchData(
-                  touchTooltipData: LineTouchTooltipData(
-                      fitInsideHorizontally: true,
-                      fitInsideVertically: true,
-                      maxContentWidth: 100,
-                      tooltipBgColor: Colors.white70,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: LineChart(
+            LineChartData(
+              lineTouchData: LineTouchData(
+                touchTooltipData: LineTouchTooltipData(
+                    fitInsideHorizontally: true,
+                    fitInsideVertically: true,
+                    maxContentWidth: 100,
+                    tooltipBgColor: Colors.white70,
                       getTooltipItems: (touchedSpots) {
                         return touchedSpots.map((LineBarSpot touchedSpot) {
                           final textStyle = TextStyle(
@@ -515,7 +642,6 @@ class GameDetailState extends State<GameDetailScreen> {
             ],
           )
         ],
-      ),
     );
   }
 

@@ -9,7 +9,7 @@ class AuthService {
       FirebaseFirestore.instance.collection('users');
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  get authStateChanges => _auth.authStateChanges();
+  Stream<User?>get authStateChanges => _auth.authStateChanges();
   models.User? _currentUser;
 
   models.User? get currentUser => _currentUser;
@@ -22,7 +22,6 @@ class AuthService {
   }
 
   Future _updateUser(userDoc) async {
-    if (userDoc.id != _auth.currentUser!.uid) return;
     Map<String, dynamic> data = userDoc.data()! as Map<String, dynamic>;
     if (data["friends"] != null) {
       List<models.Friend> friends = await Future.wait(
@@ -86,7 +85,9 @@ class AuthService {
   Future signInWithEmailAndPassword({required String email, required String password}) async {
     try {
       var userCredential = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
+        email: email,
+        password: password,
+      );
       if (userCredential.user != null) {
         await _updateUser(await _users.doc(userCredential.user!.uid).get());
       }
@@ -105,7 +106,10 @@ class AuthService {
         accessToken: googleSignInAuthentication.accessToken,
         idToken: googleSignInAuthentication.idToken,
       );
-      await _auth.signInWithCredential(credential);
+      var userCredential = await await _auth.signInWithCredential(credential);
+      if (userCredential.user != null) {
+        await _updateUser(await _users.doc(userCredential.user!.uid).get());
+      }
     } on FirebaseAuthException {
       rethrow;
     }
