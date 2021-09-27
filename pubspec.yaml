@@ -29,6 +29,7 @@ dependencies:
   flutter_signin_button: ^2.0.0
   get_it: ^7.2.0
   badges: ^2.0.1
+  flutter_svg: ^0.22.0
 
 dev_dependencies:
   flutter_test:
@@ -37,3 +38,18 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/dartboard_white.svg
+    - assets/dartboard.svg
+    - assets/crown.svg
+  fonts:
+    - family: Karbon
+      fonts:
+        - asset: fonts/Karbon-Regular.otf
+          weight: 400
+        - asset: fonts/Karbon-Medium.otf
+          weight: 500
+        - asset: fonts/Karbon-Semibold.otf
+          weight: 600
+        - asset: fonts/Karbon-Bold.otf
+          weight: 700

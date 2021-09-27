@@ -1,5 +1,4 @@
 import 'package:badges/badges.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartapp/models/user.dart' as models;
 import 'package:dartapp/screens/games.dart';
 import 'package:dartapp/screens/home/friendrequests_dialog.dart';
@@ -11,6 +10,7 @@ import 'package:dartapp/services/service_locator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -22,6 +22,7 @@ class HomeScreen extends StatefulWidget {
 class HomeState extends State<HomeScreen> {
   final _authService = locator<AuthService>();
   bool userAddFailed = false;
+  final String dartboardIcon = 'assets/dartboard_white.svg';
 
   void _showMessage(String message) {
     showDialog(
@@ -69,7 +70,7 @@ class HomeState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Pijlgooi App"),
+        elevation: 0,
         actions: [
           ValueListenableBuilder(
               valueListenable: _authService.currentUserNotifier,
@@ -122,65 +123,103 @@ class HomeState extends State<HomeScreen> {
       ),
       body: Center(
         child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(25, 25, 25, 75),
-                child: ValueListenableBuilder(
-                    valueListenable: _authService.currentUserNotifier,
-                    builder: (BuildContext context, models.User? user,
-                        Widget? child) {
-                      if (user == null) return Container();
-                      return Text(
-                        'Hi ${user.name}',
-                        style: const TextStyle(
-                          fontSize: 72,
-                          fontWeight: FontWeight.w200,
+          child: DefaultTextStyle(
+            style: const TextStyle(color: Colors.white),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(25, 25, 25, 75),
+                  child: ValueListenableBuilder(
+                      valueListenable: _authService.currentUserNotifier,
+                      builder: (BuildContext context, models.User? user,
+                          Widget? child) {
+                        if (user == null) return Container();
+                        return Text(
+                          'Hi ${user.name}',
+                          style: const TextStyle(
+                            fontSize: 72,
+                            fontWeight: FontWeight.w200,
+                          ),
+                        );
+                      }),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: TextButton.icon(
+                        icon: const Padding(
+                          padding: EdgeInsets.only(right: 20),
+                          child: Icon(
+                            Icons.add,
+                            color: Colors.white,
+                            size: 48,
+                          ),
                         ),
-                      );
-                    }),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: ElevatedButton(
-                  child: const Text('New Game'),
-                  style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 250, vertical: 50),
-                      textStyle: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold)),
-                  onPressed: () async {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) {
-                        return const NewGameScreen();
-                      }),
-                    );
-                  },
+                        label: const Text(
+                          "NEW GAME",
+                          style: TextStyle(
+                            fontSize: 48,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        onPressed: () async {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) {
+                              return const NewGameScreen();
+                            }),
+                          );
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: TextButton.icon(
+                        icon: const Padding(
+                          padding: EdgeInsets.only(right: 20),
+                          child: Icon(
+                            Icons.history,
+                            color: Colors.white,
+                            size: 48,
+                          ),
+                        ),
+                        label: const Text(
+                          "PLAYED GAMES",
+                          style: TextStyle(
+                            fontSize: 48,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        onPressed: () async {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) {
+                              return const GamesScreen();
+                            }),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: ElevatedButton(
-                  child: const Text('Played games'),
-                  style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 231, vertical: 50),
-                      textStyle: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold)),
-                  onPressed: () async {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) {
-                        return const GamesScreen();
-                      }),
-                    );
-                  },
+                Padding(
+                  padding: const EdgeInsets.only(top: 125),
+                  child: Hero(
+                    tag: 'logo',
+                    child: SvgPicture.asset(
+                      dartboardIcon,
+                      height: 350,
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

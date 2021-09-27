@@ -494,7 +494,7 @@ class DartboardPainter extends CustomPainter {
     final Matrix4 matrix4 = Matrix4.identity();
 
     matrix4.scale(scale, scale);
-    paint.color = const Color.fromARGB(25, 0, 0, 0);
+    paint.color = const Color.fromARGB(0, 0, 0, 0);
 
     if (background) {
       touchCanvas.drawRect(
