@@ -152,7 +152,7 @@ class HomeState extends State<HomeScreen> {
                       padding: const EdgeInsets.all(20),
                       child: TextButton.icon(
                         icon: const Padding(
-                          padding: EdgeInsets.only(right: 20),
+                          padding: EdgeInsets.only(right: 20, bottom: 12),
                           child: Icon(
                             Icons.add,
                             color: Colors.white,
@@ -181,7 +181,7 @@ class HomeState extends State<HomeScreen> {
                       padding: const EdgeInsets.all(20),
                       child: TextButton.icon(
                         icon: const Padding(
-                          padding: EdgeInsets.only(right: 20),
+                          padding: EdgeInsets.only(right: 20, bottom: 12),
                           child: Icon(
                             Icons.history,
                             color: Colors.white,

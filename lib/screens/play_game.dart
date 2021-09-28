@@ -10,6 +10,8 @@ import 'package:dartapp/models/dart_throw.dart';
 import 'package:dartapp/models/game.dart';
 import 'package:dartapp/models/turn.dart';
 import 'package:dartapp/screens/game_detail.dart';
+import 'package:dartapp/services/service_locator.dart';
+import 'package:dartapp/services/user_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -32,10 +34,9 @@ class PlayGameScreen extends StatefulWidget {
 class PlayGameState extends State<PlayGameScreen> {
   final CollectionReference games =
       FirebaseFirestore.instance.collection('games');
-  final CollectionReference users =
-      FirebaseFirestore.instance.collection('users');
   final FlutterTts _flutterTts = FlutterTts();
   final crownIcon = "assets/crown.svg";
+  final _userService = locator<UserService>();
 
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _scoreListKey = GlobalKey();
@@ -419,7 +420,7 @@ class PlayGameState extends State<PlayGameScreen> {
   _persist({bool finish = false}) async {
     await games.doc(widget.game.gameId).update({
       'finished': finish ? DateTime.now() : null,
-      'players': widget.game.players.map((player) => users.doc(player.userId)).toList(),
+      'players': widget.game.players.map((player) => _userService.getReference(player.userId)).toList(),
       'turns': widget.game.turns
           .map<Map<String, dynamic>>((turn) =>
       {
@@ -431,7 +432,7 @@ class PlayGameState extends State<PlayGameScreen> {
         })
             .toList(),
         'isValid': turn.isValid,
-        'userId': users.doc(turn.userId)
+        'userId': _userService.getReference(turn.userId)
       })
           .toList()
     });
@@ -625,7 +626,7 @@ class PlayGameState extends State<PlayGameScreen> {
       _renderThrowScore(
         _currentTurn.throws.length == 1,
         _currentTurn.throws.length > 1
-            ? _currentTurn.throws[0].type == DartboardScoreType.out
+            ? _currentTurn.throws[1].type == DartboardScoreType.out
                 ? "Out"
                 : "${_currentTurn.throws[1].type.toShortString()[0].toUpperCase()}${_currentTurn.throws[1].score}"
             : "-",
@@ -635,7 +636,7 @@ class PlayGameState extends State<PlayGameScreen> {
       _renderThrowScore(
         _currentTurn.throws.length == 2,
         _currentTurn.throws.length > 2
-            ? _currentTurn.throws[0].type == DartboardScoreType.out
+            ? _currentTurn.throws[1].type == DartboardScoreType.out
                 ? "Out"
                 : "${_currentTurn.throws[2].type.toShortString()[0].toUpperCase()}${_currentTurn.throws[2].score}"
             : "-",

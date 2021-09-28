@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:dartapp/screens/home/home.dart';
 import 'package:dartapp/services/auth_service.dart';
 import 'package:dartapp/services/service_locator.dart';
@@ -34,79 +36,100 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     if (_tabController == null) return Container();
-    Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          DefaultTextStyle(
-            style: const TextStyle(color: Colors.white),
-            child: Column(
+    return SingleChildScrollView(
+      child: Expanded(
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: LayoutBuilder(builder: (context, constraint) {
+            return Stack(
+              fit: StackFit.expand,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 150),
-                  child: IntrinsicHeight(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 50),
-                          child: IconButton(
-                            iconSize: 60,
-                            icon: const Icon(Icons.login_rounded),
-                            color: _tabController!.index == 0
-                                ? Colors.white
-                                : Colors.white38,
-                            onPressed: () {
-                              setState(() {
-                                _tabController!.index = 0;
-                              });
-                            },
-                          ),
-                        ),
-                        const VerticalDivider(
-                          color: Colors.white,
-                          width: 25,
-                          thickness: 2,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 50),
-                          child: IconButton(
-                            iconSize: 60,
-                            icon: const Icon(Icons.add_reaction_outlined),
-                            color: _tabController!.index == 1
-                                ? Colors.white
-                                : Colors.white38,
-                            onPressed: () {
-                              setState(() {
-                                _tabController!.index = 1;
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
+                DefaultTextStyle(
+                  style: const TextStyle(color: Colors.white),
+                  child: Column(
                     children: [
-                      _formWrapper(_getSignInForm(), size.width),
-                      _formWrapper(_getSignUpForm(), size.width),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: math.min(constraint.maxHeight * .15, 150)),
+                        child: IntrinsicHeight(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  right:
+                                      math.min(constraint.maxWidth * .025, 60),
+                                ),
+                                child: IconButton(
+                                  iconSize:
+                                      math.min(constraint.maxWidth * .1, 60),
+                                  icon: const Icon(Icons.login_rounded),
+                                  color: _tabController!.index == 0
+                                      ? Colors.white
+                                      : Colors.white38,
+                                  onPressed: () {
+                                    setState(() {
+                                      _tabController!.index = 0;
+                                    });
+                                  },
+                                ),
+                              ),
+                              const VerticalDivider(
+                                color: Colors.white,
+                                width: 25,
+                                thickness: 2,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  left:
+                                      math.min(constraint.maxWidth * .025, 60),
+                                ),
+                                child: IconButton(
+                                  iconSize:
+                                      math.min(constraint.maxWidth * .1, 60),
+                                  icon: const Icon(Icons.add_reaction_outlined),
+                                  color: _tabController!.index == 1
+                                      ? Colors.white
+                                      : Colors.white38,
+                                  onPressed: () {
+                                    setState(() {
+                                      _tabController!.index = 1;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: TabBarView(
+                          controller: _tabController,
+                          children: [
+                            _formWrapper(
+                              _getSignInForm(constraint),
+                              math.min(constraint.maxWidth - 50, 500),
+                            ),
+                            _formWrapper(
+                              _getSignUpForm(constraint),
+                              math.min(constraint.maxWidth - 50, 500),
+                            )
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
+                isLoading
+                    ? Container(
+                        decoration: const BoxDecoration(color: Colors.black26),
+                        child: const Center(child: CircularProgressIndicator()),
+                      )
+                    : Container(),
               ],
-            ),
-          ),
-          isLoading
-              ? Container(
-                  decoration: const BoxDecoration(color: Colors.black26),
-                  child: const Center(child: CircularProgressIndicator()),
-                )
-              : Container(),
-        ],
+            );
+          }),
+        ),
       ),
     );
   }
@@ -133,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen>
   Widget _formWrapper(List<Widget> child, double width) {
     return Center(
       child: SizedBox(
-        width: width * 0.5,
+        width: width,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -143,79 +166,87 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  List<Widget> _getSignInForm() {
+  List<Widget> _getSignInForm(BoxConstraints constraint) {
     return [
-      const Padding(
-        padding: EdgeInsets.only(bottom: 50),
+      Padding(
+        padding: const EdgeInsets.only(bottom: 50),
         child: Text(
           "SIGN IN",
-          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 72),
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            fontSize: math.min(constraint.maxWidth * 0.1, 72),
+          ),
         ),
       ),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
-        child: _textField(emailFieldController, "EMAIL"),
+        child: _textField(emailFieldController, "EMAIL", constraint),
       ),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
-        child: _textField(passwordFieldController, "PASSWORD", hide: true),
+        child: _textField(passwordFieldController, "PASSWORD", constraint,
+            hide: true),
       ),
       Padding(
-        padding: const EdgeInsets.only(top: 30),
-        child: _getButton(() async {
-          setState(() {
-            isLoading = true;
-          });
-          try {
-            await _authService.signInWithEmailAndPassword(
-              email: emailFieldController.text,
-              password: passwordFieldController.text,
-            );
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) {
-                return const HomeScreen();
-              }),
-                  (route) => false,
-            );
-          } on FirebaseAuthException catch (e) {
-            _showMessage(e.message!);
-          } on Exception catch (_) {
-            _showMessage("Something went wrong, please try again");
-          } finally {
+          padding: const EdgeInsets.only(top: 30),
+          child: _getButton(() async {
             setState(() {
-              isLoading = false;
+              isLoading = true;
             });
-          }
-        })
-      ),
+            try {
+              await _authService.signInWithEmailAndPassword(
+                email: emailFieldController.text,
+                password: passwordFieldController.text,
+              );
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) {
+                  return const HomeScreen();
+                }),
+                (route) => false,
+              );
+            } on FirebaseAuthException catch (e) {
+              _showMessage(e.message!);
+            } on Exception catch (_) {
+              _showMessage("Something went wrong, please try again");
+            } finally {
+              setState(() {
+                isLoading = false;
+              });
+            }
+          })),
     ];
   }
 
-  List<Widget> _getSignUpForm() {
+  List<Widget> _getSignUpForm(BoxConstraints constraint) {
     return [
-      const Padding(
-        padding: EdgeInsets.only(bottom: 50),
+      Padding(
+        padding: const EdgeInsets.only(bottom: 50),
         child: Text(
           "Sign Up",
-          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 72),
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            fontSize: math.min(constraint.maxWidth * 0.1, 72),
+          ),
         ),
       ),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
-        child: _textField(emailFieldController, "EMAIL"),
+        child: _textField(emailFieldController, "EMAIL", constraint),
       ),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
-        child: _textField(passwordFieldController, "PASSWORD", hide: true),
+        child: _textField(passwordFieldController, "PASSWORD", constraint,
+            hide: true),
       ),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
-        child: _textField(fullNameFieldController, "FULL NAME"),
+        child: _textField(fullNameFieldController, "FULL NAME", constraint),
       ),
       Padding(
         padding: const EdgeInsets.only(top: 30),
-        child: _getButton(() async {
+        child: _getButton(
+          () async {
             setState(() {
               isLoading = true;
             });
@@ -230,7 +261,7 @@ class _LoginScreenState extends State<LoginScreen>
                 MaterialPageRoute(builder: (context) {
                   return const HomeScreen();
                 }),
-                (route) => false,
+                    (route) => false,
               );
             } catch (e) {
               if (e is FirebaseAuthException) {
@@ -262,6 +293,7 @@ class _LoginScreenState extends State<LoginScreen>
       onTap: onPressed,
     );
   }
+
   // Widget _getGoogleButton(String text) {
   //   return SignInButton(
   //     Buttons.Google,
@@ -286,7 +318,8 @@ class _LoginScreenState extends State<LoginScreen>
   //   );
   // }
 
-  _textField(TextEditingController controller, String label,
+  _textField(
+      TextEditingController controller, String label, BoxConstraints constraint,
       {bool hide = false}) {
     return Column(
       children: [

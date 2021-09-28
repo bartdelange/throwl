@@ -12,6 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 
 class GameDetailScreen extends StatefulWidget {
   const GameDetailScreen({Key? key, required this.game}) : super(key: key);
@@ -22,12 +23,11 @@ class GameDetailScreen extends StatefulWidget {
 }
 
 class GameDetailState extends State<GameDetailScreen> {
-  String? _selectedUserId = '';
+  String? _selectedUserId = null;
   late Map<String, GlobalKey<CollapseTileState>> expansionTiles = {};
 
   @override
   void initState() {
-    _selectedUserId = widget.game.players[0].userId;
     expansionTiles = {for (var e in widget.game.players) e.userId: GlobalKey()};
     super.initState();
   }
@@ -66,9 +66,24 @@ class GameDetailState extends State<GameDetailScreen> {
     }
 
     return Scaffold(
+      appBar: AppBar(
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        toolbarHeight: 0,
+        backgroundColor: const Color.fromARGB(255, 225, 225, 225),
+        elevation: 0,
+      ),
       body: Column(
         children: [
-          _getDartboard(context, heatMap),
+          Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              color: Color.fromARGB(255, 225, 225, 225),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: _getDartboard(context, heatMap),
+            ),
+          ),
           Expanded(
             child: SafeArea(
               top: false,
@@ -91,29 +106,33 @@ class GameDetailState extends State<GameDetailScreen> {
                       child: Center(
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width * .8,
-                          child: Column(children: [
-                            ListView.separated(
-                              shrinkWrap: true,
-                              padding: EdgeInsets.zero,
-                              separatorBuilder:
-                                  (BuildContext context, int index) =>
-                                      const Divider(color: Colors.white),
-                              itemCount: widget.game.players.length,
-                              itemBuilder: (context, index) {
-                                var user = widget.game.players[index];
-                                return _scoreDetailDropdown(
-                                  user.name,
-                                  user.userId,
-                                  widget.game.turns
-                                      .where((element) =>
-                                          element.userId == user.userId)
-                                      .toList(),
-                                  throwCount,
-                                );
-                              },
-                            ),
-                            const Divider(color: Colors.white),
-                          ]),
+                          height: double.infinity,
+                          child: SingleChildScrollView(
+                            child: Column(children: [
+                              ListView.separated(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                padding: EdgeInsets.zero,
+                                separatorBuilder:
+                                    (BuildContext context, int index) =>
+                                        const Divider(color: Colors.white),
+                                itemCount: widget.game.players.length,
+                                itemBuilder: (context, index) {
+                                  var user = widget.game.players[index];
+                                  return _scoreDetailDropdown(
+                                    user.name,
+                                    user.userId,
+                                    widget.game.turns
+                                        .where((element) =>
+                                            element.userId == user.userId)
+                                        .toList(),
+                                    throwCount,
+                                  );
+                                },
+                              ),
+                              const Divider(color: Colors.white),
+                            ]),
+                          ),
                         ),
                       ),
                     ),
@@ -127,26 +146,18 @@ class GameDetailState extends State<GameDetailScreen> {
     );
   }
 
-  Container _getDartboard(
+  Widget _getDartboard(
     BuildContext context,
     Map<DartboardScoreTuple, double>? heatMap,
   ) {
-    return Container(
-      width: double.infinity,
-      decoration:
-          const BoxDecoration(color: Color.fromARGB(255, 225, 225, 225)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Center(
-          child: SizedBox(
-            height: 500,
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: CustomPaint(
-                painter: DartboardPainter(context, null, heatMap, false),
-                child: Container(),
-              ),
-            ),
+    return Center(
+      child: SizedBox(
+        height: 500,
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: CustomPaint(
+            painter: DartboardPainter(context, null, heatMap, false),
+            child: Container(),
           ),
         ),
       ),

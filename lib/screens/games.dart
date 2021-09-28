@@ -8,6 +8,7 @@ import 'package:dartapp/models/user.dart' as user_model;
 import 'package:dartapp/screens/game_detail.dart';
 import 'package:dartapp/screens/play_game.dart';
 import 'package:dartapp/services/auth_service.dart';
+import 'package:dartapp/services/user_service.dart';
 import 'package:dartapp/services/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -22,21 +23,18 @@ class GamesScreen extends StatefulWidget {
 class GamesState extends State<GamesScreen> {
   final _gamesCollection = FirebaseFirestore.instance.collection('games');
   final _authService = locator<AuthService>();
+  final _userService = locator<UserService>();
   var _gamesCollectionSnapshots = FirebaseFirestore.instance
       .collection('games')
       .where('players',
-          arrayContains: FirebaseFirestore.instance
-              .collection('users')
-              .doc(locator<AuthService>().currentUser!.userId))
+          arrayContains: locator<UserService>().getReference(locator<AuthService>().currentUser!.userId))
       .orderBy('started', descending: true)
       .snapshots();
 
   void refresh() async {
     _gamesCollectionSnapshots = _gamesCollection
         .where('players',
-            arrayContains: FirebaseFirestore.instance
-                .collection('users')
-                .doc(_authService.currentUser!.userId))
+            arrayContains: _userService.getReference(_authService.currentUser!.userId))
         .orderBy('started', descending: true)
         .snapshots();
   }
