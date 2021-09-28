@@ -1,4 +1,4 @@
-package nl.pijlgooi_app
+package nl.dartscounter
 
 import io.flutter.embedding.android.FlutterActivity
 

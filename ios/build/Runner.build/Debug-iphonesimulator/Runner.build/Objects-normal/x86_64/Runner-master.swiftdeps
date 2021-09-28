@@ -1,6 +1,0 @@
-version: "Apple Swift version 5.5 (swiftlang-1300.0.31.1 clang-1300.0.29.1)"
-options: "570c40daf714ceba663c02d9b63e19e942d6e6e9dbe382749088f08ddac282b6"
-build_start_time: [1632733515, 553422927]
-build_end_time: [1632733516, 44497013]
-inputs:
-  "/Volumes/storage/Development/Personal/Apps/pijlgooi-app/ios/Runner/AppDelegate.swift": !private [1631622847, 800229310]
