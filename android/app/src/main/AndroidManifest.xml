@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="nl.pijlgooi_app">
+    package="nl.dartscounter">
    <application
-        android:label="Pijlgooi App"
+        android:label="Darts Counter"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

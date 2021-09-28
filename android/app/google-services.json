@@ -1,48 +1,48 @@
 {
   "project_info": {
-    "project_number": "642102893004",
-    "project_id": "pijlgooi-app",
-    "storage_bucket": "pijlgooi-app.appspot.com"
+    "project_number": "1008094744313",
+    "project_id": "darts-counter-b73d6",
+    "storage_bucket": "darts-counter-b73d6.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:642102893004:android:90067f4863f90851c7a569",
+        "mobilesdk_app_id": "1:1008094744313:android:b542bbb59093457c605c28",
         "android_client_info": {
-          "package_name": "nl.pijlgooi_app"
+          "package_name": "nl.dartscounter"
         }
       },
       "oauth_client": [
         {
-          "client_id": "642102893004-591qnoid6s5la3a8qk5vsr63ou8rqvi6.apps.googleusercontent.com",
+          "client_id": "1008094744313-0riou9pestc1jgm9ga4e4o6tqdav6a12.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "nl.pijlgooi_app",
+            "package_name": "nl.dartscounter",
             "certificate_hash": "bda9ecbc178d445237cbd1f65a3b6039519a4a7a"
           }
         },
         {
-          "client_id": "642102893004-8ev0t51qckksi8v0vsl9nsnro62eqcg3.apps.googleusercontent.com",
+          "client_id": "1008094744313-i4bu578vuaf9f79ll44kfoqtp4pkrqnq.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBNNHbcfP7qDePqb5fcpy81DY9y3irv0BU"
+          "current_key": "AIzaSyAmAy0KPtqMCnz-s1O1rQNQ7INcinJte_M"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "642102893004-8ev0t51qckksi8v0vsl9nsnro62eqcg3.apps.googleusercontent.com",
+              "client_id": "1008094744313-i4bu578vuaf9f79ll44kfoqtp4pkrqnq.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "642102893004-bq1ss3apudl4f6cf9a895uf7oldsjut8.apps.googleusercontent.com",
+              "client_id": "1008094744313-53lreuuqu17ltmhakkg9iplko1mcs00a.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "nl.pijlgooi-app"
+                "bundle_id": "nl.dartscounter"
               }
             }
           ]

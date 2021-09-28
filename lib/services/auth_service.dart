@@ -1,13 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartapp/models/user.dart' as models;
+import 'package:dartapp/services/service_locator.dart';
+import 'package:dartapp/services/user_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
-  final CollectionReference _users =
-      FirebaseFirestore.instance.collection('users');
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final _userService = locator<UserService>();
 
   Stream<User?>get authStateChanges => _auth.authStateChanges();
   models.User? _currentUser;
@@ -21,41 +22,22 @@ class AuthService {
     return _auth.currentUser != null;
   }
 
-  Future _updateUser(userDoc) async {
-    Map<String, dynamic> data = userDoc.data()! as Map<String, dynamic>;
-    if (data["friends"] != null) {
-      List<models.Friend> friends = await Future.wait(
-          data['friends'].map<Future<models.Friend>>((friend) async {
-            var user = await friend['user'].get();
-            return models.Friend(
-                models.User(user.id, user['name'], user['email']),
-                friend['confirmed'],
-                friend['requester']);
-          }).toList());
-      _currentUser = models.User.withFriends(
-          userDoc.id, data["name"], data["email"], friends);
-    } else {
-      _currentUser = models.User.withFriends(
-          userDoc.id, data["name"], data["email"], []);
-    }
-  }
-
   Future setup() async {
     if (!isLoggedIn()) return;
-    await _updateUser(await _users.doc(_auth.currentUser!.uid).get());
+    _currentUser = await _userService.getById(_auth.currentUser!.uid);
+    currentUserNotifier.value = _currentUser;
     _auth.authStateChanges().listen((user) async {
       if (user != null) {
-        var userDoc = await _users.doc(user.uid).get();
-        await _updateUser(userDoc);
+        _currentUser = await _userService.getById(_auth.currentUser!.uid);
         currentUserNotifier.value = _currentUser;
       }
     });
-    _users.snapshots().listen((event) async {
+    _userService.userChangeSubscription.onData((event) async {
       if (!isLoggedIn()) return;
       var userDocs = event.docs.where((doc) => doc.id == _currentUser!.userId);
       if(userDocs.isEmpty) return;
       var userDoc = userDocs.first;
-      await _updateUser(userDoc);
+      _currentUser = await _userService.getById(userDoc.id);
       currentUserNotifier.value = _currentUser;
     });
   }
@@ -67,14 +49,13 @@ class AuthService {
     try {
       var user = await _auth.createUserWithEmailAndPassword(
         email: email,
-        password: password,
+        password: password.toLowerCase(),
       );
       if (user.user != null) {
-        await _users
-            .doc(user.user!.uid)
-            .set({"name": fullName, "email": email, "friends": []});
+        _currentUser = await _userService.createUser(user.user!.uid, email, fullName);
+        currentUserNotifier.value = _currentUser;
       }
-      await signInWithEmailAndPassword(email: email, password: password);
+      await signInWithEmailAndPassword(email: email, password: password.toLowerCase());
 
       return null;
     } on FirebaseAuthException {
@@ -85,33 +66,15 @@ class AuthService {
   Future signInWithEmailAndPassword({required String email, required String password}) async {
     try {
       var userCredential = await _auth.signInWithEmailAndPassword(
-        email: email,
+        email: email.toLowerCase(),
         password: password,
       );
       if (userCredential.user != null) {
-        await _updateUser(await _users.doc(userCredential.user!.uid).get());
+        _currentUser = await _userService.getById(userCredential.user!.uid);
+        currentUserNotifier.value = _currentUser;
       }
     } on FirebaseAuthException {
     rethrow;
-    }
-  }
-
-  Future<String?> signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleSignInAccount =
-          await _googleSignIn.signIn();
-      final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount!.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken,
-      );
-      var userCredential = await await _auth.signInWithCredential(credential);
-      if (userCredential.user != null) {
-        await _updateUser(await _users.doc(userCredential.user!.uid).get());
-      }
-    } on FirebaseAuthException {
-      rethrow;
     }
   }
 

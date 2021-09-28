@@ -13,19 +13,19 @@ void main() async {
 
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
-    runApp(const PijlgooiApp());
+    runApp(const DartscounterApp());
   });
 
 }
 
-class PijlgooiApp extends StatelessWidget {
-  const PijlgooiApp({Key? key}) : super(key: key);
+class DartscounterApp extends StatelessWidget {
+  const DartscounterApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Pijlgooi App',
+      title: 'Darts Counter',
       theme: ThemeData(
         primarySwatch: const MaterialColor(0xFF02314e, {
           50: Color.fromRGBO(2, 49, 78, .1),
