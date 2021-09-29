@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:measured_size/measured_size.dart';
@@ -76,30 +77,28 @@ class PlayGameState extends State<PlayGameScreen> {
     super.dispose();
   }
 
-  void speak(String text) async {
+  void _speak(String text) async {
     _flutterTts.speak(text);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Scaffold(
-          appBar: MediaQuery.of(context).orientation == Orientation.landscape
-              ? null
-              : AppBar(
-                  toolbarHeight: 10,
-                  elevation: 0,
-                  backgroundColor: const Color.fromARGB(255, 225, 225, 225),
-                  systemOverlayStyle: SystemUiOverlayStyle.dark, // 1
-                ),
-          body: DefaultTextStyle(
-            style: const TextStyle(color: Colors.white),
-            child: _layoutHelper(),
-          ),
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 225, 225, 225),
+      body: SafeArea(
+        bottom: false,
+        left: false,
+        right: false,
+        child: Stack(
+          children: [
+            DefaultTextStyle(
+              style: const TextStyle(color: Colors.white),
+              child: _layoutHelper(),
+            ),
+            _getConfettiWidget(),
+          ],
         ),
-        _getConfettiWidget(),
-      ],
+      ),
     );
   }
 
@@ -127,7 +126,11 @@ class PlayGameState extends State<PlayGameScreen> {
     return score / turns;
   }
 
-  void onClickHandler(DartboardScoreType type, int score, Offset position) async {
+  void onClickHandler(
+    DartboardScoreType type,
+    int score,
+    Offset position,
+  ) async {
     if (_locked) return;
     DartThrow currentThrow = DartThrow(type, score);
     _touchOffset = position;
@@ -164,11 +167,11 @@ class PlayGameState extends State<PlayGameScreen> {
       turnScore += ScoreHelper.calculateScore(element);
     }
     if (turnScore == 69) {
-      speak("sheeeeesh");
+      _speak("sheeeeesh");
     } else if (!_currentTurn.isValid) {
-      speak("No score");
+      _speak("No score");
     } else {
-      speak("$turnScore");
+      _speak("$turnScore");
     }
     setState(() {
       // Save state
@@ -178,7 +181,7 @@ class PlayGameState extends State<PlayGameScreen> {
       // prepare next moves
       int currentUserIndex = 1 +
           widget.game.players.indexWhere(
-                (user) => user.userId == _currentUserId,
+            (user) => user.userId == _currentUserId,
           );
       if (currentUserIndex == widget.game.players.length) {
         currentUserIndex = 0;
@@ -195,7 +198,8 @@ class PlayGameState extends State<PlayGameScreen> {
               .where((user) => user.userId == _currentUserId)
               .toList());
       if (scoreLeft <= 170) {
-        speak("${widget.game.players[currentUserIndex].name.split(' ')[0]} you need $scoreLeft");
+        _speak(
+            "${widget.game.players[currentUserIndex].name.split(' ')[0]} you need $scoreLeft");
       }
     });
   }
@@ -209,60 +213,63 @@ class PlayGameState extends State<PlayGameScreen> {
     });
 
     _persist(finish: true);
-    speak(
+    _speak(
         "${widget.game.players.firstWhere((user) => user.userId == _currentUserId).name} has won!");
 
     switch (await showDialog<int>(
         context: context,
         builder: (BuildContext context) {
           return Dialog(
-            shape: const RoundedRectangleBorder(
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
-                Radius.circular(20.0),
+                Radius.circular(20.r),
               ),
             ),
             child: IntrinsicHeight(
               child: SizedBox(
-                width: 350,
+                width: math.min(350, .9.sw),
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16.r),
                   child: Center(
                     child: Column(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(top: 16),
+                          padding: EdgeInsets.only(top: 16.h),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.only(bottom: 14, right: 16),
+                                padding: EdgeInsets.only(
+                                  bottom: 14.h,
+                                  right: 16.w,
+                                ),
                                 child: SvgPicture.asset(
                                   crownIcon,
-                                  height: 55,
-                                  width: 5,
+                                  height: 55.h,
+                                  width: 5.w,
                                   color: const Color(0xff008000),
                                 ),
                               ),
-                              const Text(
+                              Text(
                                 "WINNER",
                                 style: TextStyle(
-                                    fontSize: 55,
-                                    color: Color(0xff008000),
+                                    fontSize: math.max(55.sp, 32),
+                                    color: const Color(0xff008000),
                                     fontWeight: FontWeight.w900),
                               ),
                             ],
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
+                          padding: EdgeInsets.only(bottom: 16.h),
                           child: Text(
                             widget.game.players
                                 .firstWhere(
                                     (user) => user.userId == _currentUserId)
                                 .name,
                             style: TextStyle(
-                                fontSize: 32,
+                                fontSize: math.max(32.sp, 24),
                                 color: Theme.of(context).primaryColor,
                                 fontWeight: FontWeight.w900),
                           ),
@@ -272,19 +279,19 @@ class PlayGameState extends State<PlayGameScreen> {
                           children: [
                             IconButton(
                               color: const Color(0xfff20500),
-                              iconSize: 60,
+                              iconSize: math.max(60.r, 32),
                               icon: const Icon(Icons.exit_to_app_rounded),
                               onPressed: () => Navigator.pop(context, 1),
                             ),
                             IconButton(
                               color: Theme.of(context).primaryColor,
-                              iconSize: 60,
+                              iconSize: math.max(60.r, 32),
                               icon: const Icon(Icons.trending_up_rounded),
                               onPressed: () => Navigator.pop(context, 2),
                             ),
                             IconButton(
                               color: Theme.of(context).primaryColor,
-                              iconSize: 60,
+                              iconSize: math.max(60.r, 32),
                               icon: Transform(
                                 alignment: Alignment.center,
                                 transform: Matrix4.rotationZ(-math.pi / 4),
@@ -319,7 +326,7 @@ class PlayGameState extends State<PlayGameScreen> {
         break;
       case 3:
         setState(() {
-          _locked=false;
+          _locked = false;
           if (_currentTurn.throws.isEmpty) {
             if (widget.game.turns.isNotEmpty) {
               Turn lastTurn = widget.game.turns.removeLast();
@@ -353,7 +360,7 @@ class PlayGameState extends State<PlayGameScreen> {
       if (_currentUserId == userId) {
         int currentUserIndex = 1 +
             widget.game.players.indexWhere(
-                  (user) => user.userId == _currentUserId,
+              (user) => user.userId == _currentUserId,
             );
         if (currentUserIndex == widget.game.players.length) {
           currentUserIndex = 0;
@@ -377,9 +384,8 @@ class PlayGameState extends State<PlayGameScreen> {
                 .where((user) => user.userId == _currentUserId)
                 .toList());
         if (scoreLeft <= 170) {
-          speak(
-              "${widget.game.players[currentUserIndex].name.split(
-                  ' ')[0]} you need $scoreLeft");
+          _speak(
+              "${widget.game.players[currentUserIndex].name.split(' ')[0]} you need $scoreLeft");
         }
       }
       returnVal = true;
@@ -390,7 +396,7 @@ class PlayGameState extends State<PlayGameScreen> {
   _scrollScore() {
     var scrollIndex = widget.game.players.indexWhere(
           (element) => element.userId == _currentUserId,
-    ) +
+        ) +
         1;
     var scrollableItems = widget.game.players.length;
 
@@ -420,20 +426,20 @@ class PlayGameState extends State<PlayGameScreen> {
   _persist({bool finish = false}) async {
     await games.doc(widget.game.gameId).update({
       'finished': finish ? DateTime.now() : null,
-      'players': widget.game.players.map((player) => _userService.getReference(player.userId)).toList(),
+      'players': widget.game.players
+          .map((player) => _userService.getReference(player.userId))
+          .toList(),
       'turns': widget.game.turns
-          .map<Map<String, dynamic>>((turn) =>
-      {
-        'throws': turn.throws
-            .map<Map<String, dynamic>>((currentThrow) =>
-        {
-          'type': currentThrow.type.toShortString(),
-          'score': currentThrow.score,
-        })
-            .toList(),
-        'isValid': turn.isValid,
-        'userId': _userService.getReference(turn.userId)
-      })
+          .map<Map<String, dynamic>>((turn) => {
+                'throws': turn.throws
+                    .map<Map<String, dynamic>>((currentThrow) => {
+                          'type': currentThrow.type.toShortString(),
+                          'score': currentThrow.score,
+                        })
+                    .toList(),
+                'isValid': turn.isValid,
+                'userId': _userService.getReference(turn.userId)
+              })
           .toList()
     });
   }
@@ -481,13 +487,13 @@ class PlayGameState extends State<PlayGameScreen> {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: Theme.of(context).primaryColor,
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(25),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(25.r),
                     ),
                   ),
                   child: Center(
                     child: SizedBox(
-                      width: MediaQuery.of(context).size.width * .8,
+                      width: math.min(.9.sw, 800),
                       child: Column(
                         children: [
                           _getCurrentTurnScore(orientation),
@@ -508,7 +514,9 @@ class PlayGameState extends State<PlayGameScreen> {
           AspectRatio(
             aspectRatio: 1,
             child: SizedBox(
-                height: double.infinity, child: _getDartboard(orientation)),
+              height: double.infinity,
+              child: _getDartboard(orientation),
+            ),
           ),
           Expanded(
             child: Stack(
@@ -522,8 +530,8 @@ class PlayGameState extends State<PlayGameScreen> {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: Theme.of(context).primaryColor,
-                    borderRadius: const BorderRadius.horizontal(
-                      left: Radius.circular(25),
+                    borderRadius: BorderRadius.horizontal(
+                      left: Radius.circular(25.r),
                     ),
                   ),
                   child: Column(
@@ -547,8 +555,7 @@ class PlayGameState extends State<PlayGameScreen> {
         color: Color.fromARGB(255, 225, 225, 225),
       ),
       child: Padding(
-        padding: EdgeInsets.fromLTRB(
-            32, orientation == Orientation.landscape ? 32 : 16, 32, 32),
+        padding: EdgeInsets.all(32.r),
         child: AspectRatio(
           aspectRatio: 1,
           child: SizedBox(
@@ -574,14 +581,13 @@ class PlayGameState extends State<PlayGameScreen> {
     String superscript,
   ) {
     return Padding(
-      padding: const EdgeInsets.only(top: 15),
+      padding: EdgeInsets.only(top: 15.h),
       child: Container(
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              //                   <--- left side
               color: active ? Colors.white : Colors.transparent,
-              width: 3.0,
+              width: 3.w,
             ),
           ),
         ),
@@ -591,15 +597,16 @@ class PlayGameState extends State<PlayGameScreen> {
             Text(position),
             Text(
               superscript,
-              style:
-                  const TextStyle(fontFeatures: [FontFeature.superscripts()]),
+              style: const TextStyle(
+                fontFeatures: [FontFeature.superscripts()],
+              ),
             ),
-            const Padding(padding: EdgeInsets.all(5)),
+            Padding(padding: EdgeInsets.all(5.r)),
             Text(
               score,
-              style: const TextStyle(
-                  fontSize: 48,
-                  height: 0.75,
+              style: TextStyle(
+                  fontSize: math.max(48.sp, 24),
+                  height: 0.75.h,
                   fontWeight: FontWeight.w900,
                   textBaseline: TextBaseline.alphabetic),
             ),
@@ -647,10 +654,9 @@ class PlayGameState extends State<PlayGameScreen> {
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.only(
-              top: 5, left: orientation == Orientation.portrait ? 0 : 20),
+          padding: EdgeInsets.only(top: 5.h),
           child: DefaultTextStyle(
-            style: const TextStyle(fontSize: 24),
+            style: TextStyle(fontSize: math.max(24.sp, 14)),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -670,9 +676,9 @@ class PlayGameState extends State<PlayGameScreen> {
                 ]),
           ),
         ),
-        const Divider(
-          thickness: 1,
-          height: 8,
+        Divider(
+          thickness: 1.h,
+          height: 8.h,
           color: Colors.white54,
         ),
       ],
@@ -684,18 +690,18 @@ class PlayGameState extends State<PlayGameScreen> {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16),
+            padding: EdgeInsets.symmetric(vertical: 16.h),
             child: Row(
-              children: const [
+              children: [
                 Expanded(
                   flex: 4,
                   child: Padding(
-                    padding: EdgeInsets.all(5),
+                    padding: EdgeInsets.all(5.r),
                     child: Text(
                       "Name",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                        fontSize: math.max(18.sp, 12),
                       ),
                     ),
                   ),
@@ -704,11 +710,11 @@ class PlayGameState extends State<PlayGameScreen> {
                   flex: 1,
                   child: Center(
                     child: Padding(
-                      padding: EdgeInsets.all(5),
+                      padding: EdgeInsets.all(2.r),
                       child: Text(
                         "Last",
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: math.max(18.sp, 12),
                         ),
                       ),
                     ),
@@ -718,11 +724,11 @@ class PlayGameState extends State<PlayGameScreen> {
                   flex: 1,
                   child: Center(
                     child: Padding(
-                      padding: EdgeInsets.all(5),
+                      padding: EdgeInsets.all(2.r),
                       child: Text(
                         "Avg",
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: math.max(18.sp, 12),
                         ),
                       ),
                     ),
@@ -732,11 +738,11 @@ class PlayGameState extends State<PlayGameScreen> {
                   flex: 2,
                   child: Center(
                     child: Padding(
-                      padding: EdgeInsets.all(5),
+                      padding: EdgeInsets.all(2.r),
                       child: Text(
                         "Valid Avg",
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: math.max(18.sp, 12),
                         ),
                       ),
                     ),
@@ -746,12 +752,12 @@ class PlayGameState extends State<PlayGameScreen> {
                   flex: 1,
                   child: Center(
                     child: Padding(
-                      padding: EdgeInsets.all(5),
+                      padding: EdgeInsets.all(2.r),
                       child: Text(
                         "Score",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                          fontSize: math.max(18.sp, 12),
                         ),
                       ),
                     ),
@@ -760,11 +766,11 @@ class PlayGameState extends State<PlayGameScreen> {
               ],
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.only(bottom: 10),
+          Padding(
+            padding: EdgeInsets.only(bottom: 10.h),
             child: Divider(
-              height: 8,
-              thickness: 1,
+              height: 8.h,
+              thickness: 1.h,
               color: Colors.white54,
             ),
           ),
@@ -773,7 +779,7 @@ class PlayGameState extends State<PlayGameScreen> {
             child: SingleChildScrollView(
               controller: _scrollController,
               child: Padding(
-                padding: const EdgeInsets.only(left: 16, right: 16),
+                padding: EdgeInsets.symmetric(vertical: 16.h),
                 child: Column(
                   children: [
                     ...widget.game.players.map((user) {
@@ -788,7 +794,7 @@ class PlayGameState extends State<PlayGameScreen> {
                             key: UniqueKey(),
                             direction: DismissDirection.endToStart,
                             background: Container(
-                              padding: const EdgeInsets.only(right: 20.0),
+                              padding: EdgeInsets.only(right: 20.w),
                               color: Colors.red,
                               child: const Align(
                                 alignment: Alignment.centerRight,
@@ -833,7 +839,7 @@ class PlayGameState extends State<PlayGameScreen> {
                                 Expanded(
                                   flex: 4,
                                   child: Padding(
-                                    padding: const EdgeInsets.all(5),
+                                    padding: EdgeInsets.all(5.r),
                                     child: Text(
                                       user.name,
                                       style: TextStyle(
@@ -842,7 +848,7 @@ class PlayGameState extends State<PlayGameScreen> {
                                                 ? TextDecoration.underline
                                                 : TextDecoration.none,
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 18,
+                                        fontSize: math.max(18.sp, 12),
                                       ),
                                     ),
                                   ),
@@ -851,7 +857,7 @@ class PlayGameState extends State<PlayGameScreen> {
                                   flex: 1,
                                   child: Center(
                                     child: Padding(
-                                      padding: const EdgeInsets.all(2),
+                                      padding: EdgeInsets.all(2.r),
                                       child: Text(
                                         _calculateScore(widget.game.turns.any(
                                                     (turn) =>
@@ -865,8 +871,8 @@ class PlayGameState extends State<PlayGameScreen> {
                                                   ]
                                                 : [])
                                             .toString(),
-                                        style: const TextStyle(
-                                          fontSize: 18,
+                                        style: TextStyle(
+                                          fontSize: math.max(18.sp, 12),
                                         ),
                                       ),
                                     ),
@@ -876,14 +882,14 @@ class PlayGameState extends State<PlayGameScreen> {
                                   flex: 1,
                                   child: Center(
                                     child: Padding(
-                                      padding: const EdgeInsets.all(2),
+                                      padding: EdgeInsets.all(2.r),
                                       child: Text(
                                         ((_calculateAverage(user.userId) * 100)
                                                     .round() /
                                                 100)
                                             .toString(),
-                                        style: const TextStyle(
-                                          fontSize: 18,
+                                        style: TextStyle(
+                                          fontSize: math.max(18.sp, 12),
                                         ),
                                       ),
                                     ),
@@ -893,15 +899,15 @@ class PlayGameState extends State<PlayGameScreen> {
                                   flex: 2,
                                   child: Center(
                                     child: Padding(
-                                      padding: const EdgeInsets.all(2),
+                                      padding: EdgeInsets.all(2.r),
                                       child: Text(
                                         ((_calculateAverage(user.userId, true) *
                                                         100)
                                                     .round() /
                                                 100)
                                             .toString(),
-                                        style: const TextStyle(
-                                          fontSize: 18,
+                                        style: TextStyle(
+                                          fontSize: math.max(18.sp, 12),
                                         ),
                                       ),
                                     ),
@@ -911,7 +917,7 @@ class PlayGameState extends State<PlayGameScreen> {
                                   flex: 1,
                                   child: Center(
                                     child: Padding(
-                                      padding: const EdgeInsets.all(2),
+                                      padding: EdgeInsets.all(2.r),
                                       child: Text(
                                         (501 -
                                                 _calculateScore(widget
@@ -930,9 +936,9 @@ class PlayGameState extends State<PlayGameScreen> {
                                                         [_currentTurn])
                                                     : 0))
                                             .toString(),
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 18,
+                                          fontSize: math.max(18.sp, 12),
                                         ),
                                       ),
                                     ),
@@ -959,7 +965,7 @@ class PlayGameState extends State<PlayGameScreen> {
       children: [
         IconButton(
           color: Colors.white,
-          iconSize: 60,
+          iconSize: math.max(60.r, 45),
           icon: Transform(
             alignment: Alignment.center,
             transform: Matrix4.rotationZ(-math.pi / 4),
@@ -967,7 +973,7 @@ class PlayGameState extends State<PlayGameScreen> {
           ),
           onPressed: () => {
             setState(() {
-              _locked=false;
+              _locked = false;
 
               if (_currentTurn.throws.isEmpty) {
                 if (widget.game.turns.isNotEmpty) {

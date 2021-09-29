@@ -6,6 +6,7 @@ import 'package:dartapp/services/service_locator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -36,99 +37,95 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     if (_tabController == null) return Container();
-    return SingleChildScrollView(
-      child: Expanded(
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: LayoutBuilder(builder: (context, constraint) {
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                DefaultTextStyle(
-                  style: const TextStyle(color: Colors.white),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: math.min(constraint.maxHeight * .15, 150)),
-                        child: IntrinsicHeight(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  right:
-                                      math.min(constraint.maxWidth * .025, 60),
-                                ),
-                                child: IconButton(
-                                  iconSize:
-                                      math.min(constraint.maxWidth * .1, 60),
-                                  icon: const Icon(Icons.login_rounded),
-                                  color: _tabController!.index == 0
-                                      ? Colors.white
-                                      : Colors.white38,
-                                  onPressed: () {
-                                    setState(() {
-                                      _tabController!.index = 0;
-                                    });
-                                  },
-                                ),
-                              ),
-                              const VerticalDivider(
-                                color: Colors.white,
-                                width: 25,
-                                thickness: 2,
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left:
-                                      math.min(constraint.maxWidth * .025, 60),
-                                ),
-                                child: IconButton(
-                                  iconSize:
-                                      math.min(constraint.maxWidth * .1, 60),
-                                  icon: const Icon(Icons.add_reaction_outlined),
-                                  color: _tabController!.index == 1
-                                      ? Colors.white
-                                      : Colors.white38,
-                                  onPressed: () {
-                                    setState(() {
-                                      _tabController!.index = 1;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: TabBarView(
-                          controller: _tabController,
+    return Scaffold(
+      body: SingleChildScrollView(
+        physics:
+            const ClampingScrollPhysics(parent: NeverScrollableScrollPhysics()),
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height,
+          child: Stack(
+            children: [
+              DefaultTextStyle(
+                style: const TextStyle(color: Colors.white),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 150.h),
+                      child: IntrinsicHeight(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            _formWrapper(
-                              _getSignInForm(constraint),
-                              math.min(constraint.maxWidth - 50, 500),
+                            Padding(
+                              padding: EdgeInsets.only(right: 60.w),
+                              child: IconButton(
+                                iconSize: math.max(60.w, 45),
+                                icon: const Icon(Icons.login_rounded),
+                                color: _tabController!.index == 0
+                                    ? Colors.white
+                                    : Colors.white38,
+                                onPressed: () {
+                                  setState(() {
+                                    _tabController!.index = 0;
+                                  });
+                                },
+                              ),
                             ),
-                            _formWrapper(
-                              _getSignUpForm(constraint),
-                              math.min(constraint.maxWidth - 50, 500),
-                            )
+                            VerticalDivider(
+                              color: Colors.white,
+                              width: 25.h,
+                              thickness: 2.w,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 60.w),
+                              child: IconButton(
+                                iconSize: math.max(60.w, 45),
+                                icon: const Icon(Icons.add_reaction_outlined),
+                                color: _tabController!.index == 1
+                                    ? Colors.white
+                                    : Colors.white38,
+                                onPressed: () {
+                                  setState(() {
+                                    _tabController!.index = 1;
+                                  });
+                                },
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        controller: _tabController,
+                        children: [
+                          _formWrapper(
+                            _getSignInForm(),
+                            math.max(
+                                .5.sw,
+                                math.min(MediaQuery.of(context).size.width - 60,
+                                    500)),
+                          ),
+                          _formWrapper(
+                            _getSignUpForm(),
+                            math.max(
+                                .5.sw,
+                                math.min(MediaQuery.of(context).size.width - 60,
+                                    500)),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                isLoading
-                    ? Container(
-                        decoration: const BoxDecoration(color: Colors.black26),
-                        child: const Center(child: CircularProgressIndicator()),
-                      )
-                    : Container(),
-              ],
-            );
-          }),
+              ),
+              isLoading
+                  ? Container(
+                      decoration: const BoxDecoration(color: Colors.black26),
+                      child: const Center(child: CircularProgressIndicator()),
+                    )
+                  : Container(),
+            ],
+          ),
         ),
       ),
     );
@@ -166,29 +163,29 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  List<Widget> _getSignInForm(BoxConstraints constraint) {
+  List<Widget> _getSignInForm() {
     return [
       Padding(
-        padding: const EdgeInsets.only(bottom: 50),
+        padding: EdgeInsets.only(bottom: 50.h),
         child: Text(
           "SIGN IN",
           style: TextStyle(
             fontWeight: FontWeight.w800,
-            fontSize: math.min(constraint.maxWidth * 0.1, 72),
+            fontSize: 72.sp,
           ),
         ),
       ),
       Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: _textField(emailFieldController, "EMAIL", constraint),
+        padding: EdgeInsets.symmetric(vertical: 10.h),
+        child: _textField(emailFieldController, "EMAIL",
+            textInputAction: TextInputAction.next),
       ),
       Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: _textField(passwordFieldController, "PASSWORD", constraint,
-            hide: true),
+        padding: EdgeInsets.symmetric(vertical: 10.h),
+        child: _textField(passwordFieldController, "PASSWORD", hide: true),
       ),
       Padding(
-          padding: const EdgeInsets.only(top: 30),
+          padding: EdgeInsets.only(top: 30.h),
           child: _getButton(() async {
             setState(() {
               isLoading = true;
@@ -218,33 +215,34 @@ class _LoginScreenState extends State<LoginScreen>
     ];
   }
 
-  List<Widget> _getSignUpForm(BoxConstraints constraint) {
+  List<Widget> _getSignUpForm() {
     return [
       Padding(
-        padding: const EdgeInsets.only(bottom: 50),
+        padding: EdgeInsets.only(bottom: 50.h),
         child: Text(
           "Sign Up",
           style: TextStyle(
             fontWeight: FontWeight.w800,
-            fontSize: math.min(constraint.maxWidth * 0.1, 72),
+            fontSize: 72.sp,
           ),
         ),
       ),
       Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: _textField(emailFieldController, "EMAIL", constraint),
+        padding: EdgeInsets.symmetric(vertical: 10.h),
+        child: _textField(emailFieldController, "EMAIL",
+            textInputAction: TextInputAction.next),
       ),
       Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: _textField(passwordFieldController, "PASSWORD", constraint,
-            hide: true),
+        padding: EdgeInsets.symmetric(vertical: 10.h),
+        child: _textField(passwordFieldController, "PASSWORD",
+            textInputAction: TextInputAction.next, hide: true),
       ),
       Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: _textField(fullNameFieldController, "FULL NAME", constraint),
+        padding: EdgeInsets.symmetric(vertical: 10.h),
+        child: _textField(fullNameFieldController, "FULL NAME"),
       ),
       Padding(
-        padding: const EdgeInsets.only(top: 30),
+        padding: EdgeInsets.only(top: 30.h),
         child: _getButton(
           () async {
             setState(() {
@@ -261,7 +259,7 @@ class _LoginScreenState extends State<LoginScreen>
                 MaterialPageRoute(builder: (context) {
                   return const HomeScreen();
                 }),
-                    (route) => false,
+                (route) => false,
               );
             } catch (e) {
               if (e is FirebaseAuthException) {
@@ -277,14 +275,13 @@ class _LoginScreenState extends State<LoginScreen>
     ];
   }
 
-
   Widget _getButton(onPressed) {
     return GestureDetector(
       child: Hero(
         tag: 'logo',
         child: SizedBox(
-          width: 150,
-          height: 150,
+          width: math.max(150.w, 100),
+          height: math.max(150.w, 100),
           child: SvgPicture.asset(
             dartboardIcon,
           ),
@@ -319,23 +316,30 @@ class _LoginScreenState extends State<LoginScreen>
   // }
 
   _textField(
-      TextEditingController controller, String label, BoxConstraints constraint,
-      {bool hide = false}) {
+    TextEditingController controller,
+    String label, {
+    textInputAction = TextInputAction.done,
+    bool hide = false,
+  }) {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Text(label,
-              style:
-                  const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          padding: EdgeInsets.symmetric(vertical: 10.h),
+          child: Text(
+            label,
+            style: TextStyle(
+                fontSize: math.max(18.sp, 14), fontWeight: FontWeight.w700),
+          ),
         ),
         TextField(
+          textInputAction: textInputAction,
           controller: controller,
           obscureText: hide,
-          decoration: const InputDecoration(
-            contentPadding: EdgeInsets.symmetric(horizontal: 20),
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 20),
             border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(100))),
+              borderRadius: BorderRadius.all(Radius.circular(100.w)),
+            ),
             fillColor: Colors.white,
             filled: true,
           ),
