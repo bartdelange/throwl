@@ -1,5 +1,6 @@
+import 'dart:math' as math;
 import 'package:badges/badges.dart';
-import 'package:dartapp/models/user.dart' as models;
+import 'package:dartapp/models/user.dart' as user_models;
 import 'package:dartapp/screens/games.dart';
 import 'package:dartapp/screens/home/friendrequests_dialog.dart';
 import 'package:dartapp/screens/home/friends_dialog.dart';
@@ -11,6 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -26,21 +28,22 @@ class HomeState extends State<HomeScreen> {
 
   void _showMessage(String message) {
     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text("Error"),
-            content: Text(message),
-            actions: [
-              TextButton(
-                child: const Text("Ok"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              )
-            ],
-          );
-        });
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Error"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              child: const Text("Ok"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -75,7 +78,7 @@ class HomeState extends State<HomeScreen> {
           ValueListenableBuilder(
               valueListenable: _authService.currentUserNotifier,
               builder:
-                  (BuildContext context, models.User? user, Widget? child) {
+                  (BuildContext context, user_models.User? user, Widget? child) {
                 var friendRequests = 0;
                 if (user != null) {
                   friendRequests = user.friends
@@ -130,16 +133,16 @@ class HomeState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(25, 25, 25, 75),
+                  padding: EdgeInsets.fromLTRB(25.w, 25.h, 25.w, 75.h),
                   child: ValueListenableBuilder(
                       valueListenable: _authService.currentUserNotifier,
-                      builder: (BuildContext context, models.User? user,
+                      builder: (BuildContext context, user_models.User? user,
                           Widget? child) {
                         if (user == null) return Container();
                         return Text(
                           'Hi ${user.name}',
-                          style: const TextStyle(
-                            fontSize: 72,
+                          style: TextStyle(
+                            fontSize: 72.sp,
                             fontWeight: FontWeight.w200,
                           ),
                         );
@@ -149,20 +152,20 @@ class HomeState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: EdgeInsets.all(20.r),
                       child: TextButton.icon(
-                        icon: const Padding(
-                          padding: EdgeInsets.only(right: 20, bottom: 12),
+                        icon: Padding(
+                          padding: EdgeInsets.only(right: 20.w, bottom: 12.h),
                           child: Icon(
                             Icons.add,
                             color: Colors.white,
-                            size: 48,
+                            size: math.max(48.r, 24),
                           ),
                         ),
-                        label: const Text(
+                        label: Text(
                           "NEW GAME",
                           style: TextStyle(
-                            fontSize: 48,
+                            fontSize: math.max(48.sp, 24),
                             color: Colors.white,
                             fontWeight: FontWeight.w900,
                           ),
@@ -178,20 +181,20 @@ class HomeState extends State<HomeScreen> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: EdgeInsets.all(20.r),
                       child: TextButton.icon(
-                        icon: const Padding(
-                          padding: EdgeInsets.only(right: 20, bottom: 12),
+                        icon: Padding(
+                          padding: EdgeInsets.only(right: 20.w, bottom: 12.h),
                           child: Icon(
                             Icons.history,
                             color: Colors.white,
-                            size: 48,
+                            size: math.max(48.r, 24),
                           ),
                         ),
-                        label: const Text(
+                        label: Text(
                           "PLAYED GAMES",
                           style: TextStyle(
-                            fontSize: 48,
+                            fontSize: math.max(48.sp, 24),
                             color: Colors.white,
                             fontWeight: FontWeight.w900,
                           ),
@@ -209,12 +212,12 @@ class HomeState extends State<HomeScreen> {
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 125),
+                  padding: EdgeInsets.only(top: 125.r),
                   child: Hero(
                     tag: 'logo',
                     child: SvgPicture.asset(
                       dartboardIcon,
-                      height: 350,
+                      height: 350.h,
                     ),
                   ),
                 ),

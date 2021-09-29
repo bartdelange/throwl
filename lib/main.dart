@@ -5,6 +5,7 @@ import 'package:dartapp/screens/login.dart';
 import 'package:dartapp/screens/splash.dart';
 import 'package:dartapp/services/service_locator.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,26 +24,29 @@ class DartscounterApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Darts Counter',
-      theme: ThemeData(
-        primarySwatch: const MaterialColor(0xFF02314e, {
-          50: Color.fromRGBO(2, 49, 78, .1),
-          100: Color.fromRGBO(2, 49, 78, .2),
-          200: Color.fromRGBO(2, 49, 78, .3),
-          300: Color.fromRGBO(2, 49, 78, .4),
-          400: Color.fromRGBO(2, 49, 78, .5),
-          500: Color.fromRGBO(2, 49, 78, .6),
-          600: Color.fromRGBO(2, 49, 78, .7),
-          700: Color.fromRGBO(2, 49, 78, .8),
-          800: Color.fromRGBO(2, 49, 78, .9),
-          900: Color.fromRGBO(2, 49, 78, 1),
-        }),
-        scaffoldBackgroundColor: const Color(0xFF02314d),
-        fontFamily: 'Karbon',
+    return ScreenUtilInit(
+      designSize: const Size(1024, 1366),
+      builder: ()=> MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Darts Counter',
+        theme: ThemeData(
+          primarySwatch: const MaterialColor(0xFF02314e, {
+            50: Color.fromRGBO(2, 49, 78, .1),
+            100: Color.fromRGBO(2, 49, 78, .2),
+            200: Color.fromRGBO(2, 49, 78, .3),
+            300: Color.fromRGBO(2, 49, 78, .4),
+            400: Color.fromRGBO(2, 49, 78, .5),
+            500: Color.fromRGBO(2, 49, 78, .6),
+            600: Color.fromRGBO(2, 49, 78, .7),
+            700: Color.fromRGBO(2, 49, 78, .8),
+            800: Color.fromRGBO(2, 49, 78, .9),
+            900: Color.fromRGBO(2, 49, 78, 1),
+          }),
+          scaffoldBackgroundColor: const Color(0xFF02314d),
+          fontFamily: 'Karbon',
+        ),
+        home: const SplashScreen(mainScreen: HomeScreen(), loginScreen: LoginScreen()),
       ),
-      home: const SplashScreen(mainScreen: HomeScreen(), loginScreen: LoginScreen()),
     );
   }
 }
