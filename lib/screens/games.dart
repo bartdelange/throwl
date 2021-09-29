@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartapp/models/dart_throw.dart';
@@ -8,9 +9,10 @@ import 'package:dartapp/models/user.dart' as user_model;
 import 'package:dartapp/screens/game_detail.dart';
 import 'package:dartapp/screens/play_game.dart';
 import 'package:dartapp/services/auth_service.dart';
-import 'package:dartapp/services/user_service.dart';
 import 'package:dartapp/services/service_locator.dart';
+import 'package:dartapp/services/user_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
 class GamesScreen extends StatefulWidget {
@@ -27,14 +29,16 @@ class GamesState extends State<GamesScreen> {
   var _gamesCollectionSnapshots = FirebaseFirestore.instance
       .collection('games')
       .where('players',
-          arrayContains: locator<UserService>().getReference(locator<AuthService>().currentUser!.userId))
+          arrayContains: locator<UserService>()
+              .getReference(locator<AuthService>().currentUser!.userId))
       .orderBy('started', descending: true)
       .snapshots();
 
   void refresh() async {
     _gamesCollectionSnapshots = _gamesCollection
         .where('players',
-            arrayContains: _userService.getReference(_authService.currentUser!.userId))
+            arrayContains:
+                _userService.getReference(_authService.currentUser!.userId))
         .orderBy('started', descending: true)
         .snapshots();
   }
@@ -44,28 +48,32 @@ class GamesState extends State<GamesScreen> {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.75,
-            height: MediaQuery.of(context).size.width * 0.95,
-            // constraints: BoxConstraints(minWidth: math.min(800, MediaQuery.of(context).size.width)),
+          child: SizedBox(
+            width: .75.sw,
+            height: .8.sh,
             child: DefaultTextStyle(
               style: const TextStyle(color: Colors.white),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 30),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 30.h),
                     child: Text(
                       "PLAYED GAMES",
-                      style:
-                          TextStyle(fontSize: 48, fontWeight: FontWeight.w900),
+                      style: TextStyle(
+                        fontSize: 48.sp,
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
                   ),
-
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 30),
-                    child: Divider(height: 3, thickness: 2, color: Colors.white)
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 30.h),
+                    child: Divider(
+                      height: 3.h,
+                      thickness: 2.h,
+                      color: Colors.white,
+                    ),
                   ),
                   Expanded(
                     child: StreamBuilder(
@@ -73,32 +81,39 @@ class GamesState extends State<GamesScreen> {
                       builder:
                           (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                         if (snapshot.hasError) {
-                          return const Text(
+                          return Text(
                             'Something went wrong',
-                            style: TextStyle(fontSize: 24, color: Colors.white),
+                            style: TextStyle(
+                              fontSize: 24.sp,
+                              color: Colors.white,
+                            ),
                           );
                         }
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Text("Loading",
-                                  style: TextStyle(
-                                      fontSize: 24, color: Colors.white)),
+                            children: [
+                              Text(
+                                "Loading",
+                                style: TextStyle(
+                                  fontSize: 24.sp,
+                                  color: Colors.white,
+                                ),
+                              ),
                               Padding(
-                                padding: EdgeInsets.all(20),
-                                child: CircularProgressIndicator(),
+                                padding: EdgeInsets.all(20.r),
+                                child: const CircularProgressIndicator(),
                               ),
                             ],
                           );
                         }
 
                         if (snapshot.data == null) {
-                          return const Text(
+                          return Text(
                             'No data',
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: 24.sp,
                               color: Colors.white,
                             ),
                           );
@@ -117,7 +132,7 @@ class GamesState extends State<GamesScreen> {
                                 key: UniqueKey(),
                                 direction: DismissDirection.endToStart,
                                 background: Container(
-                                  padding: const EdgeInsets.only(right: 20.0),
+                                  padding: EdgeInsets.only(right: 20.w),
                                   color: Colors.red,
                                   child: const Align(
                                     alignment: Alignment.centerRight,
@@ -153,32 +168,38 @@ class GamesState extends State<GamesScreen> {
                                     }
                                   },
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 40),
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 40.h,
+                                    ),
                                     child: ListTile(
                                       leading: Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 50),
+                                        padding: EdgeInsets.only(right: 50.w),
                                         child: data['finished'] == null
-                                            ? const Icon(Icons.pause,
-                                                size: 50, color: Colors.white)
-                                            : const Icon(Icons.done,
-                                                size: 50, color: Colors.white),
+                                            ? Icon(
+                                                Icons.pause,
+                                                size: math.max(50.r, 25),
+                                                color: Colors.white,
+                                              )
+                                            : Icon(
+                                                Icons.done,
+                                                size: math.max(50.r, 25),
+                                                color: Colors.white,
+                                              ),
                                       ),
                                       title: Text(
                                         data['finished'] == null
                                             ? 'Unfinished game'
                                             : 'Finished game',
-                                        style: const TextStyle(
-                                          fontSize: 32,
+                                        style: TextStyle(
+                                          fontSize: math.max(32.sp, 24),
                                           color: Colors.white,
                                           fontWeight: FontWeight.w900,
                                         ),
                                       ),
                                       subtitle: Text(
                                         'Started at ${DateFormat('dd-MM-yyyy – HH:mm').format((data['started'] as Timestamp).toDate())}',
-                                        style: const TextStyle(
-                                          fontSize: 18,
+                                        style: TextStyle(
+                                          fontSize: math.max(18.sp, 14),
                                           color: Colors.white,
                                         ),
                                       ),
@@ -209,7 +230,10 @@ class GamesState extends State<GamesScreen> {
     );
   }
 
-  Future<Game> _getGame(Map<String, dynamic> data, DocumentSnapshot<Object?> document) async {
+  Future<Game> _getGame(
+    Map<String, dynamic> data,
+    DocumentSnapshot<Object?> document,
+  ) async {
     var id = document.id;
     List<user_model.User> players = await Future.wait(
         data['players'].map<Future<user_model.User>>((reference) async {

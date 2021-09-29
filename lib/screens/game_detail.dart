@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:math' as math;
 
 import 'package:dartapp/components/collapse_tile.dart';
 import 'package:dartapp/extensions/capitalize.dart';
@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class GameDetailScreen extends StatefulWidget {
   const GameDetailScreen({Key? key, required this.game}) : super(key: key);
@@ -80,7 +81,7 @@ class GameDetailState extends State<GameDetailScreen> {
               color: Color.fromARGB(255, 225, 225, 225),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16.r),
               child: _getDartboard(context, heatMap),
             ),
           ),
@@ -97,15 +98,15 @@ class GameDetailState extends State<GameDetailScreen> {
                   Container(
                     decoration: BoxDecoration(
                       color: Theme.of(context).primaryColor,
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(25),
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(25.r),
                       ),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 50),
+                      padding: EdgeInsets.symmetric(vertical: 50.h),
                       child: Center(
                         child: SizedBox(
-                          width: MediaQuery.of(context).size.width * .8,
+                          width: math.min(.95.sw, 800),
                           height: double.infinity,
                           child: SingleChildScrollView(
                             child: Column(children: [
@@ -152,7 +153,7 @@ class GameDetailState extends State<GameDetailScreen> {
   ) {
     return Center(
       child: SizedBox(
-        height: 500,
+        width: 500.w,
         child: AspectRatio(
           aspectRatio: 1,
           child: CustomPaint(
@@ -216,11 +217,204 @@ class GameDetailState extends State<GameDetailScreen> {
         (previousValue, element) =>
             previousValue + ((element.type == DartboardScoreType.out) ? 1 : 0));
 
-    var headerStyle = const TextStyle(
-        fontSize: 32, fontWeight: FontWeight.w900, color: Colors.white);
+    var headerStyle = TextStyle(
+        fontSize: math.max(32.sp, 24),
+        fontWeight: FontWeight.w900,
+        color: Colors.white);
     var rowStyle = const TextStyle(
       fontSize: 18,
       color: Colors.white,
+    );
+
+    var table = Table(
+      columnWidths: const {0: FlexColumnWidth(5), 1: FlexColumnWidth(1)},
+      children: [
+        TableRow(children: [
+          Text(
+            'Turn stats',
+            textAlign: TextAlign.start,
+            style: headerStyle,
+          ),
+          const Text(""),
+        ]), // Header
+        TableRow(children: [
+          Text(
+            'Total turns taken',
+            textAlign: TextAlign.start,
+            style: rowStyle,
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              turns.length.toString(),
+              style: rowStyle,
+            ),
+          ),
+        ]),
+        TableRow(children: [
+          Text(
+            'Turns spend under 170',
+            textAlign: TextAlign.start,
+            style: rowStyle,
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              spendUnder170.toString(),
+              style: rowStyle,
+            ),
+          ),
+        ]),
+        TableRow(children: [
+          Text(
+            'Turns spend under 100',
+            textAlign: TextAlign.start,
+            style: rowStyle,
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              spendUnder100.toString(),
+              style: rowStyle,
+            ),
+          ),
+        ]),
+        TableRow(children: [
+          Text(
+            'Turns thrown higher than 30',
+            textAlign: TextAlign.start,
+            style: rowStyle,
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              throwAbove30.toString(),
+              style: rowStyle,
+            ),
+          ),
+        ]),
+        TableRow(children: [
+          Text(
+            'Turns thrown higher than 50',
+            textAlign: TextAlign.start,
+            style: rowStyle,
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              throwAbove50.toString(),
+              style: rowStyle,
+            ),
+          ),
+        ]),
+        TableRow(children: [
+          Text(
+            'Turns thrown higher than 100',
+            textAlign: TextAlign.start,
+            style: rowStyle,
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              throwAbove100.toString(),
+              style: rowStyle,
+            ),
+          ),
+        ]),
+
+        ...(MediaQuery.of(context).size.width >= 1000
+            ? [
+                const TableRow(children: [Text(""), Text("")]), // Spacer
+                const TableRow(children: [Text(""), Text("")]), // Spacer
+                const TableRow(children: [Text(""), Text("")]), // Spacer
+                const TableRow(children: [Text(""), Text("")]), // Spacer
+              ]
+            : [const TableRow(children: [Text(""), Text("")])]),
+
+        TableRow(children: [
+          Text(
+            'Throw stats',
+            textAlign: TextAlign.start,
+            style: headerStyle,
+          ),
+          const Text(""),
+        ]), // Header
+        TableRow(children: [
+          Text(
+            'Amount of triples',
+            textAlign: TextAlign.start,
+            style: rowStyle,
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              tripleCount.toInt().toString(),
+              style: rowStyle,
+            ),
+          ),
+        ]),
+        TableRow(children: [
+          Text(
+            'Amount of doubles',
+            textAlign: TextAlign.start,
+            style: rowStyle,
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              doubleCount.toInt().toString(),
+              style: rowStyle,
+            ),
+          ),
+        ]),
+        TableRow(children: [
+          Text(
+            'Amount thrown out',
+            textAlign: TextAlign.start,
+            style: rowStyle,
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              outCount.toInt().toString(),
+              style: rowStyle,
+            ),
+          ),
+        ]),
+        TableRow(children: [
+          Text(
+            'Most thrown',
+            textAlign: TextAlign.start,
+            style: rowStyle,
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: throwCount.isNotEmpty
+                ? Text(
+                    "${throwCount.last.key.type.toShortString()[0].toUpperCase()}${throwCount.last.key.score.toString()} (${throwCount.last.value}x)",
+                    style: rowStyle,
+                  )
+                : const Text(""),
+          ),
+        ]),
+
+        TableRow(children: [
+          Text(
+            score == 0 ? 'Winning throw' : "",
+            textAlign: TextAlign.start,
+            style: rowStyle,
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              score == 0
+                  ? "${turns.last.throws.last.type.toShortString().capitalize()} ${turns.last.throws.last.score.toString()}"
+                  : "",
+              style: rowStyle,
+            ),
+          ),
+        ]),
+      ],
     );
 
     return CollapseTile(
@@ -247,7 +441,7 @@ class GameDetailState extends State<GameDetailScreen> {
       title: Text(
         title,
         style: TextStyle(
-            fontSize: userId == _selectedUserId ? 48 : 24,
+            fontSize: math.max(24.sp, 18),
             fontWeight: FontWeight.w900,
             color: Colors.white),
       ),
@@ -258,15 +452,15 @@ class GameDetailState extends State<GameDetailScreen> {
           Text(
             score > 0 ? "Remaining score $score" : "Winner",
             style: TextStyle(
-              fontSize: userId == _selectedUserId ? 32 : 24,
+              fontSize: math.max(24.sp, 18),
               color: Colors.white,
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 50),
+            padding: EdgeInsets.only(left: 50.w),
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
+                borderRadius: BorderRadius.circular(100.r),
                 color: Colors.white,
               ),
               child: Icon(
@@ -274,7 +468,7 @@ class GameDetailState extends State<GameDetailScreen> {
                     ? Icons.keyboard_arrow_up_rounded
                     : Icons.keyboard_arrow_down_rounded,
                 color: Theme.of(context).primaryColor,
-                size: 32,
+                size: math.max(32.sp, 20),
               ),
             ),
           ),
@@ -282,223 +476,57 @@ class GameDetailState extends State<GameDetailScreen> {
       ),
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 0, 20),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                flex: 4,
-                child: Table(
-                  columnWidths: const {
-                    0: FlexColumnWidth(1),
-                    1: FixedColumnWidth(75.0)
-                  },
-                  defaultColumnWidth: const FixedColumnWidth(120.0),
+          padding: MediaQuery.of(context).size.width < 1000
+              ? EdgeInsets.all(50.r)
+              : EdgeInsets.fromLTRB(20.w, 20.h, 0, 20.h),
+          child: MediaQuery.of(context).size.width < 1000
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    TableRow(children: [
-                      Text(
-                        'Turn stats',
-                        textAlign: TextAlign.start,
-                        style: headerStyle,
-                      ),
-                      const Text(""),
-                    ]), // Header
-                    TableRow(children: [
-                      Text(
-                        'Total turns taken',
-                        textAlign: TextAlign.start,
-                        style: rowStyle,
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          turns.length.toString(),
-                          style: rowStyle,
+                    table,
+                    Padding(
+                      padding: EdgeInsets.only(top: 50.w),
+                      child: Container(
+                        width: double.infinity,
+                        height: 400.h,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(25.r),
+                        ),
+                        child: Padding(
+                          padding:
+                              EdgeInsets.fromLTRB(25.w, 25.h, 25.w, 12.5.h),
+                          child: _getThrowGraph(turns),
                         ),
                       ),
-                    ]),
-                    TableRow(children: [
-                      Text(
-                        'Turns spend under 170',
-                        textAlign: TextAlign.start,
-                        style: rowStyle,
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          spendUnder170.toString(),
-                          style: rowStyle,
+                    )
+                  ],
+                )
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(flex: 4, child: table),
+                    Expanded(
+                      flex: 7,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 50.w),
+                        child: Container(
+                          width: double.infinity,
+                          height: 400.h,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(25.r),
+                          ),
+                          child: Padding(
+                            padding:
+                                EdgeInsets.fromLTRB(25.w, 25.h, 25.w, 12.5.w),
+                            child: _getThrowGraph(turns),
+                          ),
                         ),
                       ),
-                    ]),
-                    TableRow(children: [
-                      Text(
-                        'Turns spend under 100',
-                        textAlign: TextAlign.start,
-                        style: rowStyle,
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          spendUnder100.toString(),
-                          style: rowStyle,
-                        ),
-                      ),
-                    ]),
-                    TableRow(children: [
-                      Text(
-                        'Turns thrown higher than 30',
-                        textAlign: TextAlign.start,
-                        style: rowStyle,
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          throwAbove30.toString(),
-                          style: rowStyle,
-                        ),
-                      ),
-                    ]),
-                    TableRow(children: [
-                      Text(
-                        'Turns thrown higher than 50',
-                        textAlign: TextAlign.start,
-                        style: rowStyle,
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          throwAbove50.toString(),
-                          style: rowStyle,
-                        ),
-                      ),
-                    ]),
-                    TableRow(children: [
-                      Text(
-                        'Turns thrown higher than 100',
-                        textAlign: TextAlign.start,
-                        style: rowStyle,
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          throwAbove100.toString(),
-                          style: rowStyle,
-                        ),
-                      ),
-                    ]),
-
-                    const TableRow(children: [Text(""), Text("")]), // Spacer
-                    const TableRow(children: [Text(""), Text("")]), // Spacer
-                    const TableRow(children: [Text(""), Text("")]), // Spacer
-                    const TableRow(children: [Text(""), Text("")]), // Spacer
-
-                    TableRow(children: [
-                      Text(
-                        'Throw stats',
-                        textAlign: TextAlign.start,
-                        style: headerStyle,
-                      ),
-                      const Text(""),
-                    ]), // Header
-                    TableRow(children: [
-                      Text(
-                        'Amount of triples',
-                        textAlign: TextAlign.start,
-                        style: rowStyle,
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          tripleCount.toInt().toString(),
-                          style: rowStyle,
-                        ),
-                      ),
-                    ]),
-                    TableRow(children: [
-                      Text(
-                        'Amount of doubles',
-                        textAlign: TextAlign.start,
-                        style: rowStyle,
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          doubleCount.toInt().toString(),
-                          style: rowStyle,
-                        ),
-                      ),
-                    ]),
-                    TableRow(children: [
-                      Text(
-                        'Amount thrown out',
-                        textAlign: TextAlign.start,
-                        style: rowStyle,
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          outCount.toInt().toString(),
-                          style: rowStyle,
-                        ),
-                      ),
-                    ]),
-                    TableRow(children: [
-                      Text(
-                        'Most thrown',
-                        textAlign: TextAlign.start,
-                        style: rowStyle,
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: throwCount.isNotEmpty
-                            ? Text(
-                                "${throwCount.last.key.type.toShortString()[0].toUpperCase()}${throwCount.last.key.score.toString()} (${throwCount.last.value}x)",
-                                style: rowStyle,
-                              )
-                            : const Text(""),
-                      ),
-                    ]),
-
-                    TableRow(children: [
-                      Text(
-                        score == 0 ? 'Winning throw' : "",
-                        textAlign: TextAlign.start,
-                        style: rowStyle,
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          score == 0
-                              ? "${turns.last.throws.last.type.toShortString().capitalize()} ${turns.last.throws.last.score.toString()}"
-                              : "",
-                          style: rowStyle,
-                        ),
-                      ),
-                    ]),
+                    ),
                   ],
                 ),
-              ),
-              Expanded(
-                flex: 7,
-                child:  Padding(
-                  padding: const EdgeInsets.only(left: 50),
-                  child: Container(
-                  width: double.infinity,
-                  height: 400,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child:Padding(
-                      padding: const EdgeInsets.fromLTRB(25, 25, 25, 12.5),
-                      child: _getThrowGraph(turns),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
         ),
       ],
     );
@@ -519,14 +547,14 @@ class GameDetailState extends State<GameDetailScreen> {
     }
 
     var minAverage =
-        averageData.fold<double>(double.infinity, (a, b) => min(a, b.y));
+        averageData.fold<double>(double.infinity, (a, b) => math.min(a, b.y));
     var minScore =
-        scoreData.fold<double>(double.infinity, (a, b) => min(a, b.y));
-    var maxAverage = averageData.fold<double>(0, (a, b) => max(a, b.y));
-    var maxScore = scoreData.fold<double>(0, (a, b) => max(a, b.y));
+        scoreData.fold<double>(double.infinity, (a, b) => math.min(a, b.y));
+    var maxAverage = averageData.fold<double>(0, (a, b) => math.max(a, b.y));
+    var maxScore = scoreData.fold<double>(0, (a, b) => math.max(a, b.y));
 
-    var minY = min(minAverage, minScore);
-    var maxY = max(maxAverage, maxScore);
+    var minY = math.min(minAverage, minScore);
+    var maxY = math.max(maxAverage, maxScore);
 
     var grayTextStyle = const TextStyle(
       color: Colors.blueGrey,
@@ -546,113 +574,113 @@ class GameDetailState extends State<GameDetailScreen> {
                     fitInsideVertically: true,
                     maxContentWidth: 100,
                     tooltipBgColor: Colors.white70,
-                      getTooltipItems: (touchedSpots) {
-                        return touchedSpots.map((LineBarSpot touchedSpot) {
-                          final textStyle = TextStyle(
-                            color: touchedSpot.bar.colors[0],
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          );
-                          return LineTooltipItem(
-                              '${touchedSpot.x}, ${touchedSpot.y.toStringAsFixed(2)}',
-                              textStyle);
-                        }).toList();
-                      }),
-                  handleBuiltInTouches: true,
-                  getTouchLineStart: (data, index) => 0,
-                ),
-                axisTitleData: FlAxisTitleData(
-                  leftTitle: AxisTitle(
-                      showTitle: true,
-                      titleText: 'Score',
-                      margin: 0,
-                      textStyle: grayTextStyle),
-                  bottomTitle: AxisTitle(
-                      showTitle: true,
-                      titleText: 'Turn',
-                      margin: 24,
-                      textStyle: grayTextStyle),
-                ),
-                lineBarsData: [
-                  LineChartBarData(
-                    colors: [
-                      Colors.lightGreen,
-                    ],
-                    spots: averageData,
-                    isCurved: true,
-                    isStrokeCapRound: true,
-                    barWidth: 3,
-                    belowBarData: BarAreaData(
-                      show: false,
-                    ),
-                    dotData: FlDotData(show: false),
+                    getTooltipItems: (touchedSpots) {
+                      return touchedSpots.map((LineBarSpot touchedSpot) {
+                        final textStyle = TextStyle(
+                          color: touchedSpot.bar.colors[0],
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        );
+                        return LineTooltipItem(
+                            '${touchedSpot.x}, ${touchedSpot.y.toStringAsFixed(2)}',
+                            textStyle);
+                      }).toList();
+                    }),
+                handleBuiltInTouches: true,
+                getTouchLineStart: (data, index) => 0,
+              ),
+              axisTitleData: FlAxisTitleData(
+                leftTitle: AxisTitle(
+                    showTitle: true,
+                    titleText: 'Score',
+                    margin: 0,
+                    textStyle: grayTextStyle),
+                bottomTitle: AxisTitle(
+                    showTitle: true,
+                    titleText: 'Turn',
+                    margin: 24,
+                    textStyle: grayTextStyle),
+              ),
+              lineBarsData: [
+                LineChartBarData(
+                  colors: [
+                    Colors.lightGreen,
+                  ],
+                  spots: averageData,
+                  isCurved: true,
+                  isStrokeCapRound: true,
+                  barWidth: 3,
+                  belowBarData: BarAreaData(
+                    show: false,
                   ),
-                  LineChartBarData(
-                    colors: [
-                      Colors.lightBlue,
-                    ],
-                    spots: scoreData,
-                    isCurved: true,
-                    isStrokeCapRound: true,
-                    barWidth: 3,
-                    belowBarData: BarAreaData(
-                      show: false,
-                    ),
-                    dotData: FlDotData(show: false),
+                  dotData: FlDotData(show: false),
+                ),
+                LineChartBarData(
+                  colors: [
+                    Colors.lightBlue,
+                  ],
+                  spots: scoreData,
+                  isCurved: true,
+                  isStrokeCapRound: true,
+                  barWidth: 3,
+                  belowBarData: BarAreaData(
+                    show: false,
                   ),
-                ],
-                minY: minY,
-                maxY: maxY,
-                titlesData: FlTitlesData(
-                  leftTitles: SideTitles(
-                      showTitles: true,
-                      getTextStyles: (context, value) => grayTextStyle,
-                      margin: 16,
-                      reservedSize: 40),
-                  rightTitles: SideTitles(showTitles: false),
-                  bottomTitles: SideTitles(
-                      showTitles: true,
-                      getTextStyles: (context, value) => grayTextStyle,
-                      margin: 16,
-                      reservedSize: 6),
-                  topTitles: SideTitles(showTitles: false),
+                  dotData: FlDotData(show: false),
                 ),
-                gridData: FlGridData(
-                  show: true,
-                  drawHorizontalLine: true,
-                  drawVerticalLine: true,
-                  horizontalInterval: 1,
-                  verticalInterval: maxY / minY,
-                  checkToShowHorizontalLine: (value) {
-                    return value == 1 || value % 10 == 0;
-                  },
-                ),
-                borderData: FlBorderData(
-                  show: false,
-                ),
+              ],
+              minY: minY,
+              maxY: maxY,
+              titlesData: FlTitlesData(
+                leftTitles: SideTitles(
+                    showTitles: true,
+                    getTextStyles: (context, value) => grayTextStyle,
+                    margin: 16,
+                    reservedSize: 40),
+                rightTitles: SideTitles(showTitles: false),
+                bottomTitles: SideTitles(
+                    showTitles: true,
+                    getTextStyles: (context, value) => grayTextStyle,
+                    margin: 16,
+                    reservedSize: 6),
+                topTitles: SideTitles(showTitles: false),
+              ),
+              gridData: FlGridData(
+                show: true,
+                drawHorizontalLine: true,
+                drawVerticalLine: true,
+                horizontalInterval: 1,
+                verticalInterval: maxY / minY,
+                checkToShowHorizontalLine: (value) {
+                  return value == 1 || value % 10 == 0;
+                },
+              ),
+              borderData: FlBorderData(
+                show: false,
               ),
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Padding(
-                  padding: EdgeInsets.all(5),
-                  child: Text("—— Average",
-                      style: TextStyle(
-                          color: Colors.lightGreen,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w300))),
-              Padding(
-                  padding: EdgeInsets.all(5),
-                  child: Text("—— Score",
-                      style: TextStyle(
-                          color: Colors.lightBlue,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w300))),
-            ],
-          )
-        ],
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            Padding(
+                padding: EdgeInsets.all(5),
+                child: Text("—— Average",
+                    style: TextStyle(
+                        color: Colors.lightGreen,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w300))),
+            Padding(
+                padding: EdgeInsets.all(5),
+                child: Text("—— Score",
+                    style: TextStyle(
+                        color: Colors.lightBlue,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w300))),
+          ],
+        )
+      ],
     );
   }
 
