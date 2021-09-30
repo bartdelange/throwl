@@ -12,6 +12,7 @@ import 'package:dartapp/services/auth_service.dart';
 import 'package:dartapp/services/service_locator.dart';
 import 'package:dartapp/services/user_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
@@ -46,6 +47,11 @@ class GamesState extends State<GamesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: SafeArea(
         child: Center(
           child: SizedBox(
