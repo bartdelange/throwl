@@ -10,7 +10,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Select Xcode version
-      run: sudo xcode-select -s '/Applications/Xcode_11.3.app/Contents/Developer'
+      run: ls -la /Applications/ && sudo xcode-select -s '/Applications/Xcode_12.4.app/Contents/Developer'
 
     - name: Bundle install
       run: cd ./ios && bundle install
