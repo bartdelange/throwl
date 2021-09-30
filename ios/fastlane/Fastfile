@@ -12,6 +12,12 @@ end
 lane :beta do
   desc "Push a new beta build to TestFlight"
 
+  app_store_connect_api_key(
+    key_id: ENV["FASTLANE_KEY_ID"],
+    issuer_id: ENV["FASTLANE_ISSUER_ID"],
+    key_filepath: "./authkey.p8",
+  )
+
   if is_ci
     create_keychain(
       name: ENV['MATCH_KEYCHAIN_NAME'],

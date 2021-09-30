@@ -84,12 +84,16 @@ class PlayGameState extends State<PlayGameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        backgroundColor: Colors.transparent,
+        iconTheme: IconThemeData(color: Theme.of(context).primaryColor),
+        elevation: 0,
+      ),
       backgroundColor: const Color.fromARGB(255, 225, 225, 225),
-      body: SafeArea(
-        bottom: false,
-        left: false,
-        right: false,
-        child: Stack(
+      body:
+      Stack(
           children: [
             DefaultTextStyle(
               style: const TextStyle(color: Colors.white),
@@ -97,7 +101,6 @@ class PlayGameState extends State<PlayGameScreen> {
             ),
             _getConfettiWidget(),
           ],
-        ),
       ),
     );
   }
@@ -555,7 +558,7 @@ class PlayGameState extends State<PlayGameScreen> {
         color: Color.fromARGB(255, 225, 225, 225),
       ),
       child: Padding(
-        padding: EdgeInsets.all(32.r),
+        padding: EdgeInsets.fromLTRB(32.w, math.max(MediaQuery.of(context).padding.top, 32.h), 32.w, 32.h),
         child: AspectRatio(
           aspectRatio: 1,
           child: SizedBox(
