@@ -34,6 +34,13 @@ class GameDetailState extends State<GameDetailScreen> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var throws = widget.game.turns
         .where((turn) => turn.userId == _selectedUserId)
@@ -67,10 +74,11 @@ class GameDetailState extends State<GameDetailScreen> {
     }
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         systemOverlayStyle: SystemUiOverlayStyle.dark,
-        toolbarHeight: 0,
-        backgroundColor: const Color.fromARGB(255, 225, 225, 225),
+        backgroundColor: Colors.transparent,
+        iconTheme: IconThemeData(color: Theme.of(context).primaryColor),
         elevation: 0,
       ),
       body: Column(
@@ -81,7 +89,7 @@ class GameDetailState extends State<GameDetailScreen> {
               color: Color.fromARGB(255, 225, 225, 225),
             ),
             child: Padding(
-              padding: EdgeInsets.all(16.r),
+              padding: EdgeInsets.fromLTRB(16.w, math.max(MediaQuery.of(context).padding.top, 16.h), 16.w, 16.h),
               child: _getDartboard(context, heatMap),
             ),
           ),
@@ -329,7 +337,9 @@ class GameDetailState extends State<GameDetailScreen> {
                 const TableRow(children: [Text(""), Text("")]), // Spacer
                 const TableRow(children: [Text(""), Text("")]), // Spacer
               ]
-            : [const TableRow(children: [Text(""), Text("")])]),
+            : [
+                const TableRow(children: [Text(""), Text("")])
+              ]),
 
         TableRow(children: [
           Text(
