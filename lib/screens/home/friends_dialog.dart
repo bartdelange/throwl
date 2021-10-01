@@ -6,6 +6,7 @@ import 'package:dartapp/screens/login.dart';
 import 'package:dartapp/screens/new_game.dart';
 import 'package:dartapp/services/auth_service.dart';
 import 'package:dartapp/services/service_locator.dart';
+import 'package:dartapp/services/user_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ class FriendsListDialog extends StatefulWidget {
 
 class FriendsListDialogState extends State<FriendsListDialog> {
   final _authService = locator<AuthService>();
+  final _userService = locator<UserService>();
   final _newFriendFieldController = TextEditingController();
 
   void _showMessage(String message) {
@@ -86,40 +88,24 @@ class FriendsListDialogState extends State<FriendsListDialog> {
                               shape: const CircleBorder(),
                             ),
                             onPressed: () async {
-                              var users = await FirebaseFirestore.instance
-                                  .collection("users")
-                                  .where('email',
-                                  isEqualTo:
-                                  _newFriendFieldController.text)
-                                  .get();
-
-                              if (users.docs.isEmpty) {
+                              var newFriend = await _userService.getByEmail(_newFriendFieldController.text.toLowerCase());
+                              if (newFriend == null || newFriend.userId == user.userId) {
                                 _showMessage("No user found");
                                 return;
                               }
-                              QueryDocumentSnapshot newFriend = users.docs.first;
-
-                              await FirebaseFirestore.instance
-                                  .collection("users")
-                                  .doc(user.userId)
-                                  .update({
+                              await _userService.updateUser(user.userId, {
                                 'friends': FieldValue.arrayUnion([
                                   {
-                                    "user": newFriend.reference,
+                                    "user": _userService.getReference(newFriend.userId),
                                     "requester": user.userId,
                                     "confirmed": false,
                                   }
                                 ]),
                               });
-                              await FirebaseFirestore.instance
-                                  .collection("users")
-                                  .doc(newFriend.id)
-                                  .update({
+                              await _userService.updateUser(newFriend.userId, {
                                 'friends': FieldValue.arrayUnion([
                                   {
-                                    "user": FirebaseFirestore.instance
-                                        .collection("users")
-                                        .doc(user.userId),
+                                    "user": _userService.getReference(user.userId),
                                     "requester": user.userId,
                                     "confirmed": false,
                                   }

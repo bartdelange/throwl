@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="nl.dartscounter">
+    package="com.throwl">
    <application
-        android:label="Darts Counter"
+        android:label="Throwl"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

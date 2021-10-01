@@ -1,4 +1,4 @@
-app_identifier("nl.dartscounter")
+app_identifier("com.throwl")
 apple_id(ENV['FASTLANE_USER'])
 itc_team_id(ENV['ITC_TEAM_ID'])
 team_id(ENV['TEAM_ID'])

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartapp/models/user.dart' as models;
 import 'package:dartapp/services/auth_service.dart';
 import 'package:dartapp/services/service_locator.dart';
+import 'package:dartapp/services/user_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,7 @@ class FriendsRequestDialog extends StatefulWidget {
 
 class FriendsRequestDialogState extends State<FriendsRequestDialog> {
   final _authService = locator<AuthService>();
+  final _userService = locator<UserService>();
 
   @override
   void initState() {
@@ -21,50 +23,41 @@ class FriendsRequestDialogState extends State<FriendsRequestDialog> {
   }
 
   Future deleteRequest(String selfId, String friendId) async {
-    await FirebaseFirestore.instance.collection("users").doc(selfId).update({
+    await _userService.updateUser(selfId, {
       'friends': FieldValue.arrayRemove([
         {
-          "user": FirebaseFirestore.instance.collection("users").doc(friendId),
+          "user": _userService.getReference(friendId),
           "requester": friendId,
           "confirmed": false,
         }
       ]),
     });
-    await FirebaseFirestore.instance
-        .collection("users")
-        .doc(
-          friendId,
-        )
-        .update({
+    await _userService.updateUser(friendId, {
       'friends': FieldValue.arrayRemove([
         {
-          "user": FirebaseFirestore.instance.collection("users").doc(selfId),
+          "user": _userService.getReference(selfId),
           "requester": friendId,
           "confirmed": false,
         }
       ]),
     });
   }
+
   Future confirmRequest(String selfId, String friendId) async {
-    await FirebaseFirestore.instance.collection("users").doc(selfId).update({
+    await _userService.updateUser(selfId, {
       'friends': FieldValue.arrayUnion([
         {
-          "user": FirebaseFirestore.instance.collection("users").doc(friendId),
+          "user": _userService.getReference(friendId),
           "confirmed": true,
         }
       ]),
     });
 
     // Friend
-    await FirebaseFirestore.instance
-        .collection("users")
-        .doc(
-          friendId,
-        )
-        .update({
+    await _userService.updateUser(friendId, {
       'friends': FieldValue.arrayUnion([
         {
-          "user": FirebaseFirestore.instance.collection("users").doc(selfId),
+          "user": _userService.getReference(selfId),
           "confirmed": true,
         }
       ]),
@@ -122,16 +115,16 @@ class FriendsRequestDialogState extends State<FriendsRequestDialog> {
                                 IconButton(
                                   icon: const Icon(Icons.check_rounded),
                                   onPressed: () async {
-                                    confirmRequest(
+                                    await confirmRequest(
                                         user.userId, friend.user.userId);
-                                    deleteRequest(
+                                    await deleteRequest(
                                         user.userId, friend.user.userId);
                                   },
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.close_rounded),
-                                  onPressed: () {
-                                    deleteRequest(
+                                  onPressed: () async {
+                                    await deleteRequest(
                                         user.userId, friend.user.userId);
                                   },
                                 ),
