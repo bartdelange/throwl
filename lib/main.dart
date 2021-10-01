@@ -28,7 +28,7 @@ class DartscounterApp extends StatelessWidget {
       designSize: const Size(1024, 1366),
       builder: ()=> MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Darts Counter',
+        title: 'Throwl',
         theme: ThemeData(
           primarySwatch: const MaterialColor(0xFF02314e, {
             50: Color.fromRGBO(2, 49, 78, .1),
