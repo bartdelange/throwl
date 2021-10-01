@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dartapp/components/scrollable_list_view.dart';
 import 'package:dartapp/models/dart_throw.dart';
 import 'package:dartapp/models/game.dart';
 import 'package:dartapp/models/turn.dart';
@@ -12,7 +13,6 @@ import 'package:dartapp/services/auth_service.dart';
 import 'package:dartapp/services/service_locator.dart';
 import 'package:dartapp/services/user_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
@@ -23,7 +23,8 @@ class GamesScreen extends StatefulWidget {
   State<GamesScreen> createState() => GamesState();
 }
 
-class GamesState extends State<GamesScreen> {
+class GamesState extends State<GamesScreen>
+    with SingleTickerProviderStateMixin {
   final _gamesCollection = FirebaseFirestore.instance.collection('games');
   final _authService = locator<AuthService>();
   final _userService = locator<UserService>();
@@ -47,190 +48,207 @@ class GamesState extends State<GamesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
       body: SafeArea(
-        child: Center(
-          child: SizedBox(
-            width: .75.sw,
-            height: .8.sh,
-            child: DefaultTextStyle(
-              style: const TextStyle(color: Colors.white),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 30.h),
-                    child: Text(
-                      "PLAYED GAMES",
-                      style: TextStyle(
-                        fontSize: 48.sp,
-                        fontWeight: FontWeight.w900,
+        child: Stack(
+          children: [
+            Center(
+              child: SizedBox(
+                width: .75.sw,
+                height: .8.sh,
+                child: DefaultTextStyle(
+                  style: const TextStyle(color: Colors.white),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 30.h),
+                        child: Text(
+                          "PLAYED GAMES",
+                          style: TextStyle(
+                            fontSize: 48.sp,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 30.h),
-                    child: Divider(
-                      height: 3.h,
-                      thickness: 2.h,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Expanded(
-                    child: StreamBuilder(
-                      stream: _gamesCollectionSnapshots,
-                      builder:
-                          (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                        if (snapshot.hasError) {
-                          return Text(
-                            'Something went wrong',
-                            style: TextStyle(
-                              fontSize: 24.sp,
-                              color: Colors.white,
-                            ),
-                          );
-                        }
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Loading",
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 30.h),
+                        child: Divider(
+                          height: 3.h,
+                          thickness: 2.h,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Expanded(
+                        child: StreamBuilder(
+                          stream: _gamesCollectionSnapshots,
+                          builder:
+                              (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                            if (snapshot.hasError) {
+                              return Text(
+                                'Something went wrong',
                                 style: TextStyle(
                                   fontSize: 24.sp,
                                   color: Colors.white,
                                 ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(20.r),
-                                child: const CircularProgressIndicator(),
-                              ),
-                            ],
-                          );
-                        }
-
-                        if (snapshot.data == null) {
-                          return Text(
-                            'No data',
-                            style: TextStyle(
-                              fontSize: 24.sp,
-                              color: Colors.white,
-                            ),
-                          );
-                        }
-
-                        return RefreshIndicator(
-                          child: ListView.builder(
-                            padding: EdgeInsets.zero,
-                            itemCount: snapshot.data!.docs.length,
-                            itemBuilder: (context, index) {
-                              var document = snapshot.data!.docs[index];
-                              Map<String, dynamic> data =
-                                  document.data()! as Map<String, dynamic>;
-
-                              return Dismissible(
-                                key: UniqueKey(),
-                                direction: DismissDirection.endToStart,
-                                background: Container(
-                                  padding: EdgeInsets.only(right: 20.w),
-                                  color: Colors.red,
-                                  child: const Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Text('Delete',
-                                        textAlign: TextAlign.right,
-                                        style: TextStyle(color: Colors.white)),
-                                  ),
-                                ),
-                                onDismissed: (direction) {
-                                  FirebaseFirestore.instance
-                                      .collection("games")
-                                      .doc(document.id)
-                                      .delete();
-                                },
-                                child: InkWell(
-                                  onTap: () async {
-                                    var game = await _getGame(data, document);
-                                    if (game.finished == null) {
-                                      var game = await _getGame(data, document);
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (context) {
-                                          return PlayGameScreen(game: game);
-                                        }),
-                                      );
-                                    } else {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (context) {
-                                          return GameDetailScreen(game: game);
-                                        }),
-                                      );
-                                    }
-                                  },
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: 40.h,
-                                    ),
-                                    child: ListTile(
-                                      leading: Padding(
-                                        padding: EdgeInsets.only(right: 50.w),
-                                        child: data['finished'] == null
-                                            ? Icon(
-                                                Icons.pause,
-                                                size: math.max(50.r, 25),
-                                                color: Colors.white,
-                                              )
-                                            : Icon(
-                                                Icons.done,
-                                                size: math.max(50.r, 25),
-                                                color: Colors.white,
-                                              ),
-                                      ),
-                                      title: Text(
-                                        data['finished'] == null
-                                            ? 'Unfinished game'
-                                            : 'Finished game',
-                                        style: TextStyle(
-                                          fontSize: math.max(32.sp, 24),
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w900,
-                                        ),
-                                      ),
-                                      subtitle: Text(
-                                        'Started at ${DateFormat('dd-MM-yyyy – HH:mm').format((data['started'] as Timestamp).toDate())}',
-                                        style: TextStyle(
-                                          fontSize: math.max(18.sp, 14),
-                                          color: Colors.white,
-                                        ),
-                                      ),
+                              );
+                            }
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Loading",
+                                    style: TextStyle(
+                                      fontSize: 24.sp,
+                                      color: Colors.white,
                                     ),
                                   ),
+                                  Padding(
+                                    padding: EdgeInsets.all(20.r),
+                                    child: const CircularProgressIndicator(),
+                                  ),
+                                ],
+                              );
+                            }
+
+                            if (snapshot.data == null) {
+                              return Text(
+                                'No data',
+                                style: TextStyle(
+                                  fontSize: 24.sp,
+                                  color: Colors.white,
                                 ),
                               );
-                            },
-                          ),
-                          onRefresh: () {
-                            return Future.delayed(
-                              const Duration(seconds: 1),
-                              () {
-                                refresh();
+                            }
+
+                            return RefreshIndicator(
+                              child: ScrollableListView(
+                                children: snapshot.data!.docs.map((document) {
+                                  Map<String, dynamic> data =
+                                      document.data()! as Map<String, dynamic>;
+
+                                  return Dismissible(
+                                    key: UniqueKey(),
+                                    direction: DismissDirection.endToStart,
+                                    background: Container(
+                                      padding: EdgeInsets.only(right: 20.w),
+                                      color: Colors.red,
+                                      child: const Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Text('Delete',
+                                            textAlign: TextAlign.right,
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                      ),
+                                    ),
+                                    onDismissed: (direction) {
+                                      FirebaseFirestore.instance
+                                          .collection("games")
+                                          .doc(document.id)
+                                          .delete();
+                                    },
+                                    child: InkWell(
+                                      onTap: () async {
+                                        var game = await _getGame(
+                                          data,
+                                          document,
+                                        );
+                                        if (game.finished == null) {
+                                          var game = await _getGame(
+                                            data,
+                                            document,
+                                          );
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) {
+                                              return PlayGameScreen(
+                                                game: game,
+                                                currentUserId:
+                                                    game.turns.isNotEmpty
+                                                        ? game.turns.last.userId
+                                                        : null,
+                                              );
+                                            }),
+                                          );
+                                        } else {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) {
+                                              return GameDetailScreen(
+                                                  game: game);
+                                            }),
+                                          );
+                                        }
+                                      },
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 40.h,
+                                        ),
+                                        child: ListTile(
+                                          leading: Padding(
+                                            padding:
+                                                EdgeInsets.only(right: 50.w),
+                                            child: data['finished'] == null
+                                                ? Icon(
+                                                    Icons.pause,
+                                                    size: math.max(50.r, 25),
+                                                    color: Colors.white,
+                                                  )
+                                                : Icon(
+                                                    Icons.done,
+                                                    size: math.max(50.r, 25),
+                                                    color: Colors.white,
+                                                  ),
+                                          ),
+                                          title: Text(
+                                            data['finished'] == null
+                                                ? 'Unfinished game'
+                                                : 'Finished game',
+                                            style: TextStyle(
+                                              fontSize: math.max(32.sp, 24),
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          ),
+                                          subtitle: Text(
+                                            'Started at ${DateFormat('dd-MM-yyyy – HH:mm').format((data['started'] as Timestamp).toDate())}',
+                                            style: TextStyle(
+                                              fontSize: math.max(18.sp, 14),
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                              onRefresh: () {
+                                return Future.delayed(
+                                  const Duration(seconds: 1),
+                                  () {
+                                    refresh();
+                                  },
+                                );
                               },
                             );
                           },
-                        );
-                      },
-                    ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
+            Padding(
+              padding: EdgeInsets.only(left: 15.h),
+              child: const BackButton(color: Colors.white),
+            ),
+          ],
         ),
       ),
     );
