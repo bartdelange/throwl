@@ -25,8 +25,9 @@ import 'package:touchable/touchable.dart';
 import 'package:wakelock/wakelock.dart';
 
 class PlayGameScreen extends StatefulWidget {
-  const PlayGameScreen({Key? key, required this.game}) : super(key: key);
+  const PlayGameScreen({Key? key, required this.game, this.currentUserId}) : super(key: key);
   final Game game;
+  final String? currentUserId;
 
   @override
   State<PlayGameScreen> createState() => PlayGameState();
@@ -52,7 +53,8 @@ class PlayGameState extends State<PlayGameScreen> {
 
   @override
   void initState() {
-    _currentUserId = widget.game.players.first.userId;
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+    _currentUserId = widget.currentUserId != null ? widget.currentUserId! : widget.game.players.first.userId;
     _currentTurn = Turn(widget.game.players
         .firstWhere((user) => user.userId == _currentUserId)
         .userId);
@@ -64,16 +66,14 @@ class PlayGameState extends State<PlayGameScreen> {
       _flutterTts.setQueueMode(1);
     }
     Wakelock.enable();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     super.initState();
   }
 
   @override
   void dispose() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     _controllerCenter.dispose();
     Wakelock.disable();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-        overlays: SystemUiOverlay.values);
     super.dispose();
   }
 
@@ -84,11 +84,10 @@ class PlayGameState extends State<PlayGameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       backgroundColor: const Color.fromARGB(255, 225, 225, 225),
       body: SafeArea(
         bottom: false,
-        left: false,
-        right: false,
         child: Stack(
           children: [
             DefaultTextStyle(
@@ -96,6 +95,10 @@ class PlayGameState extends State<PlayGameScreen> {
               child: _layoutHelper(),
             ),
             _getConfettiWidget(),
+            Padding(
+              padding: EdgeInsets.only(left: 15.h),
+              child: const BackButton(),
+            ),
           ],
         ),
       ),
@@ -555,7 +558,7 @@ class PlayGameState extends State<PlayGameScreen> {
         color: Color.fromARGB(255, 225, 225, 225),
       ),
       child: Padding(
-        padding: EdgeInsets.all(32.r),
+        padding: EdgeInsets.fromLTRB(32.w, 32.w, 32.w, 32.h),
         child: AspectRatio(
           aspectRatio: 1,
           child: SizedBox(
