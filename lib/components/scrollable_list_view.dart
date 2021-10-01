@@ -53,6 +53,12 @@ class ScrollableListViewState extends State<ScrollableListView>
     _animationControllerScrollIndicator.forward();
   }
 
+  @override
+  void dispose() {
+    _animationControllerScrollIndicator.dispose();
+    super.dispose();
+  }
+
   void _scrollListener() {
     if (_scrollableIndicator) {
       setState(() {
