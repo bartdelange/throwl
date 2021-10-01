@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:dartapp/components/collapse_tile.dart';
-import 'package:dartapp/extensions/capitalize.dart';
 import 'package:dartapp/helpers/dartboard/dartboard_painter.dart';
 import 'package:dartapp/helpers/turn_helper.dart';
 import 'package:dartapp/models/dart_throw.dart';
@@ -35,7 +34,6 @@ class GameDetailState extends State<GameDetailScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     super.dispose();
   }
@@ -69,86 +67,99 @@ class GameDetailState extends State<GameDetailScreen> {
     Map<DartboardScoreTuple, double> heatMap = {};
     if (throwCount.isNotEmpty && min != null && max != null) {
       for (var element in throwCount) {
-        heatMap[element.key] = (element.value - min) / (max - min);
+        heatMap[element.key] =
+            max - min == 0 ? 1 : (element.value - min) / (max - min);
       }
     }
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
         systemOverlayStyle: SystemUiOverlayStyle.dark,
-        backgroundColor: Colors.transparent,
-        iconTheme: IconThemeData(color: Theme.of(context).primaryColor),
+        backgroundColor: const Color.fromARGB(255, 225, 225, 225),
+        toolbarHeight: 0,
         elevation: 0,
       ),
-      body: Column(
+      body: Stack(
         children: [
-          Container(
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(255, 225, 225, 225),
-            ),
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(16.w, math.max(MediaQuery.of(context).padding.top, 16.h), 16.w, 16.h),
-              child: _getDartboard(context, heatMap),
-            ),
-          ),
-          Expanded(
-            child: SafeArea(
-              top: false,
-              child: Stack(
-                children: [
-                  Container(
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 225, 225, 225),
-                    ),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(25.r),
+          Column(
+            children: [
+              Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 225, 225, 225),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                      16.w,
+                      math.max(MediaQuery.of(context).padding.top, 16.h),
+                      16.w,
+                      16.h),
+                  child: _getDartboard(context, heatMap),
+                ),
+              ),
+              Expanded(
+                child: SafeArea(
+                  top: false,
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: const BoxDecoration(
+                          color: Color.fromARGB(255, 225, 225, 225),
+                        ),
                       ),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 50.h),
-                      child: Center(
-                        child: SizedBox(
-                          width: math.min(.95.sw, 800),
-                          height: double.infinity,
-                          child: SingleChildScrollView(
-                            child: Column(children: [
-                              ListView.separated(
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                padding: EdgeInsets.zero,
-                                separatorBuilder:
-                                    (BuildContext context, int index) =>
-                                        const Divider(color: Colors.white),
-                                itemCount: widget.game.players.length,
-                                itemBuilder: (context, index) {
-                                  var user = widget.game.players[index];
-                                  return _scoreDetailDropdown(
-                                    user.name,
-                                    user.userId,
-                                    widget.game.turns
-                                        .where((element) =>
-                                            element.userId == user.userId)
-                                        .toList(),
-                                    throwCount,
-                                  );
-                                },
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(25.r),
+                          ),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 50.h),
+                          child: Center(
+                            child: SizedBox(
+                              width: math.min(.95.sw, 800),
+                              height: double.infinity,
+                              child: SingleChildScrollView(
+                                child: Column(children: [
+                                  ListView.separated(
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    padding: EdgeInsets.zero,
+                                    separatorBuilder:
+                                        (BuildContext context, int index) =>
+                                            const Divider(color: Colors.white),
+                                    itemCount: widget.game.players.length,
+                                    itemBuilder: (context, index) {
+                                      var user = widget.game.players[index];
+                                      return _scoreDetailDropdown(
+                                        user.name,
+                                        user.userId,
+                                        widget.game.turns
+                                            .where((element) =>
+                                                element.userId == user.userId)
+                                            .toList(),
+                                        throwCount,
+                                      );
+                                    },
+                                  ),
+                                  const Divider(color: Colors.white),
+                                ]),
                               ),
-                              const Divider(color: Colors.white),
-                            ]),
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 15.h),
+            child: const BackButton(),
           ),
         ],
       ),
@@ -235,7 +246,7 @@ class GameDetailState extends State<GameDetailScreen> {
     );
 
     var table = Table(
-      columnWidths: const {0: FlexColumnWidth(5), 1: FlexColumnWidth(1)},
+      columnWidths: const {0: FlexColumnWidth(4), 1: FlexColumnWidth(1)},
       children: [
         TableRow(children: [
           Text(
@@ -418,7 +429,7 @@ class GameDetailState extends State<GameDetailScreen> {
             alignment: Alignment.centerRight,
             child: Text(
               score == 0
-                  ? "${turns.last.throws.last.type.toShortString().capitalize()} ${turns.last.throws.last.score.toString()}"
+                  ? "${turns.last.throws.last.type.toShortString()[0].toUpperCase()}${turns.last.throws.last.score.toString()}"
                   : "",
               style: rowStyle,
             ),

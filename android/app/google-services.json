@@ -7,17 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1008094744313:android:b542bbb59093457c605c28",
+        "mobilesdk_app_id": "1:1008094744313:android:85082214de7a127d605c28",
         "android_client_info": {
-          "package_name": "nl.dartscounter"
+          "package_name": "com.throwl"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1008094744313-0riou9pestc1jgm9ga4e4o6tqdav6a12.apps.googleusercontent.com",
+          "client_id": "1008094744313-im9vh5vuvmr1mho3jld374ec2j7fud80.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "nl.dartscounter",
+            "package_name": "com.throwl",
             "certificate_hash": "bda9ecbc178d445237cbd1f65a3b6039519a4a7a"
           }
         },

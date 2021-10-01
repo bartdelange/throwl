@@ -1,4 +1,4 @@
-package nl.dartscounter
+package com.throwl
 
 import io.flutter.embedding.android.FlutterActivity
 

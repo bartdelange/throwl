@@ -3,9 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>1008094744313-53lreuuqu17ltmhakkg9iplko1mcs00a.apps.googleusercontent.com</string>
+	<string>1008094744313-gni9td5r3lqgqsckrcqg24lop3jbs959.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.1008094744313-53lreuuqu17ltmhakkg9iplko1mcs00a</string>
+	<string>com.googleusercontent.apps.1008094744313-gni9td5r3lqgqsckrcqg24lop3jbs959</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>1008094744313-0riou9pestc1jgm9ga4e4o6tqdav6a12.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyCMWoOGt-tunNrDiUusaddPes0Pe2IwmTA</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>nl.dartscounter</string>
+	<string>com.throwl</string>
 	<key>PROJECT_ID</key>
 	<string>darts-counter-b73d6</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1008094744313:ios:29390c9fb4bbd8ee605c28</string>
+	<string>1:1008094744313:ios:6b8544a422dc5983605c28</string>
 </dict>
 </plist>
