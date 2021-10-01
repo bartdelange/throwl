@@ -91,7 +91,7 @@ class GameDetailState extends State<GameDetailScreen> {
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(
                       16.w,
-                      math.max(MediaQuery.of(context).padding.top, 16.h),
+                      16.h,
                       16.w,
                       16.h),
                   child: _getDartboard(context, heatMap),
@@ -603,7 +603,7 @@ class GameDetailState extends State<GameDetailScreen> {
                           fontSize: 14,
                         );
                         return LineTooltipItem(
-                            '${touchedSpot.x}, ${touchedSpot.y.toStringAsFixed(2)}',
+                            '${touchedSpot.x.toInt()}, ${touchedSpot.y.toStringAsFixed(touchedSpot.y.truncateToDouble() == touchedSpot.y ? 0 : 2)}',
                             textStyle);
                       }).toList();
                     }),
