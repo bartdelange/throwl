@@ -14,13 +14,13 @@ void main() async {
 
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
-    runApp(const DartscounterApp());
+    runApp(const ThrowlApp());
   });
 
 }
 
-class DartscounterApp extends StatelessWidget {
-  const DartscounterApp({Key? key}) : super(key: key);
+class ThrowlApp extends StatelessWidget {
+  const ThrowlApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

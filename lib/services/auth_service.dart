@@ -45,14 +45,14 @@ class AuthService {
   Future signUp(
       {required String email,
       required String password,
-      required String fullName}) async {
+      required String name}) async {
     try {
       var user = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password.toLowerCase(),
       );
       if (user.user != null) {
-        _currentUser = await _userService.createUser(user.user!.uid, email, fullName);
+        _currentUser = await _userService.createUser(user.user!.uid, email, name);
         currentUserNotifier.value = _currentUser;
       }
       await signInWithEmailAndPassword(email: email, password: password.toLowerCase());
