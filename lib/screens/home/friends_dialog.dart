@@ -60,9 +60,7 @@ class FriendsListDialogState extends State<FriendsListDialog> {
             builder:
                 (BuildContext context, models.User? user, Widget? child) {
               if (user == null) return Container();
-              var friends = user.friends
-                  .where((friend) => friend.confirmed)
-                  .toList();
+              var friends = user.friends;
               return ListView.separated(
                 separatorBuilder: (context, index) {
                   return const Divider(
@@ -111,7 +109,6 @@ class FriendsListDialogState extends State<FriendsListDialog> {
                                   }
                                 ]),
                               });
-                              Navigator.pop(context);
                               const snackBar = SnackBar(content: Text('Friend request send'));
                               ScaffoldMessenger.of(context).showSnackBar(snackBar);
                               _newFriendFieldController.clear();
@@ -141,37 +138,46 @@ class FriendsListDialogState extends State<FriendsListDialog> {
                       ),
                     ),
                     onDismissed: (direction) async {
-                      await FirebaseFirestore.instance
-                          .collection("users")
-                          .doc(user.userId)
-                          .update({
-                        'friends': FieldValue.arrayRemove([
-                          {
-                            "user": FirebaseFirestore.instance
-                                .collection("users")
-                                .doc(friend.user.userId),
-                            "confirmed": true,
-                          }
-                        ]),
-                      });
-                      await FirebaseFirestore.instance
-                          .collection("users")
-                          .doc(
-                        friend.user.userId,
-                      )
-                          .update({
-                        'friends': FieldValue.arrayRemove([
-                          {
-                            "user": FirebaseFirestore.instance
-                                .collection("users")
-                                .doc(user.userId),
-                            "confirmed": true,
-                          }
-                        ]),
-                      });
+                      if (friend.requester == null) {
+                        await _userService.updateUser(user.userId, {
+                          'friends': FieldValue.arrayRemove([
+                            {
+                              "user": _userService.getReference(friend.user.userId),
+                              "confirmed": friend.confirmed,
+                            }
+                          ]),
+                        });
+                        await _userService.updateUser(friend.user.userId, {
+                          'friends': FieldValue.arrayRemove([
+                            {
+                              "user": _userService.getReference(user.userId),
+                              "confirmed": friend.confirmed,
+                            }
+                          ]),
+                        });
+                      } else {
+                        await _userService.updateUser(user.userId, {
+                          'friends': FieldValue.arrayRemove([
+                            {
+                              "user": _userService.getReference(friend.user.userId),
+                              "requester": friend.requester,
+                              "confirmed": friend.confirmed,
+                            }
+                          ]),
+                        });
+                        await _userService.updateUser(friend.user.userId, {
+                          'friends': FieldValue.arrayRemove([
+                            {
+                              "user": _userService.getReference(user.userId),
+                              "requester": friend.requester,
+                              "confirmed": friend.confirmed,
+                            }
+                          ]),
+                        });
+                      }
                     },
                     child: ListTile(
-                      title: Text(friend.user.name),
+                      title: Text(friend.user.name + (friend.confirmed ? "" : " - Pending"), style: TextStyle(color: friend.confirmed ? Colors.black : Colors.black45 )),
                     ),
                   );
                 },

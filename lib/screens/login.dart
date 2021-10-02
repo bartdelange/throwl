@@ -22,7 +22,7 @@ class _LoginScreenState extends State<LoginScreen>
   final _authService = locator<AuthService>();
   final emailFieldController = TextEditingController();
   final passwordFieldController = TextEditingController();
-  final fullNameFieldController = TextEditingController();
+  final nameFieldController = TextEditingController();
   late TabController? _tabController;
 
   @override
@@ -239,7 +239,7 @@ class _LoginScreenState extends State<LoginScreen>
       ),
       Padding(
         padding: EdgeInsets.symmetric(vertical: 10.h),
-        child: _textField(fullNameFieldController, "FULL NAME"),
+        child: _textField(nameFieldController, "NAME"),
       ),
       Padding(
         padding: EdgeInsets.only(top: 30.h),
@@ -252,7 +252,7 @@ class _LoginScreenState extends State<LoginScreen>
               await _authService.signUp(
                 email: emailFieldController.text,
                 password: passwordFieldController.text,
-                fullName: fullNameFieldController.text,
+                name: nameFieldController.text,
               );
               Navigator.pushAndRemoveUntil(
                 context,

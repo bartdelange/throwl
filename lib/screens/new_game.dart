@@ -177,65 +177,80 @@ class NewGameState extends State<NewGameScreen>
   }
 
   Widget _buildFriendItem(user_models.User friend) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        vertical: 25.h,
-      ),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: Text(
-              friend.name,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: math.max(32.sp, 18),
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-          ),
-          Transform.scale(
-            scale: math.max(1.25.r, .75),
-            child: Padding(
-              padding: EdgeInsets.only(
-                right: 5.w,
-              ),
-              child: Container(
-                decoration: BoxDecoration(
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          if (!_selectedUsers.any(
+            (selectedUser) => selectedUser.userId == friend.userId,
+          )) {
+            _selectedUsers.add(friend);
+          } else {
+            _selectedUsers.removeWhere(
+              (selectedUser) => selectedUser.userId == friend.userId,
+            );
+          }
+        });
+      },
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          vertical: 25.h,
+        ),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Text(
+                friend.name,
+                style: TextStyle(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(3),
-                ),
-                width: 24,
-                height: 24,
-                child: Checkbox(
-                  // shape: const CircleBorder(),
-                  side: const BorderSide(
-                    width: 0,
-                    color: Colors.white,
-                  ),
-                  tristate: false,
-                  // checkColor:
-                  //     Theme.of(context).primaryColor,
-                  activeColor: Theme.of(context).primaryColor,
-                  value: _selectedUsers.any(
-                    (selectedUser) => selectedUser.userId == friend.userId,
-                  ),
-                  onChanged: (bool? value) {
-                    setState(() {
-                      if (value!) {
-                        _selectedUsers.add(friend);
-                      } else {
-                        _selectedUsers.removeWhere(
-                          (selectedUser) =>
-                              selectedUser.userId == friend.userId,
-                        );
-                      }
-                    });
-                  },
+                  fontSize: math.max(32.sp, 18),
+                  fontWeight: FontWeight.w900,
                 ),
               ),
             ),
-          ),
-        ],
+            Transform.scale(
+              scale: math.max(1.25.r, .75),
+              child: Padding(
+                padding: EdgeInsets.only(
+                  right: 5.w,
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                  width: 24,
+                  height: 24,
+                  child: Checkbox(
+                    // shape: const CircleBorder(),
+                    side: const BorderSide(
+                      width: 0,
+                      color: Colors.white,
+                    ),
+                    tristate: false,
+                    // checkColor:
+                    //     Theme.of(context).primaryColor,
+                    activeColor: Theme.of(context).primaryColor,
+                    value: _selectedUsers.any(
+                      (selectedUser) => selectedUser.userId == friend.userId,
+                    ),
+                    onChanged: (bool? value) {
+                      setState(() {
+                        if (value!) {
+                          _selectedUsers.add(friend);
+                        } else {
+                          _selectedUsers.removeWhere(
+                            (selectedUser) =>
+                                selectedUser.userId == friend.userId,
+                          );
+                        }
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

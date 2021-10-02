@@ -52,10 +52,10 @@ class UserService {
     return _parseUser(users.docs.first);
   }
 
-  Future<user_models.User> createUser(uid, email, fullName) async {
+  Future<user_models.User> createUser(uid, email, name) async {
     await _users
         .doc(uid)
-        .set({"name": fullName, "email": email, "friends": []});
+        .set({"name": name, "email": email, "friends": []});
 
     return await getById(uid);
   }
