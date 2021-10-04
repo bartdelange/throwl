@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dartapp/models/user.dart' as models;
-import 'package:dartapp/services/auth_service.dart';
-import 'package:dartapp/services/service_locator.dart';
-import 'package:dartapp/services/user_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '/models/user.dart' as models;
+import '/services/auth_service.dart';
+import '/services/service_locator.dart';
+import '/services/user_service.dart';
 
 class FriendsRequestDialog extends StatefulWidget {
   const FriendsRequestDialog({Key? key}) : super(key: key);

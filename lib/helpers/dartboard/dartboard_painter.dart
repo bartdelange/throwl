@@ -1,6 +1,6 @@
-import 'package:dartapp/helpers/dartboard/dartboard_part.dart';
-import 'package:dartapp/helpers/dartboard/number_part.dart';
-import 'package:dartapp/models/dart_throw.dart';
+import 'dartboard_part.dart';
+import 'number_part.dart';
+import '../../models/dart_throw.dart';
 import 'package:svg_path_parser/svg_path_parser.dart';
 import 'package:flutter/material.dart';
 import 'package:touchable/touchable.dart';

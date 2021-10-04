@@ -1,9 +1,9 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:dartapp/screens/home/home.dart';
-import 'package:dartapp/screens/login.dart';
-import 'package:dartapp/screens/splash.dart';
-import 'package:dartapp/services/service_locator.dart';
+import 'screens/home/home.dart';
+import 'screens/login.dart';
+import 'screens/splash.dart';
+import 'services/service_locator.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

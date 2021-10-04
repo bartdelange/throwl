@@ -1,4 +1,4 @@
-import 'package:dartapp/models/dart_throw.dart';
+import '../models/dart_throw.dart';
 
 class ScoreHelper {
   static int calculateScore(DartThrow currentThrow) {

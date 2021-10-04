@@ -1,7 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dartapp/models/user.dart' as models;
-import 'package:dartapp/services/service_locator.dart';
-import 'package:dartapp/services/user_service.dart';
+import '/models/user.dart' as models;
+import 'service_locator.dart';
+import 'user_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';

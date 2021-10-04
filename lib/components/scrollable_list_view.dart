@@ -1,6 +1,7 @@
-import 'package:dartapp/components/bouncing_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'bouncing_widget.dart';
 
 class ScrollableListView extends StatefulWidget {
   final List<Widget> children;

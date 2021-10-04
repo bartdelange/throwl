@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:dartapp/services/auth_service.dart';
-import 'package:dartapp/services/service_locator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
+import '/services/auth_service.dart';
+import '/services/service_locator.dart';
 
 class SplashScreen extends StatefulWidget {
   final Widget mainScreen;

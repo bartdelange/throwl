@@ -1,16 +1,15 @@
 import 'dart:math' as math;
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dartapp/components/scrollable_list_view.dart';
-import 'package:dartapp/models/game.dart';
-import 'package:dartapp/models/user.dart' as user_models;
-import 'package:dartapp/screens/play_game.dart';
-import 'package:dartapp/services/auth_service.dart';
-import 'package:dartapp/services/service_locator.dart';
-import 'package:dartapp/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
+import '/components/scrollable_list_view.dart';
+import '/models/user.dart' as user_models;
+import '/services/auth_service.dart';
+import '/services/game_service.dart';
+import '/services/service_locator.dart';
+import 'play_game.dart';
 
 class NewGameScreen extends StatefulWidget {
   const NewGameScreen({Key? key}) : super(key: key);
@@ -21,10 +20,8 @@ class NewGameScreen extends StatefulWidget {
 
 class NewGameState extends State<NewGameScreen>
     with SingleTickerProviderStateMixin {
-  final CollectionReference _gamesCollection =
-      FirebaseFirestore.instance.collection('games');
   final _authService = locator<AuthService>();
-  final _userService = locator<UserService>();
+  final _gameService = locator<GameService>();
   final String dartboardIcon = 'assets/dartboard_white.svg';
 
   List<user_models.User> shuffle(
@@ -134,19 +131,12 @@ class NewGameState extends State<NewGameScreen>
                                           if (_selectedUsers.isEmpty) {
                                             return;
                                           }
-                                          var gameDocument =
-                                              await _gamesCollection.add({
-                                            'players': _selectedUsers
-                                                .map((user) => _userService
-                                                    .getReference(user.userId))
-                                                .toList(),
-                                            'started': DateTime.now(),
-                                            'turns': []
-                                          });
-                                          var game = Game(
-                                            gameDocument.id,
+                                          var game =
+                                              await _gameService.createGame(
                                             shuffle(
-                                                _selectedUsers, math.Random()),
+                                              _selectedUsers,
+                                              math.Random(),
+                                            ),
                                           );
 
                                           Navigator.push(

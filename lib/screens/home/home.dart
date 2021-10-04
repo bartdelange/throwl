@@ -1,18 +1,20 @@
 import 'dart:math' as math;
+
 import 'package:badges/badges.dart';
-import 'package:dartapp/models/user.dart' as user_models;
-import 'package:dartapp/screens/games.dart';
-import 'package:dartapp/screens/home/friendrequests_dialog.dart';
-import 'package:dartapp/screens/home/friends_dialog.dart';
-import 'package:dartapp/screens/login.dart';
-import 'package:dartapp/screens/new_game.dart';
-import 'package:dartapp/services/auth_service.dart';
-import 'package:dartapp/services/service_locator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+import '/models/user.dart' as user_models;
+import '/screens/games.dart';
+import '/screens/login.dart';
+import '/screens/new_game.dart';
+import '/services/auth_service.dart';
+import '/services/service_locator.dart';
+import 'friendrequests_dialog.dart';
+import 'friends_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -77,8 +79,8 @@ class HomeState extends State<HomeScreen> {
         actions: [
           ValueListenableBuilder(
               valueListenable: _authService.currentUserNotifier,
-              builder:
-                  (BuildContext context, user_models.User? user, Widget? child) {
+              builder: (BuildContext context, user_models.User? user,
+                  Widget? child) {
                 var friendRequests = 0;
                 if (user != null) {
                   friendRequests = user.friends

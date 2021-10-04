@@ -2,19 +2,21 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dartapp/components/scrollable_list_view.dart';
-import 'package:dartapp/models/dart_throw.dart';
-import 'package:dartapp/models/game.dart';
-import 'package:dartapp/models/turn.dart';
-import 'package:dartapp/models/user.dart' as user_model;
-import 'package:dartapp/screens/game_detail.dart';
-import 'package:dartapp/screens/play_game.dart';
-import 'package:dartapp/services/auth_service.dart';
-import 'package:dartapp/services/service_locator.dart';
-import 'package:dartapp/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+
+import '/components/scrollable_list_view.dart';
+import '/models/dart_throw.dart';
+import '/models/game.dart';
+import '/models/turn.dart';
+import '/models/user.dart' as user_model;
+import '/services/auth_service.dart';
+import '/services/game_service.dart';
+import '/services/service_locator.dart';
+import '/services/user_service.dart';
+import 'game_detail.dart';
+import 'play_game.dart';
 
 class GamesScreen extends StatefulWidget {
   const GamesScreen({Key? key}) : super(key: key);
@@ -25,9 +27,9 @@ class GamesScreen extends StatefulWidget {
 
 class GamesState extends State<GamesScreen>
     with SingleTickerProviderStateMixin {
-  final _gamesCollection = FirebaseFirestore.instance.collection('games');
   final _authService = locator<AuthService>();
   final _userService = locator<UserService>();
+  final _gameService = locator<GameService>();
   var _gamesCollectionSnapshots = FirebaseFirestore.instance
       .collection('games')
       .where('players',
@@ -37,7 +39,8 @@ class GamesState extends State<GamesScreen>
       .snapshots();
 
   void refresh() async {
-    _gamesCollectionSnapshots = _gamesCollection
+    _gamesCollectionSnapshots = FirebaseFirestore.instance
+        .collection('games')
         .where('players',
             arrayContains:
                 _userService.getReference(_authService.currentUser!.userId))
@@ -143,23 +146,15 @@ class GamesState extends State<GamesScreen>
                                                 TextStyle(color: Colors.white)),
                                       ),
                                     ),
-                                    onDismissed: (direction) {
-                                      FirebaseFirestore.instance
-                                          .collection("games")
-                                          .doc(document.id)
-                                          .delete();
+                                    onDismissed: (direction) async {
+                                      await _gameService
+                                          .deleteGame(document.id);
                                     },
                                     child: InkWell(
                                       onTap: () async {
-                                        var game = await _getGame(
-                                          data,
-                                          document,
-                                        );
+                                        var game = await _gameService
+                                            .parseGame(document);
                                         if (game.finished == null) {
-                                          var game = await _getGame(
-                                            data,
-                                            document,
-                                          );
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(

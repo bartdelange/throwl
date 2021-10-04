@@ -2,16 +2,7 @@ import 'dart:io';
 import 'dart:math' as math;
 import 'dart:ui';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:confetti/confetti.dart';
-import 'package:dartapp/helpers/dartboard/dartboard_painter.dart';
-import 'package:dartapp/helpers/turn_helper.dart';
-import 'package:dartapp/models/dart_throw.dart';
-import 'package:dartapp/models/game.dart';
-import 'package:dartapp/models/turn.dart';
-import 'package:dartapp/screens/game_detail.dart';
-import 'package:dartapp/services/service_locator.dart';
-import 'package:dartapp/services/user_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -24,8 +15,19 @@ import 'package:measured_size/measured_size.dart';
 import 'package:touchable/touchable.dart';
 import 'package:wakelock/wakelock.dart';
 
+import '/helpers/dartboard/dartboard_painter.dart';
+import '/helpers/turn_helper.dart';
+import '/models/dart_throw.dart';
+import '/models/game.dart';
+import '/models/turn.dart';
+import '/services/game_service.dart';
+import '/services/service_locator.dart';
+import '/services/user_service.dart';
+import 'game_detail.dart';
+
 class PlayGameScreen extends StatefulWidget {
-  const PlayGameScreen({Key? key, required this.game, this.currentUserId}) : super(key: key);
+  const PlayGameScreen({Key? key, required this.game, this.currentUserId})
+      : super(key: key);
   final Game game;
   final String? currentUserId;
 
@@ -34,11 +36,10 @@ class PlayGameScreen extends StatefulWidget {
 }
 
 class PlayGameState extends State<PlayGameScreen> {
-  final CollectionReference games =
-      FirebaseFirestore.instance.collection('games');
   final FlutterTts _flutterTts = FlutterTts();
   final crownIcon = "assets/crown.svg";
   final _userService = locator<UserService>();
+  final _gameService = locator<GameService>();
 
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _scoreListKey = GlobalKey();
@@ -54,7 +55,9 @@ class PlayGameState extends State<PlayGameScreen> {
   @override
   void initState() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
-    _currentUserId = widget.currentUserId != null ? widget.currentUserId! : widget.game.players.first.userId;
+    _currentUserId = widget.currentUserId != null
+        ? widget.currentUserId!
+        : widget.game.players.first.userId;
     _currentTurn = Turn(widget.game.players
         .firstWhere((user) => user.userId == _currentUserId)
         .userId);
@@ -427,7 +430,7 @@ class PlayGameState extends State<PlayGameScreen> {
   }
 
   _persist({bool finish = false}) async {
-    await games.doc(widget.game.gameId).update({
+    await _gameService.updateGame(widget.game.gameId, {
       'finished': finish ? DateTime.now() : null,
       'players': widget.game.players
           .map((player) => _userService.getReference(player.userId))

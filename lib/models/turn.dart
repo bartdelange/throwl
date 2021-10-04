@@ -1,4 +1,4 @@
-import 'package:dartapp/models/dart_throw.dart';
+import 'dart_throw.dart';
 
 class Turn {
   List<DartThrow> throws = [];
