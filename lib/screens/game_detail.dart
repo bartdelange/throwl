@@ -1,11 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:dartapp/components/collapse_tile.dart';
-import 'package:dartapp/helpers/dartboard/dartboard_painter.dart';
-import 'package:dartapp/helpers/turn_helper.dart';
-import 'package:dartapp/models/dart_throw.dart';
-import 'package:dartapp/models/game.dart';
-import 'package:dartapp/models/turn.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +7,13 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '/components/collapse_tile.dart';
+import '/helpers/dartboard/dartboard_painter.dart';
+import '/helpers/turn_helper.dart';
+import '/models/dart_throw.dart';
+import '/models/game.dart';
+import '/models/turn.dart';
 
 class GameDetailScreen extends StatefulWidget {
   const GameDetailScreen({Key? key, required this.game}) : super(key: key);
@@ -89,11 +90,7 @@ class GameDetailState extends State<GameDetailScreen> {
                   color: Color.fromARGB(255, 225, 225, 225),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(
-                      16.w,
-                      16.h,
-                      16.w,
-                      16.h),
+                  padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 16.h),
                   child: _getDartboard(context, heatMap),
                 ),
               ),

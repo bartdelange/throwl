@@ -1,5 +1,5 @@
-import 'package:dartapp/models/turn.dart';
-import 'package:dartapp/models/user.dart';
+import 'turn.dart';
+import 'user.dart';
 
 class Game {
   final String gameId;

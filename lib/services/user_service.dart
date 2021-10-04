@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dartapp/models/user.dart' as user_models;
+import '/models/user.dart' as user_models;
 
 class UserService {
   final CollectionReference _users =

@@ -1,15 +1,11 @@
-import 'package:badges/badges.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dartapp/models/user.dart' as models;
-import 'package:dartapp/screens/games.dart';
-import 'package:dartapp/screens/login.dart';
-import 'package:dartapp/screens/new_game.dart';
-import 'package:dartapp/services/auth_service.dart';
-import 'package:dartapp/services/service_locator.dart';
-import 'package:dartapp/services/user_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '/models/user.dart' as models;
+import '/services/auth_service.dart';
+import '/services/service_locator.dart';
+import '/services/user_service.dart';
 
 class FriendsListDialog extends StatefulWidget {
   const FriendsListDialog({Key? key}) : super(key: key);
@@ -57,8 +53,7 @@ class FriendsListDialogState extends State<FriendsListDialog> {
         child: ClipRect(
           child: ValueListenableBuilder(
             valueListenable: _authService.currentUserNotifier,
-            builder:
-                (BuildContext context, models.User? user, Widget? child) {
+            builder: (BuildContext context, models.User? user, Widget? child) {
               if (user == null) return Container();
               var friends = user.friends;
               return ListView.separated(
@@ -81,20 +76,22 @@ class FriendsListDialogState extends State<FriendsListDialog> {
                         decoration: InputDecoration(
                           suffixIcon: TextButton(
                             style: TextButton.styleFrom(
-                              backgroundColor:
-                              Theme.of(context).primaryColor,
+                              backgroundColor: Theme.of(context).primaryColor,
                               shape: const CircleBorder(),
                             ),
                             onPressed: () async {
-                              var newFriend = await _userService.getByEmail(_newFriendFieldController.text.toLowerCase());
-                              if (newFriend == null || newFriend.userId == user.userId) {
+                              var newFriend = await _userService.getByEmail(
+                                  _newFriendFieldController.text.toLowerCase());
+                              if (newFriend == null ||
+                                  newFriend.userId == user.userId) {
                                 _showMessage("No user found");
                                 return;
                               }
                               await _userService.updateUser(user.userId, {
                                 'friends': FieldValue.arrayUnion([
                                   {
-                                    "user": _userService.getReference(newFriend.userId),
+                                    "user": _userService
+                                        .getReference(newFriend.userId),
                                     "requester": user.userId,
                                     "confirmed": false,
                                   }
@@ -103,14 +100,17 @@ class FriendsListDialogState extends State<FriendsListDialog> {
                               await _userService.updateUser(newFriend.userId, {
                                 'friends': FieldValue.arrayUnion([
                                   {
-                                    "user": _userService.getReference(user.userId),
+                                    "user":
+                                        _userService.getReference(user.userId),
                                     "requester": user.userId,
                                     "confirmed": false,
                                   }
                                 ]),
                               });
-                              const snackBar = SnackBar(content: Text('Friend request send'));
-                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                              const snackBar = SnackBar(
+                                  content: Text('Friend request send'));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
                               _newFriendFieldController.clear();
                             },
                             child: const Icon(Icons.person_search_rounded,
@@ -142,7 +142,8 @@ class FriendsListDialogState extends State<FriendsListDialog> {
                         await _userService.updateUser(user.userId, {
                           'friends': FieldValue.arrayRemove([
                             {
-                              "user": _userService.getReference(friend.user.userId),
+                              "user":
+                                  _userService.getReference(friend.user.userId),
                               "confirmed": friend.confirmed,
                             }
                           ]),
@@ -159,7 +160,8 @@ class FriendsListDialogState extends State<FriendsListDialog> {
                         await _userService.updateUser(user.userId, {
                           'friends': FieldValue.arrayRemove([
                             {
-                              "user": _userService.getReference(friend.user.userId),
+                              "user":
+                                  _userService.getReference(friend.user.userId),
                               "requester": friend.requester,
                               "confirmed": friend.confirmed,
                             }
@@ -177,7 +179,13 @@ class FriendsListDialogState extends State<FriendsListDialog> {
                       }
                     },
                     child: ListTile(
-                      title: Text(friend.user.name + (friend.confirmed ? "" : " - Pending"), style: TextStyle(color: friend.confirmed ? Colors.black : Colors.black45 )),
+                      title: Text(
+                          friend.user.name +
+                              (friend.confirmed ? "" : " - Pending"),
+                          style: TextStyle(
+                              color: friend.confirmed
+                                  ? Colors.black
+                                  : Colors.black45)),
                     ),
                   );
                 },

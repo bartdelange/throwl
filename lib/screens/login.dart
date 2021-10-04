@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 
-import 'package:dartapp/screens/home/home.dart';
-import 'package:dartapp/services/auth_service.dart';
-import 'package:dartapp/services/service_locator.dart';
+import 'home/home.dart';
+import '/services/auth_service.dart';
+import '/services/service_locator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
