@@ -100,19 +100,19 @@ class _LoginScreenState extends State<LoginScreen>
                         controller: _tabController,
                         children: [
                           _formWrapper(
-                            _getSignInForm(),
+                            _getSignUpForm(),
                             math.max(
                                 .5.sw,
                                 math.min(MediaQuery.of(context).size.width - 60,
                                     500)),
                           ),
                           _formWrapper(
-                            _getSignUpForm(),
+                            _getSignInForm(),
                             math.max(
                                 .5.sw,
                                 math.min(MediaQuery.of(context).size.width - 60,
                                     500)),
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -190,15 +190,15 @@ class _LoginScreenState extends State<LoginScreen>
         child: Column(
           children: [
             _textField(passwordFieldController, "PASSWORD", hide: true, removeBottomPadding: true),
-            TextButton(
-              onPressed: () {
-                _showPasswordResetModal();
-              },
-              child: const Text(
-                'FORGOT PASSWORD?',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
+            // TextButton(
+            //   onPressed: () {
+            //     _showPasswordResetModal();
+            //   },
+            //   child: const Text(
+            //     'FORGOT PASSWORD?',
+            //     style: TextStyle(color: Colors.white),
+            //   ),
+            // ),
           ],
         ),
       ),
