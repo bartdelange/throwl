@@ -62,6 +62,11 @@ class AuthService {
     }
   }
 
+  Future<void> resetPassword(String email) async {
+    await _auth.sendPasswordResetEmail(email: email);
+  }
+
+
   Future signInWithEmailAndPassword({required String email, required String password}) async {
     try {
       var userCredential = await _auth.signInWithEmailAndPassword(

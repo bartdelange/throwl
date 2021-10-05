@@ -63,6 +63,7 @@ class FriendsRequestDialogState extends State<FriendsRequestDialog> {
         }
       ]),
     });
+    await _authService.setup();
   }
 
   @override
