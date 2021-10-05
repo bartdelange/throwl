@@ -73,8 +73,10 @@ class GameService {
     return await getById(gameDoc.id);
   }
 
-  Future<Game> updateGame(String uid, Object? set) async {
-    await getReference(uid).set(set);
+  Future<Game> updateGame(String uid, Map<String, Object?> set) async {
+    await _games
+        .doc(uid)
+        .update(set);
     return await getById(uid);
   }
 

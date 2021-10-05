@@ -1,13 +1,14 @@
 import 'dart:math' as math;
 
-import 'home/home.dart';
-import '/services/auth_service.dart';
-import '/services/service_locator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
+import '/services/auth_service.dart';
+import '/services/service_locator.dart';
+import 'home/home.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -163,6 +164,10 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
+  void _showPasswordResetModal() {
+    // _authService.resetPassword(emailFieldController.text);
+  }
+
   List<Widget> _getSignInForm() {
     return [
       Padding(
@@ -182,11 +187,25 @@ class _LoginScreenState extends State<LoginScreen>
       ),
       Padding(
         padding: EdgeInsets.symmetric(vertical: 10.h),
-        child: _textField(passwordFieldController, "PASSWORD", hide: true),
+        child: Column(
+          children: [
+            _textField(passwordFieldController, "PASSWORD", hide: true, removeBottomPadding: true),
+            TextButton(
+              onPressed: () {
+                _showPasswordResetModal();
+              },
+              child: const Text(
+                'FORGOT PASSWORD?',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
       ),
       Padding(
-          padding: EdgeInsets.only(top: 30.h),
-          child: _getButton(() async {
+        padding: EdgeInsets.only(top: 30.h),
+        child: _getButton(
+          () async {
             setState(() {
               isLoading = true;
             });
@@ -211,7 +230,9 @@ class _LoginScreenState extends State<LoginScreen>
                 isLoading = false;
               });
             }
-          })),
+          },
+        ),
+      ),
     ];
   }
 
@@ -320,11 +341,12 @@ class _LoginScreenState extends State<LoginScreen>
     String label, {
     textInputAction = TextInputAction.done,
     bool hide = false,
+    bool removeBottomPadding = false
   }) {
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(vertical: 10.h),
+          padding: removeBottomPadding ? EdgeInsets.only(top: 10.h, bottom: 0) : EdgeInsets.symmetric(vertical: 10.h),
           child: Text(
             label,
             style: TextStyle(
