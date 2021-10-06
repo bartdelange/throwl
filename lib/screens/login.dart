@@ -24,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen>
   final emailFieldController = TextEditingController();
   final passwordFieldController = TextEditingController();
   final nameFieldController = TextEditingController();
+  final resetPasswordEmailFieldController = TextEditingController();
   late TabController? _tabController;
 
   @override
@@ -165,7 +166,52 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   void _showPasswordResetModal() {
-    // _authService.resetPassword(emailFieldController.text);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        contentPadding: const EdgeInsets.only(top: 25),
+        title: const Text('Reset your password'),
+        content: ClipRect(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
+            child: SizedBox(
+              width: 300,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    textInputAction: TextInputAction.send,
+                    controller: resetPasswordEmailFieldController,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: 'john@doe.com',
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10.h),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _authService.resetPassword(
+                            resetPasswordEmailFieldController.text);
+                        const snackBar = SnackBar(
+                            content: Text('Reset mail send'));
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(snackBar);
+                        Navigator.pop(context);
+                        resetPasswordEmailFieldController.clear();
+                      },
+                      child: const Text(
+                        'Send reset mail',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   List<Widget> _getSignInForm() {
@@ -189,16 +235,17 @@ class _LoginScreenState extends State<LoginScreen>
         padding: EdgeInsets.symmetric(vertical: 10.h),
         child: Column(
           children: [
-            _textField(passwordFieldController, "PASSWORD", hide: true, removeBottomPadding: true),
-            // TextButton(
-            //   onPressed: () {
-            //     _showPasswordResetModal();
-            //   },
-            //   child: const Text(
-            //     'FORGOT PASSWORD?',
-            //     style: TextStyle(color: Colors.white),
-            //   ),
-            // ),
+            _textField(passwordFieldController, "PASSWORD",
+                hide: true, removeBottomPadding: true),
+            TextButton(
+              onPressed: () {
+                _showPasswordResetModal();
+              },
+              child: const Text(
+                'FORGOT PASSWORD?',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
           ],
         ),
       ),
@@ -336,17 +383,16 @@ class _LoginScreenState extends State<LoginScreen>
   //   );
   // }
 
-  _textField(
-    TextEditingController controller,
-    String label, {
-    textInputAction = TextInputAction.done,
-    bool hide = false,
-    bool removeBottomPadding = false
-  }) {
+  _textField(TextEditingController controller, String label,
+      {textInputAction = TextInputAction.done,
+      bool hide = false,
+      bool removeBottomPadding = false}) {
     return Column(
       children: [
         Padding(
-          padding: removeBottomPadding ? EdgeInsets.only(top: 10.h, bottom: 0) : EdgeInsets.symmetric(vertical: 10.h),
+          padding: removeBottomPadding
+              ? EdgeInsets.only(top: 10.h, bottom: 0)
+              : EdgeInsets.symmetric(vertical: 10.h),
           child: Text(
             label,
             style: TextStyle(
