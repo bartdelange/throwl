@@ -1,10 +1,10 @@
 import 'dart:math' as math;
 
+import '/components/dartboard_icon_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '/services/auth_service.dart';
 import '/services/service_locator.dart';
@@ -34,8 +34,6 @@ class _LoginScreenState extends State<LoginScreen>
     super.initState();
   }
 
-  final String dartboardIcon = 'assets/dartboard_white.svg';
-
   @override
   Widget build(BuildContext context) {
     if (_tabController == null) return Container();
@@ -61,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen>
                               padding: EdgeInsets.only(right: 60.w),
                               child: IconButton(
                                 iconSize: math.max(60.w, 45),
-                                icon: const Icon(Icons.login_rounded),
+                                icon: const Icon(Icons.person_add_alt_1_rounded),
                                 color: _tabController!.index == 0
                                     ? Colors.white
                                     : Colors.white38,
@@ -81,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen>
                               padding: EdgeInsets.only(left: 60.w),
                               child: IconButton(
                                 iconSize: math.max(60.w, 45),
-                                icon: const Icon(Icons.add_reaction_outlined),
+                                icon: const Icon(Icons.login_rounded),
                                 color: _tabController!.index == 1
                                     ? Colors.white
                                     : Colors.white38,
@@ -100,15 +98,15 @@ class _LoginScreenState extends State<LoginScreen>
                       child: TabBarView(
                         controller: _tabController,
                         children: [
-                          _formWrapper(
-                            _getSignUpForm(),
+                          _renderForm(
+                            _getSignUpFormItems(),
                             math.max(
                                 .5.sw,
                                 math.min(MediaQuery.of(context).size.width - 60,
                                     500)),
                           ),
-                          _formWrapper(
-                            _getSignInForm(),
+                          _renderForm(
+                            _getSignInFormItems(),
                             math.max(
                                 .5.sw,
                                 math.min(MediaQuery.of(context).size.width - 60,
@@ -152,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen>
         });
   }
 
-  Widget _formWrapper(List<Widget> child, double width) {
+  Widget _renderForm(List<Widget> child, double width) {
     return Center(
       child: SizedBox(
         width: width,
@@ -193,10 +191,9 @@ class _LoginScreenState extends State<LoginScreen>
                       onPressed: () {
                         _authService.resetPassword(
                             resetPasswordEmailFieldController.text);
-                        const snackBar = SnackBar(
-                            content: Text('Reset mail send'));
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(snackBar);
+                        const snackBar =
+                            SnackBar(content: Text('Reset mail send'));
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
                         Navigator.pop(context);
                         resetPasswordEmailFieldController.clear();
                       },
@@ -214,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  List<Widget> _getSignInForm() {
+  List<Widget> _getSignInFormItems() {
     return [
       Padding(
         padding: EdgeInsets.only(bottom: 50.h),
@@ -228,14 +225,14 @@ class _LoginScreenState extends State<LoginScreen>
       ),
       Padding(
         padding: EdgeInsets.symmetric(vertical: 10.h),
-        child: _textField(emailFieldController, "EMAIL",
+        child: _renderTextField(emailFieldController, "EMAIL",
             textInputAction: TextInputAction.next),
       ),
       Padding(
         padding: EdgeInsets.symmetric(vertical: 10.h),
         child: Column(
           children: [
-            _textField(passwordFieldController, "PASSWORD",
+            _renderTextField(passwordFieldController, "PASSWORD",
                 hide: true, removeBottomPadding: true),
             TextButton(
               onPressed: () {
@@ -251,8 +248,9 @@ class _LoginScreenState extends State<LoginScreen>
       ),
       Padding(
         padding: EdgeInsets.only(top: 30.h),
-        child: _getButton(
-          () async {
+        child: DartboardIconButton(
+          label: "GO",
+          onPressed: () async {
             setState(() {
               isLoading = true;
             });
@@ -283,12 +281,12 @@ class _LoginScreenState extends State<LoginScreen>
     ];
   }
 
-  List<Widget> _getSignUpForm() {
+  List<Widget> _getSignUpFormItems() {
     return [
       Padding(
-        padding: EdgeInsets.only(bottom: 50.h),
+        padding: EdgeInsets.only(bottom: 75.h),
         child: Text(
-          "Sign Up",
+          "SIGN UP",
           style: TextStyle(
             fontWeight: FontWeight.w800,
             fontSize: 72.sp,
@@ -297,22 +295,23 @@ class _LoginScreenState extends State<LoginScreen>
       ),
       Padding(
         padding: EdgeInsets.symmetric(vertical: 10.h),
-        child: _textField(emailFieldController, "EMAIL",
+        child: _renderTextField(emailFieldController, "EMAIL",
             textInputAction: TextInputAction.next),
       ),
       Padding(
         padding: EdgeInsets.symmetric(vertical: 10.h),
-        child: _textField(passwordFieldController, "PASSWORD",
+        child: _renderTextField(passwordFieldController, "PASSWORD",
             textInputAction: TextInputAction.next, hide: true),
       ),
       Padding(
         padding: EdgeInsets.symmetric(vertical: 10.h),
-        child: _textField(nameFieldController, "NAME"),
+        child: _renderTextField(nameFieldController, "NAME"),
       ),
       Padding(
         padding: EdgeInsets.only(top: 30.h),
-        child: _getButton(
-          () async {
+        child: DartboardIconButton(
+          label: "GO",
+          onPressed: () async {
             setState(() {
               isLoading = true;
             });
@@ -343,50 +342,15 @@ class _LoginScreenState extends State<LoginScreen>
     ];
   }
 
-  Widget _getButton(onPressed) {
-    return GestureDetector(
-      child: Hero(
-        tag: 'logo',
-        child: SizedBox(
-          width: math.max(150.w, 100),
-          height: math.max(150.w, 100),
-          child: SvgPicture.asset(
-            dartboardIcon,
-          ),
-        ),
-      ),
-      onTap: onPressed,
-    );
-  }
 
-  // Widget _getGoogleButton(String text) {
-  //   return SignInButton(
-  //     Buttons.Google,
-  //     elevation: 5,
-  //     padding: const EdgeInsets.symmetric(vertical: 2),
-  //     text: text,
-  //     onPressed: () async {
-  //       setState(() {
-  //         isLoading = true;
-  //       });
-  //       try {
-  //         await _authService.signInWithGoogle();
-  //       } catch (e) {
-  //         if (e is FirebaseAuthException) {
-  //           _showMessage(e.message!);
-  //         }
-  //       }
-  //       setState(() {
-  //         isLoading = false;
-  //       });
-  //     },
-  //   );
-  // }
 
-  _textField(TextEditingController controller, String label,
-      {textInputAction = TextInputAction.done,
-      bool hide = false,
-      bool removeBottomPadding = false}) {
+  Widget _renderTextField(
+    TextEditingController controller,
+    String label, {
+    textInputAction = TextInputAction.done,
+    bool hide = false,
+    bool removeBottomPadding = false,
+  }) {
     return Column(
       children: [
         Padding(

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 import '/models/user.dart' as models;
 import '/services/auth_service.dart';
@@ -124,68 +125,78 @@ class FriendsListDialogState extends State<FriendsListDialog> {
                     );
                   }
                   var friend = friends[index - 1];
-                  return Dismissible(
-                    key: UniqueKey(),
-                    direction: DismissDirection.endToStart,
-                    background: Container(
-                      padding: const EdgeInsets.only(right: 20.0),
-                      color: Colors.red,
-                      child: const Align(
-                        alignment: Alignment.centerRight,
-                        child: Text('Delete',
-                            textAlign: TextAlign.right,
-                            style: TextStyle(color: Colors.white)),
+                  dismiss() async {
+                    if (friend.requester == null) {
+                      await _userService.updateUser(user.userId, {
+                        'friends': FieldValue.arrayRemove([
+                          {
+                            "user":
+                                _userService.getReference(friend.user.userId),
+                            "confirmed": friend.confirmed,
+                          }
+                        ]),
+                      });
+                      await _userService.updateUser(friend.user.userId, {
+                        'friends': FieldValue.arrayRemove([
+                          {
+                            "user": _userService.getReference(user.userId),
+                            "confirmed": friend.confirmed,
+                          }
+                        ]),
+                      });
+                    } else {
+                      await _userService.updateUser(user.userId, {
+                        'friends': FieldValue.arrayRemove([
+                          {
+                            "user":
+                                _userService.getReference(friend.user.userId),
+                            "requester": friend.requester,
+                            "confirmed": friend.confirmed,
+                          }
+                        ]),
+                      });
+                      await _userService.updateUser(friend.user.userId, {
+                        'friends': FieldValue.arrayRemove([
+                          {
+                            "user": _userService.getReference(user.userId),
+                            "requester": friend.requester,
+                            "confirmed": friend.confirmed,
+                          }
+                        ]),
+                      });
+                    }
+                  }
+
+                  ;
+                  return Slidable(
+                    actionPane: const SlidableBehindActionPane(),
+                    actionExtentRatio: 0.2,
+                    key: Key(friend.user.userId),
+                    secondaryActions: <Widget>[
+                      IconSlideAction(
+                        caption: "DELETE",
+                        icon: Icons.delete,
+                        color: const Color(0xfff20500),
+                        onTap: dismiss,
                       ),
+                    ],
+                    dismissal: SlidableDismissal(
+                      child: const SlidableDrawerDismissal(),
+                      onDismissed: (_) => dismiss(),
                     ),
-                    onDismissed: (direction) async {
-                      if (friend.requester == null) {
-                        await _userService.updateUser(user.userId, {
-                          'friends': FieldValue.arrayRemove([
-                            {
-                              "user":
-                                  _userService.getReference(friend.user.userId),
-                              "confirmed": friend.confirmed,
-                            }
-                          ]),
-                        });
-                        await _userService.updateUser(friend.user.userId, {
-                          'friends': FieldValue.arrayRemove([
-                            {
-                              "user": _userService.getReference(user.userId),
-                              "confirmed": friend.confirmed,
-                            }
-                          ]),
-                        });
-                      } else {
-                        await _userService.updateUser(user.userId, {
-                          'friends': FieldValue.arrayRemove([
-                            {
-                              "user":
-                                  _userService.getReference(friend.user.userId),
-                              "requester": friend.requester,
-                              "confirmed": friend.confirmed,
-                            }
-                          ]),
-                        });
-                        await _userService.updateUser(friend.user.userId, {
-                          'friends': FieldValue.arrayRemove([
-                            {
-                              "user": _userService.getReference(user.userId),
-                              "requester": friend.requester,
-                              "confirmed": friend.confirmed,
-                            }
-                          ]),
-                        });
-                      }
-                    },
-                    child: ListTile(
-                      title: Text(
+                    child: Container(
+                      decoration: const BoxDecoration(color: Colors.white),
+                      child: ListTile(
+                        title: Text(
                           friend.user.name +
                               (friend.confirmed ? "" : " - Pending"),
                           style: TextStyle(
-                              color: friend.confirmed
-                                  ? Colors.black
-                                  : Colors.black45)),
+                            color: friend.confirmed
+                                ? Colors.black
+                                : Colors.black45,
+                          ),
+                        ),
+                      ),
                     ),
                   );
                 },

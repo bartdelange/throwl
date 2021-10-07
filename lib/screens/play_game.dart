@@ -9,6 +9,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:measured_size/measured_size.dart';
@@ -97,7 +98,7 @@ class PlayGameState extends State<PlayGameScreen> {
               style: const TextStyle(color: Colors.white),
               child: _layoutHelper(),
             ),
-            _getConfettiWidget(),
+            _renderConfettiWidget(),
             Padding(
               padding: EdgeInsets.only(left: 15.h),
               child: const BackButton(),
@@ -125,18 +126,16 @@ class PlayGameState extends State<PlayGameScreen> {
     int turns = 1;
     if (widget.game.turns.any((turn) => turn.userId == userId)) {
       var turnsList = widget.game.turns.where((turn) =>
-          turn.userId == userId && (skipInvalid ? turn.isValid : true));
+      turn.userId == userId && (skipInvalid ? turn.isValid : true));
       score = _calculateScore(turnsList.toList());
       turns = turnsList.length;
     }
     return score / turns;
   }
 
-  void onClickHandler(
-    DartboardScoreType type,
-    int score,
-    Offset position,
-  ) async {
+  void onClickHandler(DartboardScoreType type,
+      int score,
+      Offset position,) async {
     if (_locked) return;
     DartThrow currentThrow = DartThrow(type, score);
     _touchOffset = position;
@@ -187,7 +186,7 @@ class PlayGameState extends State<PlayGameScreen> {
       // prepare next moves
       int currentUserIndex = 1 +
           widget.game.players.indexWhere(
-            (user) => user.userId == _currentUserId,
+                (user) => user.userId == _currentUserId,
           );
       if (currentUserIndex == widget.game.players.length) {
         currentUserIndex = 0;
@@ -205,7 +204,8 @@ class PlayGameState extends State<PlayGameScreen> {
               .toList());
       if (scoreLeft <= 170) {
         _speak(
-            "${widget.game.players[currentUserIndex].name.split(' ')[0]} you need $scoreLeft");
+            "${widget.game.players[currentUserIndex].name.split(
+                ' ')[0]} you need $scoreLeft");
       }
     });
   }
@@ -220,7 +220,9 @@ class PlayGameState extends State<PlayGameScreen> {
 
     _persist(finish: true);
     _speak(
-        "${widget.game.players.firstWhere((user) => user.userId == _currentUserId).name} has won!");
+        "${widget.game.players
+            .firstWhere((user) => user.userId == _currentUserId)
+            .name} has won!");
 
     switch (await showDialog<int>(
         context: context,
@@ -276,7 +278,9 @@ class PlayGameState extends State<PlayGameScreen> {
                                 .name,
                             style: TextStyle(
                                 fontSize: math.max(32.sp, 24),
-                                color: Theme.of(context).primaryColor,
+                                color: Theme
+                                    .of(context)
+                                    .primaryColor,
                                 fontWeight: FontWeight.w900),
                           ),
                         ),
@@ -290,13 +294,17 @@ class PlayGameState extends State<PlayGameScreen> {
                               onPressed: () => Navigator.pop(context, 1),
                             ),
                             IconButton(
-                              color: Theme.of(context).primaryColor,
+                              color: Theme
+                                  .of(context)
+                                  .primaryColor,
                               iconSize: math.max(60.r, 32),
                               icon: const Icon(Icons.trending_up_rounded),
                               onPressed: () => Navigator.pop(context, 2),
                             ),
                             IconButton(
-                              color: Theme.of(context).primaryColor,
+                              color: Theme
+                                  .of(context)
+                                  .primaryColor,
                               iconSize: math.max(60.r, 32),
                               icon: Transform(
                                 alignment: Alignment.center,
@@ -318,7 +326,7 @@ class PlayGameState extends State<PlayGameScreen> {
       case 1:
         Navigator.popUntil(
           context,
-          (route) => route.isFirst,
+              (route) => route.isFirst,
         );
         break;
       case 2:
@@ -327,7 +335,7 @@ class PlayGameState extends State<PlayGameScreen> {
           MaterialPageRoute(builder: (context) {
             return GameDetailScreen(game: widget.game);
           }),
-          (route) => route.isFirst,
+              (route) => route.isFirst,
         );
         break;
       case 3:
@@ -357,7 +365,8 @@ class PlayGameState extends State<PlayGameScreen> {
   Future<bool> _dropOut(String userId) async {
     bool returnVal = false;
     setState(() {
-      if (widget.game.players.length != 2) {
+      var originalUserCount = widget.game.players.length;
+      if (originalUserCount != 2) {
         widget.game.turns.removeWhere((turn) => turn.userId == userId);
         widget.game.players.removeWhere((player) => player.userId == userId);
         _persist();
@@ -366,7 +375,7 @@ class PlayGameState extends State<PlayGameScreen> {
       if (_currentUserId == userId) {
         int currentUserIndex = 1 +
             widget.game.players.indexWhere(
-              (user) => user.userId == _currentUserId,
+                  (user) => user.userId == _currentUserId,
             );
         if (currentUserIndex == widget.game.players.length) {
           currentUserIndex = 0;
@@ -379,7 +388,7 @@ class PlayGameState extends State<PlayGameScreen> {
         _scrollScore();
 
         // prepare next moves
-        if (widget.game.players.length == 2) {
+        if (originalUserCount == 2) {
           _finishGame();
           returnVal = false;
           return;
@@ -391,7 +400,8 @@ class PlayGameState extends State<PlayGameScreen> {
                 .toList());
         if (scoreLeft <= 170) {
           _speak(
-              "${widget.game.players[currentUserIndex].name.split(' ')[0]} you need $scoreLeft");
+              "${widget.game.players[currentUserIndex].name.split(
+                  ' ')[0]} you need $scoreLeft");
         }
       }
       returnVal = true;
@@ -402,14 +412,17 @@ class PlayGameState extends State<PlayGameScreen> {
   _scrollScore() {
     var scrollIndex = widget.game.players.indexWhere(
           (element) => element.userId == _currentUserId,
-        ) +
+    ) +
         1;
     var scrollableItems = widget.game.players.length;
 
     var listKeyContext = _scoreListKey.currentContext;
     if (listKeyContext != null) {
       var listBox = listKeyContext.findRenderObject() as RenderBox;
-      final bottomPadding = MediaQuery.of(context).padding.bottom;
+      final bottomPadding = MediaQuery
+          .of(context)
+          .padding
+          .bottom;
       double scrollPos = math.max(
           0,
           ((scrollIndex - 1) * _scoreItemHeight) +
@@ -436,16 +449,18 @@ class PlayGameState extends State<PlayGameScreen> {
           .map((player) => _userService.getReference(player.userId))
           .toList(),
       'turns': widget.game.turns
-          .map<Map<String, dynamic>>((turn) => {
-                'throws': turn.throws
-                    .map<Map<String, dynamic>>((currentThrow) => {
-                          'type': currentThrow.type.toShortString(),
-                          'score': currentThrow.score,
-                        })
-                    .toList(),
-                'isValid': turn.isValid,
-                'userId': _userService.getReference(turn.userId)
-              })
+          .map<Map<String, dynamic>>((turn) =>
+      {
+        'throws': turn.throws
+            .map<Map<String, dynamic>>((currentThrow) =>
+        {
+          'type': currentThrow.type.toShortString(),
+          'score': currentThrow.score,
+        })
+            .toList(),
+        'isValid': turn.isValid,
+        'userId': _userService.getReference(turn.userId)
+      })
           .toList()
     });
   }
@@ -475,12 +490,14 @@ class PlayGameState extends State<PlayGameScreen> {
   }
 
   Widget _layoutHelper() {
-    Orientation orientation = MediaQuery.of(context).orientation;
+    Orientation orientation = MediaQuery
+        .of(context)
+        .orientation;
 
     if (orientation == Orientation.portrait) {
       return Column(
         children: [
-          _getDartboard(orientation),
+          _renderDartboard(orientation),
           Expanded(
             child: Stack(
               children: [
@@ -492,7 +509,9 @@ class PlayGameState extends State<PlayGameScreen> {
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
+                    color: Theme
+                        .of(context)
+                        .primaryColor,
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(25.r),
                     ),
@@ -502,8 +521,8 @@ class PlayGameState extends State<PlayGameScreen> {
                       width: math.min(.9.sw, 800),
                       child: Column(
                         children: [
-                          _getCurrentTurnScore(orientation),
-                          _getScoreTable()
+                          _renderCurrentTurnScore(orientation),
+                          _renderScoreTable()
                         ],
                       ),
                     ),
@@ -521,7 +540,7 @@ class PlayGameState extends State<PlayGameScreen> {
             aspectRatio: 1,
             child: SizedBox(
               height: double.infinity,
-              child: _getDartboard(orientation),
+              child: _renderDartboard(orientation),
             ),
           ),
           Expanded(
@@ -535,15 +554,17 @@ class PlayGameState extends State<PlayGameScreen> {
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
+                    color: Theme
+                        .of(context)
+                        .primaryColor,
                     borderRadius: BorderRadius.horizontal(
                       left: Radius.circular(25.r),
                     ),
                   ),
                   child: Column(
                     children: [
-                      _getCurrentTurnScore(orientation),
-                      _getScoreTable(),
+                      _renderCurrentTurnScore(orientation),
+                      _renderScoreTable(),
                     ],
                   ),
                 ),
@@ -555,7 +576,7 @@ class PlayGameState extends State<PlayGameScreen> {
     }
   }
 
-  Widget _getDartboard([Orientation orientation = Orientation.portrait]) {
+  Widget _renderDartboard([Orientation orientation = Orientation.portrait]) {
     return Container(
       decoration: const BoxDecoration(
         color: Color.fromARGB(255, 225, 225, 225),
@@ -568,10 +589,11 @@ class PlayGameState extends State<PlayGameScreen> {
             width: double.infinity,
             child: Stack(children: [
               CanvasTouchDetector(
-                builder: (context) => CustomPaint(
-                  painter: DartboardPainter(context, onClickHandler),
-                  child: Container(),
-                ),
+                builder: (context) =>
+                    CustomPaint(
+                      painter: DartboardPainter(context, onClickHandler),
+                      child: Container(),
+                    ),
               ),
             ]),
           ),
@@ -580,12 +602,10 @@ class PlayGameState extends State<PlayGameScreen> {
     );
   }
 
-  Widget _renderThrowScore(
-    bool active,
-    String score,
-    String position,
-    String superscript,
-  ) {
+  Widget _renderThrowScore(bool active,
+      String score,
+      String position,
+      String superscript,) {
     return Padding(
       padding: EdgeInsets.only(top: 15.h),
       child: Container(
@@ -622,7 +642,7 @@ class PlayGameState extends State<PlayGameScreen> {
     );
   }
 
-  Widget _getCurrentTurnScore([
+  Widget _renderCurrentTurnScore([
     Orientation orientation = Orientation.portrait,
   ]) {
     var children = [
@@ -630,8 +650,9 @@ class PlayGameState extends State<PlayGameScreen> {
         _currentTurn.throws.isEmpty,
         _currentTurn.throws.isNotEmpty
             ? _currentTurn.throws[0].type == DartboardScoreType.out
-                ? "Out"
-                : "${_currentTurn.throws[0].type.toShortString()[0].toUpperCase()}${_currentTurn.throws[0].score}"
+            ? "Out"
+            : "${_currentTurn.throws[0].type.toShortString()[0]
+            .toUpperCase()}${_currentTurn.throws[0].score}"
             : "-",
         '1',
         'st',
@@ -640,8 +661,9 @@ class PlayGameState extends State<PlayGameScreen> {
         _currentTurn.throws.length == 1,
         _currentTurn.throws.length > 1
             ? _currentTurn.throws[1].type == DartboardScoreType.out
-                ? "Out"
-                : "${_currentTurn.throws[1].type.toShortString()[0].toUpperCase()}${_currentTurn.throws[1].score}"
+            ? "Out"
+            : "${_currentTurn.throws[1].type.toShortString()[0]
+            .toUpperCase()}${_currentTurn.throws[1].score}"
             : "-",
         '2',
         'nd',
@@ -650,8 +672,9 @@ class PlayGameState extends State<PlayGameScreen> {
         _currentTurn.throws.length == 2,
         _currentTurn.throws.length > 2
             ? _currentTurn.throws[1].type == DartboardScoreType.out
-                ? "Out"
-                : "${_currentTurn.throws[2].type.toShortString()[0].toUpperCase()}${_currentTurn.throws[2].score}"
+            ? "Out"
+            : "${_currentTurn.throws[2].type.toShortString()[0]
+            .toUpperCase()}${_currentTurn.throws[2].score}"
             : "-",
         '3',
         'rd',
@@ -669,16 +692,16 @@ class PlayGameState extends State<PlayGameScreen> {
                   Expanded(
                     child: ((orientation == Orientation.portrait)
                         ? Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: children,
-                          )
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: children,
+                    )
                         : Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: children,
-                          )),
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: children,
+                    )),
                   ),
-                  _getButtonBar()
+                  _renderButtonBar()
                 ]),
           ),
         ),
@@ -691,7 +714,7 @@ class PlayGameState extends State<PlayGameScreen> {
     );
   }
 
-  Widget _getScoreTable() {
+  Widget _renderScoreTable() {
     return Expanded(
       child: Column(
         children: [
@@ -796,161 +819,141 @@ class PlayGameState extends State<PlayGameScreen> {
                               _scoreItemHeight = size.height;
                             });
                           },
-                          child: Dismissible(
-                            key: UniqueKey(),
-                            direction: DismissDirection.endToStart,
-                            background: Container(
-                              padding: EdgeInsets.only(right: 20.w),
-                              color: Colors.red,
-                              child: const Align(
-                                alignment: Alignment.centerRight,
-                                child: Text('Drop Out',
-                                    textAlign: TextAlign.right,
+                          child: Slidable(
+                            actionPane: const SlidableBehindActionPane(),
+                            actionExtentRatio: 0.125,
+                            key: Key(user.userId),
+                            secondaryActions: <Widget>[
+                              SlideAction(
+                                child: const Text('DROP OUT',
                                     style: TextStyle(color: Colors.white)),
+                                color: const Color(0xfff20500),
+                                onTap: () => _confirmDropOut(user.userId),
                               ),
+                            ],
+                            dismissal: SlidableDismissal(
+                              child: const SlidableDrawerDismissal(),
+                              onWillDismiss: (actionType) => _confirmDropOut(user.userId),
                             ),
-                            confirmDismiss: (direction) async {
-                              switch (await showDialog<bool>(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return SimpleDialog(
-                                    title:
-                                        const Text("Do you wish to drop out?"),
-                                    children: <Widget>[
-                                      SimpleDialogOption(
-                                        onPressed: () =>
-                                            Navigator.pop(context, true),
-                                        child: const Text("Drop out"),
-                                      ),
-                                      SimpleDialogOption(
-                                        onPressed: () =>
-                                            Navigator.pop(context, false),
-                                        child: const Text("Keep playing"),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              )) {
-                                case true:
-                                  return _dropOut(user.userId);
-                                case false:
-                                  return false;
-                              }
-                            },
-                            onDismissed: (direction) {
-                              _dropOut(user.userId);
-                            },
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  flex: 4,
-                                  child: Padding(
-                                    padding: EdgeInsets.all(5.r),
-                                    child: Text(
-                                      user.name,
-                                      style: TextStyle(
-                                        decoration:
-                                            user.userId == _currentUserId
-                                                ? TextDecoration.underline
-                                                : TextDecoration.none,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: math.max(18.sp, 12),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 1,
-                                  child: Center(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Theme
+                                      .of(context)
+                                      .primaryColor),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 4,
                                     child: Padding(
-                                      padding: EdgeInsets.all(2.r),
+                                      padding: EdgeInsets.all(5.r),
                                       child: Text(
-                                        _calculateScore(widget.game.turns.any(
-                                                    (turn) =>
-                                                        turn.userId ==
-                                                        user.userId)
-                                                ? [
-                                                    widget.game.turns.lastWhere(
-                                                        (turn) =>
-                                                            turn.userId ==
-                                                            user.userId)
-                                                  ]
-                                                : [])
-                                            .toString(),
+                                        user.name,
                                         style: TextStyle(
-                                          fontSize: math.max(18.sp, 12),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 1,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.all(2.r),
-                                      child: Text(
-                                        ((_calculateAverage(user.userId) * 100)
-                                                    .round() /
-                                                100)
-                                            .toString(),
-                                        style: TextStyle(
-                                          fontSize: math.max(18.sp, 12),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.all(2.r),
-                                      child: Text(
-                                        ((_calculateAverage(user.userId, true) *
-                                                        100)
-                                                    .round() /
-                                                100)
-                                            .toString(),
-                                        style: TextStyle(
-                                          fontSize: math.max(18.sp, 12),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 1,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.all(2.r),
-                                      child: Text(
-                                        (501 -
-                                                _calculateScore(widget
-                                                        .game.turns
-                                                        .any((turn) =>
-                                                            turn.userId ==
-                                                            user.userId)
-                                                    ? widget.game.turns
-                                                        .where((turn) =>
-                                                            turn.userId ==
-                                                            user.userId)
-                                                        .toList()
-                                                    : []) -
-                                                (user.userId == _currentUserId
-                                                    ? _calculateScore(
-                                                        [_currentTurn])
-                                                    : 0))
-                                            .toString(),
-                                        style: TextStyle(
+                                          decoration:
+                                          user.userId == _currentUserId
+                                              ? TextDecoration.underline
+                                              : TextDecoration.none,
                                           fontWeight: FontWeight.bold,
                                           fontSize: math.max(18.sp, 12),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                  Expanded(
+                                    flex: 1,
+                                    child: Center(
+                                      child: Padding(
+                                        padding: EdgeInsets.all(2.r),
+                                        child: Text(
+                                          _calculateScore(widget.game.turns.any(
+                                                  (turn) =>
+                                              turn.userId ==
+                                                  user.userId)
+                                              ? [
+                                            widget.game.turns
+                                                .lastWhere((turn) =>
+                                            turn.userId ==
+                                                user.userId)
+                                          ]
+                                              : [])
+                                              .toString(),
+                                          style: TextStyle(
+                                            fontSize: math.max(18.sp, 12),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Center(
+                                      child: Padding(
+                                        padding: EdgeInsets.all(2.r),
+                                        child: Text(
+                                          ((_calculateAverage(user.userId) *
+                                              100)
+                                              .round() /
+                                              100)
+                                              .toString(),
+                                          style: TextStyle(
+                                            fontSize: math.max(18.sp, 12),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Center(
+                                      child: Padding(
+                                        padding: EdgeInsets.all(2.r),
+                                        child: Text(
+                                          ((_calculateAverage(user.userId,
+                                              true) *
+                                              100)
+                                              .round() /
+                                              100)
+                                              .toString(),
+                                          style: TextStyle(
+                                            fontSize: math.max(18.sp, 12),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Center(
+                                      child: Padding(
+                                        padding: EdgeInsets.all(2.r),
+                                        child: Text(
+                                          (501 -
+                                              _calculateScore(widget
+                                                  .game.turns
+                                                  .any((turn) =>
+                                              turn.userId ==
+                                                  user.userId)
+                                                  ? widget.game.turns
+                                                  .where((turn) =>
+                                              turn.userId ==
+                                                  user.userId)
+                                                  .toList()
+                                                  : [],) -
+                                              (user.userId == _currentUserId
+                                                  ? _calculateScore(
+                                                  [_currentTurn])
+                                                  : 0))
+                                              .toString(),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: math.max(18.sp, 12),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -966,7 +969,7 @@ class PlayGameState extends State<PlayGameScreen> {
     );
   }
 
-  Widget _getButtonBar() {
+  Widget _renderButtonBar() {
     return ButtonBar(
       children: [
         IconButton(
@@ -977,7 +980,8 @@ class PlayGameState extends State<PlayGameScreen> {
             transform: Matrix4.rotationZ(-math.pi / 4),
             child: const Icon(Icons.replay_circle_filled),
           ),
-          onPressed: () => {
+          onPressed: () =>
+          {
             setState(() {
               _locked = false;
 
@@ -1004,7 +1008,7 @@ class PlayGameState extends State<PlayGameScreen> {
     );
   }
 
-  Widget _getConfettiWidget() {
+  Widget _renderConfettiWidget() {
     return Positioned(
       top: _touchOffset.dy - 15,
       left: _touchOffset.dx - 15,
@@ -1025,5 +1029,31 @@ class PlayGameState extends State<PlayGameScreen> {
         createParticlePath: _drawStar, // define a custom shape/path.
       ),
     );
+  }
+
+  Future<bool> _confirmDropOut(String userId) async {
+    switch (await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text("Do you wish to drop out?"),
+          children: <Widget>[
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text("Drop out"),
+            ),
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text("Keep playing"),
+            ),
+          ],
+        );
+      },
+    )) {
+      case true:
+        return _dropOut(userId);
+      default:
+        return false;
+    }
   }
 }

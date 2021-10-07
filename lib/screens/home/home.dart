@@ -127,104 +127,113 @@ class HomeState extends State<HomeScreen> {
         ],
       ),
       body: Center(
-        child: SingleChildScrollView(
-          child: DefaultTextStyle(
-            style: const TextStyle(color: Colors.white),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: EdgeInsets.fromLTRB(25.w, 25.h, 25.w, 75.h),
-                  child: ValueListenableBuilder(
-                      valueListenable: _authService.currentUserNotifier,
-                      builder: (BuildContext context, user_models.User? user,
-                          Widget? child) {
-                        if (user == null) return Container();
-                        return Text(
-                          'Hi ${user.name}',
-                          style: TextStyle(
-                            fontSize: 72.sp,
-                            fontWeight: FontWeight.w200,
-                          ),
-                        );
-                      }),
+        heightFactor: 1,
+        child: DefaultTextStyle(
+          style: const TextStyle(color: Colors.white),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: 125.r, bottom: .05.sh),
+                child: Hero(
+                  tag: 'logo',
+                  child: SvgPicture.asset(
+                    dartboardIcon,
+                    height: 200.h,
+                  ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              ),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Padding(
-                      padding: EdgeInsets.all(20.r),
-                      child: TextButton.icon(
-                        icon: Padding(
-                          padding: EdgeInsets.only(right: 20.w, bottom: 12.h),
-                          child: Icon(
-                            Icons.add,
-                            color: Colors.white,
-                            size: math.max(48.r, 24),
-                          ),
-                        ),
-                        label: Text(
-                          "NEW GAME",
-                          style: TextStyle(
-                            fontSize: math.max(48.sp, 24),
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        onPressed: () async {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) {
-                              return const NewGameScreen();
-                            }),
-                          );
-                        },
-                      ),
+                      padding: EdgeInsets.fromLTRB(25.w, 25.h, 25.w, 75.h),
+                      child: ValueListenableBuilder(
+                          valueListenable: _authService.currentUserNotifier,
+                          builder: (BuildContext context,
+                              user_models.User? user, Widget? child) {
+                            if (user == null) return Container();
+                            return Text(
+                              'Hi ${user.name}',
+                              style: TextStyle(
+                                fontSize: 72.sp,
+                                fontWeight: FontWeight.w200,
+                              ),
+                            );
+                          }),
                     ),
-                    Padding(
-                      padding: EdgeInsets.all(20.r),
-                      child: TextButton.icon(
-                        icon: Padding(
-                          padding: EdgeInsets.only(right: 20.w, bottom: 12.h),
-                          child: Icon(
-                            Icons.history,
-                            color: Colors.white,
-                            size: math.max(48.r, 24),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(20.r),
+                          child: TextButton.icon(
+                            icon: Padding(
+                              padding:
+                                  EdgeInsets.only(right: 20.w, bottom: 12.h),
+                              child: Icon(
+                                Icons.add,
+                                color: Colors.white,
+                                size: math.max(48.r, 24),
+                              ),
+                            ),
+                            label: Text(
+                              "NEW GAME",
+                              style: TextStyle(
+                                fontSize: math.max(48.sp, 24),
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            onPressed: () async {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) {
+                                  return const NewGameScreen();
+                                }),
+                              );
+                            },
                           ),
                         ),
-                        label: Text(
-                          "PLAYED GAMES",
-                          style: TextStyle(
-                            fontSize: math.max(48.sp, 24),
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
+                        Padding(
+                          padding: EdgeInsets.all(20.r),
+                          child: TextButton.icon(
+                            icon: Padding(
+                              padding:
+                                  EdgeInsets.only(right: 20.w, bottom: 12.h),
+                              child: Icon(
+                                Icons.history,
+                                color: Colors.white,
+                                size: math.max(48.r, 24),
+                              ),
+                            ),
+                            label: Text(
+                              "PLAYED GAMES",
+                              style: TextStyle(
+                                fontSize: math.max(48.sp, 24),
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            onPressed: () async {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) {
+                                  return const GamesScreen();
+                                }),
+                              );
+                            },
                           ),
                         ),
-                        onPressed: () async {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) {
-                              return const GamesScreen();
-                            }),
-                          );
-                        },
-                      ),
+                      ],
                     ),
                   ],
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: 125.r),
-                  child: Hero(
-                    tag: 'logo',
-                    child: SvgPicture.asset(
-                      dartboardIcon,
-                      height: 350.h,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
