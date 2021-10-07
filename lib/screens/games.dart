@@ -4,13 +4,10 @@ import 'dart:math' as math;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 
 import '/components/scrollable_list_view.dart';
-import '/models/dart_throw.dart';
-import '/models/game.dart';
-import '/models/turn.dart';
-import '/models/user.dart' as user_model;
 import '/services/auth_service.dart';
 import '/services/game_service.dart';
 import '/services/service_locator.dart';
@@ -116,9 +113,10 @@ class GamesState extends State<GamesScreen>
                               );
                             }
 
-                            if (snapshot.data == null) {
+                            if (snapshot.data == null ||
+                                snapshot.data!.docs.isEmpty) {
                               return Text(
-                                'No data',
+                                'No played games',
                                 style: TextStyle(
                                   fontSize: 24.sp,
                                   color: Colors.white,
@@ -132,24 +130,27 @@ class GamesState extends State<GamesScreen>
                                   Map<String, dynamic> data =
                                       document.data()! as Map<String, dynamic>;
 
-                                  return Dismissible(
-                                    key: UniqueKey(),
-                                    direction: DismissDirection.endToStart,
-                                    background: Container(
-                                      padding: EdgeInsets.only(right: 20.w),
-                                      color: Colors.red,
-                                      child: const Align(
-                                        alignment: Alignment.centerRight,
-                                        child: Text('Delete',
-                                            textAlign: TextAlign.right,
-                                            style:
-                                                TextStyle(color: Colors.white)),
+                                  return Slidable(
+                                    actionPane:
+                                        const SlidableBehindActionPane(),
+                                    actionExtentRatio: 0.25,
+                                    key: Key(document.id),
+                                    secondaryActions: <Widget>[
+                                      IconSlideAction(
+                                        caption: "DELETE",
+                                        icon: Icons.delete,
+                                        color: const Color(0xfff20500),
+                                        onTap: () async => await _gameService
+                                            .deleteGame(document.id),
                                       ),
+                                    ],
+                                    dismissal: SlidableDismissal(
+                                      child: const SlidableDrawerDismissal(),
+                                      onDismissed: (actionType) async {
+                                        await _gameService
+                                            .deleteGame(document.id);
+                                      },
                                     ),
-                                    onDismissed: (direction) async {
-                                      await _gameService
-                                          .deleteGame(document.id);
-                                    },
                                     child: InkWell(
                                       onTap: () async {
                                         var game = await _gameService
@@ -179,41 +180,46 @@ class GamesState extends State<GamesScreen>
                                           );
                                         }
                                       },
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: 40.h,
-                                        ),
-                                        child: ListTile(
-                                          leading: Padding(
-                                            padding:
-                                                EdgeInsets.only(right: 50.w),
-                                            child: data['finished'] == null
-                                                ? Icon(
-                                                    Icons.pause,
-                                                    size: math.max(50.r, 25),
-                                                    color: Colors.white,
-                                                  )
-                                                : Icon(
-                                                    Icons.done,
-                                                    size: math.max(50.r, 25),
-                                                    color: Colors.white,
-                                                  ),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color:
+                                                Theme.of(context).primaryColor),
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 20.h,
                                           ),
-                                          title: Text(
-                                            data['finished'] == null
-                                                ? 'Unfinished game'
-                                                : 'Finished game',
-                                            style: TextStyle(
-                                              fontSize: math.max(32.sp, 24),
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w900,
+                                          child: ListTile(
+                                            leading: Padding(
+                                              padding:
+                                                  EdgeInsets.only(right: 50.w),
+                                              child: data['finished'] == null
+                                                  ? Icon(
+                                                      Icons.pause,
+                                                      size: math.max(50.r, 25),
+                                                      color: Colors.white,
+                                                    )
+                                                  : Icon(
+                                                      Icons.done,
+                                                      size: math.max(50.r, 25),
+                                                      color: Colors.white,
+                                                    ),
                                             ),
-                                          ),
-                                          subtitle: Text(
-                                            'Started at ${DateFormat('dd-MM-yyyy – HH:mm').format((data['started'] as Timestamp).toDate())}',
-                                            style: TextStyle(
-                                              fontSize: math.max(18.sp, 14),
-                                              color: Colors.white,
+                                            title: Text(
+                                              data['finished'] == null
+                                                  ? 'Unfinished game'
+                                                  : 'Finished game',
+                                              style: TextStyle(
+                                                fontSize: math.max(32.sp, 24),
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w900,
+                                              ),
+                                            ),
+                                            subtitle: Text(
+                                              'Started at ${DateFormat('dd-MM-yyyy – HH:mm').format((data['started'] as Timestamp).toDate())}',
+                                              style: TextStyle(
+                                                fontSize: math.max(18.sp, 14),
+                                                color: Colors.white,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -247,41 +253,5 @@ class GamesState extends State<GamesScreen>
         ),
       ),
     );
-  }
-
-  Future<Game> _getGame(
-    Map<String, dynamic> data,
-    DocumentSnapshot<Object?> document,
-  ) async {
-    var id = document.id;
-    List<user_model.User> players = await Future.wait(
-        data['players'].map<Future<user_model.User>>((reference) async {
-      var user = await reference.get();
-      return user_model.User(reference.id, user['name'], user['email']);
-    }).toList());
-    var turns = data['turns']
-        .map<Turn>((turn) => Turn.initAll(
-              turn['userId'].id,
-              turn['throws']
-                  .map<DartThrow>(
-                    (dartThrow) => DartThrow(
-                        DartboardScoreType.values.firstWhere(
-                            (e) => e.toShortString() == dartThrow['type']),
-                        dartThrow['score']),
-                  )
-                  .toList(),
-              turn['isValid'],
-            ))
-        .toList();
-    DateTime? started;
-    if (data['finished'] != null) {
-      started = (data['started'] as Timestamp).toDate();
-    }
-    DateTime? finished;
-    if (data['finished'] != null) {
-      finished = (data['finished'] as Timestamp).toDate();
-    }
-
-    return Game.initAll(id, players, turns, started, finished);
   }
 }

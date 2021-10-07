@@ -25,7 +25,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   final _authService = locator<AuthService>();
-  final String dartboardIcon = 'assets/dartboard_white.svg';
+  final String dartboardIcon = 'assets/dartboard_white_loader.svg';
 
   StreamSubscription<User?>? _subscription;
 
@@ -75,21 +75,22 @@ class _SplashScreenState extends State<SplashScreen>
           scale: math.max(1.r, .5),
           child: Stack(
             children: [
+              const Padding(
+                padding: EdgeInsets.all(12.5),
+                child: SizedBox(
+                  width: 225,
+                  height: 225,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 15,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
               Hero(
                 tag: 'logo',
                 child: SvgPicture.asset(
                   dartboardIcon,
-                  height: 350,
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.all(48),
-                child: SizedBox(
-                  width: 250,
                   height: 250,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                  ),
                 ),
               ),
             ],

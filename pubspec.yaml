@@ -31,6 +31,7 @@ dependencies:
   badges: ^2.0.1
   flutter_svg: ^0.22.0
   flutter_screenutil: ^5.0.0+2
+  flutter_slidable: ^0.6.0
 
 dev_dependencies:
   flutter_test:
@@ -50,6 +51,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/dartboard_white.svg
+    - assets/dartboard_white_loader.svg
     - assets/dartboard.svg
     - assets/crown.svg
   fonts:
