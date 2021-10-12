@@ -1,0 +1,68 @@
+import React, {
+  createContext,
+  PropsWithChildren,
+  useEffect,
+  useState,
+} from 'react';
+import auth from '@react-native-firebase/auth';
+import { UserService } from '~/services/user_service';
+import { User } from '~/models/user';
+
+interface AuthContext {
+  user: any;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, name: string) => Promise<void>;
+  logout: () => Promise<void>;
+}
+
+// @ts-ignore Don't want to implement on creation as it is done below immediately
+export const AuthContext = createContext<AuthContext>({});
+export const AuthProvider: React.FC<PropsWithChildren<any>> = ({
+  children,
+}) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [initializing, setInitializing] = useState(true);
+
+  async function onAuthStateChanged(user: any) {
+    // Fetch user
+    if (user?.uid) {
+      setUser(await new UserService().getById(user.uid));
+    }
+    if (initializing) setInitializing(false);
+  }
+
+  useEffect(() => {
+    return auth().onAuthStateChanged(onAuthStateChanged); // unsubscribe on unmount
+  }, []);
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        login: async (email: string, password: string) => {
+          try {
+            await auth().signInWithEmailAndPassword(email, password);
+          } catch (e) {
+            console.log(e);
+          }
+        },
+        register: async (email: string, password: string) => {
+          try {
+            await auth().createUserWithEmailAndPassword(email, password);
+            await auth().signInWithEmailAndPassword(email, password);
+          } catch (e) {
+            console.log(e);
+          }
+        },
+        logout: async () => {
+          try {
+            await auth().signOut();
+          } catch (e) {
+            console.error(e);
+          }
+        },
+      }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};

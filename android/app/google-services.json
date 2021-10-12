@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1008094744313",
+    "project_id": "darts-counter-b73d6",
+    "storage_bucket": "darts-counter-b73d6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1008094744313:android:85082214de7a127d605c28",
+        "android_client_info": {
+          "package_name": "com.throwl"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1008094744313-im9vh5vuvmr1mho3jld374ec2j7fud80.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.throwl",
+            "certificate_hash": "bda9ecbc178d445237cbd1f65a3b6039519a4a7a"
+          }
+        },
+        {
+          "client_id": "1008094744313-i4bu578vuaf9f79ll44kfoqtp4pkrqnq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmAy0KPtqMCnz-s1O1rQNQ7INcinJte_M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1008094744313-i4bu578vuaf9f79ll44kfoqtp4pkrqnq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1008094744313-53lreuuqu17ltmhakkg9iplko1mcs00a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "nl.dartscounter"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
