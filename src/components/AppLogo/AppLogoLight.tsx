@@ -16,6 +16,8 @@ export const AppLogoLight = ({
         fillRule="evenodd"
         clipRule="evenodd"
         strokeLinejoin="round"
+        width="100%"
+        height="100%"
         strokeMiterlimit={2}>
         <G transform="matrix(1.04287,0,0,1.04338,-256.479,-264.827)">
           <G>

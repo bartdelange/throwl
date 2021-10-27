@@ -9,7 +9,8 @@ import { UserService } from '~/services/user_service';
 import { User } from '~/models/user';
 
 interface AuthContext {
-  user: any;
+  user?: User;
+  initializing: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -20,7 +21,7 @@ export const AuthContext = createContext<AuthContext>({});
 export const AuthProvider: React.FC<PropsWithChildren<any>> = ({
   children,
 }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User>();
   const [initializing, setInitializing] = useState(true);
 
   async function onAuthStateChanged(user: any) {
@@ -39,27 +40,23 @@ export const AuthProvider: React.FC<PropsWithChildren<any>> = ({
     <AuthContext.Provider
       value={{
         user,
+        initializing,
         login: async (email: string, password: string) => {
-          try {
-            await auth().signInWithEmailAndPassword(email, password);
-          } catch (e) {
-            console.log(e);
-          }
+          await auth().signInWithEmailAndPassword(email, password);
         },
-        register: async (email: string, password: string) => {
-          try {
-            await auth().createUserWithEmailAndPassword(email, password);
-            await auth().signInWithEmailAndPassword(email, password);
-          } catch (e) {
-            console.log(e);
-          }
+        register: async (email: string, password: string, name: string) => {
+          const userCredential = await auth().createUserWithEmailAndPassword(
+            email,
+            password
+          );
+          await auth().signInWithEmailAndPassword(email, password);
+          setUser(
+            await new UserService().create(userCredential.user.uid, email, name)
+          );
         },
         logout: async () => {
-          try {
-            await auth().signOut();
-          } catch (e) {
-            console.error(e);
-          }
+          await auth().signOut();
+          setUser(undefined);
         },
       }}>
       {children}
