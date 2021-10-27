@@ -19,6 +19,7 @@
 		8640FF471B044922943D5EBF /* Karbon-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = A7A1C3988BF34ABF9C22C755 /* Karbon-Semibold.otf */; };
 		D3B8B7F8C3C1402BB222D11D /* Karbon-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4ED90758260247F98CA6060B /* Karbon-Regular.otf */; };
 		EB19000C2715EF3F00B39D7E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = EB19000B2715EF3F00B39D7E /* GoogleService-Info.plist */; };
+		EB19000E27161D8800B39D7E /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = EB19000D27161D8800B39D7E /* Fonts */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 		C0A881CF5CF3F2B244570E2A /* Pods-throwl.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-throwl.debug.xcconfig"; path = "Target Support Files/Pods-throwl/Pods-throwl.debug.xcconfig"; sourceTree = "<group>"; };
 		D00AAFFCFCFDA5787532823F /* Pods-throwl.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-throwl.release.xcconfig"; path = "Target Support Files/Pods-throwl/Pods-throwl.release.xcconfig"; sourceTree = "<group>"; };
 		EB19000B2715EF3F00B39D7E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "throwl/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		EB19000D27161D8800B39D7E /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = "../node_modules/react-native-vector-icons/Fonts"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -96,6 +98,7 @@
 		13B07FAE1A68108700A75B9A /* throwl */ = {
 			isa = PBXGroup;
 			children = (
+				EB19000D27161D8800B39D7E /* Fonts */,
 				EB19000B2715EF3F00B39D7E /* GoogleService-Info.plist */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -273,6 +276,7 @@
 				D3B8B7F8C3C1402BB222D11D /* Karbon-Regular.otf in Resources */,
 				8640FF471B044922943D5EBF /* Karbon-Semibold.otf in Resources */,
 				EB19000C2715EF3F00B39D7E /* GoogleService-Info.plist in Resources */,
+				EB19000E27161D8800B39D7E /* Fonts in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -608,7 +612,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 ";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 i386";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -674,7 +678,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 ";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 i386";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
