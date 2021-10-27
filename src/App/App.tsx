@@ -1,36 +1,124 @@
 import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer } from '@react-navigation/native';
-
 import {
-  SPLASH_SCREEN,
-  HOME_SCREEN,
-  UNAUTHENTICATED_SCREEN,
-  RootStackParamList,
-} from '#/navigation';
-import { SplashScreen } from '~/screens/Splash/Splash';
-import { UnauthenticatedScreen } from '~/screens/Unauthenticated/Unauthenticated';
-import { HomeScreen } from '~/screens/Home/Home';
+  NavigationContainer,
+  DarkTheme as NavigationDarkTheme,
+} from '@react-navigation/native';
+import { Linking, Platform } from 'react-native';
+import {
+  configureFonts,
+  DarkTheme as PaperDarkTheme,
+  Provider as PaperProvider,
+} from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { AuthProvider } from '~/context/AuthContext';
+import { Router } from './Router';
+import { Preloader } from '~/components/Preloader/Preloader';
+import { View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+declare global {
+  namespace ReactNativePaper {
+    interface ThemeColors {
+      error: string;
+      success: string;
+      warning: string;
+    }
+  }
+}
 
+const fonts = {
+  regular: {
+    fontFamily: 'Karbon-Regular',
+    fontWeight: 'normal',
+  },
+  medium: {
+    fontFamily: 'Karbon-Medium',
+    fontWeight: 'normal',
+  },
+  light: {
+    fontFamily: 'Karbon-Regular',
+    fontWeight: '300',
+  },
+  thin: {
+    fontFamily: 'Karbon-Regular',
+    fontWeight: '100',
+  },
+};
+const fontConfig = {
+  web: fonts,
+  ios: fonts,
+  android: fonts,
+};
+const theme = {
+  ...NavigationDarkTheme,
+  ...PaperDarkTheme,
+  colors: {
+    ...NavigationDarkTheme.colors,
+    ...PaperDarkTheme.colors,
+    primary: '#02314e',
+    background: '#02314e',
+    card: '#02314e',
+    surface: '#02314e',
+    error: '#f20500',
+    success: '#008000',
+    warning: '#c0c000',
+  },
+  fonts: configureFonts(fontConfig as any),
+};
+
+const PERSISTENCE_KEY = 'NAVIGATION_STATE';
 export default function App() {
+  const [isReady, setIsReady] = React.useState(false);
+  const [initialState, setInitialState] = React.useState();
+
+  React.useEffect(() => {
+    const restoreState = async () => {
+      try {
+        const initialUrl = await Linking.getInitialURL();
+
+        if (Platform.OS !== 'web' && initialUrl == null) {
+          // Only restore state if there's no deep link and we're not on web
+          const savedStateString = await AsyncStorage.getItem(PERSISTENCE_KEY);
+          const state = savedStateString
+            ? JSON.parse(savedStateString)
+            : undefined;
+
+          if (state !== undefined) {
+            setInitialState(state);
+          }
+        }
+      } finally {
+        setIsReady(true);
+      }
+    };
+
+    if (!isReady) {
+      restoreState();
+    }
+  }, [isReady]);
+
+  if (!isReady) {
+    return null;
+  }
+
   return (
-    <NavigationContainer>
-      <AuthProvider>
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}>
-          <Stack.Screen name={SPLASH_SCREEN} component={SplashScreen} />
-          <Stack.Screen
-            name={UNAUTHENTICATED_SCREEN}
-            component={UnauthenticatedScreen}
-          />
-          <Stack.Screen name={HOME_SCREEN} component={HomeScreen} />
-        </Stack.Navigator>
-      </AuthProvider>
-    </NavigationContainer>
+    <SafeAreaProvider
+      style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      <NavigationContainer
+        theme={theme}
+        initialState={initialState}
+        onStateChange={state =>
+          AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state))
+        }>
+        <PaperProvider theme={theme}>
+          <AuthProvider>
+            <Preloader>
+              <Router />
+            </Preloader>
+          </AuthProvider>
+        </PaperProvider>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }

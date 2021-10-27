@@ -1,39 +1,31 @@
 import React from 'react';
-import { StyleSheet, View, TextInput } from 'react-native';
+import { StyleProp, TextInput, TextInputProps, View } from 'react-native';
+import { Text } from 'react-native-paper';
+import { makeStyles } from './styles';
 
-interface FormInputProps extends TextInput {
+interface FormInputProps extends TextInputProps {
+  style?: StyleProp<any>;
   label: string;
   value: string;
-  placeholder: string;
+  placeholder?: string;
 }
 
-export const FormInput: React.FC<FormInputProps> = ({
-  label,
-  value,
-  placeholder,
-  ...rest
-}) => {
-  return (
-    <View>
-      <TextInput
-        {...rest}
-        value={value}
-        style={styles.input}
-        numberOfLines={1}
-        placeholder={placeholder}
-        placeholderTextColor="#"
-      />
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
-  input: {
-    padding: 10,
-    marginTop: 5,
-    marginBottom: 10,
-    fontSize: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-  },
-});
+export const FormInput = React.forwardRef<TextInput, FormInputProps>(
+  ({ style, label, value, placeholder, ...rest }, ref) => {
+    const styles = makeStyles();
+    return (
+      <View style={[style, styles.wrapper]}>
+        <Text style={styles.text}>{label}</Text>
+        <TextInput
+          {...rest}
+          value={value}
+          style={styles.input}
+          numberOfLines={1}
+          placeholder={placeholder}
+          placeholderTextColor="#AFAFAF"
+          ref={ref}
+        />
+      </View>
+    );
+  }
+);

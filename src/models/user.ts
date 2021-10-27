@@ -1,12 +1,14 @@
 import { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
-import DocumentReference = FirebaseFirestoreTypes.DocumentReference;
+
+export interface Friend {
+  requester?: string;
+  confirmed: boolean;
+  user: Omit<User, 'friends'>;
+}
 
 export interface User {
+  id: string;
   email: string;
   name: string;
-  friends: {
-    requester: DocumentReference;
-    confirmed: boolean;
-    user: DocumentReference;
-  }[];
+  friends?: Friend[];
 }
