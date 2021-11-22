@@ -38,14 +38,11 @@ export const makeStyles = () => {
       borderTopEndRadius: 25,
       alignItems: 'center',
     },
-    scoreContainer: {
-      width: width * 0.8,
-      flex: 1,
-    },
     currentTurnScoreContainer: {
       flexDirection: 'row',
       alignItems: 'center',
       paddingVertical: height * 0.015,
+      width: width * 0.8,
     },
     currentTurnScoreActiveThrow: {},
     currentThrowContainer: {
@@ -75,6 +72,7 @@ export const makeStyles = () => {
     },
     scoreTable: {
       flex: 1,
+      width: '100%',
       backgroundColor: colors.primary,
     },
     scoreTableHead: {
@@ -82,21 +80,40 @@ export const makeStyles = () => {
       borderTopColor: 'white',
       borderBottomWidth: 1,
       borderBottomColor: 'white',
+      width: '90%',
+      alignSelf: 'center',
+      height: textSize * 1.25,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     scoreTableRow: {
       height: textSize * 1.25,
       alignItems: 'center',
+      position: 'relative',
+      paddingLeft: width * 0.05,
+      backgroundColor: colors.primary,
+    },
+    scoreTableCol: {
+      flexDirection: 'row',
     },
     scoreTableCell: {
       fontSize: textSize * 0.5,
       height: textSize * 0.5,
       lineHeight: textSize * 0.6,
+      flex: 1,
     },
     scoreTableBoldCell: {
       fontWeight: '700',
     },
     scoreTableCenterCell: {
       textAlign: 'center',
+    },
+    activeUserIconRow: {
+      height: 0,
+    },
+    activeUserIcon: {
+      position: 'absolute',
+      left: width * 0.02,
     },
   });
 };

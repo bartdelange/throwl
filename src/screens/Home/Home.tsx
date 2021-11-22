@@ -31,7 +31,7 @@ export const HomeScreen = () => {
           icon="plus"
           size={Math.min(width * 0.1, 100)}
           style={styles.buttons}
-          onPress={() => navigator.push(NEW_GAME_SCREEN)}
+          onPress={() => navigator.push(NEW_GAME_SCREEN, { selectedUsers: [] })}
         />
         <LogoButton
           label="PLAYED GAMES"

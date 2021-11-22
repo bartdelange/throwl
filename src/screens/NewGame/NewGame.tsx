@@ -1,16 +1,12 @@
 import React, { useCallback } from 'react';
-import { Dimensions, FlatList, StyleSheet, View } from 'react-native';
-import { Divider, IconButton, Menu, Text, useTheme } from 'react-native-paper';
+import { Dimensions, FlatList, View } from 'react-native';
+import { Divider, IconButton, Menu, Text } from 'react-native-paper';
 import { AuthContext } from '~/context/AuthContext';
 import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
 import { RouteProp, useNavigation } from '@react-navigation/core';
-import {
-  NativeStackNavigationProp,
-  NativeStackScreenProps,
-} from '@react-navigation/native-stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   HOME_SCREEN,
-  NEW_GAME_SCREEN,
   PLAY_GAME_SCREEN,
   RootStackParamList,
 } from '~/constants/navigation';
@@ -19,7 +15,7 @@ import { LogoButton } from '~/components/LogoButton/LogoButton';
 import { makeStyles } from './styles';
 import { useRoute } from '@react-navigation/native';
 
-export const NewGameScreen: React.FC<{}> = () => {
+export const NewGameScreen: React.FC = () => {
   const navigator =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'NEW_GAME'>>();
@@ -31,12 +27,10 @@ export const NewGameScreen: React.FC<{}> = () => {
   const setSelectedUsers = useCallback(
     (selectedUsers: string[] | ((current: string[]) => string[])) => {
       if (Array.isArray(selectedUsers)) {
-        navigator.setParams({ selectedUsers });
         _setSelectedUsers(selectedUsers);
       } else {
         _setSelectedUsers(current => {
           const newUsers = selectedUsers(current);
-          navigator.setParams({ selectedUsers: newUsers });
           return newUsers;
         });
       }
@@ -73,7 +67,10 @@ export const NewGameScreen: React.FC<{}> = () => {
     setSelectedUsers(newArray);
   };
 
-  const players = [user, ...(user.friends || []).map(friend => friend.user)];
+  const players = [
+    { ...user, friends: undefined },
+    ...(user.friends || []).map(friend => friend.user),
+  ];
 
   return (
     <FullScreenLayout style={styles.layout}>
@@ -136,11 +133,14 @@ export const NewGameScreen: React.FC<{}> = () => {
         <LogoButton
           label="GO"
           size={Math.max(50, Dimensions.get('window').width * 0.1)}
-          onPress={() =>
+          disabled={!selectedUsers.length}
+          onPress={() => {
+            navigator.setParams({ selectedUsers });
             navigator.push(PLAY_GAME_SCREEN, {
-              selectedUsers,
-            })
-          }
+              players: players.filter(p => selectedUsers.includes(p.id)),
+              startingScore: 501,
+            });
+          }}
         />
       </View>
     </FullScreenLayout>
