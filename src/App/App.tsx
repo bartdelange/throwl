@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-  NavigationContainer,
   DarkTheme as NavigationDarkTheme,
+  NavigationContainer,
 } from '@react-navigation/native';
 import { Linking, Platform } from 'react-native';
 import {
@@ -14,8 +14,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthProvider } from '~/context/AuthContext';
 import { Router } from './Router';
 import { Preloader } from '~/components/Preloader/Preloader';
-import { View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 declare global {
   namespace ReactNativePaper {
@@ -105,20 +105,24 @@ export default function App() {
   return (
     <SafeAreaProvider
       style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <NavigationContainer
-        theme={theme}
-        initialState={initialState}
-        onStateChange={state =>
-          AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state))
-        }>
-        <PaperProvider theme={theme}>
-          <AuthProvider>
-            <Preloader>
-              <Router />
-            </Preloader>
-          </AuthProvider>
-        </PaperProvider>
-      </NavigationContainer>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <NavigationContainer
+          theme={theme}
+          initialState={initialState}
+          onStateChange={state => {
+            if (JSON.stringify(state)) {
+              AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state));
+            }
+          }}>
+          <PaperProvider theme={theme}>
+            <AuthProvider>
+              <Preloader>
+                <Router />
+              </Preloader>
+            </AuthProvider>
+          </PaperProvider>
+        </NavigationContainer>
+      </GestureHandlerRootView>
     </SafeAreaProvider>
   );
 }

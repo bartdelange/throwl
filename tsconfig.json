@@ -19,8 +19,12 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "~/*": ["*"],
-      "#/*": ["constants/*"]
+      "~/*": [
+        "*"
+      ],
+      "#/*": [
+        "constants/*"
+      ]
     }
   },
   "exclude": [
@@ -28,5 +32,5 @@
     "babel.config.js",
     "metro.config.js",
     "jest.config.js"
-  ],
+  ]
 }

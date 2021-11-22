@@ -3,22 +3,21 @@ import {
   Pressable,
   PressableProps,
   StyleProp,
-  StyleSheet,
   View,
   ViewStyle,
 } from 'react-native';
-import { useTheme, Text } from 'react-native-paper';
+import { Text, useTheme } from 'react-native-paper';
 import { AppLogoDark, AppLogoLight } from '../AppLogo';
-import { SharedElement } from 'react-navigation-shared-element';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { makeStyles } from './styles';
 
-interface LogoButtonProps extends PressableProps {
+interface LogoButtonProps extends Pick<PressableProps, 'onPress'> {
   mode?: 'dark' | 'light';
   label: string;
   style?: StyleProp<ViewStyle>;
   size?: number;
   icon?: string;
+  disabled?: boolean;
 }
 
 export const LogoButton: React.FC<LogoButtonProps> = ({
@@ -27,18 +26,19 @@ export const LogoButton: React.FC<LogoButtonProps> = ({
   style,
   size = 50,
   icon,
-  ...rest
+  disabled,
+  onPress,
 }: LogoButtonProps) => {
   const theme = useTheme();
   const styles = makeStyles();
   return (
     <Pressable
-      {...rest}
+      onPress={disabled ? undefined : onPress}
       style={({ pressed }) => [
         style,
         styles.button,
         {
-          opacity: pressed ? 0.75 : 1,
+          opacity: disabled ? 0.5 : pressed ? 0.75 : 1,
         },
       ]}>
       <View style={styles.logo}>

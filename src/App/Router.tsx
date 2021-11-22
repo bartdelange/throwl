@@ -1,10 +1,10 @@
 import React from 'react';
 import {
   HOME_SCREEN,
-  UNAUTHENTICATED_SCREEN,
-  RootStackParamList,
   NEW_GAME_SCREEN,
   PLAY_GAME_SCREEN,
+  RootStackParamList,
+  UNAUTHENTICATED_SCREEN,
 } from '#/navigation';
 import { UnauthenticatedScreen } from '~/screens/Unauthenticated/Unauthenticated';
 import { HomeScreen } from '~/screens/Home/Home';

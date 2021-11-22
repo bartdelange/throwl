@@ -1,11 +1,60 @@
-import firestore, {
-  FirebaseFirestoreTypes,
-} from '@react-native-firebase/firestore';
-import { Service } from '~/services/service';
+import firestore from '@react-native-firebase/firestore';
 import { Friend, User } from '~/models/user';
 
-export class UserService implements Service<User> {
-  private async parseUser(id: string, user: any): Promise<User> {
+export class UserService {
+  public static listenToUserChanges(
+    uid: string,
+    onNext: (snapshot: User) => void,
+    onError?: (error: Error) => void,
+    onCompletion?: () => void
+  ) {
+    return firestore()
+      .collection('users')
+      .doc(uid)
+      .onSnapshot(
+        async data => {
+          const userData = (await data.data()) as Omit<User, 'id'>;
+          onNext(await this.parseUser(data.id, userData));
+        },
+        onError,
+        onCompletion
+      );
+  }
+
+  public static async create(
+    uid: string,
+    email: string,
+    name: string
+  ): Promise<User> {
+    await firestore().collection('users').doc(uid).set({
+      email,
+      name,
+      friends: [],
+    });
+    return await this.getById(uid);
+  }
+
+  public static async getById(uid: string): Promise<User> {
+    const userDoc = await firestore().collection('users').doc(uid).get();
+
+    return this.parseUser(uid, userDoc.data());
+  }
+
+  public static update(uid: string, set: any): Promise<User> {
+    console.log(set);
+    // TODO: Change user and all relations
+    return Promise.resolve(undefined) as unknown as Promise<User>;
+  }
+
+  public static delete(uid: string): Promise<User> {
+    return Promise.resolve(undefined) as unknown as Promise<User>;
+  }
+
+  static removeFriend(uid: string, friendId: string) {
+    return Promise.resolve(undefined) as unknown as Promise<User>;
+  }
+
+  private static async parseUser(id: string, user: any): Promise<User> {
     const parsedFriends: Friend[] = [];
     if (user.friends && Array.isArray(user.friends)) {
       for (const friend of user.friends) {
@@ -27,28 +76,5 @@ export class UserService implements Service<User> {
       name: user.name,
       friends: parsedFriends,
     };
-  }
-
-  public async create(uid: string, email: string, name: string): Promise<User> {
-    await firestore().collection('users').doc(uid).set({
-      email,
-      name,
-      friends: [],
-    });
-    return await this.getById(uid);
-  }
-
-  public async getById(uid: string): Promise<User> {
-    const userDoc = await firestore().collection('users').doc(uid).get();
-
-    return this.parseUser(uid, userDoc.data());
-  }
-
-  public update(uid: string, set: any): Promise<User> {
-    return Promise.resolve(undefined) as unknown as Promise<User>;
-  }
-
-  public delete(uid: string): Promise<User> {
-    return Promise.resolve(undefined) as unknown as Promise<User>;
   }
 }

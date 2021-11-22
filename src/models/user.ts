@@ -1,5 +1,3 @@
-import { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
-
 export interface Friend {
   requester?: string;
   confirmed: boolean;

@@ -1,12 +1,12 @@
-import React, { PropsWithChildren } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React from 'react';
+import { View } from 'react-native';
 import {
-  Portal,
-  Modal,
-  Surface,
-  useTheme,
-  Text,
   IconButton,
+  Modal,
+  Portal,
+  Surface,
+  Text,
+  useTheme,
 } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { makeStyles } from './styles';
@@ -14,23 +14,26 @@ import { makeStyles } from './styles';
 interface AppModalProps {
   visible: boolean;
   title: string;
-  titleIcon: string;
+  titleIcon?: string;
   titleColor?: string;
   subTitle?: string;
+  customContent?: React.ReactNode;
+  actions?: React.ReactNode;
   onDismiss?: () => void;
 }
 
-export const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
+export const AppModal: React.FC<AppModalProps> = ({
   visible,
   title,
   titleIcon,
   titleColor,
   subTitle,
+  customContent,
   onDismiss,
-  children,
-}: PropsWithChildren<AppModalProps>) => {
+  actions,
+}: AppModalProps) => {
   const { colors } = useTheme();
-  const styles = makeStyles(colors);
+  const styles = makeStyles();
 
   return (
     <Portal>
@@ -38,27 +41,36 @@ export const AppModal: React.FC<PropsWithChildren<AppModalProps>> = ({
         visible={visible}
         onDismiss={onDismiss}
         contentContainerStyle={styles.modalContainer}>
-        <Surface style={styles.surface}>
-          <IconButton
-            icon="close"
-            color={colors.primary}
-            style={styles.closeIcon}
-            onPress={onDismiss}
-          />
+        <Surface style={[styles.surface]}>
           <View style={styles.titleWrapper}>
-            <MaterialCommunityIcons
-              name={titleIcon}
-              style={[styles.icon, titleColor ? { color: titleColor } : {}]}
-            />
+            {titleIcon && (
+              <MaterialCommunityIcons
+                name={titleIcon}
+                style={[styles.icon, titleColor ? { color: titleColor } : {}]}
+              />
+            )}
             <Text
               style={[styles.title, titleColor ? { color: titleColor } : {}]}>
               {title}
             </Text>
           </View>
-          <View style={styles.subTitleWrapper}>
-            {subTitle && <Text style={styles.subTitle}>{subTitle}</Text>}
-          </View>
-          {children && <View style={styles.actionsWrapper}>{children}</View>}
+          {subTitle && (
+            <View style={styles.subTitleWrapper}>
+              <Text style={styles.subTitle}>{subTitle}</Text>
+            </View>
+          )}
+          {customContent && (
+            <View style={styles.customContentWrapper}>{customContent}</View>
+          )}
+          {actions && <View style={styles.actionsWrapper}>{actions}</View>}
+          {onDismiss && (
+            <IconButton
+              icon="close"
+              color={colors.primary}
+              style={styles.closeIcon}
+              onPress={onDismiss}
+            />
+          )}
         </Surface>
       </Modal>
     </Portal>

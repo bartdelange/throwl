@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, View, Animated } from 'react-native';
+import { Animated, Dimensions, View } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { SignUpTab } from './tabs/SignUp';
 import { SignInTab } from '~/screens/Unauthenticated/tabs/SignIn';

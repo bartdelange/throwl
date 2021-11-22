@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Dimensions, StyleSheet, View, TextInput } from 'react-native';
+import { Dimensions, StyleSheet, TextInput, View } from 'react-native';
 import { FormInput } from '../components/FormInput/FormInput';
 import { LogoButton } from '~/components/LogoButton/LogoButton';
 import { AppModal } from '~/components/AppModal/AppModal';
