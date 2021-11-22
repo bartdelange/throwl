@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 export const makeStyles = () => {
@@ -12,11 +12,13 @@ export const makeStyles = () => {
     surface: {
       backgroundColor: 'white',
       padding: 20,
-      maxWidth: 500,
-      width: '90%',
-      minHeight: 100,
-      maxHeight: '90%',
+      alignContent: 'center',
       alignItems: 'center',
+      minWidth: Dimensions.get('window').width * 0.5,
+      width: 500,
+      maxWidth: '90%',
+      minHeight: 200,
+      maxHeight: '75%',
       elevation: 4,
       borderRadius: 10,
     },
@@ -26,6 +28,7 @@ export const makeStyles = () => {
       right: 5,
       width: 50,
       height: 50,
+      backgroundColor: 'white',
     },
     titleWrapper: {
       flexDirection: 'row',
@@ -48,7 +51,6 @@ export const makeStyles = () => {
     },
     subTitleWrapper: {
       justifyContent: 'center',
-      flexGrow: 1,
       marginVertical: 10,
       paddingBottom: 10,
     },
@@ -58,9 +60,17 @@ export const makeStyles = () => {
       color: colors.primary,
       textAlign: 'center',
     },
+    customContentWrapper: {
+      justifyContent: 'center',
+      alignContent: 'center',
+      alignItems: 'stretch',
+      alignSelf: 'stretch',
+      maxHeight: '90%',
+      flexGrow: 1,
+    },
     actionsWrapper: {
       justifyContent: 'center',
-      flexGrow: 1,
+      alignItems: 'center',
       marginVertical: 10,
       paddingBottom: 10,
     },

@@ -1,12 +1,6 @@
 import React, { PropsWithChildren } from 'react';
-import {
-  SafeAreaView,
-  StatusBar,
-  StyleProp,
-  StyleSheet,
-  View,
-} from 'react-native';
-import { Surface, useTheme } from 'react-native-paper';
+import { SafeAreaView, StatusBar, StyleProp, View } from 'react-native';
+import { useTheme } from 'react-native-paper';
 import { makeStyles } from './styles';
 
 interface FullScreenLayoutProps {

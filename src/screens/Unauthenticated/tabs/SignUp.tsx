@@ -1,8 +1,7 @@
 import { useNavigation } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
-import { TextInput } from 'react-native';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, TextInput, View } from 'react-native';
 import { ActivityIndicator, Portal, Text, useTheme } from 'react-native-paper';
 import { AppModal } from '~/components/AppModal/AppModal';
 import { LogoButton } from '~/components/LogoButton/LogoButton';
@@ -88,9 +87,11 @@ export const SignUpTab = () => {
         subTitle={error}
         onDismiss={() => {
           setModalOpen(false);
-        }}>
-        {subError && <Text style={styles.subError}>{subError}</Text>}
-      </AppModal>
+        }}
+        customContent={
+          subError && <Text style={styles.subError}>{subError}</Text>
+        }
+      />
       <View style={styles.content}>
         <Text style={styles.heading}>SIGN UP</Text>
         <FormInput

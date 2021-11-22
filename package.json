@@ -23,6 +23,7 @@
     "react-native-bouncy-checkbox": "^2.1.7",
     "react-native-easy-grid": "^0.2.2",
     "react-native-gesture-handler": "^1.10.3",
+    "react-native-interactable": "^2.0.1",
     "react-native-keyboard-aware-scroll-view": "APSL/react-native-keyboard-aware-scroll-view#pull/501/head",
     "react-native-pager-view": "^5.4.7",
     "react-native-paper": "^4.9.2",

@@ -25,12 +25,19 @@ export const AuthProvider: React.FC<PropsWithChildren<any>> = ({
   const [initializing, setInitializing] = useState(true);
 
   async function onAuthStateChanged(user: any) {
-    // Fetch user
     if (user?.uid) {
-      setUser(await new UserService().getById(user.uid));
+      setUser(await UserService.getById(user.uid));
     }
     if (initializing) setInitializing(false);
   }
+
+  useEffect(() => {
+    if (user) {
+      return UserService.listenToUserChanges(user.id, data => {
+        if (JSON.stringify(user) !== JSON.stringify(data)) setUser(data);
+      });
+    }
+  }, [user]);
 
   useEffect(() => {
     return auth().onAuthStateChanged(onAuthStateChanged); // unsubscribe on unmount
@@ -51,7 +58,7 @@ export const AuthProvider: React.FC<PropsWithChildren<any>> = ({
           );
           await auth().signInWithEmailAndPassword(email, password);
           setUser(
-            await new UserService().create(userCredential.user.uid, email, name)
+            await UserService.create(userCredential.user.uid, email, name)
           );
         },
         logout: async () => {

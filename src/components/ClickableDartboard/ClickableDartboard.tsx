@@ -1,34 +1,23 @@
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
-import { PanResponder, View } from 'react-native';
-import { Animated } from 'react-native';
+import { Animated, PanResponder } from 'react-native';
 
 import { parts } from './constants/parts';
 import { numberParts } from './constants/numbers';
 import { useTheme } from 'react-native-paper';
+import { Throw } from '~/models/throw';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-export type DartboardScoreType =
-  | 'single'
-  | 'double'
-  | 'triple'
-  | 'bull'
-  | 'out';
-
-export interface ClickablePart {
-  score: number;
-  type: DartboardScoreType;
+export interface ClickablePart extends Throw {
   svgPath: string;
   color: string;
 }
 
 interface ClickableDartboardProps {
-  onClick?: (
-    part: Pick<ClickablePart, 'type' | 'score'>,
-    pagePos: { x: number; y: number }
-  ) => void;
+  onClick?: (score: Throw, pagePos: { x: number; y: number }) => void;
 }
+
 export const ClickableDartboard: React.FC<ClickableDartboardProps> = ({
   onClick,
 }) => {

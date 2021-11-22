@@ -1,8 +1,19 @@
 import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 import React from 'react';
-import { Appbar, Menu, useTheme } from 'react-native-paper';
+import {
+  Appbar,
+  Divider,
+  Menu,
+  Portal,
+  Text,
+  useTheme,
+} from 'react-native-paper';
 import { UNAUTHENTICATED_SCREEN } from '~/constants/navigation';
 import { AuthContext } from '~/context/AuthContext';
+import { AppModal } from '~/components/AppModal/AppModal';
+import { Dimensions, FlatList, View } from 'react-native';
+import { Swipeable } from '~/components/Swipeable/Swipeable';
+import { UserService } from '~/services/user_service';
 
 interface AppBarProps extends NativeStackHeaderProps {}
 
@@ -10,6 +21,8 @@ export const AppBar: React.FC<AppBarProps> = ({
   navigation,
   back,
 }: AppBarProps) => {
+  const { user } = React.useContext(AuthContext);
+  const [friendsOpen, setFriendsOpen] = React.useState(false);
   const [visible, setVisible] = React.useState(false);
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
@@ -18,6 +31,53 @@ export const AppBar: React.FC<AppBarProps> = ({
 
   return (
     <Appbar.Header style={{ backgroundColor: colors.background }}>
+      <Portal>
+        <AppModal
+          titleIcon="account-group"
+          visible={friendsOpen}
+          title="Friends"
+          onDismiss={() => setFriendsOpen(false)}
+          customContent={
+            <FlatList
+              style={{
+                flexGrow: 0,
+                maxHeight: Dimensions.get('window').height * 0.75,
+              }}
+              ItemSeparatorComponent={() => (
+                <Divider style={{ backgroundColor: colors.primary }} />
+              )}
+              data={user?.friends}
+              renderItem={({ item: friend }) => (
+                <Swipeable
+                  key={friend.user.id}
+                  rightActions={[
+                    {
+                      icon: 'delete',
+                      onPress: () =>
+                        user &&
+                        UserService.removeFriend(user.id, friend.user.id),
+                    },
+                  ]}>
+                  <View
+                    style={{
+                      flex: 1,
+                      paddingVertical: 10,
+                      backgroundColor: 'white',
+                    }}>
+                    <Text
+                      style={{
+                        color: colors.primary,
+                        fontSize: 48,
+                      }}>
+                      {friend.user.name}
+                    </Text>
+                  </View>
+                </Swipeable>
+              )}
+            />
+          }
+        />
+      </Portal>
       {back ? (
         <Appbar.BackAction color="white" onPress={navigation.goBack} />
       ) : null}
@@ -32,7 +92,8 @@ export const AppBar: React.FC<AppBarProps> = ({
           <Menu.Item
             icon="account-multiple"
             onPress={() => {
-              console.log('Option 2 was pressed');
+              closeMenu();
+              setFriendsOpen(true);
             }}
             title="FRIENDS"
           />
