@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Dimensions, ScrollView, View } from 'react-native';
 import {
   IconButton,
   Modal,
@@ -41,7 +41,7 @@ export const AppModal: React.FC<AppModalProps> = ({
         visible={visible}
         onDismiss={onDismiss}
         contentContainerStyle={styles.modalContainer}>
-        <Surface style={[styles.surface]}>
+        <Surface style={styles.surface}>
           <View style={styles.titleWrapper}>
             {titleIcon && (
               <MaterialCommunityIcons
@@ -59,9 +59,17 @@ export const AppModal: React.FC<AppModalProps> = ({
               <Text style={styles.subTitle}>{subTitle}</Text>
             </View>
           )}
-          {customContent && (
-            <View style={styles.customContentWrapper}>{customContent}</View>
-          )}
+          <ScrollView
+            alwaysBounceVertical={false}
+            nestedScrollEnabled
+            style={{
+              maxHeight: Dimensions.get('window').height * 0.5,
+              paddingHorizontal: 10,
+            }}>
+            {customContent && (
+              <View style={styles.customContentWrapper}>{customContent}</View>
+            )}
+          </ScrollView>
           {actions && <View style={styles.actionsWrapper}>{actions}</View>}
           {onDismiss && (
             <IconButton

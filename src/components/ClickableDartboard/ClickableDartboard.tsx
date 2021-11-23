@@ -7,8 +7,6 @@ import { numberParts } from './constants/numbers';
 import { useTheme } from 'react-native-paper';
 import { Throw } from '~/models/throw';
 
-const AnimatedPath = Animated.createAnimatedComponent(Path);
-
 export interface ClickablePart extends Throw {
   svgPath: string;
   color: string;

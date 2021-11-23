@@ -12,24 +12,26 @@ import { Col, Grid, Row } from 'react-native-easy-grid';
 import { ClickableDartboard } from '~/components/ClickableDartboard/ClickableDartboard';
 import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { RootStackParamList } from '#/navigation';
 import { RouteProp } from '@react-navigation/native';
 import { makeStyles } from './styles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppLogoArrowLight } from '~/components/AppLogo';
-import { Throw } from '~/models/throw';
+import { DartboardScoreType, Throw } from '~/models/throw';
 import { Turn } from '~/models/turn';
 import { User } from '~/models/user';
 import { ScoreHelper } from '~/lib/score_helper';
 import { AppModal } from '~/components/AppModal/AppModal';
 import { Swipeable } from '~/components/Swipeable/Swipeable';
+import { GameService } from '~/services/game_service';
 
 export const PlayGameScreen: React.FC<any> = () => {
   const navigator =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'PLAY_GAME'>>();
 
+  const [gameId, setGameId] = React.useState<string>();
   const [gameFinished, setGameFinished] = React.useState<boolean>(false);
   const [droppingOutUserIndex, setDroppingOutUserIndex] =
     React.useState<number>();
@@ -46,6 +48,10 @@ export const PlayGameScreen: React.FC<any> = () => {
   const iconSize = Math.max(width * 0.04, 24);
   const scoreTableRef = React.createRef<FlatList>();
 
+  useEffect(() => {
+    // TODO: Init existing game if passed in route arguments
+  }, []);
+
   const rotateUsers = (reverse: boolean = false): number => {
     let nextUserIndex = activeUserIndex + (reverse ? -1 : 1);
     if (nextUserIndex >= route.params.players.length) nextUserIndex = 0;
@@ -59,19 +65,22 @@ export const PlayGameScreen: React.FC<any> = () => {
     return nextUserIndex;
   };
 
-  const finishTurn = (turn: Turn) => {
-    // Set game turns
-    setTurns([...turns, turn]);
-    // Push next user
+  const finishTurn = async (turn: Turn) => {
+    const newTurns = [...turns, turn];
+    setTurns(newTurns);
     const nextUserIndex = rotateUsers();
     setCurrentTurn({
       userId: route.params.players[nextUserIndex].id,
       throws: [],
     });
+    await persist(newTurns);
   };
 
-  const finishGame = () => {
+  const finishGame = async (turn: Turn, position: { x: number; y: number }) => {
+    // TODO: Confetti
+    const newTurns = [...turns, turn];
     setGameFinished(true);
+    await persist(newTurns, true);
   };
 
   const updateScoreOnThrow = (
@@ -94,10 +103,10 @@ export const PlayGameScreen: React.FC<any> = () => {
     );
     setCurrentTurn(newTurn);
     if (userScore === route.params.startingScore && newTurn.isValid) {
-      return finishGame();
+      return finishGame(newTurn, position);
     }
     if (newTurn.throws.length === 3 || !newTurn.isValid) {
-      finishTurn(newTurn);
+      return finishTurn(newTurn);
     }
   };
 
@@ -114,6 +123,7 @@ export const PlayGameScreen: React.FC<any> = () => {
     newTurn.throws.pop();
     setCurrentTurn(newTurn);
     setGameFinished(false);
+    return persist(newTurns, true);
   };
 
   const dropOutUser = (userId: string) => {
@@ -124,7 +134,8 @@ export const PlayGameScreen: React.FC<any> = () => {
     const oldUserIndex = route.params.players.findIndex(u => u.id === userId);
     const newUserIndex =
       oldUserIndex === route.params.players.length - 1 ? 0 : oldUserIndex;
-    setTurns(turns.filter(t => t.userId !== userId));
+    const newTurns = turns.filter(t => t.userId !== userId);
+    setTurns(newTurns);
     navigator.setParams({
       ...route.params,
       players: route.params.players.filter(u => u.id !== userId),
@@ -137,6 +148,25 @@ export const PlayGameScreen: React.FC<any> = () => {
       });
     }
     setDroppingOutUserIndex(undefined);
+    return persist(newTurns, true);
+  };
+
+  const persist = async (turns: Turn[], finished: boolean = false) => {
+    if (!gameId) {
+      const savedGamed = await GameService.create(
+        route.params.players,
+        turns,
+        new Date()
+      );
+      setGameId(savedGamed.id);
+    } else {
+      await GameService.update(
+        gameId,
+        route.params.players,
+        turns,
+        finished ? new Date() : undefined
+      );
+    }
   };
 
   return (
@@ -146,7 +176,7 @@ export const PlayGameScreen: React.FC<any> = () => {
           onPress={evt =>
             updateScoreOnThrow(
               {
-                type: 'out',
+                type: DartboardScoreType.Out,
                 score: 0,
               },
               { x: evt.nativeEvent.pageX, y: evt.nativeEvent.pageY }
@@ -315,76 +345,72 @@ export const PlayGameScreen: React.FC<any> = () => {
           </Grid>
         </SafeAreaView>
       </View>
-      <Portal>
-        <AppModal
-          title="WINNER"
-          titleIcon="crown"
-          subTitle={route.params.players[activeUserIndex].name}
-          visible={gameFinished}
-          actions={
-            <View style={{ flexDirection: 'row' }}>
-              <IconButton
-                icon="logout-variant"
-                size={iconSize * 1.5}
-                color={colors.primary}
-                onPress={navigator.popToTop}
-              />
-              <IconButton
-                icon="chart-line"
-                size={iconSize * 1.5}
-                color={colors.success}
-                onPress={() => null}
-              />
-              <IconButton
-                icon="restore"
-                size={iconSize * 1.5}
-                color={colors.error}
-                onPress={undoThrow}
-                style={[
-                  styles.undoButton,
-                  {
-                    backgroundColor: 'transparent',
-                  },
-                ]}
-              />
-            </View>
-          }
-        />
-      </Portal>
-      <Portal>
-        <AppModal
-          title="ARE YOU SURE?"
-          titleColor={colors.primary}
-          subTitle={`Are you sure you wish to drop out${
-            droppingOutUserIndex != null
-              ? ` ${
-                  route.params.players[droppingOutUserIndex].name.split(' ')[0]
-                }`
-              : ''
-          }?`}
-          visible={droppingOutUserIndex != null}
-          actions={
-            <View style={{ flexDirection: 'row' }}>
-              <IconButton
-                icon="check"
-                size={iconSize * 1.5}
-                color={colors.error}
-                onPress={() =>
-                  droppingOutUserIndex != null
-                    ? dropOutUser(route.params.players[droppingOutUserIndex].id)
-                    : null
-                }
-              />
-              <IconButton
-                icon="close"
-                size={iconSize * 1.5}
-                color={colors.success}
-                onPress={() => setDroppingOutUserIndex(undefined)}
-              />
-            </View>
-          }
-        />
-      </Portal>
+      <AppModal
+        title="WINNER"
+        titleIcon="crown"
+        subTitle={route.params.players[activeUserIndex].name}
+        visible={gameFinished}
+        actions={
+          <View style={{ flexDirection: 'row' }}>
+            <IconButton
+              icon="logout-variant"
+              size={iconSize * 1.5}
+              color={colors.primary}
+              onPress={navigator.popToTop}
+            />
+            <IconButton
+              icon="chart-line"
+              size={iconSize * 1.5}
+              color={colors.success}
+              onPress={() => null}
+            />
+            <IconButton
+              icon="restore"
+              size={iconSize * 1.5}
+              color={colors.error}
+              onPress={undoThrow}
+              style={[
+                styles.undoButton,
+                {
+                  backgroundColor: 'transparent',
+                },
+              ]}
+            />
+          </View>
+        }
+      />
+      <AppModal
+        title="ARE YOU SURE?"
+        titleColor={colors.primary}
+        subTitle={`Are you sure you wish to drop out${
+          droppingOutUserIndex != null
+            ? ` ${
+                route.params.players[droppingOutUserIndex].name.split(' ')[0]
+              }`
+            : ''
+        }?`}
+        visible={droppingOutUserIndex != null}
+        actions={
+          <View style={{ flexDirection: 'row' }}>
+            <IconButton
+              icon="check"
+              size={iconSize * 1.5}
+              color={colors.error}
+              onPress={() =>
+                droppingOutUserIndex != null
+                  ? dropOutUser(route.params.players[droppingOutUserIndex].id)
+                  : null
+              }
+            />
+            <IconButton
+              icon="close"
+              size={iconSize * 1.5}
+              color={colors.success}
+              onPress={() => setDroppingOutUserIndex(undefined)}
+            />
+          </View>
+        }
+      />
       <View style={[styles.backButton, { top: insets.top }]}>
         <Appbar.BackAction color={colors.primary} onPress={navigator.goBack} />
       </View>
