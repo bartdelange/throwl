@@ -17,10 +17,9 @@ export const makeStyles = () => {
       minWidth: Dimensions.get('window').width * 0.5,
       width: 500,
       maxWidth: '90%',
-      minHeight: 200,
-      maxHeight: '75%',
       elevation: 4,
       borderRadius: 10,
+      borderWidth: 1,
     },
     closeIcon: {
       position: 'absolute',
@@ -65,14 +64,14 @@ export const makeStyles = () => {
       alignContent: 'center',
       alignItems: 'stretch',
       alignSelf: 'stretch',
-      maxHeight: '90%',
       flexGrow: 1,
     },
     actionsWrapper: {
       justifyContent: 'center',
-      alignItems: 'center',
-      marginVertical: 10,
-      paddingBottom: 10,
+      alignContent: 'center',
+      alignItems: 'stretch',
+      alignSelf: 'stretch',
+      flexGrow: 1,
     },
   });
 };

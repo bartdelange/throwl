@@ -11,7 +11,7 @@ import {
 import { UNAUTHENTICATED_SCREEN } from '~/constants/navigation';
 import { AuthContext } from '~/context/AuthContext';
 import { AppModal } from '~/components/AppModal/AppModal';
-import { Dimensions, FlatList, View } from 'react-native';
+import { Dimensions, SectionList, View } from 'react-native';
 import { Swipeable } from '~/components/Swipeable/Swipeable';
 import { UserService } from '~/services/user_service';
 
@@ -31,53 +31,49 @@ export const AppBar: React.FC<AppBarProps> = ({
 
   return (
     <Appbar.Header style={{ backgroundColor: colors.background }}>
-      <Portal>
-        <AppModal
-          titleIcon="account-group"
-          visible={friendsOpen}
-          title="Friends"
-          onDismiss={() => setFriendsOpen(false)}
-          customContent={
-            <FlatList
-              style={{
-                flexGrow: 0,
-                maxHeight: Dimensions.get('window').height * 0.75,
-              }}
-              ItemSeparatorComponent={() => (
-                <Divider style={{ backgroundColor: colors.primary }} />
-              )}
-              data={user?.friends}
-              renderItem={({ item: friend }) => (
-                <Swipeable
-                  key={friend.user.id}
-                  rightActions={[
-                    {
-                      icon: 'delete',
-                      onPress: () =>
-                        user &&
-                        UserService.removeFriend(user.id, friend.user.id),
-                    },
-                  ]}>
-                  <View
+      <AppModal
+        titleIcon="account-group"
+        visible={friendsOpen}
+        title="Friends"
+        onDismiss={() => setFriendsOpen(false)}
+        customContent={
+          <SectionList
+            scrollEnabled={false}
+            style={{
+              flexGrow: 0,
+              maxHeight: Dimensions.get('window').height * 0.75,
+            }}
+            sections={[{ data: user?.friends || [] }]}
+            renderItem={({ item: friend }) => (
+              <Swipeable
+                key={friend.user.id}
+                rightActions={[
+                  {
+                    icon: 'delete',
+                    onPress: () =>
+                      user && UserService.removeFriend(user.id, friend.user.id),
+                  },
+                ]}>
+                <View
+                  style={{
+                    flex: 1,
+                    paddingHorizontal: 20,
+                    paddingVertical: 10,
+                    backgroundColor: 'white',
+                  }}>
+                  <Text
                     style={{
-                      flex: 1,
-                      paddingVertical: 10,
-                      backgroundColor: 'white',
+                      color: colors.primary,
+                      fontSize: 48,
                     }}>
-                    <Text
-                      style={{
-                        color: colors.primary,
-                        fontSize: 48,
-                      }}>
-                      {friend.user.name}
-                    </Text>
-                  </View>
-                </Swipeable>
-              )}
-            />
-          }
-        />
-      </Portal>
+                    {friend.user.name}
+                  </Text>
+                </View>
+              </Swipeable>
+            )}
+          />
+        }
+      />
       {back ? (
         <Appbar.BackAction color="white" onPress={navigation.goBack} />
       ) : null}
