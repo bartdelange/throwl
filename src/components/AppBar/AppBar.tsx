@@ -1,17 +1,10 @@
 import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 import React from 'react';
-import {
-  Appbar,
-  Divider,
-  Menu,
-  Portal,
-  Text,
-  useTheme,
-} from 'react-native-paper';
+import { Appbar, Menu, Text, useTheme } from 'react-native-paper';
 import { UNAUTHENTICATED_SCREEN } from '~/constants/navigation';
 import { AuthContext } from '~/context/AuthContext';
 import { AppModal } from '~/components/AppModal/AppModal';
-import { Dimensions, SectionList, View } from 'react-native';
+import { Dimensions, View } from 'react-native';
 import { Swipeable } from '~/components/Swipeable/Swipeable';
 import { UserService } from '~/services/user_service';
 
@@ -37,16 +30,11 @@ export const AppBar: React.FC<AppBarProps> = ({
         title="Friends"
         onDismiss={() => setFriendsOpen(false)}
         customContent={
-          <SectionList
-            scrollEnabled={false}
-            style={{
-              flexGrow: 0,
-              maxHeight: Dimensions.get('window').height * 0.75,
-            }}
-            sections={[{ data: user?.friends || [] }]}
-            renderItem={({ item: friend }) => (
+          <View>
+            {(user?.friends || []).map((friend, i) => (
               <Swipeable
                 key={friend.user.id}
+                bounce={i == 0}
                 rightActions={[
                   {
                     icon: 'delete',
@@ -60,18 +48,22 @@ export const AppBar: React.FC<AppBarProps> = ({
                     paddingHorizontal: 20,
                     paddingVertical: 10,
                     backgroundColor: 'white',
+                    width: '100%',
                   }}>
                   <Text
                     style={{
                       color: colors.primary,
-                      fontSize: 48,
+                      fontSize: Math.min(
+                        48,
+                        Dimensions.get('window').width * 0.09
+                      ),
                     }}>
                     {friend.user.name}
                   </Text>
                 </View>
               </Swipeable>
-            )}
-          />
+            ))}
+          </View>
         }
       />
       {back ? (

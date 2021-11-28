@@ -65,6 +65,7 @@ export const makeStyles = () => {
       alignItems: 'stretch',
       alignSelf: 'stretch',
       flexGrow: 1,
+      width: '100%',
     },
     actionsWrapper: {
       justifyContent: 'center',
