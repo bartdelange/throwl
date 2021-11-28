@@ -13,11 +13,13 @@ export interface SwipeableProps {
     iconColor?: string;
     onPress?: (pointerInside: boolean) => void;
   }[];
+  bounce?: boolean;
 }
 
 export const Swipeable: React.FC<React.PropsWithChildren<SwipeableProps>> = ({
   children,
   rightActions = [],
+  bounce,
 }) => {
   const renderRightActions = (
     _progress: Animated.AnimatedInterpolation,
@@ -68,6 +70,17 @@ export const Swipeable: React.FC<React.PropsWithChildren<SwipeableProps>> = ({
       width: rightActions.length * 60,
       height: '100%',
     },
+  });
+
+  React.useEffect(() => {
+    if (bounce) {
+      setTimeout(() => {
+        swipeableRow.current?.openRight();
+        setTimeout(() => {
+          swipeableRow.current?.close();
+        }, 1500);
+      }, 500);
+    }
   });
 
   return (
