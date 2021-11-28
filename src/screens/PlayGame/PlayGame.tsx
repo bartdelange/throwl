@@ -277,6 +277,7 @@ export const PlayGameScreen: React.FC<any> = () => {
                 );
                 return (
                   <Swipeable
+                    bounce={index === 0}
                     key={user.id}
                     rightActions={[
                       {
