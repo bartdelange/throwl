@@ -1,4 +1,5 @@
 import { User } from '~/models/user';
+import { Game } from '~/models/game';
 
 export const SPLASH_SCREEN = 'SPLASH';
 export const HOME_SCREEN = 'HOME';
@@ -10,11 +11,12 @@ export type RootStackParamList = {
   [SPLASH_SCREEN]: undefined;
   [HOME_SCREEN]: undefined;
   [NEW_GAME_SCREEN]: {
-    selectedUsers: string[];
+    selectedUsers?: string[];
   };
   [PLAY_GAME_SCREEN]: {
     players: Omit<User, 'friends'>[];
     startingScore: number;
+    activeGame?: Game;
   };
   [UNAUTHENTICATED_SCREEN]: undefined;
 };
