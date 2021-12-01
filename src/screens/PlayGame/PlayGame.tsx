@@ -1,4 +1,4 @@
-import { Appbar, IconButton, Portal, Text, useTheme } from 'react-native-paper';
+import { Appbar, IconButton, Text, useTheme } from 'react-native-paper';
 import {
   Dimensions,
   FlatList,
@@ -8,15 +8,16 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/core';
 import { Col, Grid, Row } from 'react-native-easy-grid';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Confetti from 'react-native-confetti';
 
 import { ClickableDartboard } from '~/components/ClickableDartboard/ClickableDartboard';
 import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect } from 'react';
 import { RootStackParamList } from '#/navigation';
-import { RouteProp } from '@react-navigation/native';
 import { makeStyles } from './styles';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppLogoArrowLight } from '~/components/AppLogo';
 import { DartboardScoreType, Throw } from '~/models/throw';
 import { Turn } from '~/models/turn';
@@ -25,6 +26,7 @@ import { ScoreHelper } from '~/lib/score_helper';
 import { AppModal } from '~/components/AppModal/AppModal';
 import { Swipeable } from '~/components/Swipeable/Swipeable';
 import { GameService } from '~/services/game_service';
+import { act } from 'react-test-renderer';
 
 export const PlayGameScreen: React.FC<any> = () => {
   const navigator =
@@ -48,12 +50,33 @@ export const PlayGameScreen: React.FC<any> = () => {
   const iconSize = Math.max(width * 0.04, 24);
   const scoreTableRef = React.createRef<FlatList>();
 
+  const confettiRef = React.createRef<Confetti>();
+  const [confettiing, setConfettiing] = React.useState(false);
+
   useEffect(() => {
-    // TODO: Init existing game if passed in route arguments
+    if (route.params.activeGame) {
+      const activeGame = route.params.activeGame;
+      setGameId(activeGame.id);
+      setTurns(activeGame.turns);
+      rotateUsers(
+        false,
+        route.params.players.findIndex(player => {
+          return (
+            player.id === activeGame.turns[activeGame.turns.length - 1].userId
+          );
+        })
+      );
+    }
   }, []);
 
-  const rotateUsers = (reverse: boolean = false): number => {
-    let nextUserIndex = activeUserIndex + (reverse ? -1 : 1);
+  const rotateUsers = (
+    reverse: boolean = false,
+    customIndex?: number
+  ): number => {
+    let nextUserIndex =
+      customIndex !== undefined && customIndex !== null
+        ? customIndex
+        : activeUserIndex + (reverse ? -1 : 1);
     if (nextUserIndex >= route.params.players.length) nextUserIndex = 0;
     if (nextUserIndex < 0) nextUserIndex = route.params.players.length - 1;
     scoreTableRef.current?.scrollToIndex({
@@ -77,7 +100,7 @@ export const PlayGameScreen: React.FC<any> = () => {
   };
 
   const finishGame = async (turn: Turn, position: { x: number; y: number }) => {
-    // TODO: Confetti
+    setConfettiing(true);
     const newTurns = [...turns, turn];
     setGameFinished(true);
     await persist(newTurns, true);
@@ -111,6 +134,7 @@ export const PlayGameScreen: React.FC<any> = () => {
   };
 
   const undoThrow = () => {
+    setConfettiing(false);
     let newTurn = { ...currentTurn };
     let newTurns = [...turns];
     if (!newTurn.throws.length) {
@@ -168,6 +192,12 @@ export const PlayGameScreen: React.FC<any> = () => {
       );
     }
   };
+
+  React.useEffect(() => {
+    confettiing
+      ? confettiRef.current?.startConfetti()
+      : confettiRef.current?.stopConfetti();
+  }, [confettiing]);
 
   return (
     <FullScreenLayout style={styles.layout} mode="light" size="fullscreen">
@@ -346,13 +376,14 @@ export const PlayGameScreen: React.FC<any> = () => {
           </Grid>
         </SafeAreaView>
       </View>
+      <Confetti timeout={5} size={2} ref={confettiRef} untilStopped />
       <AppModal
         title="WINNER"
         titleIcon="crown"
         subTitle={route.params.players[activeUserIndex].name}
         visible={gameFinished}
         actions={
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
             <IconButton
               icon="logout-variant"
               size={iconSize * 1.5}
@@ -392,7 +423,7 @@ export const PlayGameScreen: React.FC<any> = () => {
         }?`}
         visible={droppingOutUserIndex != null}
         actions={
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
             <IconButton
               icon="check"
               size={iconSize * 1.5}

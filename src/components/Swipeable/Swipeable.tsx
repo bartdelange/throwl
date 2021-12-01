@@ -81,7 +81,7 @@ export const Swipeable: React.FC<React.PropsWithChildren<SwipeableProps>> = ({
         }, 1500);
       }, 500);
     }
-  });
+  }, []);
 
   return (
     <RNGHSwipeable
