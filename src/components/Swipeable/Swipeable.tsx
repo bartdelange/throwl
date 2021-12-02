@@ -4,7 +4,7 @@ import { Animated, StyleSheet, View } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 
 import { default as RNGHSwipeable } from 'react-native-gesture-handler/Swipeable';
-import { IconButton } from 'react-native-paper';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export interface SwipeableProps {
   rightActions?: {
@@ -21,12 +21,13 @@ export const Swipeable: React.FC<React.PropsWithChildren<SwipeableProps>> = ({
   rightActions = [],
   bounce,
 }) => {
+  const [elemWidth, setElemWidth] = React.useState<number>(0);
   const renderRightActions = (
     _progress: Animated.AnimatedInterpolation,
     dragX: Animated.AnimatedInterpolation
   ) => {
     const scale = dragX.interpolate({
-      inputRange: [-(rightActions.length * 60), 0],
+      inputRange: [-(rightActions.length * elemWidth), 0],
       outputRange: [1, 0],
       extrapolate: 'clamp',
     });
@@ -34,19 +35,24 @@ export const Swipeable: React.FC<React.PropsWithChildren<SwipeableProps>> = ({
       <View style={[styles.rightAction]}>
         {rightActions.map((action, i) => (
           <View
+            onLayout={event => {
+              setElemWidth(event.nativeEvent.layout.width);
+            }}
             key={i}
             style={[
-              styles.actionIcon,
+              styles.actionIconWrapper,
               { backgroundColor: action.backgroundColor || 'red' },
             ]}>
-            <Animated.View style={[{ transform: [{ scale }] }]}>
-              <RectButton onPress={action.onPress}>
-                <IconButton
-                  icon={action.icon}
+            <RectButton onPress={action.onPress} style={styles.actionIcon}>
+              <Animated.View style={[{ transform: [{ scale }] }]}>
+                <MaterialCommunityIcons
+                  name={action.icon}
+                  adjustsFontSizeToFit
+                  style={{ fontSize: 1000 }}
                   color={action.iconColor || 'white'}
                 />
-              </RectButton>
-            </Animated.View>
+              </Animated.View>
+            </RectButton>
           </View>
         ))}
       </View>
@@ -56,18 +62,21 @@ export const Swipeable: React.FC<React.PropsWithChildren<SwipeableProps>> = ({
   const swipeableRow = React.useRef<RNGHSwipeable>();
 
   const styles = StyleSheet.create({
-    actionIcon: {
+    actionIconWrapper: {
       flex: 1,
       alignItems: 'center',
       flexDirection: 'row',
       justifyContent: 'center',
       height: '100%',
     },
+    actionIcon: {
+      padding: '25%',
+    },
     rightAction: {
       alignItems: 'center',
       flexDirection: 'row',
       justifyContent: 'center',
-      width: rightActions.length * 60,
+      aspectRatio: 1,
       height: '100%',
     },
   });

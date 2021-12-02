@@ -26,7 +26,6 @@ import { ScoreHelper } from '~/lib/score_helper';
 import { AppModal } from '~/components/AppModal/AppModal';
 import { Swipeable } from '~/components/Swipeable/Swipeable';
 import { GameService } from '~/services/game_service';
-import { act } from 'react-test-renderer';
 
 export const PlayGameScreen: React.FC<any> = () => {
   const navigator =
@@ -147,7 +146,7 @@ export const PlayGameScreen: React.FC<any> = () => {
     newTurn.throws.pop();
     setCurrentTurn(newTurn);
     setGameFinished(false);
-    return persist(newTurns, true);
+    return persist(newTurns, false);
   };
 
   const dropOutUser = (userId: string) => {
@@ -180,7 +179,8 @@ export const PlayGameScreen: React.FC<any> = () => {
       const savedGamed = await GameService.create(
         route.params.players,
         turns,
-        new Date()
+        new Date(),
+        route.params.startingScore
       );
       setGameId(savedGamed.id);
     } else {
@@ -188,6 +188,7 @@ export const PlayGameScreen: React.FC<any> = () => {
         gameId,
         route.params.players,
         turns,
+        route.params.startingScore,
         finished ? new Date() : undefined
       );
     }
