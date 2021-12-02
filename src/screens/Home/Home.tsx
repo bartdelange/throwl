@@ -5,7 +5,11 @@ import { Dimensions, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { AppLogoLight } from '~/components/AppLogo';
 import { LogoButton } from '~/components/LogoButton/LogoButton';
-import { NEW_GAME_SCREEN, RootStackParamList } from '~/constants/navigation';
+import {
+  NEW_GAME_SCREEN,
+  PLAYED_GAMES_SCREEN,
+  RootStackParamList,
+} from '~/constants/navigation';
 import { AuthContext } from '~/context/AuthContext';
 import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
 import { makeStyles } from './styles';
@@ -38,6 +42,7 @@ export const HomeScreen = () => {
           icon="history"
           size={Math.min(width * 0.1, 100)}
           style={styles.buttons}
+          onPress={() => navigator.push(PLAYED_GAMES_SCREEN)}
         />
       </View>
     </FullScreenLayout>

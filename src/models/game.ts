@@ -7,4 +7,5 @@ export interface Game {
   turns: Turn[];
   started: Date;
   finished: Date;
+  startingScore: number;
 }
