@@ -3,6 +3,7 @@ import {
   HOME_SCREEN,
   NEW_GAME_SCREEN,
   PLAY_GAME_SCREEN,
+  PLAYED_GAMES_SCREEN,
   RootStackParamList,
   UNAUTHENTICATED_SCREEN,
 } from '#/navigation';
@@ -13,6 +14,7 @@ import { AppBar } from '~/components/AppBar/AppBar';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NewGameScreen } from '~/screens/NewGame/NewGame';
 import { PlayGameScreen } from '~/screens/PlayGame/PlayGame';
+import { PlayedGamesScreen } from '~/screens/PlayedGames/PlayedGames';
 
 export const Router = () => {
   const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -40,6 +42,7 @@ export const Router = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen name={PLAYED_GAMES_SCREEN} component={PlayedGamesScreen} />
     </Stack.Navigator>
   );
 };
