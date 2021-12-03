@@ -27,7 +27,6 @@ export const makeStyles = () => {
       right: 5,
       width: 50,
       height: 50,
-      backgroundColor: 'white',
     },
     titleWrapper: {
       flexDirection: 'row',

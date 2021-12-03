@@ -29,6 +29,8 @@ export const makeStyles = () => {
     },
     menuButton: {
       alignSelf: 'flex-end',
+      backgroundColor: 'transparent',
+      borderRadius: 10000,
       paddingBottom: 5,
     },
     divider: {
@@ -46,21 +48,17 @@ export const makeStyles = () => {
       fontWeight: '700',
       fontSize: Math.max(Dimensions.get('window').width * 0.05, 24),
     },
-    scoreButtonRow: {
-      width: '100%',
-      flexDirection: 'row',
-      alignContent: 'center',
-      justifyContent: 'space-evenly',
+    scoreInput: {
+      height: (Math.max(Dimensions.get('window').height * 0.06, 55) + 15) * 6,
     },
-    scoreButtonWrapper: {
-      flex: 1,
-      flexDirection: 'row',
-      alignContent: 'center',
-      justifyContent: 'center',
+    scoreButton: {
       padding: 10,
       margin: 10,
       borderWidth: 2,
       borderRadius: 10,
+      alignItems: 'center',
+      alignContent: 'center',
+      height: Math.max(Dimensions.get('window').height * 0.06, 55),
       borderColor: colors.primary,
     },
     scorePreviewWrapper: {

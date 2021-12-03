@@ -1,4 +1,4 @@
-import { RootStackParamList } from '#/navigation';
+import { GAME_DETAIL_SCREEN, RootStackParamList } from '#/navigation';
 import { useNavigation, useRoute } from '@react-navigation/core';
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -395,7 +395,11 @@ export const PlayGameScreen: React.FC<any> = () => {
               icon="chart-line"
               size={iconSize * 1.5}
               color={colors.success}
-              onPress={() => null}
+              onPress={async () =>
+                navigator.push(GAME_DETAIL_SCREEN, {
+                  game: await GameService.getById(gameId!),
+                })
+              }
             />
             <IconButton
               icon="restore"
