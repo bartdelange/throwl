@@ -1,4 +1,5 @@
 import {
+  GAME_DETAIL_SCREEN,
   HOME_SCREEN,
   NEW_GAME_SCREEN,
   PLAY_GAME_SCREEN,
@@ -10,6 +11,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { AppBar } from '~/components/AppBar/AppBar';
 import { AuthContext } from '~/context/AuthContext';
+import { GameDetailScreen } from '~/screens/GameDetail/GameDetail';
 import { HomeScreen } from '~/screens/Home/Home';
 import { NewGameScreen } from '~/screens/NewGame/NewGame';
 import { PlayedGamesScreen } from '~/screens/PlayedGames/PlayedGames';
@@ -43,6 +45,13 @@ export const Router = () => {
         }}
       />
       <Stack.Screen name={PLAYED_GAMES_SCREEN} component={PlayedGamesScreen} />
+      <Stack.Screen
+        name={GAME_DETAIL_SCREEN}
+        component={GameDetailScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
   );
 };

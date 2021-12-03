@@ -1,4 +1,8 @@
-import { PLAY_GAME_SCREEN, RootStackParamList } from '#/navigation';
+import {
+  GAME_DETAIL_SCREEN,
+  PLAY_GAME_SCREEN,
+  RootStackParamList,
+} from '#/navigation';
 import { useNavigation } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { format } from 'date-fns';
@@ -68,7 +72,7 @@ export const PlayedGamesScreen: React.FC<any> = () => {
         activeGame: game,
       });
     } else {
-      // navigator.push(GAME_DETAIL_SCREEN, { game });
+      navigator.push(GAME_DETAIL_SCREEN, { game });
     }
   };
 
