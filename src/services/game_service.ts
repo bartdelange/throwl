@@ -1,9 +1,7 @@
-import firestore, {
-  FirebaseFirestoreTypes,
-} from '@react-native-firebase/firestore';
-import { User } from '~/models/user';
-import { Turn } from '~/models/turn';
+import firestore from '@react-native-firebase/firestore';
 import { Game } from '~/models/game';
+import { Turn } from '~/models/turn';
+import { User } from '~/models/user';
 import { UserService } from '~/services/user_service';
 
 export class GameService {

@@ -1,12 +1,12 @@
+import auth from '@react-native-firebase/auth';
 import React, {
   createContext,
   PropsWithChildren,
   useEffect,
   useState,
 } from 'react';
-import auth from '@react-native-firebase/auth';
-import { UserService } from '~/services/user_service';
 import { User } from '~/models/user';
+import { UserService } from '~/services/user_service';
 
 interface AuthContext {
   user?: User;

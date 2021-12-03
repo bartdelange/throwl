@@ -1,13 +1,13 @@
+import { useNavigation } from '@react-navigation/core';
+import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useRef } from 'react';
 import { Dimensions, StyleSheet, TextInput, View } from 'react-native';
-import { FormInput } from '../components/FormInput/FormInput';
-import { LogoButton } from '~/components/LogoButton/LogoButton';
-import { AppModal } from '~/components/AppModal/AppModal';
-import { AuthContext } from '~/context/AuthContext';
 import { ActivityIndicator, Text, useTheme } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/core';
+import { AppModal } from '~/components/AppModal/AppModal';
+import { LogoButton } from '~/components/LogoButton/LogoButton';
 import { RootStackParamList } from '~/constants/navigation';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { AuthContext } from '~/context/AuthContext';
+import { FormInput } from '../components/FormInput/FormInput';
 
 export const SignInTab = () => {
   const [working, setWorking] = React.useState(false);

@@ -2,8 +2,8 @@ import React from 'react';
 import { Dimensions, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import { List, Text } from 'react-native-paper';
-import { makeStyles } from './styles';
 import { User } from '~/models/user';
+import { makeStyles } from './styles';
 
 interface PlayerItemProps {
   player: Omit<User, 'friends'>;
@@ -29,7 +29,7 @@ export const PlayerItem: React.FC<PlayerItemProps> = ({
       onPress={() => {
         bouncyCheckboxRef.current?.onPress();
       }}
-      right={props => (
+      right={_ => (
         <BouncyCheckbox
           // @ts-ignore
           ref={bouncyCheckboxRef}
@@ -56,7 +56,6 @@ export const PlayerItem: React.FC<PlayerItemProps> = ({
           onPress={() => {
             onPress();
           }}
-          // iconComponent=
           textContainerStyle={{}}
           key={player.id}
         />

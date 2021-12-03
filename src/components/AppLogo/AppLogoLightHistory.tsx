@@ -1,6 +1,6 @@
 import React from 'react';
-import Svg, { G, Path } from 'react-native-svg';
 import { StyleProp, View } from 'react-native';
+import Svg, { G, Path } from 'react-native-svg';
 
 export const AppLogoLightHistory = ({
   style,

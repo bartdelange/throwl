@@ -33,6 +33,7 @@ export const makeStyles = () => {
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
+      maxWidth: '90%',
     },
     icon: {
       fontSize: 48,
@@ -40,7 +41,7 @@ export const makeStyles = () => {
       color: colors.success,
       marginVertical: 10,
       paddingBottom: 10,
-      marginRight: 10,
+      marginRight: 15,
     },
     title: {
       fontSize: 48,

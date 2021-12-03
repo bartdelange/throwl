@@ -1,4 +1,8 @@
-import { Appbar, IconButton, Text, useTheme } from 'react-native-paper';
+import { RootStackParamList } from '#/navigation';
+import { useNavigation, useRoute } from '@react-navigation/core';
+import { RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { useEffect } from 'react';
 import {
   Dimensions,
   FlatList,
@@ -6,26 +10,22 @@ import {
   SafeAreaView,
   View,
 } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/core';
-import { Col, Grid, Row } from 'react-native-easy-grid';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RouteProp } from '@react-navigation/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Confetti from 'react-native-confetti';
+import { Col, Grid, Row } from 'react-native-easy-grid';
+import { Appbar, IconButton, Text, useTheme } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AppLogoArrowLight } from '~/components/AppLogo';
+import { AppModal } from '~/components/AppModal/AppModal';
 
 import { ClickableDartboard } from '~/components/ClickableDartboard/ClickableDartboard';
+import { Swipeable } from '~/components/Swipeable/Swipeable';
 import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
-import React, { useEffect } from 'react';
-import { RootStackParamList } from '#/navigation';
-import { makeStyles } from './styles';
-import { AppLogoArrowLight } from '~/components/AppLogo';
+import { ScoreHelper } from '~/lib/score_helper';
 import { DartboardScoreType, Throw } from '~/models/throw';
 import { Turn } from '~/models/turn';
 import { User } from '~/models/user';
-import { ScoreHelper } from '~/lib/score_helper';
-import { AppModal } from '~/components/AppModal/AppModal';
-import { Swipeable } from '~/components/Swipeable/Swipeable';
 import { GameService } from '~/services/game_service';
+import { makeStyles } from './styles';
 
 export const PlayGameScreen: React.FC<any> = () => {
   const navigator =
