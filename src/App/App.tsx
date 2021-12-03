@@ -14,6 +14,7 @@ import { Preloader } from '~/components/Preloader/Preloader';
 
 import { AuthProvider } from '~/context/AuthContext';
 import { Router } from './Router';
+import { LogBox } from 'react-native';
 
 declare global {
   namespace ReactNativePaper {
@@ -64,6 +65,10 @@ const theme = {
   },
   fonts: configureFonts(fontConfig as any),
 };
+
+LogBox.ignoreLogs([
+  'Non-serializable values were found in the navigation state',
+]);
 
 export default function App() {
   return (
