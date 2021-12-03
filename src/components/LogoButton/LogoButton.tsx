@@ -7,8 +7,8 @@ import {
   ViewStyle,
 } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
-import { AppLogoDark, AppLogoLight } from '../AppLogo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { AppLogoDark, AppLogoLight } from '../AppLogo';
 import { makeStyles } from './styles';
 
 interface LogoButtonProps extends Pick<PressableProps, 'onPress'> {

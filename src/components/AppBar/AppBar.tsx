@@ -1,11 +1,11 @@
 import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 import React from 'react';
+import { Dimensions, View } from 'react-native';
 import { Appbar, Menu, Text, useTheme } from 'react-native-paper';
+import { AppModal } from '~/components/AppModal/AppModal';
+import { Swipeable } from '~/components/Swipeable/Swipeable';
 import { UNAUTHENTICATED_SCREEN } from '~/constants/navigation';
 import { AuthContext } from '~/context/AuthContext';
-import { AppModal } from '~/components/AppModal/AppModal';
-import { Dimensions, View } from 'react-native';
-import { Swipeable } from '~/components/Swipeable/Swipeable';
 import { UserService } from '~/services/user_service';
 
 interface AppBarProps extends NativeStackHeaderProps {}

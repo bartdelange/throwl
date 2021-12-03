@@ -1,19 +1,27 @@
+import { RouteProp, useNavigation } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useCallback } from 'react';
 import { Dimensions, FlatList, View } from 'react-native';
-import { Divider, IconButton, Menu, Text } from 'react-native-paper';
-import { AuthContext } from '~/context/AuthContext';
-import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
-import { RouteProp, useNavigation } from '@react-navigation/core';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import {
+  Divider,
+  IconButton,
+  Menu,
+  Text,
+  TouchableRipple,
+} from 'react-native-paper';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { AppModal } from '~/components/AppModal/AppModal';
+import { LogoButton } from '~/components/LogoButton/LogoButton';
 import {
   HOME_SCREEN,
   PLAY_GAME_SCREEN,
   RootStackParamList,
 } from '~/constants/navigation';
+import { AuthContext } from '~/context/AuthContext';
+import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
 import { PlayerItem } from './components/PlayerItem/PlayerItem';
-import { LogoButton } from '~/components/LogoButton/LogoButton';
 import { makeStyles } from './styles';
-import { useRoute } from '@react-navigation/native';
 
 export const NewGameScreen: React.FC = () => {
   const navigator =
@@ -23,6 +31,8 @@ export const NewGameScreen: React.FC = () => {
   const [selectedUsers, _setSelectedUsers] = React.useState<string[]>(
     route.params?.selectedUsers || []
   );
+  const [customGameScoreOpen, setCustomGameScoreOpen] = React.useState(false);
+  const [gameStartingScore, setGameStartingScore] = React.useState(501);
 
   const setSelectedUsers = useCallback(
     (selectedUsers: string[] | ((current: string[]) => string[])) => {
@@ -101,6 +111,11 @@ export const NewGameScreen: React.FC = () => {
               onPress={() => setSelectedUsers([])}
               title="CLEAR"
             />
+            <Menu.Item
+              icon="scoreboard-outline"
+              onPress={() => setCustomGameScoreOpen(true)}
+              title="SET STARTING SCORE"
+            />
           </Menu>
         </View>
         <Divider style={styles.divider} />
@@ -143,6 +158,96 @@ export const NewGameScreen: React.FC = () => {
           }}
         />
       </View>
+      <AppModal
+        visible={customGameScoreOpen}
+        titleIcon="scoreboard-outline"
+        title="STARTING SCORE"
+        onDismiss={() => setCustomGameScoreOpen(false)}
+        actions={
+          <View>
+            <View style={styles.scoreButtonRow}>
+              <View
+                style={[styles.scoreButtonWrapper, styles.scorePreviewWrapper]}>
+                <Text style={styles.scoreButtonText}>{gameStartingScore}</Text>
+              </View>
+              <View style={styles.scoreButtonWrapper}>
+                <MaterialCommunityIcons
+                  style={styles.scoreRemoveButton}
+                  name="backspace-outline"
+                />
+              </View>
+            </View>
+            <View style={styles.scoreButtonRow}>
+              <TouchableRipple
+                style={styles.scoreButtonWrapper}
+                onPress={() => setGameStartingScore(1)}>
+                <Text style={styles.scoreButtonText}>1</Text>
+              </TouchableRipple>
+              <TouchableRipple
+                style={styles.scoreButtonWrapper}
+                onPress={() => setGameStartingScore(2)}>
+                <Text style={styles.scoreButtonText}>2</Text>
+              </TouchableRipple>
+              <TouchableRipple
+                style={styles.scoreButtonWrapper}
+                onPress={() => setGameStartingScore(3)}>
+                <Text style={styles.scoreButtonText}>3</Text>
+              </TouchableRipple>
+            </View>
+            <View style={styles.scoreButtonRow}>
+              <TouchableRipple
+                style={styles.scoreButtonWrapper}
+                onPress={() => setGameStartingScore(4)}>
+                <Text style={styles.scoreButtonText}>4</Text>
+              </TouchableRipple>
+              <TouchableRipple
+                style={styles.scoreButtonWrapper}
+                onPress={() => setGameStartingScore(5)}>
+                <Text style={styles.scoreButtonText}>5</Text>
+              </TouchableRipple>
+              <TouchableRipple
+                style={styles.scoreButtonWrapper}
+                onPress={() => setGameStartingScore(6)}>
+                <Text style={styles.scoreButtonText}>6</Text>
+              </TouchableRipple>
+            </View>
+            <View style={styles.scoreButtonRow}>
+              <TouchableRipple
+                style={styles.scoreButtonWrapper}
+                onPress={() => setGameStartingScore(7)}>
+                <Text style={styles.scoreButtonText}>7</Text>
+              </TouchableRipple>
+              <TouchableRipple
+                style={styles.scoreButtonWrapper}
+                onPress={() => setGameStartingScore(8)}>
+                <Text style={styles.scoreButtonText}>8</Text>
+              </TouchableRipple>
+              <TouchableRipple
+                style={styles.scoreButtonWrapper}
+                onPress={() => setGameStartingScore(9)}>
+                <Text style={styles.scoreButtonText}>9</Text>
+              </TouchableRipple>
+            </View>
+            <View style={styles.scoreButtonRow}>
+              <TouchableRipple
+                style={styles.scoreButtonWrapper}
+                onPress={() => setGameStartingScore(501)}>
+                <Text style={styles.scoreButtonText}>501</Text>
+              </TouchableRipple>
+              <TouchableRipple
+                style={styles.scoreButtonWrapper}
+                onPress={() => setGameStartingScore(0)}>
+                <Text style={styles.scoreButtonText}>0</Text>
+              </TouchableRipple>
+              <TouchableRipple
+                style={styles.scoreButtonWrapper}
+                onPress={() => setGameStartingScore(301)}>
+                <Text style={styles.scoreButtonText}>301</Text>
+              </TouchableRipple>
+            </View>
+          </View>
+        }
+      />
     </FullScreenLayout>
   );
 };

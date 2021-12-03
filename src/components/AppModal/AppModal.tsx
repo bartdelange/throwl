@@ -50,6 +50,8 @@ export const AppModal: React.FC<AppModalProps> = ({
               />
             )}
             <Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
               style={[styles.title, titleColor ? { color: titleColor } : {}]}>
               {title}
             </Text>

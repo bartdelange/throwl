@@ -1,11 +1,11 @@
 import React from 'react';
+import { PanResponder } from 'react-native';
+import { useTheme } from 'react-native-paper';
 import Svg, { Path } from 'react-native-svg';
-import { Animated, PanResponder } from 'react-native';
+import { Throw } from '~/models/throw';
+import { numberParts } from './constants/numbers';
 
 import { parts } from './constants/parts';
-import { numberParts } from './constants/numbers';
-import { useTheme } from 'react-native-paper';
-import { Throw } from '~/models/throw';
 
 export interface ClickablePart extends Throw {
   svgPath: string;

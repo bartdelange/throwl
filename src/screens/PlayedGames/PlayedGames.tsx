@@ -1,3 +1,7 @@
+import { PLAY_GAME_SCREEN, RootStackParamList } from '#/navigation';
+import { useNavigation } from '@react-navigation/core';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { format } from 'date-fns';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -7,19 +11,14 @@ import {
   RefreshControl,
   View,
 } from 'react-native';
-import { GameService } from '~/services/game_service';
-import { AuthContext } from '~/context/AuthContext';
-import { Game } from '~/models/game';
 import { Divider, Text, TouchableRipple } from 'react-native-paper';
-import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
-import { makeStyles } from './styles';
-import { format } from 'date-fns';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/core';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { PLAY_GAME_SCREEN, RootStackParamList } from '#/navigation';
 import { Swipeable } from '~/components/Swipeable/Swipeable';
-import { UserService } from '~/services/user_service';
+import { AuthContext } from '~/context/AuthContext';
+import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
+import { Game } from '~/models/game';
+import { GameService } from '~/services/game_service';
+import { makeStyles } from './styles';
 
 export const PlayedGamesScreen: React.FC<any> = () => {
   const navigator =

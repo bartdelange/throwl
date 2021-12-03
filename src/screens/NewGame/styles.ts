@@ -1,7 +1,9 @@
 import { Dimensions, StyleSheet } from 'react-native';
+import { useTheme } from 'react-native-paper';
 
-export const makeStyles = () =>
-  StyleSheet.create({
+export const makeStyles = () => {
+  const { colors } = useTheme();
+  return StyleSheet.create({
     layout: {
       flexDirection: 'column',
       alignContent: 'center',
@@ -44,6 +46,39 @@ export const makeStyles = () =>
       fontWeight: '700',
       fontSize: Math.max(Dimensions.get('window').width * 0.05, 24),
     },
+    scoreButtonRow: {
+      width: '100%',
+      flexDirection: 'row',
+      alignContent: 'center',
+      justifyContent: 'space-evenly',
+    },
+    scoreButtonWrapper: {
+      flex: 1,
+      flexDirection: 'row',
+      alignContent: 'center',
+      justifyContent: 'center',
+      padding: 10,
+      margin: 10,
+      borderWidth: 2,
+      borderRadius: 10,
+      borderColor: colors.primary,
+    },
+    scorePreviewWrapper: {
+      flex: 2.4,
+    },
+    scoreRemoveButton: {
+      textAlign: 'center',
+      paddingTop: 5,
+      color: colors.primary,
+      fontSize: Math.max(Dimensions.get('window').width * 0.05, 24),
+    },
+    scoreButtonText: {
+      textAlign: 'center',
+      paddingTop: 5,
+      includeFontPadding: false,
+      color: colors.primary,
+      fontSize: Math.max(Dimensions.get('window').width * 0.05, 24),
+    },
     goButton: {
       flex: 1,
       justifyContent: 'space-evenly',
@@ -53,3 +88,4 @@ export const makeStyles = () =>
       paddingVertical: Dimensions.get('window').width < 500 ? 0 : '5%',
     },
   });
+};

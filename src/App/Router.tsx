@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   HOME_SCREEN,
   NEW_GAME_SCREEN,
@@ -7,14 +6,15 @@ import {
   RootStackParamList,
   UNAUTHENTICATED_SCREEN,
 } from '#/navigation';
-import { UnauthenticatedScreen } from '~/screens/Unauthenticated/Unauthenticated';
-import { HomeScreen } from '~/screens/Home/Home';
-import { AuthContext } from '~/context/AuthContext';
-import { AppBar } from '~/components/AppBar/AppBar';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React from 'react';
+import { AppBar } from '~/components/AppBar/AppBar';
+import { AuthContext } from '~/context/AuthContext';
+import { HomeScreen } from '~/screens/Home/Home';
 import { NewGameScreen } from '~/screens/NewGame/NewGame';
-import { PlayGameScreen } from '~/screens/PlayGame/PlayGame';
 import { PlayedGamesScreen } from '~/screens/PlayedGames/PlayedGames';
+import { PlayGameScreen } from '~/screens/PlayGame/PlayGame';
+import { UnauthenticatedScreen } from '~/screens/Unauthenticated/Unauthenticated';
 
 export const Router = () => {
   const Stack = createNativeStackNavigator<RootStackParamList>();

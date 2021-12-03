@@ -1,21 +1,19 @@
-import React from 'react';
 import {
   DarkTheme as NavigationDarkTheme,
   NavigationContainer,
 } from '@react-navigation/native';
-import { Linking, Platform } from 'react-native';
+import React from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import {
   configureFonts,
   DarkTheme as PaperDarkTheme,
   Provider as PaperProvider,
 } from 'react-native-paper';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Preloader } from '~/components/Preloader/Preloader';
 
 import { AuthProvider } from '~/context/AuthContext';
 import { Router } from './Router';
-import { Preloader } from '~/components/Preloader/Preloader';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 declare global {
   namespace ReactNativePaper {

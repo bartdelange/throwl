@@ -1,5 +1,5 @@
-import { User } from '~/models/user';
 import { Game } from '~/models/game';
+import { User } from '~/models/user';
 
 export const SPLASH_SCREEN = 'SPLASH';
 export const HOME_SCREEN = 'HOME';

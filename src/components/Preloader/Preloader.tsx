@@ -1,11 +1,11 @@
 import React, { PropsWithChildren } from 'react';
 import { View } from 'react-native';
 import { CircleSnail as ProgressCircle } from 'react-native-progress';
-import { AppLogoLightLoader } from '~/components/AppLogo';
-import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
-import { AuthContext } from '~/context/AuthContext';
-import { makeStyles } from './styles';
 import { useSharedValue } from 'react-native-reanimated';
+import { AppLogoLightLoader } from '~/components/AppLogo';
+import { AuthContext } from '~/context/AuthContext';
+import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
+import { makeStyles } from './styles';
 
 export const Preloader: React.FC<PropsWithChildren<any>> = ({
   children,

@@ -1,12 +1,12 @@
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React from 'react';
 import { Animated, Dimensions, View } from 'react-native';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { SignUpTab } from './tabs/SignUp';
-import { SignInTab } from '~/screens/Unauthenticated/tabs/SignIn';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Divider, IconButton } from 'react-native-paper';
 import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { SignInTab } from '~/screens/Unauthenticated/tabs/SignIn';
 import { makeStyles } from './styles';
+import { SignUpTab } from './tabs/SignUp';
 
 const Tab = createMaterialTopTabNavigator();
 

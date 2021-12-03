@@ -1,5 +1,5 @@
-import { User } from '~/models/user';
 import { Turn } from '~/models/turn';
+import { User } from '~/models/user';
 
 export interface Game {
   id: string;
