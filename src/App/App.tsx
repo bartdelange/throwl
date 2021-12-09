@@ -19,6 +19,7 @@ import { LogBox } from 'react-native';
 declare global {
   namespace ReactNativePaper {
     interface ThemeColors {
+      secondary: string;
       error: string;
       success: string;
       warning: string;
@@ -49,13 +50,14 @@ const fontConfig = {
   ios: fonts,
   android: fonts,
 };
-const theme = {
+export const theme = {
   ...NavigationDarkTheme,
   ...PaperDarkTheme,
   colors: {
     ...NavigationDarkTheme.colors,
     ...PaperDarkTheme.colors,
     primary: '#02314e',
+    secondary: '#adcadb',
     background: '#02314e',
     card: '#02314e',
     surface: '#02314e',

@@ -1,6 +1,7 @@
 import React from 'react';
 import { PanResponder } from 'react-native';
 import { useTheme } from 'react-native-paper';
+import interpolateColor from 'color-interpolate';
 import Svg, { Path } from 'react-native-svg';
 import { Throw } from '~/models/throw';
 import { numberParts } from './constants/numbers';
@@ -14,10 +15,12 @@ export interface ClickablePart extends Throw {
 
 interface ClickableDartboardProps {
   onClick?: (score: Throw, pagePos: { x: number; y: number }) => void;
+  heatmap?: Map<string, number>;
 }
 
 export const ClickableDartboard: React.FC<ClickableDartboardProps> = ({
   onClick,
+  heatmap,
 }) => {
   const [currentlySelected, setCurrentlySelected] =
     React.useState<ClickablePart>();
@@ -61,11 +64,19 @@ export const ClickableDartboard: React.FC<ClickableDartboardProps> = ({
             setCurrentlySelected(undefined);
           },
         });
+
+        let partColor = part.color;
+        if (heatmap && heatmap.has(`${part.type}/${part.score}`)) {
+          const percentage = heatmap.get(`${part.type}/${part.score}`) || 0;
+          const colorMap = interpolateColor(['#80deea', '#0d47a1']);
+          partColor = colorMap(percentage);
+        }
+
         return (
           <Path
             key={`${part.type}-${part.score}`}
             d={part.svgPath}
-            fill={part.color}
+            fill={partColor}
             stroke={isCurrentlySelected(part) ? colors.primary : ''}
             strokeWidth={isCurrentlySelected(part) ? 50 : 0}
             {...responder.panHandlers}

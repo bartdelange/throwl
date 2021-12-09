@@ -1,11 +1,9 @@
 import { Dimensions, StyleSheet } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
-export const makeStyles = () => {
+export const makeStyles = (textSize: number) => {
   const { colors } = useTheme();
   const { width, height } = Dimensions.get('window');
-
-  const textSize = Math.max(width * 0.04, 24);
 
   return StyleSheet.create({
     layout: {
@@ -29,39 +27,63 @@ export const makeStyles = () => {
       borderTopEndRadius: 25,
       alignItems: 'center',
       paddingTop: textSize * 0.1,
+      borderWidth: 1,
     },
     playerList: {
-      paddingVertical: height * 0.025,
+      marginTop: height * 0.025,
       paddingHorizontal: height * 0.025,
       width: '100%',
+      borderBottomStartRadius: 25,
+      borderBottomEndRadius: 25,
     },
-    playerListRow: {
+    rowBorderWrapper: {
+      backgroundColor: colors.primary,
       borderBottomColor: 'white',
       borderBottomWidth: 2,
-      paddingVertical: height * 0.025,
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      alignContent: 'center',
+    },
+    accordion: {
+      marginVertical: height * 0.0125,
     },
     playerName: {
       paddingTop: 1,
       fontSize: textSize,
       lineHeight: textSize,
       fontWeight: '700',
-      borderWidth: 1,
       flex: 1,
+      color: colors.primary,
     },
-    scoreSegment: {
-      paddingTop: 1,
+    scoreText: {
       paddingLeft: height * 0.025,
-      lineHeight: textSize,
-      borderWidth: 1,
+      paddingRight: height * 0.025,
+      lineHeight: textSize * 0.75,
+      fontSize: textSize * 0.75,
+      fontWeight: '200',
+      color: colors.primary,
+    },
+    arrow: {
+      paddingLeft: height * 0.025,
       fontSize: textSize,
     },
-    arrowDown: {
-      paddingLeft: height * 0.025,
-      borderWidth: 1,
-      fontSize: textSize,
+    accordionContent: {
+      margin: height * 0.0125,
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+    },
+    statsContainer: {
+      height: 350,
+      flex: 1,
+      padding: height * 0.0125,
+    },
+    graphContainer: {
+      height: 350,
+      flex: 1,
+      padding: height * 0.0125,
+      aspectRatio: 1,
+      minWidth: width < 500 ? width - height * 0.075 : 0, // width - all the margin/padding applied above
+    },
+    graph: {
+      backgroundColor: colors.primary,
+      aspectRatio: 1,
     },
   });
 };
