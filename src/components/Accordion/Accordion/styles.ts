@@ -7,7 +7,7 @@ export const makeStyles = () => {
   return StyleSheet.create({
     container: {
       marginTop: 16,
-      backgroundColor: colors.secondary,
+      backgroundColor: colors.accent,
       padding: 16,
       borderTopLeftRadius: 8,
       borderTopRightRadius: 8,
@@ -26,7 +26,7 @@ export const makeStyles = () => {
     },
     content: {
       overflow: 'hidden',
-      backgroundColor: colors.secondary,
+      backgroundColor: colors.accent,
       borderBottomLeftRadius: 8,
       borderBottomRightRadius: 8,
     },

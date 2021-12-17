@@ -108,7 +108,7 @@ export class ScoreHelper {
     let moreThan100 = 0;
 
     for (const turn of turns) {
-      const turnScore = this.calculateScore([turn]);
+      const turnScore = this.calculateTurnScore(turn);
       score -= turnScore;
       total++;
 
