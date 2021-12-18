@@ -1,13 +1,20 @@
 import { useNavigation } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useRef } from 'react';
-import { Dimensions, StyleSheet, TextInput, View } from 'react-native';
+import {
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import { ActivityIndicator, Text, useTheme } from 'react-native-paper';
 import { AppModal } from '~/components/AppModal/AppModal';
 import { LogoButton } from '~/components/LogoButton/LogoButton';
 import { RootStackParamList } from '~/constants/navigation';
 import { AuthContext } from '~/context/AuthContext';
 import { FormInput } from '../components/FormInput/FormInput';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export const SignInTab = () => {
   const [working, setWorking] = React.useState(false);
@@ -73,7 +80,12 @@ export const SignInTab = () => {
         subTitle={error}
         onDismiss={() => setError(undefined)}
       />
-      <View style={styles.content}>
+      <KeyboardAwareScrollView
+        resetScrollToCoords={{ x: 0, y: 0 }}
+        scrollEnabled={true}
+        extraScrollHeight={80}
+        extraHeight={80}
+        contentContainerStyle={styles.content}>
         <Text style={styles.heading}>SIGN IN</Text>
         <FormInput
           style={styles.input}
@@ -83,6 +95,8 @@ export const SignInTab = () => {
           onChangeText={val => setEmail(val.toLowerCase())}
           autoCapitalize="none"
           returnKeyType="next"
+          keyboardType="email-address"
+          textContentType="emailAddress"
           onSubmitEditing={() => {
             passwordInputRef.current?.focus();
           }}
@@ -92,14 +106,15 @@ export const SignInTab = () => {
           label={'PASSWORD'}
           value={password}
           onChangeText={setPassword}
-          returnKeyType="done"
           textContentType="password"
           ref={passwordInputRef}
           secureTextEntry
+          returnKeyType="go"
           onSubmitEditing={onSubmit}
         />
         <LogoButton style={styles.button} label="GO" onPress={onSubmit} />
-      </View>
+        <View style={styles.spacer} />
+      </KeyboardAwareScrollView>
     </View>
   );
 };
@@ -111,8 +126,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   content: {
-    maxWidth: 500,
-    width: '90%',
+    width: Math.min(Dimensions.get('window').width * 0.9, 500),
+    marginTop: '25%',
     justifyContent: 'center',
     alignContent: 'center',
     alignItems: 'center',
@@ -136,6 +151,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    marginTop: '10%',
+    marginTop: Dimensions.get('window').height * 0.05,
+  },
+  spacer: {
+    marginVertical: 75,
   },
 });

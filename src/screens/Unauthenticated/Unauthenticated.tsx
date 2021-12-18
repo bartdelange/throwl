@@ -17,14 +17,11 @@ export const UnauthenticatedScreen = () => {
 
   return (
     <FullScreenLayout>
-      <KeyboardAwareScrollView
-        resetScrollToCoords={{ x: 0, y: 0 }}
-        contentContainerStyle={styles.layout}
-        scrollEnabled={true}>
-        <Tab.Navigator
-          tabBar={({ state, descriptors, navigation, position }) => {
-            const buttons = state.routes.map((route, index) => {
-              if (!route) return;
+      <Tab.Navigator
+        tabBar={({ state, descriptors, navigation, position }) => {
+          const buttons: JSX.Element[] = state.routes
+            .filter(route => !!route)
+            .map((route, index) => {
               const isFocused = state.index === index;
 
               const onPress = () => {
@@ -68,30 +65,29 @@ export const UnauthenticatedScreen = () => {
               );
             });
 
-            const dividedButtons = buttons.reduce(
-              (r, button) =>
-                r.concat(
-                  button,
-                  <Divider
-                    key="divider"
-                    style={{
-                      width: Math.max(width * 0.005, 2),
-                      height: '100%',
-                      backgroundColor: 'white',
-                    }}
-                  />
-                ),
-              [<View />]
-            );
-            dividedButtons.shift();
-            dividedButtons.pop();
+          const dividedButtons = buttons.reduce(
+            (r, button) =>
+              r.concat(
+                button,
+                <Divider
+                  key="divider"
+                  style={{
+                    width: Math.max(width * 0.005, 2),
+                    height: '100%',
+                    backgroundColor: 'white',
+                  }}
+                />
+              ),
+            [<View />]
+          );
+          dividedButtons.shift();
+          dividedButtons.pop();
 
-            return <View style={styles.tabBar}>{dividedButtons}</View>;
-          }}>
-          <Tab.Screen name="SIGN_UP" component={SignUpTab} />
-          <Tab.Screen name="SIGN_IN" component={SignInTab} />
-        </Tab.Navigator>
-      </KeyboardAwareScrollView>
+          return <View style={styles.tabBar}>{dividedButtons}</View>;
+        }}>
+        <Tab.Screen name="SIGN_UP" component={SignUpTab} />
+        <Tab.Screen name="SIGN_IN" component={SignInTab} />
+      </Tab.Navigator>
     </FullScreenLayout>
   );
 };
