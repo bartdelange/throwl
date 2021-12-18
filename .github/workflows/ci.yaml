@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install npm dependencies
         run: |
-          npm install
+          npm ci
       - name: Run tests
         run: |
           npm test
@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install npm dependencies
         run: |
-          npm install
+          npm ci
       - name: Build Android Release
         run: |
           cd android && ./gradlew assembleRelease -PTHROWL_UPLOAD_STORE_PASSWORD='${{ secrets.KEYSTORE_PASSWORD }}' -PTHROWL_UPLOAD_KEY_PASSWORD='${{ secrets.KEYSTORE_PASSWORD }}'
@@ -39,7 +39,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install npm dependencies
         run: |
-          npm install
+          npm ci
       - name: Install pod dependencies
         run: |
           cd ios && pod install
