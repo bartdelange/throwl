@@ -1,5 +1,4 @@
 import React from 'react';
-import { View } from 'react-native';
 import { ThemeProvider, useTheme } from 'react-native-paper';
 import {
   Chart,
@@ -54,8 +53,6 @@ export const GraphContainer: React.FC<ScoreContainerProps> = ({ turns }) => {
     setAverageValues(averageData);
     setScoreValues(scoreData);
   }, [turns]);
-
-  console.log(averageValues, scoreValues);
 
   return (
     <ThemeProvider

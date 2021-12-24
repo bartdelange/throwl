@@ -4,6 +4,7 @@ import {
 } from '@react-navigation/native';
 import React from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import RNBootSplash from 'react-native-bootsplash';
 import {
   configureFonts,
   DarkTheme as PaperDarkTheme,
@@ -72,6 +73,10 @@ LogBox.ignoreLogs([
 ]);
 
 export default function App() {
+  React.useEffect(() => {
+    RNBootSplash.hide({ fade: true });
+  }, []);
+
   return (
     <SafeAreaProvider
       style={{ flex: 1, backgroundColor: theme.colors.background }}>

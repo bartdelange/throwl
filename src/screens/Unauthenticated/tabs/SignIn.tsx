@@ -1,19 +1,13 @@
 import { useNavigation } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useRef } from 'react';
-import {
-  Dimensions,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
-import { ActivityIndicator, Text, useTheme } from 'react-native-paper';
+import { Dimensions, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, Portal, Text, useTheme } from 'react-native-paper';
 import { AppModal } from '~/components/AppModal/AppModal';
 import { LogoButton } from '~/components/LogoButton/LogoButton';
 import { RootStackParamList } from '~/constants/navigation';
 import { AuthContext } from '~/context/AuthContext';
-import { FormInput } from '../components/FormInput/FormInput';
+import { FormInput } from '../../../components/FormInput/FormInput';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export const SignInTab = () => {
@@ -67,11 +61,6 @@ export const SignInTab = () => {
 
   return (
     <View style={styles.parent}>
-      {working && (
-        <View style={styles.loader}>
-          <ActivityIndicator size="large" />
-        </View>
-      )}
       <AppModal
         visible={!!error}
         title={'Error'}
@@ -115,6 +104,13 @@ export const SignInTab = () => {
         <LogoButton style={styles.button} label="GO" onPress={onSubmit} />
         <View style={styles.spacer} />
       </KeyboardAwareScrollView>
+      {working && (
+        <Portal>
+          <View style={styles.loader}>
+            <ActivityIndicator size="large" color="white" />
+          </View>
+        </Portal>
+      )}
     </View>
   );
 };
@@ -126,20 +122,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   content: {
-    width: Math.min(Dimensions.get('window').width * 0.9, 500),
-    marginTop: '25%',
+    paddingHorizontal:
+      (Dimensions.get('window').width -
+        Math.min(Dimensions.get('window').width * 0.9, 500)) /
+      2,
+    marginTop: '15%',
     justifyContent: 'center',
     alignContent: 'center',
     alignItems: 'center',
   },
   loader: {
     position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
+    left:
+      Dimensions.get('screen').width / 2 - Dimensions.get('screen').width * 0.1,
+    top:
+      Dimensions.get('screen').height / 2 -
+      Dimensions.get('screen').width * 0.1,
+    width: Dimensions.get('screen').width * 0.2,
+    aspectRatio: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 20,
+    borderRadius: Dimensions.get('window').width * 0.05,
+    backgroundColor: 'rgba(0,0,0,.25)',
   },
   heading: {
     fontSize: Math.max(Dimensions.get('window').width * 0.1, 24),
