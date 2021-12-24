@@ -1,12 +1,12 @@
 import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 import React from 'react';
-import { Dimensions, View } from 'react-native';
-import { Appbar, Menu, Text, useTheme } from 'react-native-paper';
-import { AppModal } from '~/components/AppModal/AppModal';
-import { Swipeable } from '~/components/Swipeable/Swipeable';
-import { UNAUTHENTICATED_SCREEN } from '~/constants/navigation';
+import { Appbar, Menu, useTheme } from 'react-native-paper';
+import {
+  FRIENDS_SCREEN,
+  PROFILE_SCREEN,
+  UNAUTHENTICATED_SCREEN,
+} from '~/constants/navigation';
 import { AuthContext } from '~/context/AuthContext';
-import { UserService } from '~/services/user_service';
 
 interface AppBarProps extends NativeStackHeaderProps {}
 
@@ -14,8 +14,6 @@ export const AppBar: React.FC<AppBarProps> = ({
   navigation,
   back,
 }: AppBarProps) => {
-  const { user } = React.useContext(AuthContext);
-  const [friendsOpen, setFriendsOpen] = React.useState(false);
   const [visible, setVisible] = React.useState(false);
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
@@ -23,49 +21,7 @@ export const AppBar: React.FC<AppBarProps> = ({
   const { colors } = useTheme();
 
   return (
-    <Appbar.Header style={{ backgroundColor: colors.background }}>
-      <AppModal
-        titleIcon="account-group"
-        visible={friendsOpen}
-        title="Friends"
-        onDismiss={() => setFriendsOpen(false)}
-        customContent={
-          <View>
-            {(user?.friends || []).map((friend, i) => (
-              <Swipeable
-                key={friend.user.id}
-                bounce={i == 0}
-                rightActions={[
-                  {
-                    icon: 'delete',
-                    onPress: () =>
-                      user && UserService.removeFriend(user.id, friend.user.id),
-                  },
-                ]}>
-                <View
-                  style={{
-                    flex: 1,
-                    paddingHorizontal: 20,
-                    paddingVertical: 10,
-                    backgroundColor: 'white',
-                    width: '100%',
-                  }}>
-                  <Text
-                    style={{
-                      color: colors.primary,
-                      fontSize: Math.min(
-                        48,
-                        Dimensions.get('window').width * 0.09
-                      ),
-                    }}>
-                    {friend.user.name}
-                  </Text>
-                </View>
-              </Swipeable>
-            ))}
-          </View>
-        }
-      />
+    <Appbar.Header style={{ backgroundColor: colors.background, elevation: 0 }}>
       {back ? (
         <Appbar.BackAction color="white" onPress={navigation.goBack} />
       ) : null}
@@ -80,17 +36,18 @@ export const AppBar: React.FC<AppBarProps> = ({
           <Menu.Item
             icon="account-multiple"
             onPress={() => {
+              navigation.push(FRIENDS_SCREEN);
               closeMenu();
-              setFriendsOpen(true);
             }}
             title="FRIENDS"
           />
           <Menu.Item
-            icon="bell"
+            icon="tune"
             onPress={() => {
-              console.log('Option 3 was pressed');
+              navigation.push(PROFILE_SCREEN);
+              closeMenu();
             }}
-            title="NOTIFICATIONS"
+            title="SETTINGS"
           />
           <Menu.Item
             icon="logout-variant"

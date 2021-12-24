@@ -18,7 +18,7 @@ import { AppLogoArrowLight } from '~/components/AppLogo';
 import { AppModal } from '~/components/AppModal/AppModal';
 
 import { ClickableDartboard } from '~/components/ClickableDartboard/ClickableDartboard';
-import { Swipeable } from '~/components/Swipeable/Swipeable';
+import { SwipeActions } from '~/components/Swipeable/SwipeActions';
 import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
 import { ScoreHelper } from '~/lib/score_helper';
 import { DartboardScoreType, Throw } from '~/models/throw';
@@ -307,7 +307,7 @@ export const PlayGameScreen: React.FC<any> = () => {
                   activeUserIndex === index ? currentTurn : undefined
                 );
                 return (
-                  <Swipeable
+                  <SwipeActions
                     bounce={index === 0}
                     key={user.id}
                     rightActions={[
@@ -370,7 +370,7 @@ export const PlayGameScreen: React.FC<any> = () => {
                         </Text>
                       </Col>
                     </Row>
-                  </Swipeable>
+                  </SwipeActions>
                 );
               }}
             />

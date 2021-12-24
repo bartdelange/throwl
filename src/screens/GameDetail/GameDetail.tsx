@@ -4,9 +4,8 @@ import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
 import { Dimensions, FlatList, SafeAreaView, View } from 'react-native';
-import { Appbar, Text, ThemeProvider, useTheme } from 'react-native-paper';
+import { Appbar, useTheme } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { theme } from '~/App/App';
 import { Accordion } from '~/components/Accordion';
 
 import { ClickableDartboard } from '~/components/ClickableDartboard/ClickableDartboard';
