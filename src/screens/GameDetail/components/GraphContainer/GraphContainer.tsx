@@ -1,16 +1,17 @@
 import React from 'react';
-import { ThemeProvider, useTheme } from 'react-native-paper';
+import { Text, ThemeProvider, useTheme } from 'react-native-paper';
 import {
   Chart,
   HorizontalAxis,
   Line,
-  Tooltip,
   VerticalAxis,
 } from 'react-native-responsive-linechart';
 import { theme } from '~/App/App';
 import { ScoreHelper } from '~/lib/score_helper';
 import { Turn } from '~/models/turn';
 import { makeStyles } from './styles';
+import { View } from 'react-native';
+import { Tooltip } from './Tooltip';
 
 interface ScoreContainerProps {
   turns: Turn[];
@@ -21,7 +22,6 @@ type graphPoint = { x: number; y: number };
 export const GraphContainer: React.FC<ScoreContainerProps> = ({ turns }) => {
   const { colors } = useTheme();
   const styles = makeStyles();
-  const [minYValue, setMinYValue] = React.useState(0);
   const [maxYValue, setMaxYValue] = React.useState(0);
   const [averageValues, setAverageValues] = React.useState<graphPoint[]>([]);
   const [scoreValues, setScoreValues] = React.useState<graphPoint[]>([]);
@@ -43,12 +43,9 @@ export const GraphContainer: React.FC<ScoreContainerProps> = ({ turns }) => {
       turnCount++;
     }
 
-    const minAverage = averageData.reduce((a, b) => Math.min(a, b.y), Infinity);
-    const minScore = scoreData.reduce((a, b) => Math.min(a, b.y), Infinity);
     const maxAverage = averageData.reduce((a, b) => Math.max(a, b.y), 0);
     const maxScore = scoreData.reduce((a, b) => Math.max(a, b.y), 0);
 
-    setMinYValue(Math.min(minAverage, minScore));
     setMaxYValue(Math.max(maxAverage, maxScore));
     setAverageValues(averageData);
     setScoreValues(scoreData);
@@ -62,7 +59,7 @@ export const GraphContainer: React.FC<ScoreContainerProps> = ({ turns }) => {
       }}>
       <Chart
         data={scoreValues}
-        style={{ height: '100%', width: '100%', marginBottom: 40 }}
+        style={{ flex: 1 }}
         padding={{ left: 40, bottom: 20, right: 40, top: 40 }}
         yDomain={{ min: 0, max: maxYValue }}>
         <VerticalAxis
@@ -86,18 +83,6 @@ export const GraphContainer: React.FC<ScoreContainerProps> = ({ turns }) => {
         <Line
           smoothing="bezier"
           tension={0.3}
-          tooltipComponent={
-            <Tooltip
-              theme={{
-                shape: {
-                  height: 30,
-                  width: 50,
-                  // opacity: 0.5,
-                },
-                formatter: v => v.y.toFixed(2),
-              }}
-            />
-          }
           theme={{
             scatter: {
               default: { width: 10, height: 10, rx: 4, color: 'transparent' },
@@ -114,11 +99,19 @@ export const GraphContainer: React.FC<ScoreContainerProps> = ({ turns }) => {
             <Tooltip
               theme={{
                 shape: {
-                  height: 30,
-                  width: 50,
-                  // opacity: 0.5,
+                  height: 50,
+                  width: 110,
+                  color: colors.primary,
                 },
-                formatter: v => v.y.toFixed(2),
+                formatter: v => {
+                  const score = scoreValues.find(s => s.x == v.x)?.y || 0;
+                  const average = averageValues.find(a => a.x == v.x)?.y || 0;
+
+                  return {
+                    label: `Turn ${v.x}`,
+                    data: `S${score.toFixed(2)} - A${average.toFixed(2)}`,
+                  };
+                },
               }}
             />
           }
@@ -131,6 +124,16 @@ export const GraphContainer: React.FC<ScoreContainerProps> = ({ turns }) => {
           }}
         />
       </Chart>
+      <View style={styles.legend}>
+        <View style={styles.legendEntry}>
+          <View style={[styles.legendBall, { backgroundColor: '#03a9f4' }]} />
+          <Text>Score</Text>
+        </View>
+        <View style={styles.legendEntry}>
+          <View style={[styles.legendBall, { backgroundColor: '#8bc34a' }]} />
+          <Text>Average</Text>
+        </View>
+      </View>
     </ThemeProvider>
   );
 };
