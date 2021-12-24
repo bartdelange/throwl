@@ -9,12 +9,14 @@ import { RootStackParamList } from '~/constants/navigation';
 import { AuthContext } from '~/context/AuthContext';
 import { FormInput } from '../../../components/FormInput/FormInput';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import auth from '@react-native-firebase/auth';
 
 export const SignInTab = () => {
   const [working, setWorking] = React.useState(false);
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [error, setError] = React.useState<string>();
+  const [status, setStatus] = React.useState<string>();
   const passwordInputRef = useRef<TextInput>(null);
   const { login } = React.useContext(AuthContext);
   const nav = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -59,6 +61,20 @@ export const SignInTab = () => {
     }
   };
 
+  const resetPassword = async () => {
+    if (!email.length) {
+      return setError('Please enter an email');
+    }
+    try {
+      await auth().sendPasswordResetEmail(email);
+      setStatus(
+        "An email has been send to the provided address if it's known to us"
+      );
+    } catch {
+      setError('Please check the provided email again');
+    }
+  };
+
   return (
     <View style={styles.parent}>
       <AppModal
@@ -68,6 +84,14 @@ export const SignInTab = () => {
         titleIcon="alert-circle"
         subTitle={error}
         onDismiss={() => setError(undefined)}
+      />
+      <AppModal
+        visible={!!status}
+        title={'Success'}
+        titleColor={colors.success}
+        titleIcon="alert-circle"
+        subTitle={status}
+        onDismiss={() => setStatus(undefined)}
       />
       <KeyboardAwareScrollView
         resetScrollToCoords={{ x: 0, y: 0 }}
@@ -101,6 +125,11 @@ export const SignInTab = () => {
           returnKeyType="go"
           onSubmitEditing={onSubmit}
         />
+        <Text
+          style={{ color: 'white', textDecorationLine: 'underline' }}
+          onPress={resetPassword}>
+          Forgot password?
+        </Text>
         <LogoButton style={styles.button} label="GO" onPress={onSubmit} />
         <View style={styles.spacer} />
       </KeyboardAwareScrollView>

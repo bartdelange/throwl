@@ -106,8 +106,7 @@ export const PlayedGamesScreen: React.FC<any> = () => {
           refreshControl={
             <RefreshControl
               tintColor="white"
-              colors={['white']}
-              refreshing={loading}
+              refreshing={!initialLoading && loading}
               onRefresh={loadNewGames}
             />
           }
