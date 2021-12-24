@@ -1,0 +1,59 @@
+name: Build Android and iOS
+on:
+  push:
+    branches:
+      - master
+jobs:
+  install-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install npm dependencies
+        run: |
+          npm ci
+      - name: Run tests
+        run: |
+          npm test
+
+#  build-android:
+#    needs: install-and-test
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: Install npm dependencies
+#        run: |
+#          npm ci
+#      - name: Build Android Release
+#        run: |
+#          cd android && ./gradlew assembleRelease \
+#            -Pandroid.injected.signing.store.file=$KEYFILE \
+#            -Pandroid.injected.signing.store.password=$STORE_PASSWORD \
+#            -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
+#            -Pandroid.injected.signing.key.password=$KEY_PASSWORD
+#      - name: Upload Artifact
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: android-apk
+#          path: android/app/build/outputs/apk/release/
+
+  build-ios:
+    needs: install-and-test
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install npm dependencies
+        run: |
+          npm ci
+      - name: Install pod dependencies
+        working-directory: ios
+        run: pod install
+      - name: Build app
+        working-directory: ios
+        run: |
+          xcodebuild -workspace throwl.xcworkspace -scheme throwl archive -archivePath throwl.xcarchive -allowProvisioningUpdates
+          xcodebuild -exportArchive -archivePath ./throwl.xcarchive -exportPath . -exportOptionsPlist throwl/Info.plist
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ios-ipa
+          path: '**/*.ipa'
