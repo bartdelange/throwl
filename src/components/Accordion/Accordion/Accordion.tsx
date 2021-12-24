@@ -7,8 +7,6 @@ import {
   View,
 } from 'react-native';
 import Animated, {
-  measure,
-  runOnUI,
   useAnimatedRef,
   useAnimatedStyle,
   useDerivedValue,

@@ -40,17 +40,19 @@ export class UserService {
     return this.parseUser(uid, userDoc.data());
   }
 
-  public static update(uid: string, set: any): Promise<User> {
-    console.log(set);
-    // TODO: Change user and all relations
-    return Promise.resolve(undefined) as unknown as Promise<User>;
+  public static async updateEmail(uid: string, email: string) {
+    await firestore().collection('users').doc(uid).update({
+      email,
+    });
   }
 
-  public static delete(uid: string): Promise<User> {
-    return Promise.resolve(undefined) as unknown as Promise<User>;
+  public static async updateName(uid: string, name: string) {
+    await firestore().collection('users').doc(uid).update({
+      name,
+    });
   }
 
-  static removeFriend(uid: string, friendId: string) {
+  public static removeFriend(uid: string, friendId: string) {
     return Promise.resolve(undefined) as unknown as Promise<User>;
   }
 

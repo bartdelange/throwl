@@ -1,5 +1,4 @@
 import { Dimensions, StyleSheet } from 'react-native';
-import { useTheme } from 'react-native-paper';
 
 export const makeStyles = (textSize: number) => {
   const { height } = Dimensions.get('window');

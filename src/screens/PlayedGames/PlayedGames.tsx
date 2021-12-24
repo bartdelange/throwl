@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import { Divider, Text, TouchableRipple } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Swipeable } from '~/components/Swipeable/Swipeable';
+import { SwipeActions } from '~/components/Swipeable/SwipeActions';
 import { AuthContext } from '~/context/AuthContext';
 import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
 import { Game } from '~/models/game';
@@ -105,7 +105,6 @@ export const PlayedGamesScreen: React.FC<any> = () => {
           }}
           refreshControl={
             <RefreshControl
-              size={0}
               tintColor="white"
               colors={['white']}
               refreshing={loading}
@@ -114,7 +113,7 @@ export const PlayedGamesScreen: React.FC<any> = () => {
           }
           renderItem={({ item: game, index }) => {
             return (
-              <Swipeable
+              <SwipeActions
                 key={game.id}
                 bounce={index === 0}
                 rightActions={[
@@ -153,7 +152,7 @@ export const PlayedGamesScreen: React.FC<any> = () => {
                     </View>
                   </View>
                 </TouchableRipple>
-              </Swipeable>
+              </SwipeActions>
             );
           }}
           ListEmptyComponent={

@@ -1,25 +1,21 @@
+import React from 'react';
 import { useNavigation } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
-import React from 'react';
-import {
-  Dimensions,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
+import { Dimensions, StyleSheet, TextInput, View } from 'react-native';
 import { ActivityIndicator, Portal, Text, useTheme } from 'react-native-paper';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import isEmail from 'validator/es/lib/isEmail';
 import { AppModal } from '~/components/AppModal/AppModal';
 import { LogoButton } from '~/components/LogoButton/LogoButton';
 import { RootStackParamList } from '~/constants/navigation';
 import { AuthContext } from '~/context/AuthContext';
-import { FormInput } from '../components/FormInput/FormInput';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { FormInput } from '~/components/FormInput/FormInput';
 
 export const SignUpTab = () => {
   const [working, setWorking] = React.useState(false);
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [confirmPassword, setConfirmPassword] = React.useState('');
   const [name, setName] = React.useState('');
   const [error, setError] = React.useState<string>();
   const [subError, setSubError] = React.useState<string>();
@@ -28,13 +24,26 @@ export const SignUpTab = () => {
   const { colors } = useTheme();
 
   const passwordInputRef = React.useRef<TextInput>(null);
+  const confirmPasswordInputRef = React.useRef<TextInput>(null);
   const nameInputRef = React.useRef<TextInput>(null);
 
   const { register } = React.useContext(AuthContext);
 
   const onSubmit = async () => {
-    if (!email.length || !password.length || !name.length) {
-      setError('Please check the entered credentials');
+    if (!email.length || !isEmail(email)) {
+      setError('Please enter a valid email');
+      setModalOpen(true);
+      return;
+    }
+
+    if (!password.length || confirmPassword !== password) {
+      setError('Please make sure the passwords match');
+      setModalOpen(true);
+      return;
+    }
+
+    if (!name.length) {
+      setError('Please enter a name');
       setModalOpen(true);
       return;
     }
@@ -79,13 +88,6 @@ export const SignUpTab = () => {
 
   return (
     <View style={styles.parent}>
-      {working && (
-        <Portal>
-          <View style={styles.loader}>
-            <ActivityIndicator size="large" color="white" />
-          </View>
-        </Portal>
-      )}
       <AppModal
         visible={!!modalOpen}
         title={'Error'}
@@ -128,6 +130,19 @@ export const SignUpTab = () => {
           textContentType="password"
           ref={passwordInputRef}
           onSubmitEditing={() => {
+            confirmPasswordInputRef.current?.focus();
+          }}
+          returnKeyType="next"
+        />
+        <FormInput
+          style={styles.input}
+          label={'CONFIRM PASSWORD'}
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry
+          textContentType="password"
+          ref={confirmPasswordInputRef}
+          onSubmitEditing={() => {
             nameInputRef.current?.focus();
           }}
           returnKeyType="next"
@@ -144,6 +159,13 @@ export const SignUpTab = () => {
         <LogoButton style={styles.button} label="GO" onPress={onSubmit} />
         <View style={styles.spacer} />
       </KeyboardAwareScrollView>
+      {working && (
+        <Portal>
+          <View style={styles.loader}>
+            <ActivityIndicator size="large" color="white" />
+          </View>
+        </Portal>
+      )}
     </View>
   );
 };
@@ -155,21 +177,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   content: {
-    width: Math.min(Dimensions.get('window').width * 0.9, 500),
-    marginTop: '25%',
+    paddingHorizontal:
+      (Dimensions.get('window').width -
+        Math.min(Dimensions.get('window').width * 0.9, 500)) /
+      2,
+    marginTop: '15%',
     justifyContent: 'center',
     alignContent: 'center',
     alignItems: 'center',
   },
   loader: {
     position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
+    left:
+      Dimensions.get('screen').width / 2 - Dimensions.get('screen').width * 0.1,
+    top:
+      Dimensions.get('screen').height / 2 -
+      Dimensions.get('screen').width * 0.1,
+    width: Dimensions.get('screen').width * 0.2,
+    aspectRatio: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,.1)',
+    padding: 20,
+    borderRadius: Dimensions.get('window').width * 0.05,
+    backgroundColor: 'rgba(0,0,0,.25)',
   },
   heading: {
     fontSize: Math.max(Dimensions.get('window').width * 0.1, 24),
