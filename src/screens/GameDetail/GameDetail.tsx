@@ -3,7 +3,13 @@ import { useNavigation, useRoute } from '@react-navigation/core';
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
-import { Dimensions, FlatList, SafeAreaView, View } from 'react-native';
+import {
+  Dimensions,
+  FlatList,
+  LayoutChangeEvent,
+  SafeAreaView,
+  View,
+} from 'react-native';
 import { Appbar, useTheme } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Accordion } from '~/components/Accordion';
@@ -17,7 +23,6 @@ import { StatsContainer } from '~/screens/GameDetail/components/StatsContainer/S
 import { makeStyles } from './styles';
 
 export const GameDetailScreen: React.FC<any> = () => {
-  const [containerWidth, setContainerWidth] = React.useState<number>(0);
   const [selectedUserId, setSelectedUserId] = React.useState<string>();
   const [heatmap, setHeatmap] = React.useState<Map<string, number>>();
 
@@ -28,9 +33,8 @@ export const GameDetailScreen: React.FC<any> = () => {
 
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
-  const { width } = Dimensions.get('window');
 
-  const textSize = Math.max(width * 0.04, 24);
+  const textSize = Math.max(Dimensions.get('window').width * 0.04, 24);
   const styles = makeStyles(textSize);
 
   return (

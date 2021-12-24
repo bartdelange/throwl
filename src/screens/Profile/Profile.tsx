@@ -183,6 +183,7 @@ export const ProfileScreen = () => {
             onSubmitEditing={() => {
               confirmPasswordInputRef.current?.focus();
             }}
+            placeholder={'john@doe.com'}
             returnKeyType="next"
             keyboardType="email-address"
             textContentType="emailAddress"
