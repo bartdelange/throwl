@@ -30,6 +30,6 @@ jobs:
         working-directory: ios
         run: pod install
       - name: Build iOS (debug)
-        run: xcodebuild -workspace ios/throwl.xcworkspace -scheme throwl clean archive -sdk iphoneos -configuration Debug -UseModernBuildSystem=NO -archivePath $PWD/throwl CODE_SIGNING_ALLOWED=NO"
+        run: xcodebuild -workspace throwl.xcworkspace -scheme throwl clean archive -sdk iphoneos -configuration Debug -UseModernBuildSystem=NO -archivePath $PWD/throwl CODE_SIGNING_ALLOWED=NO
 
 
