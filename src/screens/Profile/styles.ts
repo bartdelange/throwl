@@ -40,21 +40,5 @@ export const makeStyles = () => {
       alignItems: 'flex-start',
       marginBottom: '2.5%',
     },
-    loader: {
-      position: 'absolute',
-      left:
-        Dimensions.get('screen').width / 2 -
-        Dimensions.get('screen').width * 0.1,
-      top:
-        Dimensions.get('screen').height / 2 -
-        Dimensions.get('screen').width * 0.1,
-      width: Dimensions.get('screen').width * 0.2,
-      aspectRatio: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: 20,
-      borderRadius: Dimensions.get('window').width * 0.05,
-      backgroundColor: 'rgba(0,0,0,.25)',
-    },
   });
 };

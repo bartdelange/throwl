@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 export const makeStyles = () =>
   StyleSheet.create({
     wrapper: {
+      position: 'relative',
       alignItems: 'center',
       alignContent: 'center',
       justifyContent: 'center',

@@ -34,12 +34,15 @@ export const SwipeActions: React.FC<
         {rightActions.map((action, i) => (
           <View
             onLayout={event => {
-              setElemWidth(event.nativeEvent.layout.width);
+              setElemWidth(event.nativeEvent.layout.height);
             }}
             key={i}
             style={[
               styles.actionIconWrapper,
-              { backgroundColor: action.backgroundColor || 'red' },
+              {
+                backgroundColor: action.backgroundColor || 'red',
+                width: elemWidth,
+              },
             ]}>
             <RectButton onPress={action.onPress} style={styles.actionIcon}>
               <Animated.View style={[{ transform: [{ scale }] }]}>
@@ -61,7 +64,6 @@ export const SwipeActions: React.FC<
 
   const styles = StyleSheet.create({
     actionIconWrapper: {
-      flex: 1,
       alignItems: 'center',
       flexDirection: 'row',
       justifyContent: 'center',
@@ -74,7 +76,6 @@ export const SwipeActions: React.FC<
       alignItems: 'center',
       flexDirection: 'row',
       justifyContent: 'center',
-      aspectRatio: 1,
       height: '100%',
     },
   });

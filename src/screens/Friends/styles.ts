@@ -34,7 +34,14 @@ export const makeStyles = () => {
       marginBottom: '2.5%',
     },
     section: {
-      flexGrow: 1,
+      flexGrow: 0,
+    },
+    input: {
+      marginVertical: '5%',
+    },
+    button: {
+      marginBottom: '10%',
+      alignSelf: 'center',
     },
     friendContainer: {
       paddingVertical: Math.min(25, Dimensions.get('window').height * 0.09),
