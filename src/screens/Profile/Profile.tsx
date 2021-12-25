@@ -19,6 +19,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList, UNAUTHENTICATED_SCREEN } from '#/navigation';
 import { LogoButton } from '~/components/LogoButton/LogoButton';
 import { AppModal } from '~/components/AppModal/AppModal';
+import { Loader } from '~/components/Loader/Loader';
 
 export const ProfileScreen = () => {
   const navigator =
@@ -217,7 +218,7 @@ export const ProfileScreen = () => {
       </ScrollView>
       <AppModal
         visible={modalOpen}
-        title={'Error'}
+        title="ERROR"
         titleColor={colors.error}
         titleIcon="alert-circle"
         subTitle={error}
@@ -225,13 +226,7 @@ export const ProfileScreen = () => {
           setModalOpen(false);
         }}
       />
-      {working && (
-        <Portal>
-          <View style={styles.loader}>
-            <ActivityIndicator size="large" color="white" />
-          </View>
-        </Portal>
-      )}
+      <Loader working={working} />
     </FullScreenLayout>
   );
 };

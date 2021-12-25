@@ -1,4 +1,4 @@
-name: Build Android and iOS
+name: PR checks
 on: [pull_request]
 jobs:
   install-and-test:
