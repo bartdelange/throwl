@@ -10,6 +10,7 @@ import { LogoButton } from '~/components/LogoButton/LogoButton';
 import { RootStackParamList } from '~/constants/navigation';
 import { AuthContext } from '~/context/AuthContext';
 import { FormInput } from '~/components/FormInput/FormInput';
+import { Loader } from '~/components/Loader/Loader';
 
 export const SignUpTab = () => {
   const [working, setWorking] = React.useState(false);
@@ -90,7 +91,7 @@ export const SignUpTab = () => {
     <View style={styles.parent}>
       <AppModal
         visible={!!modalOpen}
-        title={'Error'}
+        title="ERROR"
         titleColor={colors.error}
         titleIcon="alert-circle"
         subTitle={error}
@@ -159,13 +160,7 @@ export const SignUpTab = () => {
         <LogoButton style={styles.button} label="GO" onPress={onSubmit} />
         <View style={styles.spacer} />
       </KeyboardAwareScrollView>
-      {working && (
-        <Portal>
-          <View style={styles.loader}>
-            <ActivityIndicator size="large" color="white" />
-          </View>
-        </Portal>
-      )}
+      <Loader working={working} />
     </View>
   );
 };
@@ -185,21 +180,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignContent: 'center',
     alignItems: 'center',
-  },
-  loader: {
-    position: 'absolute',
-    left:
-      Dimensions.get('screen').width / 2 - Dimensions.get('screen').width * 0.1,
-    top:
-      Dimensions.get('screen').height / 2 -
-      Dimensions.get('screen').width * 0.1,
-    width: Dimensions.get('screen').width * 0.2,
-    aspectRatio: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-    borderRadius: Dimensions.get('window').width * 0.05,
-    backgroundColor: 'rgba(0,0,0,.25)',
   },
   heading: {
     fontSize: Math.max(Dimensions.get('window').width * 0.1, 24),
