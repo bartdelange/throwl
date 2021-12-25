@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
+
 jobs:
   install-and-test:
     runs-on: ubuntu-latest
@@ -36,24 +38,38 @@ jobs:
 #          name: android-apk
 #          path: android/app/build/outputs/apk/release/
 
-  build-ios:
+  deploy-ios:
+    name: Deploying to Testflight
     needs: install-and-test
-    runs-on: macos-latest
+    runs-on: macOS-latest
+
     steps:
-      - uses: actions/checkout@v2
-      - name: Install npm dependencies
-        run: |
-          npm ci
-      - name: Install pod dependencies
-        working-directory: ios
-        run: pod install
-      - name: Build app
-        working-directory: ios
-        run: |
-          xcodebuild -workspace throwl.xcworkspace -scheme throwl archive -archivePath throwl.xcarchive -allowProvisioningUpdates
-          xcodebuild -exportArchive -archivePath ./throwl.xcarchive -exportPath . -exportOptionsPlist throwl/Info.plist
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - uses: ruby/setup-ruby@v1
         with:
-          name: ios-ipa
-          path: '**/*.ipa'
+          ruby-version: '2.6.8'
+          bundler-cache: true
+
+      - name: Deploy iOS Beta to TestFlight via Fastlane
+        uses: maierj/fastlane-action@v2.0.1
+        with:
+          lane: closed_beta
+          subdirectory: ios
+          skip-tracking: true
+        env:
+          APP_STORE_CONNECT_TEAM_ID: '${{ secrets.APP_STORE_CONNECT_TEAM_ID }}'
+          DEVELOPER_APP_ID: '${{ secrets.DEVELOPER_APP_ID }}'
+          DEVELOPER_APP_IDENTIFIER: '${{ secrets.DEVELOPER_APP_IDENTIFIER }}'
+          DEVELOPER_PORTAL_TEAM_ID: '${{ secrets.DEVELOPER_PORTAL_TEAM_ID }}'
+          FASTLANE_APPLE_ID: '${{ secrets.FASTLANE_APPLE_ID }}'
+          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: '${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}'
+          MATCH_PASSWORD: '${{ secrets.MATCH_PASSWORD }}'
+          GIT_AUTHORIZATION: '${{ secrets.GIT_AUTHORIZATION }}'
+          PROVISIONING_PROFILE_SPECIFIER: '${{ secrets.PROVISIONING_PROFILE_SPECIFIER }}'
+          TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
+          TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
+          APPLE_KEY_ID: '${{ secrets.APPLE_KEY_ID }}'
+          APPLE_ISSUER_ID: '${{ secrets.APPLE_ISSUER_ID }}'
+          APPLE_KEY_CONTENT: '${{ secrets.APPLE_KEY_CONTENT }}'
