@@ -34,6 +34,8 @@ export const PlayGameScreen: React.FC<any> = () => {
 
   const [gameId, setGameId] = React.useState<string>();
   const [gameFinished, setGameFinished] = React.useState<boolean>(false);
+  const [gameFinishedPopup, setGameFinishedPopup] =
+    React.useState<boolean>(false);
   const [droppingOutUserIndex, setDroppingOutUserIndex] =
     React.useState<number>();
   const [activeUserIndex, setActiveUserIndex] = React.useState<number>(0);
@@ -57,7 +59,7 @@ export const PlayGameScreen: React.FC<any> = () => {
       const activeGame = route.params.activeGame;
       setGameId(activeGame.id);
       setTurns(activeGame.turns);
-      rotateUsers(
+      const nextUserIndex = rotateUsers(
         false,
         route.params.players.findIndex(player => {
           return (
@@ -65,6 +67,10 @@ export const PlayGameScreen: React.FC<any> = () => {
           );
         })
       );
+      setCurrentTurn({
+        userId: route.params.players[nextUserIndex].id,
+        throws: [],
+      });
     }
   }, []);
 
@@ -74,7 +80,7 @@ export const PlayGameScreen: React.FC<any> = () => {
   ): number => {
     let nextUserIndex =
       customIndex !== undefined && customIndex !== null
-        ? customIndex
+        ? customIndex + (reverse ? -1 : 1)
         : activeUserIndex + (reverse ? -1 : 1);
     if (nextUserIndex >= route.params.players.length) nextUserIndex = 0;
     if (nextUserIndex < 0) nextUserIndex = route.params.players.length - 1;
@@ -102,6 +108,7 @@ export const PlayGameScreen: React.FC<any> = () => {
     setConfettiing(true);
     const newTurns = [...turns, turn];
     setGameFinished(true);
+    setGameFinishedPopup(true);
     await persist(newTurns, true);
   };
 
@@ -145,6 +152,7 @@ export const PlayGameScreen: React.FC<any> = () => {
     }
     newTurn.throws.pop();
     setCurrentTurn(newTurn);
+    setGameFinishedPopup(false);
     setGameFinished(false);
     return persist(newTurns, false);
   };
@@ -295,6 +303,7 @@ export const PlayGameScreen: React.FC<any> = () => {
               </Col>
             </Row>
             <FlatList<User>
+              onScrollToIndexFailed={() => {}}
               ref={scoreTableRef}
               data={route.params.players}
               style={{
@@ -382,24 +391,32 @@ export const PlayGameScreen: React.FC<any> = () => {
         title="WINNER"
         titleIcon="crown"
         subTitle={route.params.players[activeUserIndex].name}
-        visible={gameFinished}
+        visible={gameFinishedPopup}
+        onDismiss={() => {
+          setGameFinishedPopup(false);
+          navigator.popToTop();
+        }}
         actions={
           <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
             <IconButton
               icon="logout-variant"
               size={iconSize * 1.5}
               color={colors.primary}
-              onPress={navigator.popToTop}
+              onPress={() => {
+                setGameFinishedPopup(false);
+                navigator.popToTop();
+              }}
             />
             <IconButton
               icon="chart-line"
               size={iconSize * 1.5}
               color={colors.success}
-              onPress={async () =>
+              onPress={async () => {
+                setGameFinishedPopup(false);
                 navigator.push(GAME_DETAIL_SCREEN, {
                   game: await GameService.getById(gameId!),
-                })
-              }
+                });
+              }}
             />
             <IconButton
               icon="restore"
@@ -432,7 +449,7 @@ export const PlayGameScreen: React.FC<any> = () => {
             <IconButton
               icon="check"
               size={iconSize * 1.5}
-              color={colors.error}
+              color={colors.success}
               onPress={() =>
                 droppingOutUserIndex != null
                   ? dropOutUser(route.params.players[droppingOutUserIndex].id)
@@ -442,7 +459,7 @@ export const PlayGameScreen: React.FC<any> = () => {
             <IconButton
               icon="close"
               size={iconSize * 1.5}
-              color={colors.success}
+              color={colors.error}
               onPress={() => setDroppingOutUserIndex(undefined)}
             />
           </View>
