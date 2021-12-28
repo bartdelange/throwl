@@ -127,6 +127,12 @@ def enableHermes = project.ext.react.get("enableHermes", false);
  */
 def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitectures")
 
+
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+
 android {
     ndkVersion rootProject.ext.ndkVersion
 
@@ -155,12 +161,10 @@ android {
             keyPassword 'android'
         }
         release {
-            if (project.hasProperty('THROWL_RELEASE_STORE_FILE')) {
-                storeFile file(THROWL_RELEASE_STORE_FILE)
-                storePassword THROWL_RELEASE_STORE_PASSWORD
-                keyAlias THROWL_RELEASE_KEY_ALIAS
-                keyPassword THROWL_RELEASE_KEY_PASSWORD
-            }
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
         }
     }
     buildTypes {
