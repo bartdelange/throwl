@@ -47,6 +47,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - run: npm ci
+
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '2.6.8'
