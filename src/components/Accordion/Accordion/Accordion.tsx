@@ -65,8 +65,10 @@ export const Accordion: React.FC<React.PropsWithChildren<AccordionProps>> = ({
           onChange();
         }}>
         <Animated.View style={[styles.container, headerStyle]}>
-          <Text style={[styles.title, titleStyle]}>{title}</Text>
-          <Text style={[styles.subtitle, subtitleStyle]}>{subtitle}</Text>
+          <View>
+            <Text style={[styles.title, titleStyle]}>{title}</Text>
+            <Text style={[styles.subtitle, subtitleStyle]}>{subtitle}</Text>
+          </View>
           <Chevron progress={progress} />
         </Animated.View>
       </TouchableWithoutFeedback>

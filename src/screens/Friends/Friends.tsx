@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, View } from 'react-native';
+import { FlatList, ScrollView, View } from 'react-native';
 import {
   ActivityIndicator,
   Divider,
@@ -77,7 +77,7 @@ export const FriendsScreen = () => {
 
   return (
     <FullScreenLayout style={styles.layout}>
-      <View style={styles.content}>
+      <ScrollView style={styles.content}>
         <FormInput
           style={styles.input}
           label="ADD A FRIEND"
@@ -101,10 +101,8 @@ export const FriendsScreen = () => {
               </Text>
             </View>
             <Divider style={styles.divider} />
-            <FlatList
-              scrollEnabled={false}
-              data={pendingFriends}
-              renderItem={({ item: friend, index }) => {
+            <View style={styles.section}>
+              {pendingFriends.map((friend, index) => {
                 const actions = [];
                 if (friend.requester != user?.id) {
                   actions.push({
@@ -137,9 +135,8 @@ export const FriendsScreen = () => {
                     </View>
                   </SwipeActions>
                 );
-              }}
-              style={styles.section}
-            />
+              })}
+            </View>
           </>
         )}
         <View style={styles.header}>
@@ -148,10 +145,8 @@ export const FriendsScreen = () => {
           </Text>
         </View>
         <Divider style={styles.divider} />
-        <FlatList
-          scrollEnabled={false}
-          data={friends}
-          renderItem={({ item: friend, index }) => (
+        <View style={styles.section}>
+          {friends.map((friend, index) => (
             <SwipeActions
               key={index}
               bounce={!pendingFriends.length && index == 0}
@@ -166,10 +161,9 @@ export const FriendsScreen = () => {
                 <Text style={styles.friendName}>{friend.user.name}</Text>
               </View>
             </SwipeActions>
-          )}
-          style={styles.section}
-        />
-      </View>
+          ))}
+        </View>
+      </ScrollView>
       <AppModal
         visible={!!error}
         title="ERROR"

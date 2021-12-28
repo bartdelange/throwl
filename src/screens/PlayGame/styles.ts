@@ -49,7 +49,7 @@ export const makeStyles = () => {
       flexDirection: 'row',
       flex: 1,
       paddingTop: textSize * 0.1,
-      height: textSize,
+      height: textSize + textSize * 0.2,
     },
     currentThrowNumberText: {
       textAlignVertical: 'bottom',

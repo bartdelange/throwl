@@ -805,7 +805,7 @@ PODS:
     - Firebase/Auth (= 8.10.0)
     - React-Core
     - RNFBApp
-  - RNFBFirestore (13.1.0):
+  - RNFBFirestore (14.1.0):
     - Firebase/Firestore (= 8.10.0)
     - React-Core
     - RNFBApp
@@ -844,8 +844,8 @@ PODS:
     - React-RCTImage
   - RNSharedElement (0.8.3):
     - React-Core
-  - RNSVG (12.2.0):
-    - React-Core
+  - RNSVG (12.1.1):
+    - React
   - RNVectorIcons (9.0.0):
     - React-Core
   - Yoga (1.14.0)
@@ -1120,12 +1120,12 @@ SPEC CHECKSUMS:
   RNCMaskedView: c298b644a10c0c142055b3ae24d83879ecb13ccd
   RNFBApp: e884e9a2dcc5edfa73e2651ef6638df5e0672f89
   RNFBAuth: fd6cbf93302641dbe20045a44e64c1fa3d4eff02
-  RNFBFirestore: d141f27f48e94c66830e561167aff712659d4d87
+  RNFBFirestore: 335dcbdb91786a892dd76831373f9794ac947e3b
   RNGestureHandler: e5c7cab5f214503dcefd6b2b0cefb050e1f51c4a
   RNReanimated: da3860204e5660c0dd66739936732197d359d753
   RNScreens: 522705f2e5c9d27efb17f24aceb2bf8335bc7b8e
   RNSharedElement: 381b5e33366513cc3f449f2dc3a42c5df0f54021
-  RNSVG: 4ecc2e8f38b6ebe7889909570c26f3abe8059767
+  RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
   RNVectorIcons: 4143ba35feebab8fdbe6bc43d1e776b393d47ac8
   Yoga: e7dc4e71caba6472ff48ad7d234389b91dadc280
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
