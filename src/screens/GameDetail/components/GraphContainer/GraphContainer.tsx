@@ -61,7 +61,7 @@ export const GraphContainer: React.FC<ScoreContainerProps> = ({ turns }) => {
         data={scoreValues}
         style={{ flex: 1 }}
         padding={{ left: 40, bottom: 20, right: 40, top: 40 }}
-        yDomain={{ min: 0, max: maxYValue }}>
+        yDomain={{ min: 0, max: maxYValue + 20 }}>
         <VerticalAxis
           tickCount={3}
           theme={{
@@ -100,7 +100,7 @@ export const GraphContainer: React.FC<ScoreContainerProps> = ({ turns }) => {
               theme={{
                 shape: {
                   height: 50,
-                  width: 110,
+                  width: 75,
                   color: colors.primary,
                 },
                 formatter: v => {

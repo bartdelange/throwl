@@ -47,10 +47,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - uses: ruby/setup-ruby@v1
+      - name: Use Ruby v2.6.8
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: '2.6.8'
           bundler-cache: true
+
+      - name: Install npm dependencies
+        run: npm ci
 
       - name: Deploy iOS Beta to TestFlight via Fastlane
         uses: maierj/fastlane-action@v2.0.1

@@ -53,8 +53,6 @@ export const makeStyles = (textSize: number) => {
       color: colors.primary,
     },
     scoreText: {
-      paddingLeft: height * 0.025,
-      paddingRight: height * 0.025,
       lineHeight: textSize * 0.75,
       fontSize: textSize * 0.75,
       fontWeight: '200',
@@ -72,11 +70,13 @@ export const makeStyles = (textSize: number) => {
     statsContainer: {
       height: 350,
       flex: 1,
+      paddingTop: 0,
       padding: height * 0.0125,
     },
     graphContainer: {
       height: 350,
       flex: 1,
+      paddingTop: 0,
       padding: height * 0.0125,
       aspectRatio: 1,
       minWidth: width < 500 ? width - height * 0.075 : 0, // width - all the margin/padding applied above

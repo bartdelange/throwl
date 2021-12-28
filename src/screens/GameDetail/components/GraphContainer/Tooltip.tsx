@@ -54,17 +54,26 @@ const Tooltip: React.FC<Props> = props => {
         textAnchor={label.textAnchor}>
         {formatter(value).label}
       </Text>
-      <Text
-        x={position.x + label.dx}
-        y={position.y - label.dy + shape.height / 5}
-        fontSize={label.fontSize}
-        fontWeight={label.fontWeight}
-        fontFamily={label.fontFamily}
-        fill={label.color}
-        opacity={label.opacity}
-        textAnchor={label.textAnchor}>
-        {formatter(value).data}
-      </Text>
+      {formatter(value)
+        .data.split(' - ')
+        .map((val, index) => (
+          <Text
+            x={position.x + label.dx}
+            y={
+              position.y -
+              label.dy +
+              shape.height / 10 +
+              (shape.height / 5) * index
+            }
+            fontSize={label.fontSize}
+            fontWeight={label.fontWeight}
+            fontFamily={label.fontFamily}
+            fill={label.color}
+            opacity={label.opacity}
+            textAnchor={label.textAnchor}>
+            {val}
+          </Text>
+        ))}
     </React.Fragment>
   );
 };

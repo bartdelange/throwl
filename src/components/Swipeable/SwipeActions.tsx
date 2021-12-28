@@ -49,7 +49,7 @@ export const SwipeActions: React.FC<
                 <MaterialCommunityIcons
                   name={action.icon}
                   adjustsFontSizeToFit
-                  style={{ fontSize: 1000 }}
+                  style={{ fontSize: 100 }}
                   color={action.iconColor || 'white'}
                 />
               </Animated.View>
