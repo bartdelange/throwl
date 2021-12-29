@@ -1,14 +1,14 @@
 {
   "name": "throwl",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest --passWithNoTests",
-    "setAndroidVersion": "cd android; bundle exec fastlane update_version version:$VERSION",
-    "setIosVersion": "cd ios; bundle exec fastlane update_version version:$VERSION",
+    "setAndroidVersion": "cd android; bundle exec fastlane update_version version:$npm_package_version",
+    "setIosVersion": "cd ios; bundle exec fastlane update_version version:$npm_package_version",
     "setVersion": "npm run setAndroidVersion && npm run setIosVersion"
   },
   "dependencies": {
