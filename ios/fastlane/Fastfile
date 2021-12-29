@@ -31,6 +31,15 @@ def ensure_temp_keychain(name, password)
 end
 
 platform :ios do
+  lane :update_version do |options|
+    increment_version_number(
+      version_number: options[:version],
+      xcodeproj: "throwl.xcodeproj"
+    )
+    increment_build_number(xcodeproj: "throwl.xcodeproj")
+  end
+
+  desc "Submit a new Beta Build"
   lane :closed_beta do
     keychain_name = TEMP_KEYCHAIN_USER
     keychain_password = TEMP_KEYCHAIN_PASSWORD
@@ -43,8 +52,6 @@ platform :ios do
       duration: 1200,
       in_house: false
     )
-
-    increment_build_number(xcodeproj: "throwl.xcodeproj")
 
     cocoapods(
       clean_install: true

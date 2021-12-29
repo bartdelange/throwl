@@ -6,7 +6,10 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
-    "test": "jest --passWithNoTests"
+    "test": "jest --passWithNoTests",
+    "setAndroidVersion": "cd android; bundle exec fastlane update_version version:$VERSION",
+    "setIosVersion": "cd ios; bundle exec fastlane update_version version:$VERSION",
+    "setVersion": "npm run setAndroidVersion && npm run setIosVersion"
   },
   "dependencies": {
     "@babel/preset-typescript": "^7.16.5",

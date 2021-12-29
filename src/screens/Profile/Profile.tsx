@@ -139,7 +139,7 @@ export const ProfileScreen = () => {
   return (
     <FullScreenLayout style={styles.layout}>
       <ScrollView style={styles.content}>
-        <View style={styles.header}>
+        <View style={[styles.header, styles.firstHeader]}>
           <Text numberOfLines={1} adjustsFontSizeToFit style={styles.heading}>
             Your profile
           </Text>
@@ -157,7 +157,7 @@ export const ProfileScreen = () => {
           <LogoButton label="UPDATE" onPress={updateTrivialUserData} />
         </View>
         <View style={styles.header}>
-          <Text numberOfLines={1} adjustsFontSizeToFit style={styles.heading}>
+          <Text numberOfLines={2} adjustsFontSizeToFit style={styles.heading}>
             Your security information
           </Text>
         </View>

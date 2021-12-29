@@ -25,11 +25,13 @@ export const FullScreenLayout: React.FC<
         style={[
           style,
           {
-            backgroundColor: mode === 'dark' ? colors.background : '#adcadb',
+            backgroundColor:
+              mode === 'dark' ? colors.background : colors.accent,
           },
           styles.mainView,
         ]}>
         <StatusBar
+          backgroundColor={mode === 'dark' ? colors.background : colors.accent}
           barStyle={mode === 'dark' ? 'light-content' : 'dark-content'}
         />
         {children}
@@ -41,11 +43,13 @@ export const FullScreenLayout: React.FC<
         style={[
           style,
           {
-            backgroundColor: mode === 'dark' ? colors.background : '#adcadb',
+            backgroundColor:
+              mode === 'dark' ? colors.background : colors.accent,
           },
           styles.mainView,
         ]}>
         <StatusBar
+          backgroundColor={mode === 'dark' ? colors.background : colors.accent}
           barStyle={mode === 'dark' ? 'light-content' : 'dark-content'}
         />
         {children}
