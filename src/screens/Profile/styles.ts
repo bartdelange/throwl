@@ -10,7 +10,8 @@ export const makeStyles = () => {
       alignItems: 'center',
     },
     content: {
-      width: '80%',
+      paddingHorizontal: '10%',
+      paddingBottom: '5%',
       height: '100%',
       flexShrink: 1,
     },
@@ -19,7 +20,10 @@ export const makeStyles = () => {
       alignItems: 'center',
       justifyContent: 'center',
       marginBottom: '5%',
-      marginTop: '10%',
+      marginTop: '15%',
+    },
+    firstHeader: {
+      marginTop: 0,
     },
     heading: {
       fontSize: 48,
@@ -35,6 +39,7 @@ export const makeStyles = () => {
     },
     section: {
       flexGrow: 1,
+      paddingVertical: '10%',
     },
     input: {
       alignItems: 'flex-start',

@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 
 export const makeStyles = () =>
   StyleSheet.create({
@@ -9,7 +9,7 @@ export const makeStyles = () =>
       justifyContent: 'center',
     },
     text: {
-      fontSize: 24,
+      fontSize: Math.max(Dimensions.get('window').width * 0.04, 24),
       fontWeight: '700',
       color: '#FFFFFF',
     },
