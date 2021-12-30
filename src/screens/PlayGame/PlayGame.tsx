@@ -14,9 +14,11 @@ import Confetti from 'react-native-confetti';
 import { Col, Grid, Row } from 'react-native-easy-grid';
 import { Appbar, IconButton, Text, useTheme } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import KeepAwake from 'react-native-keep-awake';
+import Tts from 'react-native-tts';
+
 import { AppLogoArrowLight } from '~/components/AppLogo';
 import { AppModal } from '~/components/AppModal/AppModal';
-
 import { ClickableDartboard } from '~/components/ClickableDartboard/ClickableDartboard';
 import { SwipeActions } from '~/components/Swipeable/SwipeActions';
 import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
@@ -54,19 +56,39 @@ export const PlayGameScreen: React.FC<any> = () => {
   const confettiRef = React.createRef<Confetti>();
   const [confettiing, setConfettiing] = React.useState(false);
 
+  // Required by tts app, results in errors when not listening to these events
+  useEffect(() => {
+    Tts.addEventListener('tts-start', _event => {});
+    Tts.addEventListener('tts-finish', _event => {});
+    Tts.addEventListener('tts-cancel', _event => {});
+  });
+
+  // Wake lock
+  useEffect(() => {
+    KeepAwake.activate();
+    return () => {
+      KeepAwake.deactivate();
+    };
+  });
+
+  // Game resumption
   useEffect(() => {
     if (route.params.activeGame) {
       const activeGame = route.params.activeGame;
       setGameId(activeGame.id);
       setTurns(activeGame.turns);
-      const nextUserIndex = rotateUsers(
-        false,
-        route.params.players.findIndex(player => {
-          return (
-            player.id === activeGame.turns[activeGame.turns.length - 1].userId
-          );
-        })
-      );
+      let nextUserIndex = 0;
+      if (activeGame.turns[activeGame.turns.length - 1]) {
+        nextUserIndex = rotateUsers(
+          false,
+          route.params.players.findIndex(player => {
+            return (
+              player.id ===
+              activeGame.turns[activeGame.turns.length - 1]?.userId
+            );
+          })
+        );
+      }
       setCurrentTurn({
         userId: route.params.players[nextUserIndex].id,
         throws: [],
@@ -93,6 +115,16 @@ export const PlayGameScreen: React.FC<any> = () => {
     return nextUserIndex;
   };
 
+  const speak = async (words: string) => {
+    try {
+      await Tts.setDefaultLanguage('en-US');
+    } catch (err) {
+      console.log(`setDefaultLanguage error `, err);
+    }
+    await Tts.setDefaultRate(0.45);
+    await Tts.speak(words);
+  };
+
   const finishTurn = async (turn: Turn) => {
     const newTurns = [...turns, turn];
     setTurns(newTurns);
@@ -101,41 +133,66 @@ export const PlayGameScreen: React.FC<any> = () => {
       userId: route.params.players[nextUserIndex].id,
       throws: [],
     });
+
+    const userScoreLeft =
+      route.params.startingScore -
+      ScoreHelper.calculateScore(
+        turns.filter(
+          t => t.userId === route.params.players[nextUserIndex].id && t.isValid
+        )
+      );
+
+    if (userScoreLeft <= 170) {
+      speak(
+        `${
+          route.params.players[nextUserIndex].name.split(' ')[0]
+        } you need ${userScoreLeft}`
+      );
+    }
     await persist(newTurns);
   };
 
-  const finishGame = async (turn: Turn, position: { x: number; y: number }) => {
+  const finishGame = async (turn: Turn) => {
     setConfettiing(true);
     const newTurns = [...turns, turn];
     setGameFinished(true);
     setGameFinishedPopup(true);
+    speak(
+      `${route.params.players[activeUserIndex].name.split(' ')[0]} has won!`
+    );
     await persist(newTurns, true);
   };
 
-  const updateScoreOnThrow = (
-    thrw: Throw,
-    position: { x: number; y: number }
-  ) => {
+  const onThrow = (thrw: Throw, _position: { x: number; y: number }) => {
     if (gameFinished) return;
-    const newTurn = {
+    const thisTurn = {
       ...currentTurn,
       throws: [...currentTurn.throws, thrw],
     };
+    const turnScore = ScoreHelper.calculateTurnScore(thisTurn);
     const userScore =
       ScoreHelper.calculateScore(
-        turns.filter(t => t.userId === newTurn.userId && t.isValid)
-      ) + ScoreHelper.calculateTurnScore(newTurn);
-    newTurn.isValid = ScoreHelper.checkThrowValidity(
-      newTurn,
+        turns.filter(t => t.userId === thisTurn.userId && t.isValid)
+      ) + turnScore;
+    thisTurn.isValid = ScoreHelper.checkThrowValidity(
+      thisTurn,
       userScore,
       route.params.startingScore
     );
-    setCurrentTurn(newTurn);
-    if (userScore === route.params.startingScore && newTurn.isValid) {
-      return finishGame(newTurn, position);
+    setCurrentTurn(thisTurn);
+    if (userScore === route.params.startingScore && thisTurn.isValid) {
+      return finishGame(thisTurn);
     }
-    if (newTurn.throws.length === 3 || !newTurn.isValid) {
-      return finishTurn(newTurn);
+    if (thisTurn.throws.length === 3 || !thisTurn.isValid) {
+      if (!thisTurn.isValid) {
+        speak('No score');
+      } else if (turnScore === 69) {
+        speak('sheeeeesh');
+      } else {
+        speak(turnScore.toFixed(0));
+      }
+
+      return finishTurn(thisTurn);
     }
   };
 
@@ -166,18 +223,34 @@ export const PlayGameScreen: React.FC<any> = () => {
     const newUserIndex =
       oldUserIndex === route.params.players.length - 1 ? 0 : oldUserIndex;
     const newTurns = turns.filter(t => t.userId !== userId);
+    const newPlayers = route.params.players.filter(u => u.id !== userId);
     setTurns(newTurns);
     navigator.setParams({
       ...route.params,
-      players: route.params.players.filter(u => u.id !== userId),
+      players: newPlayers,
     });
     setActiveUserIndex(newUserIndex);
     if (oldUserIndex === activeUserIndex) {
       setCurrentTurn({
-        userId: route.params.players[newUserIndex].id,
+        userId: newPlayers[newUserIndex].id,
         throws: [],
       });
     }
+
+    const userScoreLeft =
+      route.params.startingScore -
+      ScoreHelper.calculateScore(
+        turns.filter(t => t.userId === newPlayers[newUserIndex].id && t.isValid)
+      );
+
+    if (userScoreLeft <= 170) {
+      speak(
+        `${
+          newPlayers[newUserIndex].name.split(' ')[0]
+        } you need ${userScoreLeft}`
+      );
+    }
+
     setDroppingOutUserIndex(undefined);
     return persist(newTurns, true);
   };
@@ -213,7 +286,7 @@ export const PlayGameScreen: React.FC<any> = () => {
       <View style={styles.content}>
         <Pressable
           onPress={evt =>
-            updateScoreOnThrow(
+            onThrow(
               {
                 type: DartboardScoreType.Out,
                 score: 0,
@@ -223,7 +296,7 @@ export const PlayGameScreen: React.FC<any> = () => {
           }>
           <View style={styles.dartboardWrapper}>
             <View>
-              <ClickableDartboard onClick={updateScoreOnThrow} />
+              <ClickableDartboard onClick={onThrow} />
               <Text style={styles.missText}>MISS</Text>
             </View>
           </View>

@@ -116,10 +116,12 @@ export class GameService {
       finished: game.finished ? game.finished.toDate() : undefined,
       started: game.started ? game.started.toDate() : undefined,
       players: players,
-      turns: game.turns.map((t: any) => ({
-        ...t,
-        userId: t.userId.id,
-      })),
+      turns: game.turns
+        .filter((t: any) => !!t)
+        .map((t: any) => ({
+          ...t,
+          userId: t.userId.id,
+        })),
       startingScore: game.startingScore || 501,
     };
   }
