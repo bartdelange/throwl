@@ -1,5 +1,7 @@
 name: PR checks
-on: [pull_request]
+on:
+  pull_request:
+    branches-ignore: "dependabot/**"
 jobs:
   install-and-test:
     runs-on: ubuntu-latest
