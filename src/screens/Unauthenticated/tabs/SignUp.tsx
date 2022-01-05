@@ -1,7 +1,13 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Dimensions, StyleSheet, TextInput, View } from 'react-native';
+import {
+  Dimensions,
+  Platform,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import { ActivityIndicator, Portal, Text, useTheme } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import isEmail from 'validator/es/lib/isEmail';
@@ -183,7 +189,14 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: Math.max(Dimensions.get('window').width * 0.1, 24),
-    fontWeight: '900',
+    ...Platform.select({
+      default: {
+        fontWeight: 'bold',
+      },
+      android: {
+        fontFamily: 'Karbon-Bold',
+      },
+    }),
     marginBottom: '10%',
     color: 'white',
   },

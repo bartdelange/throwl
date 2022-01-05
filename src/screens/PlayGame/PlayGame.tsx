@@ -118,11 +118,11 @@ export const PlayGameScreen: React.FC<any> = () => {
   const speak = async (words: string) => {
     try {
       await Tts.setDefaultLanguage('en-US');
+      await Tts.setDefaultRate(0.45);
+      await Tts.speak(words);
     } catch (err) {
-      console.log(`setDefaultLanguage error `, err);
+      console.error(`speaking error `, err);
     }
-    await Tts.setDefaultRate(0.45);
-    await Tts.speak(words);
   };
 
   const finishTurn = async (turn: Turn) => {
@@ -295,10 +295,8 @@ export const PlayGameScreen: React.FC<any> = () => {
             )
           }>
           <View style={styles.dartboardWrapper}>
-            <View>
-              <ClickableDartboard onClick={onThrow} />
-              <Text style={styles.missText}>MISS</Text>
-            </View>
+            <Text style={styles.missText}>MISS</Text>
+            <ClickableDartboard onClick={onThrow} />
           </View>
         </Pressable>
         <SafeAreaView style={styles.scoreWrapper}>

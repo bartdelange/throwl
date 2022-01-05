@@ -1,7 +1,10 @@
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, Platform, StyleSheet } from 'react-native';
+import { useTheme } from 'react-native-paper';
 
-export const makeStyles = () =>
-  StyleSheet.create({
+export const makeStyles = () => {
+  const { colors } = useTheme();
+
+  return StyleSheet.create({
     wrapper: {
       position: 'relative',
       alignItems: 'center',
@@ -10,7 +13,14 @@ export const makeStyles = () =>
     },
     text: {
       fontSize: Math.max(Dimensions.get('window').width * 0.04, 24),
-      fontWeight: '700',
+      ...Platform.select({
+        default: {
+          fontWeight: 'bold',
+        },
+        android: {
+          fontFamily: 'Karbon-Bold',
+        },
+      }),
       color: '#FFFFFF',
     },
     input: {
@@ -22,5 +32,7 @@ export const makeStyles = () =>
       borderRadius: 100,
       minWidth: '100%',
       backgroundColor: '#FFF',
+      color: colors.primary,
     },
   });
+};

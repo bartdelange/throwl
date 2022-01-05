@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, Platform, StyleSheet } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 export const makeStyles = () => {
@@ -30,7 +30,14 @@ export const makeStyles = () => {
       flex: 1,
       marginRight: '25%',
       includeFontPadding: false,
-      fontWeight: '700',
+      ...Platform.select({
+        default: {
+          fontWeight: 'bold',
+        },
+        android: {
+          fontFamily: 'Karbon-Bold',
+        },
+      }),
     },
     divider: {
       height: 3,

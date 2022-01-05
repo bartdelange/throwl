@@ -2,7 +2,7 @@ name: Distribute app to Android & iOS stores 🚀
 on:
   push:
     branches:
-      - master
+      - releases/*
   workflow_dispatch:
 
 jobs:

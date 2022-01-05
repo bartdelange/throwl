@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, Platform, StyleSheet } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 export const makeStyles = () => {
@@ -19,7 +19,14 @@ export const makeStyles = () => {
       fontSize: textSize,
       paddingRight: '25%',
       includeFontPadding: false,
-      fontWeight: '700',
+      ...Platform.select({
+        default: {
+          fontWeight: 'bold',
+        },
+        android: {
+          fontFamily: 'Karbon-Bold',
+        },
+      }),
     },
     divider: {
       marginTop: 50,
@@ -43,11 +50,17 @@ export const makeStyles = () => {
     },
     listItemGameState: {
       fontSize: textSize,
-      fontWeight: '700',
+      ...Platform.select({
+        default: {
+          fontWeight: 'bold',
+        },
+        android: {
+          fontFamily: 'Karbon-Bold',
+        },
+      }),
     },
     listItemGameTimes: {
       fontSize: textSize / 2,
-      fontWeight: '200',
     },
   });
 };

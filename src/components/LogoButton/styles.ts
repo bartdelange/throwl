@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 export const makeStyles = () =>
   StyleSheet.create({
@@ -12,7 +12,14 @@ export const makeStyles = () =>
       marginRight: 20,
     },
     text: {
-      fontWeight: '700',
+      ...Platform.select({
+        default: {
+          fontWeight: 'bold',
+        },
+        android: {
+          fontFamily: 'Karbon-Bold',
+        },
+      }),
       marginTop: 5,
     },
   });

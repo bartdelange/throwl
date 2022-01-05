@@ -5,6 +5,7 @@ import {
   Label,
   XYValue,
   Shape,
+  FontWeight,
 } from 'react-native-responsive-linechart';
 import { Text, Rect } from 'react-native-svg';
 import ChartContext from 'react-native-responsive-linechart/lib/ChartContext';
@@ -79,7 +80,6 @@ const Tooltip: React.FC<Props> = props => {
 };
 
 export { Tooltip };
-
 const defaultProps = {
   theme: {
     label: {
