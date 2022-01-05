@@ -62,6 +62,14 @@ export const makeStyles = (textSize: number) => {
     scoreText: {
       lineHeight: textSize * 0.75,
       fontSize: textSize * 0.75,
+      ...Platform.select({
+        default: {
+          fontWeight: 'normal',
+        },
+        android: {
+          fontFamily: 'Karbon-Regular',
+        },
+      }),
       color: colors.primary,
     },
     arrow: {
