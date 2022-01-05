@@ -38,17 +38,20 @@ const fonts = {
   },
   light: {
     fontFamily: 'Karbon-Regular',
-    fontWeight: '300',
+    fontWeight: 'normal',
   },
   thin: {
     fontFamily: 'Karbon-Regular',
-    fontWeight: '100',
+    fontWeight: 'normal',
   },
 };
 const fontConfig = {
-  web: fonts,
   ios: fonts,
   android: fonts,
+  macos: fonts,
+  windows: fonts,
+  web: fonts,
+  native: fonts,
 };
 export const theme = {
   ...NavigationDarkTheme,

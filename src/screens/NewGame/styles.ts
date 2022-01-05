@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, Platform, StyleSheet } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 export const makeStyles = () => {
@@ -25,7 +25,14 @@ export const makeStyles = () => {
       flex: 1,
       paddingRight: '25%',
       includeFontPadding: false,
-      fontWeight: '700',
+      ...Platform.select({
+        default: {
+          fontWeight: 'bold',
+        },
+        android: {
+          fontFamily: 'Karbon-Bold',
+        },
+      }),
     },
     menuButton: {
       alignSelf: 'flex-end',
@@ -45,7 +52,14 @@ export const makeStyles = () => {
     player: {
       paddingVertical: 5,
       color: 'white',
-      fontWeight: '700',
+      ...Platform.select({
+        default: {
+          fontWeight: 'bold',
+        },
+        android: {
+          fontFamily: 'Karbon-Bold',
+        },
+      }),
       fontSize: Math.max(Dimensions.get('window').width * 0.05, 24),
     },
     scoreInput: {

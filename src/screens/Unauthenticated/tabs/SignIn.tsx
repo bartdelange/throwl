@@ -1,7 +1,13 @@
 import { useNavigation } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useRef } from 'react';
-import { Dimensions, StyleSheet, TextInput, View } from 'react-native';
+import {
+  Dimensions,
+  Platform,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import { ActivityIndicator, Portal, Text, useTheme } from 'react-native-paper';
 import { AppModal } from '~/components/AppModal/AppModal';
 import { LogoButton } from '~/components/LogoButton/LogoButton';
@@ -157,7 +163,14 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: Math.max(Dimensions.get('window').width * 0.1, 24),
-    fontWeight: '900',
+    ...Platform.select({
+      default: {
+        fontWeight: 'bold',
+      },
+      android: {
+        fontFamily: 'Karbon-Bold',
+      },
+    }),
     marginBottom: '10%',
     color: 'white',
   },

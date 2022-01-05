@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, Platform, StyleSheet } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 export const makeStyles = () => {
@@ -36,7 +36,14 @@ export const makeStyles = () => {
     },
     icon: {
       fontSize: 48,
-      fontWeight: '700',
+      ...Platform.select({
+        default: {
+          fontWeight: 'bold',
+        },
+        android: {
+          fontFamily: 'Karbon-Bold',
+        },
+      }),
       color: colors.success,
       marginVertical: 10,
       paddingBottom: 10,
@@ -44,7 +51,14 @@ export const makeStyles = () => {
     },
     title: {
       fontSize: 48,
-      fontWeight: '700',
+      ...Platform.select({
+        default: {
+          fontWeight: 'bold',
+        },
+        android: {
+          fontFamily: 'Karbon-Bold',
+        },
+      }),
       color: colors.success,
       marginVertical: 10,
     },
@@ -55,7 +69,14 @@ export const makeStyles = () => {
     },
     subTitle: {
       fontSize: 24,
-      fontWeight: '600',
+      ...Platform.select({
+        default: {
+          fontWeight: 'bold',
+        },
+        android: {
+          fontFamily: 'Karbon-Bold',
+        },
+      }),
       color: colors.primary,
       textAlign: 'center',
     },

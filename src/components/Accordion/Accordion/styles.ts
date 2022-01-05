@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 export const makeStyles = () => {
@@ -17,12 +17,26 @@ export const makeStyles = () => {
     },
     title: {
       fontSize: 16,
-      fontWeight: 'bold',
+      ...Platform.select({
+        default: {
+          fontWeight: 'bold',
+        },
+        android: {
+          fontFamily: 'Karbon-Bold',
+        },
+      }),
       flex: 2,
     },
     subtitle: {
       fontSize: 16,
-      fontWeight: 'bold',
+      ...Platform.select({
+        default: {
+          fontWeight: 'bold',
+        },
+        android: {
+          fontFamily: 'Karbon-Bold',
+        },
+      }),
     },
     content: {
       overflow: 'hidden',
