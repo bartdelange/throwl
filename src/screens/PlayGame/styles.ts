@@ -1,11 +1,11 @@
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, Platform, StyleSheet } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 export const makeStyles = () => {
   const { colors } = useTheme();
   const { width, height } = Dimensions.get('window');
 
-  const textSize = Math.max(width * 0.04, 24);
+  const textSize = Math.max(width * 0.05, 30);
 
   return StyleSheet.create({
     layout: {
@@ -23,12 +23,19 @@ export const makeStyles = () => {
     },
     missText: {
       position: 'absolute',
-      right: 0,
-      bottom: 0,
+      right: width * 0.025,
+      bottom: width * 0.025,
       color: colors.primary,
-      fontWeight: '700',
+      ...Platform.select({
+        default: {
+          fontWeight: 'bold',
+        },
+        android: {
+          fontFamily: 'Karbon-Bold',
+        },
+      }),
       fontSize: textSize,
-      height: (textSize / 5) * 4,
+      height: textSize,
       includeFontPadding: false,
     },
     scoreWrapper: {
@@ -48,22 +55,24 @@ export const makeStyles = () => {
     currentThrowContainer: {
       flexDirection: 'row',
       flex: 1,
-      paddingTop: textSize * 0.1,
-      height: textSize + textSize * 0.2,
     },
     currentThrowNumberText: {
-      textAlignVertical: 'bottom',
-      fontSize: textSize,
+      fontSize: textSize * 0.5,
     },
     currentThrowNumberTextSuperScript: {
-      textAlignVertical: 'top',
-      fontSize: textSize * 0.6,
-      lineHeight: textSize * 0.6 * 1.1,
+      fontSize: textSize * 0.8 * 0.4,
     },
     currentThrowScoreText: {
-      paddingLeft: textSize * 0.5,
+      paddingLeft: width * 0.02,
       fontSize: textSize,
-      fontWeight: '700',
+      ...Platform.select({
+        default: {
+          fontWeight: 'bold',
+        },
+        android: {
+          fontFamily: 'Karbon-Bold',
+        },
+      }),
     },
     undoButton: {
       transform: [{ rotateZ: '45deg' }],
@@ -98,12 +107,17 @@ export const makeStyles = () => {
     },
     scoreTableCell: {
       fontSize: textSize * 0.5,
-      height: textSize * 0.5,
-      lineHeight: textSize * 0.6,
       flex: 1,
     },
     scoreTableBoldCell: {
-      fontWeight: '700',
+      ...Platform.select({
+        default: {
+          fontWeight: 'bold',
+        },
+        android: {
+          fontFamily: 'Karbon-Bold',
+        },
+      }),
     },
     scoreTableCenterCell: {
       textAlign: 'center',

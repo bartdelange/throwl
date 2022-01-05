@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, Platform, StyleSheet } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 export const makeStyles = (textSize: number) => {
@@ -48,14 +48,20 @@ export const makeStyles = (textSize: number) => {
       paddingTop: 1,
       fontSize: textSize,
       lineHeight: textSize,
-      fontWeight: '700',
+      ...Platform.select({
+        default: {
+          fontWeight: 'bold',
+        },
+        android: {
+          fontFamily: 'Karbon-Bold',
+        },
+      }),
       flex: 1,
       color: colors.primary,
     },
     scoreText: {
       lineHeight: textSize * 0.75,
       fontSize: textSize * 0.75,
-      fontWeight: '200',
       color: colors.primary,
     },
     arrow: {

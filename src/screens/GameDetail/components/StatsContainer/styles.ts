@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, Platform, StyleSheet } from 'react-native';
 
 export const makeStyles = (textSize: number) => {
   const { height } = Dimensions.get('window');
@@ -8,7 +8,14 @@ export const makeStyles = (textSize: number) => {
       fontSize: textSize,
       marginTop: height * 0.0125,
       marginBottom: height * 0.0125,
-      fontWeight: '600',
+      ...Platform.select({
+        default: {
+          fontWeight: 'bold',
+        },
+        android: {
+          fontFamily: 'Karbon-Bold',
+        },
+      }),
     },
     scoreItem: {
       flexDirection: 'row',
