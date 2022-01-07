@@ -72,6 +72,8 @@ platform :ios do
       workspace: "throwl.xcworkspace",
       scheme: "throwl",
       export_method: "app-store",
+      keychain_name: keychain_name,
+      keychain_password: keychain_password,
       export_options: {
         provisioningProfiles: {
             DEVELOPER_APP_ID => PROVISIONING_PROFILE_SPECIFIER
