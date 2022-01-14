@@ -20,6 +20,7 @@ platform :ios do
   desc "Submit a new Beta Build"
   lane :beta do
     setup_ci
+    xcversion(version: "13")
 
     cocoapods(
       clean_install: true
@@ -48,14 +49,14 @@ platform :ios do
       export_method: "app-store"
     )
 
-    upload_to_testflight(
-      apple_id: "#{DEVELOPER_APP_ID}",
-      app_identifier: "#{DEVELOPER_APP_IDENTIFIER}",
-      skip_waiting_for_build_processing: true,
-      skip_submission: true,
-      distribute_external: false,
-      notify_external_testers: false,
-      ipa: "./throwl.ipa"
-    )
+#     upload_to_testflight(
+#       apple_id: "#{DEVELOPER_APP_ID}",
+#       app_identifier: "#{DEVELOPER_APP_IDENTIFIER}",
+#       skip_waiting_for_build_processing: true,
+#       skip_submission: true,
+#       distribute_external: false,
+#       notify_external_testers: false,
+#       ipa: "./throwl.ipa"
+#     )
   end
 end
