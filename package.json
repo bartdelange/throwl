@@ -90,6 +90,12 @@
   "release-it": {
     "github": {
       "release": true
+    },
+    "npm": {
+      "publish": false
+    },
+    "hooks": {
+      "after:bump": "npm run setVersion"
     }
   }
 }
