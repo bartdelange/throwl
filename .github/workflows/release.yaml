@@ -88,7 +88,7 @@ jobs:
       - name: Distribute app to TestFlight 🚀
         uses: maierj/fastlane-action@v2.0.1
         with:
-          lane: closed_beta
+          lane: beta
           subdirectory: ios
           skip-tracking: true
         env:
