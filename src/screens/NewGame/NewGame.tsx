@@ -15,6 +15,7 @@ import {
 } from '~/constants/navigation';
 import { AuthContext } from '~/context/AuthContext';
 import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
+import { User } from '~/models/user';
 import { PlayerItem } from './components/PlayerItem/PlayerItem';
 import { makeStyles } from './styles';
 
@@ -154,7 +155,9 @@ export const NewGameScreen: React.FC = () => {
           onPress={() => {
             navigator.setParams({ selectedUsers });
             navigator.push(PLAY_GAME_SCREEN, {
-              players: players.filter(p => selectedUsers.includes(p.id)),
+              players: selectedUsers
+                .map(selectedUser => players.find(p => p.id == selectedUser))
+                .filter(Boolean) as Omit<User, 'friends'>[],
               startingScore: gameStartingScore,
             });
           }}
