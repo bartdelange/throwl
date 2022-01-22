@@ -40,7 +40,7 @@
     "react-native-keep-awake": "^4.0.0",
     "react-native-keyboard-aware-scroll-view": "APSL/react-native-keyboard-aware-scroll-view#pull/501/head",
     "react-native-pager-view": "^5.4.9",
-    "react-native-paper": "^4.11.1",
+    "react-native-paper": "^4.11.2",
     "react-native-progress": "^5.0.0",
     "react-native-reanimated": "^2.3.1",
     "react-native-responsive-linechart": "^5.7.1",
