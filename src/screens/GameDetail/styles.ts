@@ -82,13 +82,11 @@ export const makeStyles = (textSize: number) => {
       flexWrap: 'wrap',
     },
     statsContainer: {
-      height: 350,
       flex: 1,
       paddingTop: 0,
       padding: height * 0.0125,
     },
     graphContainer: {
-      height: 350,
       flex: 1,
       paddingTop: 0,
       padding: height * 0.0125,
