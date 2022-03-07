@@ -60,7 +60,7 @@
     "@babel/core": "^7.16.7",
     "@babel/runtime": "^7.16.7",
     "@types/jest": "^27.4.0",
-    "@types/react-native": "^0.66.12",
+    "@types/react-native": "^0.67.2",
     "@types/react-native-confetti": "^0.1.0",
     "@types/react-native-keep-awake": "^2.0.3",
     "@types/react-native-vector-icons": "^6.4.10",
