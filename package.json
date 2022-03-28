@@ -20,7 +20,7 @@
     "@react-native-firebase/auth": "^14.2.2",
     "@react-native-firebase/firestore": "^14.2.2",
     "@react-native-masked-view/masked-view": "^0.2.6",
-    "@react-navigation/bottom-tabs": "^6.0.9",
+    "@react-navigation/bottom-tabs": "^6.2.0",
     "@react-navigation/material-top-tabs": "^6.0.6",
     "@react-navigation/native": "^6.0.6",
     "@react-navigation/native-stack": "^6.2.5",
@@ -73,7 +73,7 @@
     "prettier": "^2.5.1",
     "react-native": "^0.67.3",
     "react-test-renderer": "17.0.2",
-    "release-it": "^14.12.3",
+    "release-it": "^14.13.1",
     "typescript": "^4.6.2"
   },
   "resolutions": {
