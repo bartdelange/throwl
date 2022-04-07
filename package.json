@@ -58,7 +58,7 @@
     "validator": "^13.7.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.17.8",
+    "@babel/core": "^7.17.9",
     "@babel/runtime": "^7.17.8",
     "@types/jest": "^27.4.1",
     "@types/react-native": "^0.67.3",
