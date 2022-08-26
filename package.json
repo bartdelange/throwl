@@ -38,7 +38,7 @@
     "react-native-confetti": "^0.1.0",
     "react-native-dynamic-vector-icons": "^1.1.6",
     "react-native-easy-grid": "^0.2.2",
-    "react-native-gesture-handler": "^2.3.2",
+    "react-native-gesture-handler": "^2.6.0",
     "react-native-interactable": "^2.0.1",
     "react-native-keep-awake": "^4.0.0",
     "react-native-keyboard-aware-scroll-view": "APSL/react-native-keyboard-aware-scroll-view#pull/501/head",
