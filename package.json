@@ -66,7 +66,7 @@
     "@types/react-native-keep-awake": "^2.0.3",
     "@types/react-native-vector-icons": "^6.4.10",
     "@types/react-test-renderer": "^18.0.0",
-    "@types/validator": "^13.7.2",
+    "@types/validator": "^13.7.6",
     "babel-plugin-module-resolver": "^4.1.0",
     "jest": "^27.5.1",
     "metro-react-native-babel-preset": "^0.72.3",
