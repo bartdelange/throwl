@@ -15,7 +15,7 @@
   "dependencies": {
     "@babel/preset-typescript": "^7.16.7",
     "@freakycoder/react-native-helpers": "0.0.21",
-    "@react-native-async-storage/async-storage": "^1.17.3",
+    "@react-native-async-storage/async-storage": "^1.17.10",
     "@react-native-firebase/app": "^14.1.0",
     "@react-native-firebase/auth": "^14.7.0",
     "@react-native-firebase/firestore": "^14.7.0",
