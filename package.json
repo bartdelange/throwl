@@ -59,7 +59,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.17.9",
-    "@babel/runtime": "^7.17.9",
+    "@babel/runtime": "^7.19.0",
     "@types/jest": "^27.4.1",
     "@types/react-native": "^0.67.4",
     "@types/react-native-confetti": "^0.1.0",
