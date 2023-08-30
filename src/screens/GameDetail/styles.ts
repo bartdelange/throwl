@@ -15,10 +15,32 @@ export const makeStyles = (textSize: number) => {
     content: { flex: 1, width: '100%' },
     dartboardWrapper: {
       padding: width * 0.025,
-      aspectRatio: 1,
       height: '33%',
       position: 'relative',
+      // alignSelf: 'center',
+    },
+    dartboard: {
+      padding: width * 0.025,
+      aspectRatio: 1,
+      position: 'relative',
       alignSelf: 'center',
+    },
+    missText: {
+      position: 'absolute',
+      right: width * 0.025,
+      bottom: width * 0.025,
+      color: colors.primary,
+      ...Platform.select({
+        default: {
+          fontWeight: 'bold',
+        },
+        android: {
+          fontFamily: 'Karbon-Bold',
+        },
+      }),
+      fontSize: textSize,
+      height: textSize,
+      includeFontPadding: false,
     },
     playerListWrapper: {
       flex: 1,
