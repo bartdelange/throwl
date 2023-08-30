@@ -68,7 +68,7 @@ jobs:
         run: bundle exec fastlane beta
 
   deploy-ios:
-    name: Deploying to Testflight
+    name: Deploying to App Store
     needs: install-and-test
     runs-on: macos-latest
 
