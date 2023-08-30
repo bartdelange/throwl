@@ -41,15 +41,15 @@ export const GameDetailScreen: React.FC<any> = () => {
     <FullScreenLayout style={styles.layout} mode="light" size="fullscreen">
       <View style={styles.content}>
         <View style={styles.dartboardWrapper}>
-          <View style={styles.dartboard}>
-            <ClickableDartboard heatmap={heatmap} />
-          </View>
           <Pressable
             onPress={() =>
               navigator.push(NEW_GAME_SCREEN, {
                 selectedUsers: game.players.map(u => u.id),
               })
             }>
+            <View style={styles.dartboard}>
+              <ClickableDartboard heatmap={heatmap} />
+            </View>
             <Text style={styles.missText}>REMATCH?</Text>
           </Pressable>
         </View>
