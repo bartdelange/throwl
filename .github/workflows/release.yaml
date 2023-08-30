@@ -27,10 +27,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Use Ruby v2.6.8
+      - name: Use Ruby v2.6.10
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '2.6'
+          ruby-version: '2.6.10'
           bundler-cache: true
 
       - name: Install npm dependencies
