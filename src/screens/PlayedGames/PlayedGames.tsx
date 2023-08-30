@@ -51,6 +51,8 @@ export const PlayedGamesScreen: React.FC<any> = () => {
   };
 
   const loadMoreGames = () => {
+    if (!games.length) return;
+    if (loading) return;
     if (fetchingMore) return;
     setFetchingMore(true);
     GameService.getOwnGames(user!.id, 5, games[games.length - 1].id).then(
