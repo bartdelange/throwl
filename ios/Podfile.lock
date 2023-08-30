@@ -1073,7 +1073,7 @@ PODS:
     - glog
   - react-native-keep-awake (4.0.0):
     - React
-  - react-native-pager-view (5.4.25):
+  - react-native-pager-view (6.1.0-rc.2):
     - React-Core
   - react-native-safe-area-context (4.7.1):
     - React-Core
@@ -1240,7 +1240,7 @@ PODS:
   - RNScreens (3.24.0):
     - React-Core
     - React-RCTImage
-  - RNSharedElement (0.8.4):
+  - RNSharedElement (0.8.8):
     - React-Core
   - RNSVG (13.13.0):
     - React-Core
@@ -1489,7 +1489,7 @@ SPEC CHECKSUMS:
   React-jsinspector: aaed4cf551c4a1c98092436518c2d267b13a673f
   React-logger: da1ebe05ae06eb6db4b162202faeafac4b435e77
   react-native-keep-awake: afad8a51dfef9fe9655a6344771be32c8596d774
-  react-native-pager-view: da490aa1f902c9a5aeecf0909cc975ad0e92e53e
+  react-native-pager-view: 037b3949788e38cb5ddfb44b854012804e803655
   react-native-safe-area-context: 9697629f7b2cda43cf52169bb7e0767d330648c2
   React-NativeModulesApple: aa23fefeee7d17ab1f574e7f0728a71c17aa8511
   React-perflogger: 496a1a3dc6737f964107cb3ddae7f9e265ddda58
@@ -1518,13 +1518,13 @@ SPEC CHECKSUMS:
   RNGestureHandler: c0d04458598fcb26052494ae23dda8f8f5162b13
   RNReanimated: 726395a2fa2f04cea340274ba57a4e659bc0d9c1
   RNScreens: b21dc57dfa2b710c30ec600786a3fc223b1b92e7
-  RNSharedElement: eb7d506733952d58634f34c82ec17e82f557e377
+  RNSharedElement: 504fa28a235b12505b6daedbb452a9ec96809bd0
   RNSVG: ed492aaf3af9ca01bc945f7a149d76d62e73ec82
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   TextToSpeech: b3aa777ff5585705f179c0a2436bfd0926d1716e
   Yoga: 3efc43e0d48686ce2e8c60f99d4e6bd349aff981
 
-PODFILE CHECKSUM: cf4a29d37ec08cb7c357d32a55d9ca2961824567
+PODFILE CHECKSUM: ca5274169a0aa756a1ccc5dfd5495bb873f3519e
 
 COCOAPODS: 1.12.1
