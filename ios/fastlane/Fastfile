@@ -20,7 +20,6 @@ platform :ios do
   desc "Submit a new Beta Build"
   lane :beta do
     setup_ci
-    xcodes(version: "14.2.0")
 
     cocoapods(
       clean_install: true
