@@ -44,7 +44,6 @@ platform :ios do
       scheme: "throwl",
       workspace: "throwl.xcworkspace",
       clean: true,
-      include_bitcode: true,
       export_method: "app-store"
     )
 
