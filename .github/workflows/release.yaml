@@ -92,7 +92,8 @@ jobs:
           bundler-cache: true
 
       - name: Bundle install
-        run: cd ./ios && bundle install
+        working-directory: android
+        run: bundle install
 
       - name: Use latest xcode
         uses: maxim-lobanov/setup-xcode@v1
@@ -100,7 +101,8 @@ jobs:
           xcode-version: 15.4.0
 
       - name: Distribute app to TestFlight 🚀
-        run: cd ./ios && bundle exec fastlane beta
+        working-directory: android
+        run: bundle exec fastlane beta
         env:
           APP_STORE_CONNECT_TEAM_ID: '${{ secrets.APP_STORE_CONNECT_TEAM_ID }}'
           DEVELOPER_APP_ID: '${{ secrets.DEVELOPER_APP_ID }}'

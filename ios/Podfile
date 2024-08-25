@@ -21,6 +21,7 @@ target 'throwl' do
   $RNFirebaseAsStaticFramework = true
 
   use_react_native!(
+    :hermes_enabled => false,
     :path => config[:reactNativePath],
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
