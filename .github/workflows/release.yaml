@@ -92,7 +92,7 @@ jobs:
           bundler-cache: true
 
       - name: Bundle install
-        working-directory: android
+        working-directory: ios
         run: bundle install
 
       - name: Use latest xcode
