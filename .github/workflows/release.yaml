@@ -101,7 +101,7 @@ jobs:
           xcode-version: 15.4.0
 
       - name: Distribute app to TestFlight 🚀
-        working-directory: android
+        working-directory: ios
         run: bundle exec fastlane beta
         env:
           APP_STORE_CONNECT_TEAM_ID: '${{ secrets.APP_STORE_CONNECT_TEAM_ID }}'
