@@ -2,4 +2,5 @@
 <resources>
   <color name="launcher">#02314e</color>
   <color name="primary_dark">#000000</color>
+  <color name="bootsplash_background">#02314e</color>
 </resources>

@@ -1,0 +1,1244 @@
+Starting resolution (2024-08-17 18:16:11 +0200)
+User-requested dependencies: [#<Gem::Resolver::DependencyRequest:0x00007fc883945ef0 @dependency=<Gem::Dependency type=:runtime name="did_you_mean" requirements="= 1.3.0">, @requester=nil>, #<Gem::Resolver::DependencyRequest:0x00007fc883945ec8 @dependency=<Gem::Dependency type=:runtime name="bundler" requirements="= 2.2.22">, @requester=nil>]
+Resolving dependencies...Creating possibility state for did_you_mean (= 1.3.0) (1 remaining)
+ Attempting to activate did_you_mean-1.3.0
+ Activated did_you_mean at did_you_mean-1.3.0
+ Requiring nested dependencies ()
+ Creating possibility state for bundler (= 2.2.22) (1 remaining)
+  Attempting to activate bundler-2.2.22
+  Activated bundler at bundler-2.2.22
+  Requiring nested dependencies ()
+
+Finished resolution (2 steps) (Took 0.007005 seconds) (2024-08-17 18:16:11 +0200)
+Unactivated: 
+Activated: did_you_mean, bundler
+Fetching gem metadata from https://rubygems.org/........
+BUNDLER: Starting resolution (2024-08-17 18:16:15 +0200)
+BUNDLER: User-requested dependencies: [#<Bundler::DepProxy:0x00007fc87494a450 @dep=<Bundler::Dependency type=:runtime name="fastlane" requirements=">= 0">, @__platform=#<Gem::Platform:0x00007fc8420290d8 @cpu="universal", @os="darwin", @version="21" @cpu="universal", @os="darwin", @version="21">>, #<Bundler::DepProxy:0x00007fc87494a400 @dep=<Bundler::Dependency type=:runtime name="fastlane" requirements=">= 0">, @__platform=#<Gem::Platform:0x00007fc8420288b8 @cpu="universal", @os="darwin", @version="22" @cpu="universal", @os="darwin", @version="22">>, #<Bundler::DepProxy:0x00007fc87494a388 @dep=<Bundler::Dependency type=:runtime name="fastlane" requirements=">= 0">, @__platform=#<Gem::Platform:0x00007fc88381d348 @cpu="universal", @os="darwin", @version="23" @cpu="universal", @os="darwin", @version="23">>, #<Bundler::DepProxy:0x00007fc87494a270 @dep=<Bundler::Dependency type=:runtime name="fastlane-plugin-versioning_android" requirements=">= 0">, @__platform=#<Gem::Platform:0x00007fc8420290d8 @cpu="universal", @os="darwin", @version="21" @cpu="universal", @os="darwin", @version="21">>, #<Bundler::DepProxy:0x00007fc87494a220 @dep=<Bundler::Dependency type=:runtime name="fastlane-plugin-versioning_android" requirements=">= 0">, @__platform=#<Gem::Platform:0x00007fc8420288b8 @cpu="universal", @os="darwin", @version="22" @cpu="universal", @os="darwin", @version="22">>, #<Bundler::DepProxy:0x00007fc87494a1d0 @dep=<Bundler::Dependency type=:runtime name="fastlane-plugin-versioning_android" requirements=">= 0">, @__platform=#<Gem::Platform:0x00007fc88381d348 @cpu="universal", @os="darwin", @version="23" @cpu="universal", @os="darwin", @version="23">>, #<Bundler::DepProxy:0x00007fc874865dc8 @dep=<Bundler::Dependency type=:runtime name="Ruby\u0000" requirements=">= 0">, @__platform=#<Gem::Platform:0x00007fc8420290d8 @cpu="universal", @os="darwin", @version="21" @cpu="universal", @os="darwin", @version="21">>, #<Bundler::DepProxy:0x00007fc874865d50 @dep=<Bundler::Dependency type=:runtime name="Ruby\u0000" requirements=">= 0">, @__platform=#<Gem::Platform:0x00007fc8420288b8 @cpu="universal", @os="darwin", @version="22" @cpu="universal", @os="darwin", @version="22">>, #<Bundler::DepProxy:0x00007fc874865cb0 @dep=<Bundler::Dependency type=:runtime name="Ruby\u0000" requirements=">= 0">, @__platform=#<Gem::Platform:0x00007fc88381d348 @cpu="universal", @os="darwin", @version="23" @cpu="universal", @os="darwin", @version="23">>, #<Bundler::DepProxy:0x00007fc874865c10 @dep=<Bundler::Dependency type=:runtime name="RubyGems\u0000" requirements="= 3.0.3.1">, @__platform=#<Gem::Platform:0x00007fc8420290d8 @cpu="universal", @os="darwin", @version="21" @cpu="universal", @os="darwin", @version="21">>, #<Bundler::DepProxy:0x00007fc874865bc0 @dep=<Bundler::Dependency type=:runtime name="RubyGems\u0000" requirements="= 3.0.3.1">, @__platform=#<Gem::Platform:0x00007fc8420288b8 @cpu="universal", @os="darwin", @version="22" @cpu="universal", @os="darwin", @version="22">>, #<Bundler::DepProxy:0x00007fc874865b48 @dep=<Bundler::Dependency type=:runtime name="RubyGems\u0000" requirements="= 3.0.3.1">, @__platform=#<Gem::Platform:0x00007fc88381d348 @cpu="universal", @os="darwin", @version="23" @cpu="universal", @os="darwin", @version="23">>]
+Resolving dependencies...
+BUNDLER: Creating possibility state for fastlane universal-darwin-21 (2 remaining)
+BUNDLER(1): Attempting to activate [fastlane (2.214.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(1): Activated fastlane at [fastlane (2.214.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(1): Requiring nested dependencies (xcodeproj (>= 1.13.0, < 2.0.0) universal-darwin-21, xcpretty (~> 0.3.0) universal-darwin-21, terminal-notifier (>= 2.0.0, < 3.0.0) universal-darwin-21, terminal-table (>= 1.4.5, < 2.0.0) universal-darwin-21, plist (>= 3.1.0, < 4.0.0) universal-darwin-21, CFPropertyList (>= 2.3, < 4.0.0) universal-darwin-21, addressable (>= 2.8, < 3.0.0) universal-darwin-21, multipart-post (>= 2.0.0, < 3.0.0) universal-darwin-21, word_wrap (~> 1.0.0) universal-darwin-21, optparse (~> 0.1.1) universal-darwin-21, tty-screen (>= 0.6.3, < 1.0.0) universal-darwin-21, tty-spinner (>= 0.8.0, < 1.0.0) universal-darwin-21, artifactory (~> 3.0) universal-darwin-21, babosa (>= 1.0.3, < 2.0.0) universal-darwin-21, colored universal-darwin-21, commander (~> 4.6) universal-darwin-21, excon (>= 0.71.0, < 1.0.0) universal-darwin-21, faraday-cookie_jar (~> 0.0.6) universal-darwin-21, faraday (~> 1.0) universal-darwin-21, faraday_middleware (~> 1.0) universal-darwin-21, fastimage (>= 2.1.0, < 3.0.0) universal-darwin-21, gh_inspector (>= 1.1.2, < 2.0.0) universal-darwin-21, highline (~> 2.0) universal-darwin-21, json (< 3.0.0) universal-darwin-21, mini_magick (>= 4.9.4, < 5.0.0) universal-darwin-21, naturally (~> 2.2) universal-darwin-21, rubyzip (>= 2.0.0, < 3.0.0) universal-darwin-21, security (= 0.1.3) universal-darwin-21, xcpretty-travis-formatter (>= 0.0.3) universal-darwin-21, dotenv (>= 2.1.1, < 3.0.0) universal-darwin-21, bundler (>= 1.12.0, < 3.0.0) universal-darwin-21, simctl (~> 1.6.3) universal-darwin-21, jwt (>= 2.1.0, < 3) universal-darwin-21, google-apis-playcustomapp_v1 (~> 0.1) universal-darwin-21, google-apis-androidpublisher_v3 (~> 0.3) universal-darwin-21, google-cloud-storage (~> 1.31) universal-darwin-21, emoji_regex (>= 0.1, < 4.0) universal-darwin-21, aws-sdk-s3 (~> 1.0) universal-darwin-21, xcodeproj (>= 1.13.0, < 2.0.0) universal-darwin-22, xcpretty (~> 0.3.0) universal-darwin-22, terminal-notifier (>= 2.0.0, < 3.0.0) universal-darwin-22, terminal-table (>= 1.4.5, < 2.0.0) universal-darwin-22, plist (>= 3.1.0, < 4.0.0) universal-darwin-22, CFPropertyList (>= 2.3, < 4.0.0) universal-darwin-22, addressable (>= 2.8, < 3.0.0) universal-darwin-22, multipart-post (>= 2.0.0, < 3.0.0) universal-darwin-22, word_wrap (~> 1.0.0) universal-darwin-22, optparse (~> 0.1.1) universal-darwin-22, tty-screen (>= 0.6.3, < 1.0.0) universal-darwin-22, tty-spinner (>= 0.8.0, < 1.0.0) universal-darwin-22, artifactory (~> 3.0) universal-darwin-22, babosa (>= 1.0.3, < 2.0.0) universal-darwin-22, colored universal-darwin-22, commander (~> 4.6) universal-darwin-22, excon (>= 0.71.0, < 1.0.0) universal-darwin-22, faraday-cookie_jar (~> 0.0.6) universal-darwin-22, faraday (~> 1.0) universal-darwin-22, faraday_middleware (~> 1.0) universal-darwin-22, fastimage (>= 2.1.0, < 3.0.0) universal-darwin-22, gh_inspector (>= 1.1.2, < 2.0.0) universal-darwin-22, highline (~> 2.0) universal-darwin-22, json (< 3.0.0) universal-darwin-22, mini_magick (>= 4.9.4, < 5.0.0) universal-darwin-22, naturally (~> 2.2) universal-darwin-22, rubyzip (>= 2.0.0, < 3.0.0) universal-darwin-22, security (= 0.1.3) universal-darwin-22, xcpretty-travis-formatter (>= 0.0.3) universal-darwin-22, dotenv (>= 2.1.1, < 3.0.0) universal-darwin-22, bundler (>= 1.12.0, < 3.0.0) universal-darwin-22, simctl (~> 1.6.3) universal-darwin-22, jwt (>= 2.1.0, < 3) universal-darwin-22, google-apis-playcustomapp_v1 (~> 0.1) universal-darwin-22, google-apis-androidpublisher_v3 (~> 0.3) universal-darwin-22, google-cloud-storage (~> 1.31) universal-darwin-22, emoji_regex (>= 0.1, < 4.0) universal-darwin-22, aws-sdk-s3 (~> 1.0) universal-darwin-22, xcodeproj (>= 1.13.0, < 2.0.0) universal-darwin-23, xcpretty (~> 0.3.0) universal-darwin-23, terminal-notifier (>= 2.0.0, < 3.0.0) universal-darwin-23, terminal-table (>= 1.4.5, < 2.0.0) universal-darwin-23, plist (>= 3.1.0, < 4.0.0) universal-darwin-23, CFPropertyList (>= 2.3, < 4.0.0) universal-darwin-23, addressable (>= 2.8, < 3.0.0) universal-darwin-23, multipart-post (>= 2.0.0, < 3.0.0) universal-darwin-23, word_wrap (~> 1.0.0) universal-darwin-23, optparse (~> 0.1.1) universal-darwin-23, tty-screen (>= 0.6.3, < 1.0.0) universal-darwin-23, tty-spinner (>= 0.8.0, < 1.0.0) universal-darwin-23, artifactory (~> 3.0) universal-darwin-23, babosa (>= 1.0.3, < 2.0.0) universal-darwin-23, colored universal-darwin-23, commander (~> 4.6) universal-darwin-23, excon (>= 0.71.0, < 1.0.0) universal-darwin-23, faraday-cookie_jar (~> 0.0.6) universal-darwin-23, faraday (~> 1.0) universal-darwin-23, faraday_middleware (~> 1.0) universal-darwin-23, fastimage (>= 2.1.0, < 3.0.0) universal-darwin-23, gh_inspector (>= 1.1.2, < 2.0.0) universal-darwin-23, highline (~> 2.0) universal-darwin-23, json (< 3.0.0) universal-darwin-23, mini_magick (>= 4.9.4, < 5.0.0) universal-darwin-23, naturally (~> 2.2) universal-darwin-23, rubyzip (>= 2.0.0, < 3.0.0) universal-darwin-23, security (= 0.1.3) universal-darwin-23, xcpretty-travis-formatter (>= 0.0.3) universal-darwin-23, dotenv (>= 2.1.1, < 3.0.0) universal-darwin-23, bundler (>= 1.12.0, < 3.0.0) universal-darwin-23, simctl (~> 1.6.3) universal-darwin-23, jwt (>= 2.1.0, < 3) universal-darwin-23, google-apis-playcustomapp_v1 (~> 0.1) universal-darwin-23, google-apis-androidpublisher_v3 (~> 0.3) universal-darwin-23, google-cloud-storage (~> 1.31) universal-darwin-23, emoji_regex (>= 0.1, < 4.0) universal-darwin-23, aws-sdk-s3 (~> 1.0) universal-darwin-23)
+BUNDLER(1): Creating possibility state for fastlane universal-darwin-22 (2 remaining)
+BUNDLER(2): Attempting to activate [fastlane (2.214.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(2): Found existing spec ([fastlane (2.214.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(2): Creating possibility state for fastlane universal-darwin-23 (2 remaining)
+BUNDLER(3): Attempting to activate [fastlane (2.214.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(3): Found existing spec ([fastlane (2.214.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(3): Creating possibility state for fastlane-plugin-versioning_android universal-darwin-21 (1 remaining)
+BUNDLER(4): Attempting to activate [fastlane-plugin-versioning_android (0.1.0) (ruby), fastlane-plugin-versioning_android (0.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(4): Activated fastlane-plugin-versioning_android at [fastlane-plugin-versioning_android (0.1.0) (ruby), fastlane-plugin-versioning_android (0.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(4): Requiring nested dependencies ()
+BUNDLER(4): Creating possibility state for fastlane-plugin-versioning_android universal-darwin-22 (1 remaining)
+BUNDLER(5): Attempting to activate [fastlane-plugin-versioning_android (0.1.0) (ruby), fastlane-plugin-versioning_android (0.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(5): Found existing spec ([fastlane-plugin-versioning_android (0.1.0) (ruby), fastlane-plugin-versioning_android (0.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(5): Creating possibility state for fastlane-plugin-versioning_android universal-darwin-23 (1 remaining)
+BUNDLER(6): Attempting to activate [fastlane-plugin-versioning_android (0.1.0) (ruby), fastlane-plugin-versioning_android (0.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(6): Found existing spec ([fastlane-plugin-versioning_android (0.1.0) (ruby), fastlane-plugin-versioning_android (0.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(6): Creating possibility state for google-apis-playcustomapp_v1 (~> 0.1) universal-darwin-21 (2 remaining)
+BUNDLER(7): Attempting to activate [google-apis-playcustomapp_v1 (0.13.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(7): Activated google-apis-playcustomapp_v1 at [google-apis-playcustomapp_v1 (0.13.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(7): Requiring nested dependencies (google-apis-core (>= 0.11.0, < 2.a) universal-darwin-21, google-apis-core (>= 0.11.0, < 2.a) universal-darwin-22, google-apis-core (>= 0.11.0, < 2.a) universal-darwin-23)
+BUNDLER(7): Creating possibility state for google-apis-playcustomapp_v1 (~> 0.1) universal-darwin-22 (2 remaining)
+BUNDLER(8): Attempting to activate [google-apis-playcustomapp_v1 (0.13.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(8): Found existing spec ([google-apis-playcustomapp_v1 (0.13.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(8): Creating possibility state for google-apis-playcustomapp_v1 (~> 0.1) universal-darwin-23 (2 remaining)
+BUNDLER(9): Attempting to activate [google-apis-playcustomapp_v1 (0.13.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(9): Found existing spec ([google-apis-playcustomapp_v1 (0.13.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(9): Creating possibility state for addressable (>= 2.8, < 3.0.0) universal-darwin-21 (2 remaining)
+BUNDLER(10): Attempting to activate [addressable (2.8.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(10): Activated addressable at [addressable (2.8.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(10): Requiring nested dependencies (public_suffix (>= 2.0.2, < 6.0) universal-darwin-21, public_suffix (>= 2.0.2, < 6.0) universal-darwin-22, public_suffix (>= 2.0.2, < 6.0) universal-darwin-23)
+BUNDLER(10): Creating possibility state for addressable (>= 2.8, < 3.0.0) universal-darwin-22 (2 remaining)
+BUNDLER(11): Attempting to activate [addressable (2.8.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(11): Found existing spec ([addressable (2.8.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(11): Creating possibility state for addressable (>= 2.8, < 3.0.0) universal-darwin-23 (2 remaining)
+BUNDLER(12): Attempting to activate [addressable (2.8.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(12): Found existing spec ([addressable (2.8.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(12): Creating possibility state for babosa (>= 1.0.3, < 2.0.0) universal-darwin-21 (1 remaining)
+BUNDLER(13): Attempting to activate [babosa (1.0.4) (ruby), babosa (1.0.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(13): Activated babosa at [babosa (1.0.4) (ruby), babosa (1.0.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(13): Requiring nested dependencies ()
+BUNDLER(13): Creating possibility state for colored universal-darwin-21 (1 remaining)
+BUNDLER(14): Attempting to activate [colored (1.2) (ruby), colored (1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(14): Activated colored at [colored (1.2) (ruby), colored (1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(14): Requiring nested dependencies ()
+BUNDLER(14): Creating possibility state for commander (~> 4.6) universal-darwin-21 (2 remaining)
+BUNDLER(15): Attempting to activate [commander (4.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(15): Activated commander at [commander (4.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(15): Requiring nested dependencies (highline (~> 2.0.0) universal-darwin-21, highline (~> 2.0.0) universal-darwin-22, highline (~> 2.0.0) universal-darwin-23)
+BUNDLER(15): Creating possibility state for colored universal-darwin-22 (1 remaining)
+BUNDLER(16): Attempting to activate [colored (1.2) (ruby), colored (1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(16): Found existing spec ([colored (1.2) (ruby), colored (1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(16): Creating possibility state for commander (~> 4.6) universal-darwin-22 (2 remaining)
+BUNDLER(17): Attempting to activate [commander (4.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(17): Found existing spec ([commander (4.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(17): Creating possibility state for babosa (>= 1.0.3, < 2.0.0) universal-darwin-22 (1 remaining)
+BUNDLER(18): Attempting to activate [babosa (1.0.4) (ruby), babosa (1.0.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(18): Found existing spec ([babosa (1.0.4) (ruby), babosa (1.0.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(18): Creating possibility state for commander (~> 4.6) universal-darwin-23 (2 remaining)
+BUNDLER(19): Attempting to activate [commander (4.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(19): Found existing spec ([commander (4.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(19): Creating possibility state for colored universal-darwin-23 (1 remaining)
+BUNDLER(20): Attempting to activate [colored (1.2) (ruby), colored (1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(20): Found existing spec ([colored (1.2) (ruby), colored (1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(20): Creating possibility state for babosa (>= 1.0.3, < 2.0.0) universal-darwin-23 (1 remaining)
+BUNDLER(21): Attempting to activate [babosa (1.0.4) (ruby), babosa (1.0.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(21): Found existing spec ([babosa (1.0.4) (ruby), babosa (1.0.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(21): Creating possibility state for security (= 0.1.3) universal-darwin-21 (1 remaining)
+BUNDLER(22): Attempting to activate [security (0.1.3) (ruby), security (0.1.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(22): Activated security at [security (0.1.3) (ruby), security (0.1.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(22): Requiring nested dependencies ()
+BUNDLER(22): Creating possibility state for xcpretty-travis-formatter (>= 0.0.3) universal-darwin-21 (2 remaining)
+BUNDLER(23): Attempting to activate [xcpretty-travis-formatter (1.0.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(23): Activated xcpretty-travis-formatter at [xcpretty-travis-formatter (1.0.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(23): Requiring nested dependencies (xcpretty (>= 0.0.7, ~> 0.2) universal-darwin-21, xcpretty (>= 0.0.7, ~> 0.2) universal-darwin-22, xcpretty (>= 0.0.7, ~> 0.2) universal-darwin-23)
+BUNDLER(23): Creating possibility state for xcpretty-travis-formatter (>= 0.0.3) universal-darwin-22 (2 remaining)
+BUNDLER(24): Attempting to activate [xcpretty-travis-formatter (1.0.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(24): Found existing spec ([xcpretty-travis-formatter (1.0.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(24): Creating possibility state for security (= 0.1.3) universal-darwin-22 (1 remaining)
+BUNDLER(25): Attempting to activate [security (0.1.3) (ruby), security (0.1.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(25): Found existing spec ([security (0.1.3) (ruby), security (0.1.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(25): Creating possibility state for security (= 0.1.3) universal-darwin-23 (1 remaining)
+BUNDLER(26): Attempting to activate [security (0.1.3) (ruby), security (0.1.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(26): Found existing spec ([security (0.1.3) (ruby), security (0.1.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(26): Creating possibility state for xcpretty-travis-formatter (>= 0.0.3) universal-darwin-23 (2 remaining)
+BUNDLER(27): Attempting to activate [xcpretty-travis-formatter (1.0.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(27): Found existing spec ([xcpretty-travis-formatter (1.0.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(27): Creating possibility state for terminal-notifier (>= 2.0.0, < 3.0.0) universal-darwin-21 (1 remaining)
+BUNDLER(28): Attempting to activate [terminal-notifier (2.0.0) (ruby), terminal-notifier (2.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(28): Activated terminal-notifier at [terminal-notifier (2.0.0) (ruby), terminal-notifier (2.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(28): Requiring nested dependencies ()
+BUNDLER(28): Creating possibility state for dotenv (>= 2.1.1, < 3.0.0) universal-darwin-21 (1 remaining)
+BUNDLER(29): Attempting to activate [dotenv (2.8.1) (ruby), dotenv (2.8.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(29): Activated dotenv at [dotenv (2.8.1) (ruby), dotenv (2.8.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(29): Requiring nested dependencies ()
+BUNDLER(29): Creating possibility state for plist (>= 3.1.0, < 4.0.0) universal-darwin-21 (1 remaining)
+BUNDLER(30): Attempting to activate [plist (3.7.0) (ruby), plist (3.7.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(30): Activated plist at [plist (3.7.0) (ruby), plist (3.7.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(30): Requiring nested dependencies ()
+BUNDLER(30): Creating possibility state for terminal-table (>= 1.4.5, < 2.0.0) universal-darwin-21 (2 remaining)
+BUNDLER(31): Attempting to activate [terminal-table (1.8.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(31): Activated terminal-table at [terminal-table (1.8.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(31): Requiring nested dependencies (unicode-display_width (~> 1.1, >= 1.1.1) universal-darwin-21, unicode-display_width (~> 1.1, >= 1.1.1) universal-darwin-22, unicode-display_width (~> 1.1, >= 1.1.1) universal-darwin-23)
+BUNDLER(31): Creating possibility state for plist (>= 3.1.0, < 4.0.0) universal-darwin-22 (1 remaining)
+BUNDLER(32): Attempting to activate [plist (3.7.0) (ruby), plist (3.7.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(32): Found existing spec ([plist (3.7.0) (ruby), plist (3.7.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(32): Creating possibility state for dotenv (>= 2.1.1, < 3.0.0) universal-darwin-22 (1 remaining)
+BUNDLER(33): Attempting to activate [dotenv (2.8.1) (ruby), dotenv (2.8.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(33): Found existing spec ([dotenv (2.8.1) (ruby), dotenv (2.8.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(33): Creating possibility state for terminal-notifier (>= 2.0.0, < 3.0.0) universal-darwin-22 (1 remaining)
+BUNDLER(34): Attempting to activate [terminal-notifier (2.0.0) (ruby), terminal-notifier (2.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(34): Found existing spec ([terminal-notifier (2.0.0) (ruby), terminal-notifier (2.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(34): Creating possibility state for terminal-table (>= 1.4.5, < 2.0.0) universal-darwin-22 (2 remaining)
+BUNDLER(35): Attempting to activate [terminal-table (1.8.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(35): Found existing spec ([terminal-table (1.8.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(35): Creating possibility state for plist (>= 3.1.0, < 4.0.0) universal-darwin-23 (1 remaining)
+BUNDLER(36): Attempting to activate [plist (3.7.0) (ruby), plist (3.7.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(36): Found existing spec ([plist (3.7.0) (ruby), plist (3.7.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(36): Creating possibility state for terminal-table (>= 1.4.5, < 2.0.0) universal-darwin-23 (2 remaining)
+BUNDLER(37): Attempting to activate [terminal-table (1.8.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(37): Found existing spec ([terminal-table (1.8.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(37): Creating possibility state for dotenv (>= 2.1.1, < 3.0.0) universal-darwin-23 (1 remaining)
+BUNDLER(38): Attempting to activate [dotenv (2.8.1) (ruby), dotenv (2.8.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(38): Found existing spec ([dotenv (2.8.1) (ruby), dotenv (2.8.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(38): Creating possibility state for terminal-notifier (>= 2.0.0, < 3.0.0) universal-darwin-23 (1 remaining)
+BUNDLER(39): Attempting to activate [terminal-notifier (2.0.0) (ruby), terminal-notifier (2.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(39): Found existing spec ([terminal-notifier (2.0.0) (ruby), terminal-notifier (2.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(39): Creating possibility state for highline (~> 2.0) universal-darwin-21 (1 remaining)
+BUNDLER(40): Attempting to activate [highline (2.0.3) (ruby), highline (2.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(40): Activated highline at [highline (2.0.3) (ruby), highline (2.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(40): Requiring nested dependencies ()
+BUNDLER(40): Creating possibility state for mini_magick (>= 4.9.4, < 5.0.0) universal-darwin-21 (1 remaining)
+BUNDLER(41): Attempting to activate [mini_magick (4.12.0) (ruby), mini_magick (4.12.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(41): Activated mini_magick at [mini_magick (4.12.0) (ruby), mini_magick (4.12.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(41): Requiring nested dependencies ()
+BUNDLER(41): Creating possibility state for naturally (~> 2.2) universal-darwin-21 (1 remaining)
+BUNDLER(42): Attempting to activate [naturally (2.2.1) (ruby), naturally (2.2.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(42): Activated naturally at [naturally (2.2.1) (ruby), naturally (2.2.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(42): Requiring nested dependencies ()
+BUNDLER(42): Creating possibility state for xcodeproj (>= 1.13.0, < 2.0.0) universal-darwin-21 (2 remaining)
+BUNDLER(43): Attempting to activate [xcodeproj (1.22.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(43): Activated xcodeproj at [xcodeproj (1.22.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(43): Requiring nested dependencies (atomos (~> 0.1.3) universal-darwin-21, CFPropertyList (>= 2.3.3, < 4.0) universal-darwin-21, claide (>= 1.0.2, < 2.0) universal-darwin-21, colored2 (~> 3.1) universal-darwin-21, nanaimo (~> 0.3.0) universal-darwin-21, rexml (~> 3.2.4) universal-darwin-21, atomos (~> 0.1.3) universal-darwin-22, CFPropertyList (>= 2.3.3, < 4.0) universal-darwin-22, claide (>= 1.0.2, < 2.0) universal-darwin-22, colored2 (~> 3.1) universal-darwin-22, nanaimo (~> 0.3.0) universal-darwin-22, rexml (~> 3.2.4) universal-darwin-22, atomos (~> 0.1.3) universal-darwin-23, CFPropertyList (>= 2.3.3, < 4.0) universal-darwin-23, claide (>= 1.0.2, < 2.0) universal-darwin-23, colored2 (~> 3.1) universal-darwin-23, nanaimo (~> 0.3.0) universal-darwin-23, rexml (~> 3.2.4) universal-darwin-23)
+BUNDLER(43): Creating possibility state for highline (~> 2.0.0) universal-darwin-21 (1 remaining)
+BUNDLER(44): Attempting to activate [highline (2.0.3) (ruby), highline (2.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(44): Found existing spec ([highline (2.0.3) (ruby), highline (2.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(44): Creating possibility state for naturally (~> 2.2) universal-darwin-22 (1 remaining)
+BUNDLER(45): Attempting to activate [naturally (2.2.1) (ruby), naturally (2.2.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(45): Found existing spec ([naturally (2.2.1) (ruby), naturally (2.2.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(45): Creating possibility state for highline (~> 2.0) universal-darwin-22 (1 remaining)
+BUNDLER(46): Attempting to activate [highline (2.0.3) (ruby), highline (2.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(46): Found existing spec ([highline (2.0.3) (ruby), highline (2.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(46): Creating possibility state for xcodeproj (>= 1.13.0, < 2.0.0) universal-darwin-22 (2 remaining)
+BUNDLER(47): Attempting to activate [xcodeproj (1.22.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(47): Found existing spec ([xcodeproj (1.22.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(47): Creating possibility state for highline (~> 2.0.0) universal-darwin-22 (1 remaining)
+BUNDLER(48): Attempting to activate [highline (2.0.3) (ruby), highline (2.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(48): Found existing spec ([highline (2.0.3) (ruby), highline (2.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(48): Creating possibility state for mini_magick (>= 4.9.4, < 5.0.0) universal-darwin-22 (1 remaining)
+BUNDLER(49): Attempting to activate [mini_magick (4.12.0) (ruby), mini_magick (4.12.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(49): Found existing spec ([mini_magick (4.12.0) (ruby), mini_magick (4.12.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(49): Creating possibility state for highline (~> 2.0) universal-darwin-23 (1 remaining)
+BUNDLER(50): Attempting to activate [highline (2.0.3) (ruby), highline (2.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(50): Found existing spec ([highline (2.0.3) (ruby), highline (2.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(50): Creating possibility state for naturally (~> 2.2) universal-darwin-23 (1 remaining)
+BUNDLER(51): Attempting to activate [naturally (2.2.1) (ruby), naturally (2.2.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(51): Found existing spec ([naturally (2.2.1) (ruby), naturally (2.2.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(51): Creating possibility state for xcodeproj (>= 1.13.0, < 2.0.0) universal-darwin-23 (2 remaining)
+BUNDLER(52): Attempting to activate [xcodeproj (1.22.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(52): Found existing spec ([xcodeproj (1.22.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(52): Creating possibility state for highline (~> 2.0.0) universal-darwin-23 (1 remaining)
+BUNDLER(53): Attempting to activate [highline (2.0.3) (ruby), highline (2.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(53): Found existing spec ([highline (2.0.3) (ruby), highline (2.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(53): Creating possibility state for mini_magick (>= 4.9.4, < 5.0.0) universal-darwin-23 (1 remaining)
+BUNDLER(54): Attempting to activate [mini_magick (4.12.0) (ruby), mini_magick (4.12.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(54): Found existing spec ([mini_magick (4.12.0) (ruby), mini_magick (4.12.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(54): Creating possibility state for rexml (~> 3.2.4) universal-darwin-21 (1 remaining)
+BUNDLER(55): Attempting to activate [rexml (3.2.6) (ruby), rexml (3.2.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(55): Activated rexml at [rexml (3.2.6) (ruby), rexml (3.2.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(55): Requiring nested dependencies ()
+BUNDLER(55): Creating possibility state for nanaimo (~> 0.3.0) universal-darwin-21 (1 remaining)
+BUNDLER(56): Attempting to activate [nanaimo (0.3.0) (ruby), nanaimo (0.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(56): Activated nanaimo at [nanaimo (0.3.0) (ruby), nanaimo (0.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(56): Requiring nested dependencies ()
+BUNDLER(56): Creating possibility state for atomos (~> 0.1.3) universal-darwin-21 (1 remaining)
+BUNDLER(57): Attempting to activate [atomos (0.1.3) (ruby), atomos (0.1.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(57): Activated atomos at [atomos (0.1.3) (ruby), atomos (0.1.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(57): Requiring nested dependencies ()
+BUNDLER(57): Creating possibility state for CFPropertyList (>= 2.3.3, < 4.0) universal-darwin-21 (2 remaining)
+BUNDLER(58): Attempting to activate [CFPropertyList (3.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(58): Activated CFPropertyList at [CFPropertyList (3.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(58): Requiring nested dependencies (rexml universal-darwin-21, rexml universal-darwin-22, rexml universal-darwin-23)
+BUNDLER(58): Creating possibility state for rexml universal-darwin-21 (1 remaining)
+BUNDLER(59): Attempting to activate [rexml (3.2.6) (ruby), rexml (3.2.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(59): Found existing spec ([rexml (3.2.6) (ruby), rexml (3.2.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(59): Creating possibility state for CFPropertyList (>= 2.3, < 4.0.0) universal-darwin-21 (2 remaining)
+BUNDLER(60): Attempting to activate [CFPropertyList (3.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(60): Found existing spec ([CFPropertyList (3.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(60): Creating possibility state for rexml (~> 3.2.4) universal-darwin-22 (1 remaining)
+BUNDLER(61): Attempting to activate [rexml (3.2.6) (ruby), rexml (3.2.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(61): Found existing spec ([rexml (3.2.6) (ruby), rexml (3.2.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(61): Creating possibility state for nanaimo (~> 0.3.0) universal-darwin-22 (1 remaining)
+BUNDLER(62): Attempting to activate [nanaimo (0.3.0) (ruby), nanaimo (0.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(62): Found existing spec ([nanaimo (0.3.0) (ruby), nanaimo (0.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(62): Creating possibility state for rexml universal-darwin-22 (1 remaining)
+BUNDLER(63): Attempting to activate [rexml (3.2.6) (ruby), rexml (3.2.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(63): Found existing spec ([rexml (3.2.6) (ruby), rexml (3.2.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(63): Creating possibility state for atomos (~> 0.1.3) universal-darwin-22 (1 remaining)
+BUNDLER(64): Attempting to activate [atomos (0.1.3) (ruby), atomos (0.1.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(64): Found existing spec ([atomos (0.1.3) (ruby), atomos (0.1.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(64): Creating possibility state for CFPropertyList (>= 2.3, < 4.0.0) universal-darwin-22 (2 remaining)
+BUNDLER(65): Attempting to activate [CFPropertyList (3.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(65): Found existing spec ([CFPropertyList (3.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(65): Creating possibility state for CFPropertyList (>= 2.3.3, < 4.0) universal-darwin-22 (2 remaining)
+BUNDLER(66): Attempting to activate [CFPropertyList (3.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(66): Found existing spec ([CFPropertyList (3.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(66): Creating possibility state for CFPropertyList (>= 2.3.3, < 4.0) universal-darwin-23 (2 remaining)
+BUNDLER(67): Attempting to activate [CFPropertyList (3.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(67): Found existing spec ([CFPropertyList (3.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(67): Creating possibility state for rexml (~> 3.2.4) universal-darwin-23 (1 remaining)
+BUNDLER(68): Attempting to activate [rexml (3.2.6) (ruby), rexml (3.2.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(68): Found existing spec ([rexml (3.2.6) (ruby), rexml (3.2.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(68): Creating possibility state for rexml universal-darwin-23 (1 remaining)
+BUNDLER(69): Attempting to activate [rexml (3.2.6) (ruby), rexml (3.2.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(69): Found existing spec ([rexml (3.2.6) (ruby), rexml (3.2.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(69): Creating possibility state for CFPropertyList (>= 2.3, < 4.0.0) universal-darwin-23 (2 remaining)
+BUNDLER(70): Attempting to activate [CFPropertyList (3.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(70): Found existing spec ([CFPropertyList (3.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(70): Creating possibility state for nanaimo (~> 0.3.0) universal-darwin-23 (1 remaining)
+BUNDLER(71): Attempting to activate [nanaimo (0.3.0) (ruby), nanaimo (0.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(71): Found existing spec ([nanaimo (0.3.0) (ruby), nanaimo (0.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(71): Creating possibility state for atomos (~> 0.1.3) universal-darwin-23 (1 remaining)
+BUNDLER(72): Attempting to activate [atomos (0.1.3) (ruby), atomos (0.1.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(72): Found existing spec ([atomos (0.1.3) (ruby), atomos (0.1.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(72): Creating possibility state for google-apis-core (>= 0.11.0, < 2.a) universal-darwin-21 (2 remaining)
+BUNDLER(73): Attempting to activate [google-apis-core (0.11.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(73): Activated google-apis-core at [google-apis-core (0.11.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(73): Requiring nested dependencies (representable (~> 3.0) universal-darwin-21, retriable (>= 2.0, < 4.a) universal-darwin-21, addressable (~> 2.5, >= 2.5.1) universal-darwin-21, mini_mime (~> 1.0) universal-darwin-21, googleauth (>= 0.16.2, < 2.a) universal-darwin-21, httpclient (>= 2.8.1, < 3.a) universal-darwin-21, rexml universal-darwin-21, webrick universal-darwin-21, representable (~> 3.0) universal-darwin-22, retriable (>= 2.0, < 4.a) universal-darwin-22, addressable (~> 2.5, >= 2.5.1) universal-darwin-22, mini_mime (~> 1.0) universal-darwin-22, googleauth (>= 0.16.2, < 2.a) universal-darwin-22, httpclient (>= 2.8.1, < 3.a) universal-darwin-22, rexml universal-darwin-22, webrick universal-darwin-22, representable (~> 3.0) universal-darwin-23, retriable (>= 2.0, < 4.a) universal-darwin-23, addressable (~> 2.5, >= 2.5.1) universal-darwin-23, mini_mime (~> 1.0) universal-darwin-23, googleauth (>= 0.16.2, < 2.a) universal-darwin-23, httpclient (>= 2.8.1, < 3.a) universal-darwin-23, rexml universal-darwin-23, webrick universal-darwin-23)
+BUNDLER(73): Creating possibility state for addressable (~> 2.5, >= 2.5.1) universal-darwin-21 (2 remaining)
+BUNDLER(74): Attempting to activate [addressable (2.8.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(74): Found existing spec ([addressable (2.8.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(74): Creating possibility state for addressable (~> 2.5, >= 2.5.1) universal-darwin-22 (2 remaining)
+BUNDLER(75): Attempting to activate [addressable (2.8.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(75): Found existing spec ([addressable (2.8.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(75): Creating possibility state for google-apis-core (>= 0.11.0, < 2.a) universal-darwin-22 (2 remaining)
+BUNDLER(76): Attempting to activate [google-apis-core (0.11.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(76): Found existing spec ([google-apis-core (0.11.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(76): Creating possibility state for addressable (~> 2.5, >= 2.5.1) universal-darwin-23 (2 remaining)
+BUNDLER(77): Attempting to activate [addressable (2.8.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(77): Found existing spec ([addressable (2.8.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(77): Creating possibility state for google-apis-core (>= 0.11.0, < 2.a) universal-darwin-23 (2 remaining)
+BUNDLER(78): Attempting to activate [google-apis-core (0.11.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(78): Found existing spec ([google-apis-core (0.11.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(78): Creating possibility state for retriable (>= 2.0, < 4.a) universal-darwin-21 (1 remaining)
+BUNDLER(79): Attempting to activate [retriable (3.1.2) (ruby), retriable (3.1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(79): Activated retriable at [retriable (3.1.2) (ruby), retriable (3.1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(79): Requiring nested dependencies ()
+BUNDLER(79): Creating possibility state for faraday (~> 1.0) universal-darwin-21 (2 remaining)
+BUNDLER(80): Attempting to activate [faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(80): Activated faraday at [faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(80): Requiring nested dependencies (faraday-em_http (~> 1.0) universal-darwin-21, faraday-em_synchrony (~> 1.0) universal-darwin-21, faraday-excon (~> 1.1) universal-darwin-21, faraday-httpclient (~> 1.0) universal-darwin-21, faraday-multipart (~> 1.0) universal-darwin-21, faraday-net_http (~> 1.0) universal-darwin-21, faraday-net_http_persistent (~> 1.0) universal-darwin-21, faraday-patron (~> 1.0) universal-darwin-21, faraday-rack (~> 1.0) universal-darwin-21, faraday-retry (~> 1.0) universal-darwin-21, ruby2_keywords (>= 0.0.4) universal-darwin-21, faraday-em_http (~> 1.0) universal-darwin-22, faraday-em_synchrony (~> 1.0) universal-darwin-22, faraday-excon (~> 1.1) universal-darwin-22, faraday-httpclient (~> 1.0) universal-darwin-22, faraday-multipart (~> 1.0) universal-darwin-22, faraday-net_http (~> 1.0) universal-darwin-22, faraday-net_http_persistent (~> 1.0) universal-darwin-22, faraday-patron (~> 1.0) universal-darwin-22, faraday-rack (~> 1.0) universal-darwin-22, faraday-retry (~> 1.0) universal-darwin-22, ruby2_keywords (>= 0.0.4) universal-darwin-22, faraday-em_http (~> 1.0) universal-darwin-23, faraday-em_synchrony (~> 1.0) universal-darwin-23, faraday-excon (~> 1.1) universal-darwin-23, faraday-httpclient (~> 1.0) universal-darwin-23, faraday-multipart (~> 1.0) universal-darwin-23, faraday-net_http (~> 1.0) universal-darwin-23, faraday-net_http_persistent (~> 1.0) universal-darwin-23, faraday-patron (~> 1.0) universal-darwin-23, faraday-rack (~> 1.0) universal-darwin-23, faraday-retry (~> 1.0) universal-darwin-23, ruby2_keywords (>= 0.0.4) universal-darwin-23)
+BUNDLER(80): Creating possibility state for retriable (>= 2.0, < 4.a) universal-darwin-22 (1 remaining)
+BUNDLER(81): Attempting to activate [retriable (3.1.2) (ruby), retriable (3.1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(81): Found existing spec ([retriable (3.1.2) (ruby), retriable (3.1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(81): Creating possibility state for faraday (~> 1.0) universal-darwin-22 (2 remaining)
+BUNDLER(82): Attempting to activate [faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(82): Found existing spec ([faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(82): Creating possibility state for faraday (~> 1.0) universal-darwin-23 (2 remaining)
+BUNDLER(83): Attempting to activate [faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(83): Found existing spec ([faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(83): Creating possibility state for retriable (>= 2.0, < 4.a) universal-darwin-23 (1 remaining)
+BUNDLER(84): Attempting to activate [retriable (3.1.2) (ruby), retriable (3.1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(84): Found existing spec ([retriable (3.1.2) (ruby), retriable (3.1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(84): Creating possibility state for aws-sdk-s3 (~> 1.0) universal-darwin-21 (2 remaining)
+BUNDLER(85): Attempting to activate [aws-sdk-s3 (1.134.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(85): Activated aws-sdk-s3 at [aws-sdk-s3 (1.134.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(85): Requiring nested dependencies (aws-sdk-core (~> 3, >= 3.181.0) universal-darwin-21, aws-sdk-kms (~> 1) universal-darwin-21, aws-sigv4 (~> 1.6) universal-darwin-21, aws-sdk-core (~> 3, >= 3.181.0) universal-darwin-22, aws-sdk-kms (~> 1) universal-darwin-22, aws-sigv4 (~> 1.6) universal-darwin-22, aws-sdk-core (~> 3, >= 3.181.0) universal-darwin-23, aws-sdk-kms (~> 1) universal-darwin-23, aws-sigv4 (~> 1.6) universal-darwin-23)
+BUNDLER(85): Creating possibility state for aws-sdk-s3 (~> 1.0) universal-darwin-22 (2 remaining)
+BUNDLER(86): Attempting to activate [aws-sdk-s3 (1.134.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(86): Found existing spec ([aws-sdk-s3 (1.134.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(86): Creating possibility state for aws-sdk-s3 (~> 1.0) universal-darwin-23 (2 remaining)
+BUNDLER(87): Attempting to activate [aws-sdk-s3 (1.134.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(87): Found existing spec ([aws-sdk-s3 (1.134.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(87): Creating possibility state for faraday-excon (~> 1.1) universal-darwin-21 (1 remaining)
+BUNDLER(88): Attempting to activate [faraday-excon (1.1.0) (ruby), faraday-excon (1.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(88): Activated faraday-excon at [faraday-excon (1.1.0) (ruby), faraday-excon (1.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(88): Requiring nested dependencies ()
+BUNDLER(88): Creating possibility state for faraday-httpclient (~> 1.0) universal-darwin-21 (1 remaining)
+BUNDLER(89): Attempting to activate [faraday-httpclient (1.0.1) (ruby), faraday-httpclient (1.0.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(89): Activated faraday-httpclient at [faraday-httpclient (1.0.1) (ruby), faraday-httpclient (1.0.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(89): Requiring nested dependencies ()
+BUNDLER(89): Creating possibility state for faraday-multipart (~> 1.0) universal-darwin-21 (2 remaining)
+BUNDLER(90): Attempting to activate [faraday-multipart (1.0.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(90): Activated faraday-multipart at [faraday-multipart (1.0.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(90): Requiring nested dependencies (multipart-post (~> 2) universal-darwin-21, multipart-post (~> 2) universal-darwin-22, multipart-post (~> 2) universal-darwin-23)
+BUNDLER(90): Creating possibility state for faraday-multipart (~> 1.0) universal-darwin-22 (2 remaining)
+BUNDLER(91): Attempting to activate [faraday-multipart (1.0.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(91): Found existing spec ([faraday-multipart (1.0.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(91): Creating possibility state for faraday-excon (~> 1.1) universal-darwin-22 (1 remaining)
+BUNDLER(92): Attempting to activate [faraday-excon (1.1.0) (ruby), faraday-excon (1.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(92): Found existing spec ([faraday-excon (1.1.0) (ruby), faraday-excon (1.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(92): Creating possibility state for faraday-httpclient (~> 1.0) universal-darwin-22 (1 remaining)
+BUNDLER(93): Attempting to activate [faraday-httpclient (1.0.1) (ruby), faraday-httpclient (1.0.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(93): Found existing spec ([faraday-httpclient (1.0.1) (ruby), faraday-httpclient (1.0.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(93): Creating possibility state for faraday-multipart (~> 1.0) universal-darwin-23 (2 remaining)
+BUNDLER(94): Attempting to activate [faraday-multipart (1.0.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(94): Found existing spec ([faraday-multipart (1.0.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(94): Creating possibility state for faraday-httpclient (~> 1.0) universal-darwin-23 (1 remaining)
+BUNDLER(95): Attempting to activate [faraday-httpclient (1.0.1) (ruby), faraday-httpclient (1.0.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(95): Found existing spec ([faraday-httpclient (1.0.1) (ruby), faraday-httpclient (1.0.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(95): Creating possibility state for faraday-excon (~> 1.1) universal-darwin-23 (1 remaining)
+BUNDLER(96): Attempting to activate [faraday-excon (1.1.0) (ruby), faraday-excon (1.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(96): Found existing spec ([faraday-excon (1.1.0) (ruby), faraday-excon (1.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(96): Creating possibility state for mini_mime (~> 1.0) universal-darwin-21 (1 remaining)
+BUNDLER(97): Attempting to activate [mini_mime (1.1.5) (ruby), mini_mime (1.1.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(97): Activated mini_mime at [mini_mime (1.1.5) (ruby), mini_mime (1.1.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(97): Requiring nested dependencies ()
+BUNDLER(97): Creating possibility state for googleauth (>= 0.16.2, < 2.a) universal-darwin-21 (2 remaining)
+BUNDLER(98): Attempting to activate [googleauth (1.7.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(98): Activated googleauth at [googleauth (1.7.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(98): Requiring nested dependencies (faraday (>= 0.17.3, < 3.a) universal-darwin-21, jwt (>= 1.4, < 3.0) universal-darwin-21, memoist (~> 0.16) universal-darwin-21, multi_json (~> 1.11) universal-darwin-21, os (>= 0.9, < 2.0) universal-darwin-21, signet (>= 0.16, < 2.a) universal-darwin-21, faraday (>= 0.17.3, < 3.a) universal-darwin-22, jwt (>= 1.4, < 3.0) universal-darwin-22, memoist (~> 0.16) universal-darwin-22, multi_json (~> 1.11) universal-darwin-22, os (>= 0.9, < 2.0) universal-darwin-22, signet (>= 0.16, < 2.a) universal-darwin-22, faraday (>= 0.17.3, < 3.a) universal-darwin-23, jwt (>= 1.4, < 3.0) universal-darwin-23, memoist (~> 0.16) universal-darwin-23, multi_json (~> 1.11) universal-darwin-23, os (>= 0.9, < 2.0) universal-darwin-23, signet (>= 0.16, < 2.a) universal-darwin-23)
+BUNDLER(98): Creating possibility state for faraday (>= 0.17.3, < 3.a) universal-darwin-21 (2 remaining)
+BUNDLER(99): Attempting to activate [faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(99): Found existing spec ([faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(99): Creating possibility state for mini_mime (~> 1.0) universal-darwin-22 (1 remaining)
+BUNDLER(100): Attempting to activate [mini_mime (1.1.5) (ruby), mini_mime (1.1.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(100): Found existing spec ([mini_mime (1.1.5) (ruby), mini_mime (1.1.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(100): Creating possibility state for faraday (>= 0.17.3, < 3.a) universal-darwin-22 (2 remaining)
+BUNDLER(101): Attempting to activate [faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(101): Found existing spec ([faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(101): Creating possibility state for googleauth (>= 0.16.2, < 2.a) universal-darwin-22 (2 remaining)
+BUNDLER(102): Attempting to activate [googleauth (1.7.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(102): Found existing spec ([googleauth (1.7.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(102): Creating possibility state for googleauth (>= 0.16.2, < 2.a) universal-darwin-23 (2 remaining)
+BUNDLER(103): Attempting to activate [googleauth (1.7.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(103): Found existing spec ([googleauth (1.7.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(103): Creating possibility state for mini_mime (~> 1.0) universal-darwin-23 (1 remaining)
+BUNDLER(104): Attempting to activate [mini_mime (1.1.5) (ruby), mini_mime (1.1.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(104): Found existing spec ([mini_mime (1.1.5) (ruby), mini_mime (1.1.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(104): Creating possibility state for faraday (>= 0.17.3, < 3.a) universal-darwin-23 (2 remaining)
+BUNDLER(105): Attempting to activate [faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(105): Found existing spec ([faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(105): Creating possibility state for colored2 (~> 3.1) universal-darwin-21 (1 remaining)
+BUNDLER(106): Attempting to activate [colored2 (3.1.2) (ruby), colored2 (3.1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(106): Activated colored2 at [colored2 (3.1.2) (ruby), colored2 (3.1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(106): Requiring nested dependencies ()
+BUNDLER(106): Creating possibility state for rubyzip (>= 2.0.0, < 3.0.0) universal-darwin-21 (1 remaining)
+BUNDLER(107): Attempting to activate [rubyzip (2.3.2) (ruby), rubyzip (2.3.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(107): Activated rubyzip at [rubyzip (2.3.2) (ruby), rubyzip (2.3.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(107): Requiring nested dependencies ()
+BUNDLER(107): Creating possibility state for tty-screen (>= 0.6.3, < 1.0.0) universal-darwin-21 (1 remaining)
+BUNDLER(108): Attempting to activate [tty-screen (0.8.1) (ruby), tty-screen (0.8.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(108): Activated tty-screen at [tty-screen (0.8.1) (ruby), tty-screen (0.8.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(108): Requiring nested dependencies ()
+BUNDLER(108): Creating possibility state for faraday-em_http (~> 1.0) universal-darwin-21 (1 remaining)
+BUNDLER(109): Attempting to activate [faraday-em_http (1.0.0) (ruby), faraday-em_http (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(109): Activated faraday-em_http at [faraday-em_http (1.0.0) (ruby), faraday-em_http (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(109): Requiring nested dependencies ()
+BUNDLER(109): Creating possibility state for artifactory (~> 3.0) universal-darwin-21 (1 remaining)
+BUNDLER(110): Attempting to activate [artifactory (3.0.15) (ruby), artifactory (3.0.15) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(110): Activated artifactory at [artifactory (3.0.15) (ruby), artifactory (3.0.15) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(110): Requiring nested dependencies ()
+BUNDLER(110): Creating possibility state for faraday-em_synchrony (~> 1.0) universal-darwin-21 (1 remaining)
+BUNDLER(111): Attempting to activate [faraday-em_synchrony (1.0.0) (ruby), faraday-em_synchrony (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(111): Activated faraday-em_synchrony at [faraday-em_synchrony (1.0.0) (ruby), faraday-em_synchrony (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(111): Requiring nested dependencies ()
+BUNDLER(111): Creating possibility state for multipart-post (~> 2) universal-darwin-21 (1 remaining)
+BUNDLER(112): Attempting to activate [multipart-post (2.3.0) (ruby), multipart-post (2.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(112): Activated multipart-post at [multipart-post (2.3.0) (ruby), multipart-post (2.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(112): Requiring nested dependencies ()
+BUNDLER(112): Creating possibility state for faraday-net_http_persistent (~> 1.0) universal-darwin-21 (1 remaining)
+BUNDLER(113): Attempting to activate [faraday-net_http_persistent (1.2.0) (ruby), faraday-net_http_persistent (1.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(113): Activated faraday-net_http_persistent at [faraday-net_http_persistent (1.2.0) (ruby), faraday-net_http_persistent (1.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(113): Requiring nested dependencies ()
+BUNDLER(113): Creating possibility state for faraday-patron (~> 1.0) universal-darwin-21 (1 remaining)
+BUNDLER(114): Attempting to activate [faraday-patron (1.0.0) (ruby), faraday-patron (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(114): Activated faraday-patron at [faraday-patron (1.0.0) (ruby), faraday-patron (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(114): Requiring nested dependencies ()
+BUNDLER(114): Creating possibility state for multipart-post (>= 2.0.0, < 3.0.0) universal-darwin-21 (1 remaining)
+BUNDLER(115): Attempting to activate [multipart-post (2.3.0) (ruby), multipart-post (2.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(115): Found existing spec ([multipart-post (2.3.0) (ruby), multipart-post (2.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(115): Creating possibility state for faraday-rack (~> 1.0) universal-darwin-21 (1 remaining)
+BUNDLER(116): Attempting to activate [faraday-rack (1.0.0) (ruby), faraday-rack (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(116): Activated faraday-rack at [faraday-rack (1.0.0) (ruby), faraday-rack (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(116): Requiring nested dependencies ()
+BUNDLER(116): Creating possibility state for faraday-retry (~> 1.0) universal-darwin-21 (1 remaining)
+BUNDLER(117): Attempting to activate [faraday-retry (1.0.3) (ruby), faraday-retry (1.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(117): Activated faraday-retry at [faraday-retry (1.0.3) (ruby), faraday-retry (1.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(117): Requiring nested dependencies ()
+BUNDLER(117): Creating possibility state for ruby2_keywords (>= 0.0.4) universal-darwin-21 (1 remaining)
+BUNDLER(118): Attempting to activate [ruby2_keywords (0.0.5) (ruby), ruby2_keywords (0.0.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(118): Activated ruby2_keywords at [ruby2_keywords (0.0.5) (ruby), ruby2_keywords (0.0.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(118): Requiring nested dependencies ()
+BUNDLER(118): Creating possibility state for emoji_regex (>= 0.1, < 4.0) universal-darwin-21 (1 remaining)
+BUNDLER(119): Attempting to activate [emoji_regex (3.2.3) (ruby), emoji_regex (3.2.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(119): Activated emoji_regex at [emoji_regex (3.2.3) (ruby), emoji_regex (3.2.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(119): Requiring nested dependencies ()
+BUNDLER(119): Creating possibility state for jwt (>= 2.1.0, < 3) universal-darwin-21 (1 remaining)
+BUNDLER(120): Attempting to activate [jwt (2.7.1) (ruby), jwt (2.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(120): Activated jwt at [jwt (2.7.1) (ruby), jwt (2.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(120): Requiring nested dependencies ()
+BUNDLER(120): Creating possibility state for google-apis-androidpublisher_v3 (~> 0.3) universal-darwin-21 (2 remaining)
+BUNDLER(121): Attempting to activate [google-apis-androidpublisher_v3 (0.49.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(121): Activated google-apis-androidpublisher_v3 at [google-apis-androidpublisher_v3 (0.49.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(121): Requiring nested dependencies (google-apis-core (>= 0.11.0, < 2.a) universal-darwin-21, google-apis-core (>= 0.11.0, < 2.a) universal-darwin-22, google-apis-core (>= 0.11.0, < 2.a) universal-darwin-23)
+BUNDLER(121): Creating possibility state for jwt (>= 1.4, < 3.0) universal-darwin-21 (1 remaining)
+BUNDLER(122): Attempting to activate [jwt (2.7.1) (ruby), jwt (2.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(122): Found existing spec ([jwt (2.7.1) (ruby), jwt (2.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(122): Creating possibility state for faraday-net_http_persistent (~> 1.0) universal-darwin-22 (1 remaining)
+BUNDLER(123): Attempting to activate [faraday-net_http_persistent (1.2.0) (ruby), faraday-net_http_persistent (1.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(123): Found existing spec ([faraday-net_http_persistent (1.2.0) (ruby), faraday-net_http_persistent (1.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(123): Creating possibility state for google-apis-androidpublisher_v3 (~> 0.3) universal-darwin-22 (2 remaining)
+BUNDLER(124): Attempting to activate [google-apis-androidpublisher_v3 (0.49.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(124): Found existing spec ([google-apis-androidpublisher_v3 (0.49.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(124): Creating possibility state for faraday-rack (~> 1.0) universal-darwin-22 (1 remaining)
+BUNDLER(125): Attempting to activate [faraday-rack (1.0.0) (ruby), faraday-rack (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(125): Found existing spec ([faraday-rack (1.0.0) (ruby), faraday-rack (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(125): Creating possibility state for faraday-patron (~> 1.0) universal-darwin-22 (1 remaining)
+BUNDLER(126): Attempting to activate [faraday-patron (1.0.0) (ruby), faraday-patron (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(126): Found existing spec ([faraday-patron (1.0.0) (ruby), faraday-patron (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(126): Creating possibility state for emoji_regex (>= 0.1, < 4.0) universal-darwin-22 (1 remaining)
+BUNDLER(127): Attempting to activate [emoji_regex (3.2.3) (ruby), emoji_regex (3.2.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(127): Found existing spec ([emoji_regex (3.2.3) (ruby), emoji_regex (3.2.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(127): Creating possibility state for colored2 (~> 3.1) universal-darwin-22 (1 remaining)
+BUNDLER(128): Attempting to activate [colored2 (3.1.2) (ruby), colored2 (3.1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(128): Found existing spec ([colored2 (3.1.2) (ruby), colored2 (3.1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(128): Creating possibility state for multipart-post (>= 2.0.0, < 3.0.0) universal-darwin-22 (1 remaining)
+BUNDLER(129): Attempting to activate [multipart-post (2.3.0) (ruby), multipart-post (2.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(129): Found existing spec ([multipart-post (2.3.0) (ruby), multipart-post (2.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(129): Creating possibility state for faraday-em_http (~> 1.0) universal-darwin-22 (1 remaining)
+BUNDLER(130): Attempting to activate [faraday-em_http (1.0.0) (ruby), faraday-em_http (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(130): Found existing spec ([faraday-em_http (1.0.0) (ruby), faraday-em_http (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(130): Creating possibility state for faraday-em_synchrony (~> 1.0) universal-darwin-22 (1 remaining)
+BUNDLER(131): Attempting to activate [faraday-em_synchrony (1.0.0) (ruby), faraday-em_synchrony (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(131): Found existing spec ([faraday-em_synchrony (1.0.0) (ruby), faraday-em_synchrony (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(131): Creating possibility state for tty-screen (>= 0.6.3, < 1.0.0) universal-darwin-22 (1 remaining)
+BUNDLER(132): Attempting to activate [tty-screen (0.8.1) (ruby), tty-screen (0.8.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(132): Found existing spec ([tty-screen (0.8.1) (ruby), tty-screen (0.8.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(132): Creating possibility state for jwt (>= 2.1.0, < 3) universal-darwin-22 (1 remaining)
+BUNDLER(133): Attempting to activate [jwt (2.7.1) (ruby), jwt (2.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(133): Found existing spec ([jwt (2.7.1) (ruby), jwt (2.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(133): Creating possibility state for artifactory (~> 3.0) universal-darwin-22 (1 remaining)
+BUNDLER(134): Attempting to activate [artifactory (3.0.15) (ruby), artifactory (3.0.15) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(134): Found existing spec ([artifactory (3.0.15) (ruby), artifactory (3.0.15) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(134): Creating possibility state for faraday-retry (~> 1.0) universal-darwin-22 (1 remaining)
+BUNDLER(135): Attempting to activate [faraday-retry (1.0.3) (ruby), faraday-retry (1.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(135): Found existing spec ([faraday-retry (1.0.3) (ruby), faraday-retry (1.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(135): Creating possibility state for jwt (>= 1.4, < 3.0) universal-darwin-22 (1 remaining)
+BUNDLER(136): Attempting to activate [jwt (2.7.1) (ruby), jwt (2.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(136): Found existing spec ([jwt (2.7.1) (ruby), jwt (2.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(136): Creating possibility state for multipart-post (~> 2) universal-darwin-22 (1 remaining)
+BUNDLER(137): Attempting to activate [multipart-post (2.3.0) (ruby), multipart-post (2.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(137): Found existing spec ([multipart-post (2.3.0) (ruby), multipart-post (2.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(137): Creating possibility state for rubyzip (>= 2.0.0, < 3.0.0) universal-darwin-22 (1 remaining)
+BUNDLER(138): Attempting to activate [rubyzip (2.3.2) (ruby), rubyzip (2.3.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(138): Found existing spec ([rubyzip (2.3.2) (ruby), rubyzip (2.3.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(138): Creating possibility state for ruby2_keywords (>= 0.0.4) universal-darwin-22 (1 remaining)
+BUNDLER(139): Attempting to activate [ruby2_keywords (0.0.5) (ruby), ruby2_keywords (0.0.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(139): Found existing spec ([ruby2_keywords (0.0.5) (ruby), ruby2_keywords (0.0.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(139): Creating possibility state for rubyzip (>= 2.0.0, < 3.0.0) universal-darwin-23 (1 remaining)
+BUNDLER(140): Attempting to activate [rubyzip (2.3.2) (ruby), rubyzip (2.3.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(140): Found existing spec ([rubyzip (2.3.2) (ruby), rubyzip (2.3.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(140): Creating possibility state for jwt (>= 2.1.0, < 3) universal-darwin-23 (1 remaining)
+BUNDLER(141): Attempting to activate [jwt (2.7.1) (ruby), jwt (2.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(141): Found existing spec ([jwt (2.7.1) (ruby), jwt (2.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(141): Creating possibility state for jwt (>= 1.4, < 3.0) universal-darwin-23 (1 remaining)
+BUNDLER(142): Attempting to activate [jwt (2.7.1) (ruby), jwt (2.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(142): Found existing spec ([jwt (2.7.1) (ruby), jwt (2.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(142): Creating possibility state for faraday-em_synchrony (~> 1.0) universal-darwin-23 (1 remaining)
+BUNDLER(143): Attempting to activate [faraday-em_synchrony (1.0.0) (ruby), faraday-em_synchrony (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(143): Found existing spec ([faraday-em_synchrony (1.0.0) (ruby), faraday-em_synchrony (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(143): Creating possibility state for multipart-post (~> 2) universal-darwin-23 (1 remaining)
+BUNDLER(144): Attempting to activate [multipart-post (2.3.0) (ruby), multipart-post (2.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(144): Found existing spec ([multipart-post (2.3.0) (ruby), multipart-post (2.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(144): Creating possibility state for faraday-retry (~> 1.0) universal-darwin-23 (1 remaining)
+BUNDLER(145): Attempting to activate [faraday-retry (1.0.3) (ruby), faraday-retry (1.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(145): Found existing spec ([faraday-retry (1.0.3) (ruby), faraday-retry (1.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(145): Creating possibility state for emoji_regex (>= 0.1, < 4.0) universal-darwin-23 (1 remaining)
+BUNDLER(146): Attempting to activate [emoji_regex (3.2.3) (ruby), emoji_regex (3.2.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(146): Found existing spec ([emoji_regex (3.2.3) (ruby), emoji_regex (3.2.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(146): Creating possibility state for artifactory (~> 3.0) universal-darwin-23 (1 remaining)
+BUNDLER(147): Attempting to activate [artifactory (3.0.15) (ruby), artifactory (3.0.15) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(147): Found existing spec ([artifactory (3.0.15) (ruby), artifactory (3.0.15) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(147): Creating possibility state for multipart-post (>= 2.0.0, < 3.0.0) universal-darwin-23 (1 remaining)
+BUNDLER(148): Attempting to activate [multipart-post (2.3.0) (ruby), multipart-post (2.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(148): Found existing spec ([multipart-post (2.3.0) (ruby), multipart-post (2.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(148): Creating possibility state for ruby2_keywords (>= 0.0.4) universal-darwin-23 (1 remaining)
+BUNDLER(149): Attempting to activate [ruby2_keywords (0.0.5) (ruby), ruby2_keywords (0.0.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(149): Found existing spec ([ruby2_keywords (0.0.5) (ruby), ruby2_keywords (0.0.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(149): Creating possibility state for colored2 (~> 3.1) universal-darwin-23 (1 remaining)
+BUNDLER(150): Attempting to activate [colored2 (3.1.2) (ruby), colored2 (3.1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(150): Found existing spec ([colored2 (3.1.2) (ruby), colored2 (3.1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(150): Creating possibility state for tty-screen (>= 0.6.3, < 1.0.0) universal-darwin-23 (1 remaining)
+BUNDLER(151): Attempting to activate [tty-screen (0.8.1) (ruby), tty-screen (0.8.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(151): Found existing spec ([tty-screen (0.8.1) (ruby), tty-screen (0.8.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(151): Creating possibility state for faraday-em_http (~> 1.0) universal-darwin-23 (1 remaining)
+BUNDLER(152): Attempting to activate [faraday-em_http (1.0.0) (ruby), faraday-em_http (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(152): Found existing spec ([faraday-em_http (1.0.0) (ruby), faraday-em_http (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(152): Creating possibility state for google-apis-androidpublisher_v3 (~> 0.3) universal-darwin-23 (2 remaining)
+BUNDLER(153): Attempting to activate [google-apis-androidpublisher_v3 (0.49.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(153): Found existing spec ([google-apis-androidpublisher_v3 (0.49.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(153): Creating possibility state for faraday-rack (~> 1.0) universal-darwin-23 (1 remaining)
+BUNDLER(154): Attempting to activate [faraday-rack (1.0.0) (ruby), faraday-rack (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(154): Found existing spec ([faraday-rack (1.0.0) (ruby), faraday-rack (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(154): Creating possibility state for faraday-patron (~> 1.0) universal-darwin-23 (1 remaining)
+BUNDLER(155): Attempting to activate [faraday-patron (1.0.0) (ruby), faraday-patron (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(155): Found existing spec ([faraday-patron (1.0.0) (ruby), faraday-patron (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(155): Creating possibility state for faraday-net_http_persistent (~> 1.0) universal-darwin-23 (1 remaining)
+BUNDLER(156): Attempting to activate [faraday-net_http_persistent (1.2.0) (ruby), faraday-net_http_persistent (1.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(156): Found existing spec ([faraday-net_http_persistent (1.2.0) (ruby), faraday-net_http_persistent (1.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(156): Creating possibility state for xcpretty (~> 0.3.0) universal-darwin-21 (2 remaining)
+BUNDLER(157): Attempting to activate [xcpretty (0.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(157): Activated xcpretty at [xcpretty (0.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(157): Requiring nested dependencies (rouge (~> 2.0.7) universal-darwin-21, rouge (~> 2.0.7) universal-darwin-22, rouge (~> 2.0.7) universal-darwin-23)
+BUNDLER(157): Creating possibility state for xcpretty (>= 0.0.7, ~> 0.2) universal-darwin-21 (2 remaining)
+BUNDLER(158): Attempting to activate [xcpretty (0.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(158): Found existing spec ([xcpretty (0.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(158): Creating possibility state for xcpretty (>= 0.0.7, ~> 0.2) universal-darwin-22 (2 remaining)
+BUNDLER(159): Attempting to activate [xcpretty (0.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(159): Found existing spec ([xcpretty (0.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(159): Creating possibility state for xcpretty (~> 0.3.0) universal-darwin-22 (2 remaining)
+BUNDLER(160): Attempting to activate [xcpretty (0.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(160): Found existing spec ([xcpretty (0.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(160): Creating possibility state for xcpretty (>= 0.0.7, ~> 0.2) universal-darwin-23 (2 remaining)
+BUNDLER(161): Attempting to activate [xcpretty (0.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(161): Found existing spec ([xcpretty (0.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(161): Creating possibility state for xcpretty (~> 0.3.0) universal-darwin-23 (2 remaining)
+BUNDLER(162): Attempting to activate [xcpretty (0.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(162): Found existing spec ([xcpretty (0.3.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(162): Creating possibility state for optparse (~> 0.1.1) universal-darwin-21 (1 remaining)
+BUNDLER(163): Attempting to activate [optparse (0.1.1) (ruby), optparse (0.1.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(163): Activated optparse at [optparse (0.1.1) (ruby), optparse (0.1.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(163): Requiring nested dependencies ()
+BUNDLER(163): Creating possibility state for faraday_middleware (~> 1.0) universal-darwin-21 (2 remaining)
+BUNDLER(164): Attempting to activate [faraday_middleware (1.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(164): Activated faraday_middleware at [faraday_middleware (1.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(164): Requiring nested dependencies (faraday (~> 1.0) universal-darwin-21, faraday (~> 1.0) universal-darwin-22, faraday (~> 1.0) universal-darwin-23)
+BUNDLER(164): Creating possibility state for optparse (~> 0.1.1) universal-darwin-22 (1 remaining)
+BUNDLER(165): Attempting to activate [optparse (0.1.1) (ruby), optparse (0.1.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(165): Found existing spec ([optparse (0.1.1) (ruby), optparse (0.1.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(165): Creating possibility state for faraday_middleware (~> 1.0) universal-darwin-22 (2 remaining)
+BUNDLER(166): Attempting to activate [faraday_middleware (1.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(166): Found existing spec ([faraday_middleware (1.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(166): Creating possibility state for faraday_middleware (~> 1.0) universal-darwin-23 (2 remaining)
+BUNDLER(167): Attempting to activate [faraday_middleware (1.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(167): Found existing spec ([faraday_middleware (1.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(167): Creating possibility state for optparse (~> 0.1.1) universal-darwin-23 (1 remaining)
+BUNDLER(168): Attempting to activate [optparse (0.1.1) (ruby), optparse (0.1.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(168): Found existing spec ([optparse (0.1.1) (ruby), optparse (0.1.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(168): Creating possibility state for faraday-cookie_jar (~> 0.0.6) universal-darwin-21 (2 remaining)
+BUNDLER(169): Attempting to activate [faraday-cookie_jar (0.0.7) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(169): Activated faraday-cookie_jar at [faraday-cookie_jar (0.0.7) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(169): Requiring nested dependencies (faraday (>= 0.8.0) universal-darwin-21, http-cookie (~> 1.0.0) universal-darwin-21, faraday (>= 0.8.0) universal-darwin-22, http-cookie (~> 1.0.0) universal-darwin-22, faraday (>= 0.8.0) universal-darwin-23, http-cookie (~> 1.0.0) universal-darwin-23)
+BUNDLER(169): Creating possibility state for faraday (>= 0.8.0) universal-darwin-21 (2 remaining)
+BUNDLER(170): Attempting to activate [faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(170): Found existing spec ([faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(170): Creating possibility state for faraday-cookie_jar (~> 0.0.6) universal-darwin-22 (2 remaining)
+BUNDLER(171): Attempting to activate [faraday-cookie_jar (0.0.7) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(171): Found existing spec ([faraday-cookie_jar (0.0.7) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(171): Creating possibility state for faraday (>= 0.8.0) universal-darwin-22 (2 remaining)
+BUNDLER(172): Attempting to activate [faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(172): Found existing spec ([faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(172): Creating possibility state for faraday (>= 0.8.0) universal-darwin-23 (2 remaining)
+BUNDLER(173): Attempting to activate [faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(173): Found existing spec ([faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(173): Creating possibility state for faraday-cookie_jar (~> 0.0.6) universal-darwin-23 (2 remaining)
+BUNDLER(174): Attempting to activate [faraday-cookie_jar (0.0.7) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(174): Found existing spec ([faraday-cookie_jar (0.0.7) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(174): Creating possibility state for simctl (~> 1.6.3) universal-darwin-21 (2 remaining)
+BUNDLER(175): Attempting to activate [simctl (1.6.10) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(175): Activated simctl at [simctl (1.6.10) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(175): Requiring nested dependencies (CFPropertyList universal-darwin-21, naturally universal-darwin-21, CFPropertyList universal-darwin-22, naturally universal-darwin-22, CFPropertyList universal-darwin-23, naturally universal-darwin-23)
+BUNDLER(175): Creating possibility state for CFPropertyList universal-darwin-21 (2 remaining)
+BUNDLER(176): Attempting to activate [CFPropertyList (3.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(176): Found existing spec ([CFPropertyList (3.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(176): Creating possibility state for naturally universal-darwin-21 (1 remaining)
+BUNDLER(177): Attempting to activate [naturally (2.2.1) (ruby), naturally (2.2.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(177): Found existing spec ([naturally (2.2.1) (ruby), naturally (2.2.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(177): Creating possibility state for CFPropertyList universal-darwin-22 (2 remaining)
+BUNDLER(178): Attempting to activate [CFPropertyList (3.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(178): Found existing spec ([CFPropertyList (3.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(178): Creating possibility state for simctl (~> 1.6.3) universal-darwin-22 (2 remaining)
+BUNDLER(179): Attempting to activate [simctl (1.6.10) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(179): Found existing spec ([simctl (1.6.10) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(179): Creating possibility state for naturally universal-darwin-22 (1 remaining)
+BUNDLER(180): Attempting to activate [naturally (2.2.1) (ruby), naturally (2.2.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(180): Found existing spec ([naturally (2.2.1) (ruby), naturally (2.2.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(180): Creating possibility state for CFPropertyList universal-darwin-23 (2 remaining)
+BUNDLER(181): Attempting to activate [CFPropertyList (3.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(181): Found existing spec ([CFPropertyList (3.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(181): Creating possibility state for naturally universal-darwin-23 (1 remaining)
+BUNDLER(182): Attempting to activate [naturally (2.2.1) (ruby), naturally (2.2.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(182): Found existing spec ([naturally (2.2.1) (ruby), naturally (2.2.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(182): Creating possibility state for simctl (~> 1.6.3) universal-darwin-23 (2 remaining)
+BUNDLER(183): Attempting to activate [simctl (1.6.10) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(183): Found existing spec ([simctl (1.6.10) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(183): Creating possibility state for multi_json (~> 1.11) universal-darwin-21 (1 remaining)
+BUNDLER(184): Attempting to activate [multi_json (1.15.0) (ruby), multi_json (1.15.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(184): Activated multi_json at [multi_json (1.15.0) (ruby), multi_json (1.15.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(184): Requiring nested dependencies ()
+BUNDLER(184): Creating possibility state for public_suffix (>= 2.0.2, < 6.0) universal-darwin-21 (1 remaining)
+BUNDLER(185): Attempting to activate [public_suffix (5.0.3) (ruby), public_suffix (5.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(185): Activated public_suffix at [public_suffix (5.0.3) (ruby), public_suffix (5.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(185): Requiring nested dependencies ()
+BUNDLER(185): Creating possibility state for webrick universal-darwin-21 (1 remaining)
+BUNDLER(186): Attempting to activate [webrick (1.8.1) (ruby), webrick (1.8.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(186): Activated webrick at [webrick (1.8.1) (ruby), webrick (1.8.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(186): Requiring nested dependencies ()
+BUNDLER(186): Creating possibility state for word_wrap (~> 1.0.0) universal-darwin-21 (1 remaining)
+BUNDLER(187): Attempting to activate [word_wrap (1.0.0) (ruby), word_wrap (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(187): Activated word_wrap at [word_wrap (1.0.0) (ruby), word_wrap (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(187): Requiring nested dependencies ()
+BUNDLER(187): Creating possibility state for unicode-display_width (~> 1.1, >= 1.1.1) universal-darwin-21 (1 remaining)
+BUNDLER(188): Attempting to activate [unicode-display_width (1.8.0) (ruby), unicode-display_width (1.8.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(188): Activated unicode-display_width at [unicode-display_width (1.8.0) (ruby), unicode-display_width (1.8.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(188): Requiring nested dependencies ()
+BUNDLER(188): Creating possibility state for gh_inspector (>= 1.1.2, < 2.0.0) universal-darwin-21 (1 remaining)
+BUNDLER(189): Attempting to activate [gh_inspector (1.1.3) (ruby), gh_inspector (1.1.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(189): Activated gh_inspector at [gh_inspector (1.1.3) (ruby), gh_inspector (1.1.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(189): Requiring nested dependencies ()
+BUNDLER(189): Creating possibility state for signet (>= 0.16, < 2.a) universal-darwin-21 (2 remaining)
+BUNDLER(190): Attempting to activate [signet (0.17.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(190): Activated signet at [signet (0.17.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(190): Requiring nested dependencies (addressable (~> 2.8) universal-darwin-21, faraday (>= 0.17.5, < 3.a) universal-darwin-21, jwt (>= 1.5, < 3.0) universal-darwin-21, multi_json (~> 1.10) universal-darwin-21, addressable (~> 2.8) universal-darwin-22, faraday (>= 0.17.5, < 3.a) universal-darwin-22, jwt (>= 1.5, < 3.0) universal-darwin-22, multi_json (~> 1.10) universal-darwin-22, addressable (~> 2.8) universal-darwin-23, faraday (>= 0.17.5, < 3.a) universal-darwin-23, jwt (>= 1.5, < 3.0) universal-darwin-23, multi_json (~> 1.10) universal-darwin-23)
+BUNDLER(190): Creating possibility state for faraday (>= 0.17.5, < 3.a) universal-darwin-21 (2 remaining)
+BUNDLER(191): Attempting to activate [faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(191): Found existing spec ([faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(191): Creating possibility state for addressable (~> 2.8) universal-darwin-21 (2 remaining)
+BUNDLER(192): Attempting to activate [addressable (2.8.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(192): Found existing spec ([addressable (2.8.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(192): Creating possibility state for multi_json (~> 1.10) universal-darwin-21 (1 remaining)
+BUNDLER(193): Attempting to activate [multi_json (1.15.0) (ruby), multi_json (1.15.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(193): Found existing spec ([multi_json (1.15.0) (ruby), multi_json (1.15.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(193): Creating possibility state for jwt (>= 1.5, < 3.0) universal-darwin-21 (1 remaining)
+BUNDLER(194): Attempting to activate [jwt (2.7.1) (ruby), jwt (2.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(194): Found existing spec ([jwt (2.7.1) (ruby), jwt (2.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(194): Creating possibility state for signet (>= 0.16, < 2.a) universal-darwin-22 (2 remaining)
+BUNDLER(195): Attempting to activate [signet (0.17.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(195): Found existing spec ([signet (0.17.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(195): Creating possibility state for word_wrap (~> 1.0.0) universal-darwin-22 (1 remaining)
+BUNDLER(196): Attempting to activate [word_wrap (1.0.0) (ruby), word_wrap (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(196): Found existing spec ([word_wrap (1.0.0) (ruby), word_wrap (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(196): Creating possibility state for unicode-display_width (~> 1.1, >= 1.1.1) universal-darwin-22 (1 remaining)
+BUNDLER(197): Attempting to activate [unicode-display_width (1.8.0) (ruby), unicode-display_width (1.8.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(197): Found existing spec ([unicode-display_width (1.8.0) (ruby), unicode-display_width (1.8.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(197): Creating possibility state for public_suffix (>= 2.0.2, < 6.0) universal-darwin-22 (1 remaining)
+BUNDLER(198): Attempting to activate [public_suffix (5.0.3) (ruby), public_suffix (5.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(198): Found existing spec ([public_suffix (5.0.3) (ruby), public_suffix (5.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(198): Creating possibility state for gh_inspector (>= 1.1.2, < 2.0.0) universal-darwin-22 (1 remaining)
+BUNDLER(199): Attempting to activate [gh_inspector (1.1.3) (ruby), gh_inspector (1.1.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(199): Found existing spec ([gh_inspector (1.1.3) (ruby), gh_inspector (1.1.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(199): Creating possibility state for webrick universal-darwin-22 (1 remaining)
+BUNDLER(200): Attempting to activate [webrick (1.8.1) (ruby), webrick (1.8.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(200): Found existing spec ([webrick (1.8.1) (ruby), webrick (1.8.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(200): Creating possibility state for multi_json (~> 1.10) universal-darwin-22 (1 remaining)
+BUNDLER(201): Attempting to activate [multi_json (1.15.0) (ruby), multi_json (1.15.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(201): Found existing spec ([multi_json (1.15.0) (ruby), multi_json (1.15.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(201): Creating possibility state for jwt (>= 1.5, < 3.0) universal-darwin-22 (1 remaining)
+BUNDLER(202): Attempting to activate [jwt (2.7.1) (ruby), jwt (2.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(202): Found existing spec ([jwt (2.7.1) (ruby), jwt (2.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(202): Creating possibility state for faraday (>= 0.17.5, < 3.a) universal-darwin-22 (2 remaining)
+BUNDLER(203): Attempting to activate [faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(203): Found existing spec ([faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(203): Creating possibility state for multi_json (~> 1.11) universal-darwin-22 (1 remaining)
+BUNDLER(204): Attempting to activate [multi_json (1.15.0) (ruby), multi_json (1.15.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(204): Found existing spec ([multi_json (1.15.0) (ruby), multi_json (1.15.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(204): Creating possibility state for addressable (~> 2.8) universal-darwin-22 (2 remaining)
+BUNDLER(205): Attempting to activate [addressable (2.8.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(205): Found existing spec ([addressable (2.8.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(205): Creating possibility state for webrick universal-darwin-23 (1 remaining)
+BUNDLER(206): Attempting to activate [webrick (1.8.1) (ruby), webrick (1.8.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(206): Found existing spec ([webrick (1.8.1) (ruby), webrick (1.8.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(206): Creating possibility state for multi_json (~> 1.10) universal-darwin-23 (1 remaining)
+BUNDLER(207): Attempting to activate [multi_json (1.15.0) (ruby), multi_json (1.15.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(207): Found existing spec ([multi_json (1.15.0) (ruby), multi_json (1.15.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(207): Creating possibility state for jwt (>= 1.5, < 3.0) universal-darwin-23 (1 remaining)
+BUNDLER(208): Attempting to activate [jwt (2.7.1) (ruby), jwt (2.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(208): Found existing spec ([jwt (2.7.1) (ruby), jwt (2.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(208): Creating possibility state for multi_json (~> 1.11) universal-darwin-23 (1 remaining)
+BUNDLER(209): Attempting to activate [multi_json (1.15.0) (ruby), multi_json (1.15.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(209): Found existing spec ([multi_json (1.15.0) (ruby), multi_json (1.15.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(209): Creating possibility state for faraday (>= 0.17.5, < 3.a) universal-darwin-23 (2 remaining)
+BUNDLER(210): Attempting to activate [faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(210): Found existing spec ([faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(210): Creating possibility state for addressable (~> 2.8) universal-darwin-23 (2 remaining)
+BUNDLER(211): Attempting to activate [addressable (2.8.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(211): Found existing spec ([addressable (2.8.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(211): Creating possibility state for word_wrap (~> 1.0.0) universal-darwin-23 (1 remaining)
+BUNDLER(212): Attempting to activate [word_wrap (1.0.0) (ruby), word_wrap (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(212): Found existing spec ([word_wrap (1.0.0) (ruby), word_wrap (1.0.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(212): Creating possibility state for unicode-display_width (~> 1.1, >= 1.1.1) universal-darwin-23 (1 remaining)
+BUNDLER(213): Attempting to activate [unicode-display_width (1.8.0) (ruby), unicode-display_width (1.8.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(213): Found existing spec ([unicode-display_width (1.8.0) (ruby), unicode-display_width (1.8.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(213): Creating possibility state for signet (>= 0.16, < 2.a) universal-darwin-23 (2 remaining)
+BUNDLER(214): Attempting to activate [signet (0.17.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(214): Found existing spec ([signet (0.17.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(214): Creating possibility state for public_suffix (>= 2.0.2, < 6.0) universal-darwin-23 (1 remaining)
+BUNDLER(215): Attempting to activate [public_suffix (5.0.3) (ruby), public_suffix (5.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(215): Found existing spec ([public_suffix (5.0.3) (ruby), public_suffix (5.0.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(215): Creating possibility state for gh_inspector (>= 1.1.2, < 2.0.0) universal-darwin-23 (1 remaining)
+BUNDLER(216): Attempting to activate [gh_inspector (1.1.3) (ruby), gh_inspector (1.1.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(216): Found existing spec ([gh_inspector (1.1.3) (ruby), gh_inspector (1.1.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(216): Creating possibility state for faraday-net_http (~> 1.0) universal-darwin-21 (1 remaining)
+BUNDLER(217): Attempting to activate [faraday-net_http (1.0.1) (ruby), faraday-net_http (1.0.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(217): Activated faraday-net_http at [faraday-net_http (1.0.1) (ruby), faraday-net_http (1.0.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(217): Requiring nested dependencies ()
+BUNDLER(217): Creating possibility state for json (< 3.0.0) universal-darwin-21 (2 remaining)
+BUNDLER(218): Attempting to activate [json (2.6.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(218): Activated json at [json (2.6.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(218): Requiring nested dependencies (Ruby  (>= 2.3) universal-darwin-21, Ruby  (>= 2.3) universal-darwin-22, Ruby  (>= 2.3) universal-darwin-23)
+BUNDLER(218): Creating possibility state for faraday-net_http (~> 1.0) universal-darwin-22 (1 remaining)
+BUNDLER(219): Attempting to activate [faraday-net_http (1.0.1) (ruby), faraday-net_http (1.0.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(219): Found existing spec ([faraday-net_http (1.0.1) (ruby), faraday-net_http (1.0.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(219): Creating possibility state for json (< 3.0.0) universal-darwin-22 (2 remaining)
+BUNDLER(220): Attempting to activate [json (2.6.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(220): Found existing spec ([json (2.6.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(220): Creating possibility state for json (< 3.0.0) universal-darwin-23 (2 remaining)
+BUNDLER(221): Attempting to activate [json (2.6.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(221): Found existing spec ([json (2.6.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(221): Creating possibility state for faraday-net_http (~> 1.0) universal-darwin-23 (1 remaining)
+BUNDLER(222): Attempting to activate [faraday-net_http (1.0.1) (ruby), faraday-net_http (1.0.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(222): Found existing spec ([faraday-net_http (1.0.1) (ruby), faraday-net_http (1.0.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(222): Creating possibility state for excon (>= 0.71.0, < 1.0.0) universal-darwin-21 (1 remaining)
+BUNDLER(223): Attempting to activate [excon (0.102.0) (ruby), excon (0.102.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(223): Activated excon at [excon (0.102.0) (ruby), excon (0.102.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(223): Requiring nested dependencies ()
+BUNDLER(223): Creating possibility state for claide (>= 1.0.2, < 2.0) universal-darwin-21 (1 remaining)
+BUNDLER(224): Attempting to activate [claide (1.1.0) (ruby), claide (1.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(224): Activated claide at [claide (1.1.0) (ruby), claide (1.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(224): Requiring nested dependencies ()
+BUNDLER(224): Creating possibility state for representable (~> 3.0) universal-darwin-21 (2 remaining)
+BUNDLER(225): Attempting to activate [representable (3.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(225): Activated representable at [representable (3.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(225): Requiring nested dependencies (uber (< 0.2.0) universal-darwin-21, declarative (< 0.1.0) universal-darwin-21, trailblazer-option (>= 0.1.1, < 0.2.0) universal-darwin-21, uber (< 0.2.0) universal-darwin-22, declarative (< 0.1.0) universal-darwin-22, trailblazer-option (>= 0.1.1, < 0.2.0) universal-darwin-22, uber (< 0.2.0) universal-darwin-23, declarative (< 0.1.0) universal-darwin-23, trailblazer-option (>= 0.1.1, < 0.2.0) universal-darwin-23)
+BUNDLER(225): Creating possibility state for representable (~> 3.0) universal-darwin-22 (2 remaining)
+BUNDLER(226): Attempting to activate [representable (3.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(226): Found existing spec ([representable (3.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(226): Creating possibility state for claide (>= 1.0.2, < 2.0) universal-darwin-22 (1 remaining)
+BUNDLER(227): Attempting to activate [claide (1.1.0) (ruby), claide (1.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(227): Found existing spec ([claide (1.1.0) (ruby), claide (1.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(227): Creating possibility state for excon (>= 0.71.0, < 1.0.0) universal-darwin-22 (1 remaining)
+BUNDLER(228): Attempting to activate [excon (0.102.0) (ruby), excon (0.102.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(228): Found existing spec ([excon (0.102.0) (ruby), excon (0.102.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(228): Creating possibility state for claide (>= 1.0.2, < 2.0) universal-darwin-23 (1 remaining)
+BUNDLER(229): Attempting to activate [claide (1.1.0) (ruby), claide (1.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(229): Found existing spec ([claide (1.1.0) (ruby), claide (1.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(229): Creating possibility state for representable (~> 3.0) universal-darwin-23 (2 remaining)
+BUNDLER(230): Attempting to activate [representable (3.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(230): Found existing spec ([representable (3.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(230): Creating possibility state for excon (>= 0.71.0, < 1.0.0) universal-darwin-23 (1 remaining)
+BUNDLER(231): Attempting to activate [excon (0.102.0) (ruby), excon (0.102.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(231): Found existing spec ([excon (0.102.0) (ruby), excon (0.102.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(231): Creating possibility state for aws-sdk-kms (~> 1) universal-darwin-21 (2 remaining)
+BUNDLER(232): Attempting to activate [aws-sdk-kms (1.71.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(232): Activated aws-sdk-kms at [aws-sdk-kms (1.71.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(232): Requiring nested dependencies (aws-sdk-core (~> 3, >= 3.177.0) universal-darwin-21, aws-sigv4 (~> 1.1) universal-darwin-21, aws-sdk-core (~> 3, >= 3.177.0) universal-darwin-22, aws-sigv4 (~> 1.1) universal-darwin-22, aws-sdk-core (~> 3, >= 3.177.0) universal-darwin-23, aws-sigv4 (~> 1.1) universal-darwin-23)
+BUNDLER(232): Creating possibility state for aws-sdk-kms (~> 1) universal-darwin-22 (2 remaining)
+BUNDLER(233): Attempting to activate [aws-sdk-kms (1.71.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(233): Found existing spec ([aws-sdk-kms (1.71.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(233): Creating possibility state for aws-sdk-kms (~> 1) universal-darwin-23 (2 remaining)
+BUNDLER(234): Attempting to activate [aws-sdk-kms (1.71.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(234): Found existing spec ([aws-sdk-kms (1.71.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(234): Creating possibility state for fastimage (>= 2.1.0, < 3.0.0) universal-darwin-21 (1 remaining)
+BUNDLER(235): Attempting to activate [fastimage (2.2.7) (ruby), fastimage (2.2.7) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(235): Activated fastimage at [fastimage (2.2.7) (ruby), fastimage (2.2.7) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(235): Requiring nested dependencies ()
+BUNDLER(235): Creating possibility state for aws-sigv4 (~> 1.6) universal-darwin-21 (2 remaining)
+BUNDLER(236): Attempting to activate [aws-sigv4 (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(236): Activated aws-sigv4 at [aws-sigv4 (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(236): Requiring nested dependencies (aws-eventstream (~> 1, >= 1.0.2) universal-darwin-21, aws-eventstream (~> 1, >= 1.0.2) universal-darwin-22, aws-eventstream (~> 1, >= 1.0.2) universal-darwin-23)
+BUNDLER(236): Creating possibility state for aws-sigv4 (~> 1.1) universal-darwin-21 (2 remaining)
+BUNDLER(237): Attempting to activate [aws-sigv4 (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(237): Found existing spec ([aws-sigv4 (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(237): Creating possibility state for aws-sigv4 (~> 1.1) universal-darwin-22 (2 remaining)
+BUNDLER(238): Attempting to activate [aws-sigv4 (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(238): Found existing spec ([aws-sigv4 (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(238): Creating possibility state for aws-sigv4 (~> 1.6) universal-darwin-22 (2 remaining)
+BUNDLER(239): Attempting to activate [aws-sigv4 (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(239): Found existing spec ([aws-sigv4 (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(239): Creating possibility state for fastimage (>= 2.1.0, < 3.0.0) universal-darwin-22 (1 remaining)
+BUNDLER(240): Attempting to activate [fastimage (2.2.7) (ruby), fastimage (2.2.7) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(240): Found existing spec ([fastimage (2.2.7) (ruby), fastimage (2.2.7) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(240): Creating possibility state for fastimage (>= 2.1.0, < 3.0.0) universal-darwin-23 (1 remaining)
+BUNDLER(241): Attempting to activate [fastimage (2.2.7) (ruby), fastimage (2.2.7) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(241): Found existing spec ([fastimage (2.2.7) (ruby), fastimage (2.2.7) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(241): Creating possibility state for aws-sigv4 (~> 1.1) universal-darwin-23 (2 remaining)
+BUNDLER(242): Attempting to activate [aws-sigv4 (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(242): Found existing spec ([aws-sigv4 (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(242): Creating possibility state for aws-sigv4 (~> 1.6) universal-darwin-23 (2 remaining)
+BUNDLER(243): Attempting to activate [aws-sigv4 (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(243): Found existing spec ([aws-sigv4 (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(243): Creating possibility state for memoist (~> 0.16) universal-darwin-21 (1 remaining)
+BUNDLER(244): Attempting to activate [memoist (0.16.2) (ruby), memoist (0.16.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(244): Activated memoist at [memoist (0.16.2) (ruby), memoist (0.16.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(244): Requiring nested dependencies ()
+BUNDLER(244): Creating possibility state for aws-eventstream (~> 1, >= 1.0.2) universal-darwin-21 (1 remaining)
+BUNDLER(245): Attempting to activate [aws-eventstream (1.2.0) (ruby), aws-eventstream (1.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(245): Activated aws-eventstream at [aws-eventstream (1.2.0) (ruby), aws-eventstream (1.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(245): Requiring nested dependencies ()
+BUNDLER(245): Creating possibility state for aws-sdk-core (~> 3, >= 3.181.0) universal-darwin-21 (2 remaining)
+BUNDLER(246): Attempting to activate [aws-sdk-core (3.181.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(246): Activated aws-sdk-core at [aws-sdk-core (3.181.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(246): Requiring nested dependencies (aws-eventstream (~> 1, >= 1.0.2) universal-darwin-21, aws-partitions (~> 1, >= 1.651.0) universal-darwin-21, aws-sigv4 (~> 1.5) universal-darwin-21, jmespath (~> 1, >= 1.6.1) universal-darwin-21, aws-eventstream (~> 1, >= 1.0.2) universal-darwin-22, aws-partitions (~> 1, >= 1.651.0) universal-darwin-22, aws-sigv4 (~> 1.5) universal-darwin-22, jmespath (~> 1, >= 1.6.1) universal-darwin-22, aws-eventstream (~> 1, >= 1.0.2) universal-darwin-23, aws-partitions (~> 1, >= 1.651.0) universal-darwin-23, aws-sigv4 (~> 1.5) universal-darwin-23, jmespath (~> 1, >= 1.6.1) universal-darwin-23)
+BUNDLER(246): Creating possibility state for aws-sdk-core (~> 3, >= 3.177.0) universal-darwin-21 (2 remaining)
+BUNDLER(247): Attempting to activate [aws-sdk-core (3.181.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(247): Found existing spec ([aws-sdk-core (3.181.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(247): Creating possibility state for aws-sigv4 (~> 1.5) universal-darwin-21 (2 remaining)
+BUNDLER(248): Attempting to activate [aws-sigv4 (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(248): Found existing spec ([aws-sigv4 (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(248): Creating possibility state for memoist (~> 0.16) universal-darwin-22 (1 remaining)
+BUNDLER(249): Attempting to activate [memoist (0.16.2) (ruby), memoist (0.16.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(249): Found existing spec ([memoist (0.16.2) (ruby), memoist (0.16.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(249): Creating possibility state for aws-sdk-core (~> 3, >= 3.177.0) universal-darwin-22 (2 remaining)
+BUNDLER(250): Attempting to activate [aws-sdk-core (3.181.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(250): Found existing spec ([aws-sdk-core (3.181.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(250): Creating possibility state for aws-sigv4 (~> 1.5) universal-darwin-22 (2 remaining)
+BUNDLER(251): Attempting to activate [aws-sigv4 (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(251): Found existing spec ([aws-sigv4 (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(251): Creating possibility state for aws-eventstream (~> 1, >= 1.0.2) universal-darwin-22 (1 remaining)
+BUNDLER(252): Attempting to activate [aws-eventstream (1.2.0) (ruby), aws-eventstream (1.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(252): Found existing spec ([aws-eventstream (1.2.0) (ruby), aws-eventstream (1.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(252): Creating possibility state for aws-sdk-core (~> 3, >= 3.181.0) universal-darwin-22 (2 remaining)
+BUNDLER(253): Attempting to activate [aws-sdk-core (3.181.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(253): Found existing spec ([aws-sdk-core (3.181.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(253): Creating possibility state for aws-eventstream (~> 1, >= 1.0.2) universal-darwin-23 (1 remaining)
+BUNDLER(254): Attempting to activate [aws-eventstream (1.2.0) (ruby), aws-eventstream (1.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(254): Found existing spec ([aws-eventstream (1.2.0) (ruby), aws-eventstream (1.2.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(254): Creating possibility state for aws-sigv4 (~> 1.5) universal-darwin-23 (2 remaining)
+BUNDLER(255): Attempting to activate [aws-sigv4 (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(255): Found existing spec ([aws-sigv4 (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(255): Creating possibility state for aws-sdk-core (~> 3, >= 3.181.0) universal-darwin-23 (2 remaining)
+BUNDLER(256): Attempting to activate [aws-sdk-core (3.181.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(256): Found existing spec ([aws-sdk-core (3.181.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(256): Creating possibility state for memoist (~> 0.16) universal-darwin-23 (1 remaining)
+BUNDLER(257): Attempting to activate [memoist (0.16.2) (ruby), memoist (0.16.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(257): Found existing spec ([memoist (0.16.2) (ruby), memoist (0.16.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(257): Creating possibility state for aws-sdk-core (~> 3, >= 3.177.0) universal-darwin-23 (2 remaining)
+BUNDLER(258): Attempting to activate [aws-sdk-core (3.181.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(258): Found existing spec ([aws-sdk-core (3.181.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(258): Creating possibility state for declarative (< 0.1.0) universal-darwin-21 (1 remaining)
+BUNDLER(259): Attempting to activate [declarative (0.0.20) (ruby), declarative (0.0.20) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(259): Activated declarative at [declarative (0.0.20) (ruby), declarative (0.0.20) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(259): Requiring nested dependencies ()
+BUNDLER(259): Creating possibility state for http-cookie (~> 1.0.0) universal-darwin-21 (2 remaining)
+BUNDLER(260): Attempting to activate [http-cookie (1.0.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(260): Activated http-cookie at [http-cookie (1.0.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(260): Requiring nested dependencies (domain_name (~> 0.5) universal-darwin-21, domain_name (~> 0.5) universal-darwin-22, domain_name (~> 0.5) universal-darwin-23)
+BUNDLER(260): Creating possibility state for http-cookie (~> 1.0.0) universal-darwin-22 (2 remaining)
+BUNDLER(261): Attempting to activate [http-cookie (1.0.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(261): Found existing spec ([http-cookie (1.0.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(261): Creating possibility state for declarative (< 0.1.0) universal-darwin-22 (1 remaining)
+BUNDLER(262): Attempting to activate [declarative (0.0.20) (ruby), declarative (0.0.20) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(262): Found existing spec ([declarative (0.0.20) (ruby), declarative (0.0.20) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(262): Creating possibility state for declarative (< 0.1.0) universal-darwin-23 (1 remaining)
+BUNDLER(263): Attempting to activate [declarative (0.0.20) (ruby), declarative (0.0.20) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(263): Found existing spec ([declarative (0.0.20) (ruby), declarative (0.0.20) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(263): Creating possibility state for http-cookie (~> 1.0.0) universal-darwin-23 (2 remaining)
+BUNDLER(264): Attempting to activate [http-cookie (1.0.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(264): Found existing spec ([http-cookie (1.0.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(264): Creating possibility state for trailblazer-option (>= 0.1.1, < 0.2.0) universal-darwin-21 (1 remaining)
+BUNDLER(265): Attempting to activate [trailblazer-option (0.1.2) (ruby), trailblazer-option (0.1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(265): Activated trailblazer-option at [trailblazer-option (0.1.2) (ruby), trailblazer-option (0.1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(265): Requiring nested dependencies ()
+BUNDLER(265): Creating possibility state for domain_name (~> 0.5) universal-darwin-21 (2 remaining)
+BUNDLER(266): Attempting to activate [domain_name (0.5.20190701) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(266): Activated domain_name at [domain_name (0.5.20190701) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(266): Requiring nested dependencies (unf (>= 0.0.5, < 1.0.0) universal-darwin-21, unf (>= 0.0.5, < 1.0.0) universal-darwin-22, unf (>= 0.0.5, < 1.0.0) universal-darwin-23)
+BUNDLER(266): Creating possibility state for trailblazer-option (>= 0.1.1, < 0.2.0) universal-darwin-22 (1 remaining)
+BUNDLER(267): Attempting to activate [trailblazer-option (0.1.2) (ruby), trailblazer-option (0.1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(267): Found existing spec ([trailblazer-option (0.1.2) (ruby), trailblazer-option (0.1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(267): Creating possibility state for domain_name (~> 0.5) universal-darwin-22 (2 remaining)
+BUNDLER(268): Attempting to activate [domain_name (0.5.20190701) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(268): Found existing spec ([domain_name (0.5.20190701) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(268): Creating possibility state for trailblazer-option (>= 0.1.1, < 0.2.0) universal-darwin-23 (1 remaining)
+BUNDLER(269): Attempting to activate [trailblazer-option (0.1.2) (ruby), trailblazer-option (0.1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(269): Found existing spec ([trailblazer-option (0.1.2) (ruby), trailblazer-option (0.1.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(269): Creating possibility state for domain_name (~> 0.5) universal-darwin-23 (2 remaining)
+BUNDLER(270): Attempting to activate [domain_name (0.5.20190701) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(270): Found existing spec ([domain_name (0.5.20190701) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(270): Creating possibility state for os (>= 0.9, < 2.0) universal-darwin-21 (1 remaining)
+BUNDLER(271): Attempting to activate [os (1.1.4) (ruby), os (1.1.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(271): Activated os at [os (1.1.4) (ruby), os (1.1.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(271): Requiring nested dependencies ()
+BUNDLER(271): Creating possibility state for unf (>= 0.0.5, < 1.0.0) universal-darwin-21 (2 remaining)
+BUNDLER(272): Attempting to activate [unf (0.1.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(272): Activated unf at [unf (0.1.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(272): Requiring nested dependencies (unf_ext universal-darwin-21, unf_ext universal-darwin-22, unf_ext universal-darwin-23)
+BUNDLER(272): Creating possibility state for os (>= 0.9, < 2.0) universal-darwin-22 (1 remaining)
+BUNDLER(273): Attempting to activate [os (1.1.4) (ruby), os (1.1.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(273): Found existing spec ([os (1.1.4) (ruby), os (1.1.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(273): Creating possibility state for unf (>= 0.0.5, < 1.0.0) universal-darwin-22 (2 remaining)
+BUNDLER(274): Attempting to activate [unf (0.1.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(274): Found existing spec ([unf (0.1.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(274): Creating possibility state for unf (>= 0.0.5, < 1.0.0) universal-darwin-23 (2 remaining)
+BUNDLER(275): Attempting to activate [unf (0.1.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(275): Found existing spec ([unf (0.1.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(275): Creating possibility state for os (>= 0.9, < 2.0) universal-darwin-23 (1 remaining)
+BUNDLER(276): Attempting to activate [os (1.1.4) (ruby), os (1.1.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(276): Found existing spec ([os (1.1.4) (ruby), os (1.1.4) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(276): Creating possibility state for uber (< 0.2.0) universal-darwin-21 (1 remaining)
+BUNDLER(277): Attempting to activate [uber (0.1.0) (ruby), uber (0.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(277): Activated uber at [uber (0.1.0) (ruby), uber (0.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(277): Requiring nested dependencies ()
+BUNDLER(277): Creating possibility state for rouge (~> 2.0.7) universal-darwin-21 (1 remaining)
+BUNDLER(278): Attempting to activate [rouge (2.0.7) (ruby), rouge (2.0.7) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(278): Activated rouge at [rouge (2.0.7) (ruby), rouge (2.0.7) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(278): Requiring nested dependencies ()
+BUNDLER(278): Creating possibility state for jmespath (~> 1, >= 1.6.1) universal-darwin-21 (1 remaining)
+BUNDLER(279): Attempting to activate [jmespath (1.6.2) (ruby), jmespath (1.6.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(279): Activated jmespath at [jmespath (1.6.2) (ruby), jmespath (1.6.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(279): Requiring nested dependencies ()
+BUNDLER(279): Creating possibility state for unf_ext universal-darwin-21 (2 remaining)
+BUNDLER(280): Attempting to activate [unf_ext (0.0.8.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(280): Activated unf_ext at [unf_ext (0.0.8.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(280): Requiring nested dependencies (Ruby  (>= 2.2) universal-darwin-21, Ruby  (>= 2.2) universal-darwin-22, Ruby  (>= 2.2) universal-darwin-23)
+BUNDLER(280): Creating possibility state for unf_ext universal-darwin-22 (2 remaining)
+BUNDLER(281): Attempting to activate [unf_ext (0.0.8.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(281): Found existing spec ([unf_ext (0.0.8.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(281): Creating possibility state for rouge (~> 2.0.7) universal-darwin-22 (1 remaining)
+BUNDLER(282): Attempting to activate [rouge (2.0.7) (ruby), rouge (2.0.7) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(282): Found existing spec ([rouge (2.0.7) (ruby), rouge (2.0.7) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(282): Creating possibility state for uber (< 0.2.0) universal-darwin-22 (1 remaining)
+BUNDLER(283): Attempting to activate [uber (0.1.0) (ruby), uber (0.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(283): Found existing spec ([uber (0.1.0) (ruby), uber (0.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(283): Creating possibility state for jmespath (~> 1, >= 1.6.1) universal-darwin-22 (1 remaining)
+BUNDLER(284): Attempting to activate [jmespath (1.6.2) (ruby), jmespath (1.6.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(284): Found existing spec ([jmespath (1.6.2) (ruby), jmespath (1.6.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(284): Creating possibility state for rouge (~> 2.0.7) universal-darwin-23 (1 remaining)
+BUNDLER(285): Attempting to activate [rouge (2.0.7) (ruby), rouge (2.0.7) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(285): Found existing spec ([rouge (2.0.7) (ruby), rouge (2.0.7) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(285): Creating possibility state for uber (< 0.2.0) universal-darwin-23 (1 remaining)
+BUNDLER(286): Attempting to activate [uber (0.1.0) (ruby), uber (0.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(286): Found existing spec ([uber (0.1.0) (ruby), uber (0.1.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(286): Creating possibility state for unf_ext universal-darwin-23 (2 remaining)
+BUNDLER(287): Attempting to activate [unf_ext (0.0.8.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(287): Found existing spec ([unf_ext (0.0.8.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(287): Creating possibility state for jmespath (~> 1, >= 1.6.1) universal-darwin-23 (1 remaining)
+BUNDLER(288): Attempting to activate [jmespath (1.6.2) (ruby), jmespath (1.6.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(288): Found existing spec ([jmespath (1.6.2) (ruby), jmespath (1.6.2) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(288): Creating possibility state for tty-spinner (>= 0.8.0, < 1.0.0) universal-darwin-21 (2 remaining)
+BUNDLER(289): Attempting to activate [tty-spinner (0.9.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(289): Activated tty-spinner at [tty-spinner (0.9.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(289): Requiring nested dependencies (tty-cursor (~> 0.7) universal-darwin-21, tty-cursor (~> 0.7) universal-darwin-22, tty-cursor (~> 0.7) universal-darwin-23)
+BUNDLER(289): Creating possibility state for tty-spinner (>= 0.8.0, < 1.0.0) universal-darwin-22 (2 remaining)
+BUNDLER(290): Attempting to activate [tty-spinner (0.9.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(290): Found existing spec ([tty-spinner (0.9.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(290): Creating possibility state for tty-spinner (>= 0.8.0, < 1.0.0) universal-darwin-23 (2 remaining)
+BUNDLER(291): Attempting to activate [tty-spinner (0.9.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(291): Found existing spec ([tty-spinner (0.9.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(291): Creating possibility state for aws-partitions (~> 1, >= 1.651.0) universal-darwin-21 (1 remaining)
+BUNDLER(292): Attempting to activate [aws-partitions (1.814.0) (ruby), aws-partitions (1.814.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(292): Activated aws-partitions at [aws-partitions (1.814.0) (ruby), aws-partitions (1.814.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(292): Requiring nested dependencies ()
+BUNDLER(292): Creating possibility state for httpclient (>= 2.8.1, < 3.a) universal-darwin-21 (1 remaining)
+BUNDLER(293): Attempting to activate [httpclient (2.8.3) (ruby), httpclient (2.8.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(293): Activated httpclient at [httpclient (2.8.3) (ruby), httpclient (2.8.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(293): Requiring nested dependencies ()
+BUNDLER(293): Creating possibility state for google-cloud-storage (~> 1.31) universal-darwin-21 (2 remaining)
+BUNDLER(294): Attempting to activate [google-cloud-storage (1.44.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(294): Activated google-cloud-storage at [google-cloud-storage (1.44.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(294): Requiring nested dependencies (google-cloud-core (~> 1.6) universal-darwin-21, google-apis-iamcredentials_v1 (~> 0.1) universal-darwin-21, google-apis-storage_v1 (~> 0.19.0) universal-darwin-21, googleauth (>= 0.16.2, < 2.a) universal-darwin-21, digest-crc (~> 0.4) universal-darwin-21, addressable (~> 2.8) universal-darwin-21, mini_mime (~> 1.0) universal-darwin-21, google-cloud-core (~> 1.6) universal-darwin-22, google-apis-iamcredentials_v1 (~> 0.1) universal-darwin-22, google-apis-storage_v1 (~> 0.19.0) universal-darwin-22, googleauth (>= 0.16.2, < 2.a) universal-darwin-22, digest-crc (~> 0.4) universal-darwin-22, addressable (~> 2.8) universal-darwin-22, mini_mime (~> 1.0) universal-darwin-22, google-cloud-core (~> 1.6) universal-darwin-23, google-apis-iamcredentials_v1 (~> 0.1) universal-darwin-23, google-apis-storage_v1 (~> 0.19.0) universal-darwin-23, googleauth (>= 0.16.2, < 2.a) universal-darwin-23, digest-crc (~> 0.4) universal-darwin-23, addressable (~> 2.8) universal-darwin-23, mini_mime (~> 1.0) universal-darwin-23)
+BUNDLER(294): Creating possibility state for httpclient (>= 2.8.1, < 3.a) universal-darwin-22 (1 remaining)
+BUNDLER(295): Attempting to activate [httpclient (2.8.3) (ruby), httpclient (2.8.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(295): Found existing spec ([httpclient (2.8.3) (ruby), httpclient (2.8.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(295): Creating possibility state for aws-partitions (~> 1, >= 1.651.0) universal-darwin-22 (1 remaining)
+BUNDLER(296): Attempting to activate [aws-partitions (1.814.0) (ruby), aws-partitions (1.814.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(296): Found existing spec ([aws-partitions (1.814.0) (ruby), aws-partitions (1.814.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(296): Creating possibility state for google-cloud-storage (~> 1.31) universal-darwin-22 (2 remaining)
+BUNDLER(297): Attempting to activate [google-cloud-storage (1.44.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(297): Found existing spec ([google-cloud-storage (1.44.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(297): Creating possibility state for google-cloud-storage (~> 1.31) universal-darwin-23 (2 remaining)
+BUNDLER(298): Attempting to activate [google-cloud-storage (1.44.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(298): Found existing spec ([google-cloud-storage (1.44.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(298): Creating possibility state for aws-partitions (~> 1, >= 1.651.0) universal-darwin-23 (1 remaining)
+BUNDLER(299): Attempting to activate [aws-partitions (1.814.0) (ruby), aws-partitions (1.814.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(299): Found existing spec ([aws-partitions (1.814.0) (ruby), aws-partitions (1.814.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(299): Creating possibility state for httpclient (>= 2.8.1, < 3.a) universal-darwin-23 (1 remaining)
+BUNDLER(300): Attempting to activate [httpclient (2.8.3) (ruby), httpclient (2.8.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(300): Found existing spec ([httpclient (2.8.3) (ruby), httpclient (2.8.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(300): Creating possibility state for google-cloud-core (~> 1.6) universal-darwin-21 (2 remaining)
+BUNDLER(301): Attempting to activate [google-cloud-core (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(301): Activated google-cloud-core at [google-cloud-core (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(301): Requiring nested dependencies (google-cloud-env (~> 1.0) universal-darwin-21, google-cloud-errors (~> 1.0) universal-darwin-21, google-cloud-env (~> 1.0) universal-darwin-22, google-cloud-errors (~> 1.0) universal-darwin-22, google-cloud-env (~> 1.0) universal-darwin-23, google-cloud-errors (~> 1.0) universal-darwin-23)
+BUNDLER(301): Creating possibility state for google-cloud-core (~> 1.6) universal-darwin-22 (2 remaining)
+BUNDLER(302): Attempting to activate [google-cloud-core (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(302): Found existing spec ([google-cloud-core (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(302): Creating possibility state for google-cloud-core (~> 1.6) universal-darwin-23 (2 remaining)
+BUNDLER(303): Attempting to activate [google-cloud-core (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(303): Found existing spec ([google-cloud-core (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(303): Creating possibility state for google-cloud-env (~> 1.0) universal-darwin-21 (2 remaining)
+BUNDLER(304): Attempting to activate [google-cloud-env (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(304): Activated google-cloud-env at [google-cloud-env (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(304): Requiring nested dependencies (faraday (>= 0.17.3, < 3.0) universal-darwin-21, faraday (>= 0.17.3, < 3.0) universal-darwin-22, faraday (>= 0.17.3, < 3.0) universal-darwin-23)
+BUNDLER(304): Creating possibility state for faraday (>= 0.17.3, < 3.0) universal-darwin-21 (2 remaining)
+BUNDLER(305): Attempting to activate [faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(305): Found existing spec ([faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(305): Creating possibility state for faraday (>= 0.17.3, < 3.0) universal-darwin-22 (2 remaining)
+BUNDLER(306): Attempting to activate [faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(306): Found existing spec ([faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(306): Creating possibility state for google-cloud-env (~> 1.0) universal-darwin-22 (2 remaining)
+BUNDLER(307): Attempting to activate [google-cloud-env (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(307): Found existing spec ([google-cloud-env (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(307): Creating possibility state for faraday (>= 0.17.3, < 3.0) universal-darwin-23 (2 remaining)
+BUNDLER(308): Attempting to activate [faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(308): Found existing spec ([faraday (1.10.3) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(308): Creating possibility state for google-cloud-env (~> 1.0) universal-darwin-23 (2 remaining)
+BUNDLER(309): Attempting to activate [google-cloud-env (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(309): Found existing spec ([google-cloud-env (1.6.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(309): Creating possibility state for tty-cursor (~> 0.7) universal-darwin-21 (1 remaining)
+BUNDLER(310): Attempting to activate [tty-cursor (0.7.1) (ruby), tty-cursor (0.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(310): Activated tty-cursor at [tty-cursor (0.7.1) (ruby), tty-cursor (0.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(310): Requiring nested dependencies ()
+BUNDLER(310): Creating possibility state for google-cloud-errors (~> 1.0) universal-darwin-21 (1 remaining)
+BUNDLER(311): Attempting to activate [google-cloud-errors (1.3.1) (ruby), google-cloud-errors (1.3.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(311): Activated google-cloud-errors at [google-cloud-errors (1.3.1) (ruby), google-cloud-errors (1.3.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(311): Requiring nested dependencies ()
+BUNDLER(311): Creating possibility state for digest-crc (~> 0.4) universal-darwin-21 (2 remaining)
+BUNDLER(312): Attempting to activate [digest-crc (0.6.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(312): Activated digest-crc at [digest-crc (0.6.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(312): Requiring nested dependencies (rake (>= 12.0.0, < 14.0.0) universal-darwin-21, rake (>= 12.0.0, < 14.0.0) universal-darwin-22, rake (>= 12.0.0, < 14.0.0) universal-darwin-23)
+BUNDLER(312): Creating possibility state for tty-cursor (~> 0.7) universal-darwin-22 (1 remaining)
+BUNDLER(313): Attempting to activate [tty-cursor (0.7.1) (ruby), tty-cursor (0.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(313): Found existing spec ([tty-cursor (0.7.1) (ruby), tty-cursor (0.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(313): Creating possibility state for digest-crc (~> 0.4) universal-darwin-22 (2 remaining)
+BUNDLER(314): Attempting to activate [digest-crc (0.6.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(314): Found existing spec ([digest-crc (0.6.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(314): Creating possibility state for google-cloud-errors (~> 1.0) universal-darwin-22 (1 remaining)
+BUNDLER(315): Attempting to activate [google-cloud-errors (1.3.1) (ruby), google-cloud-errors (1.3.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(315): Found existing spec ([google-cloud-errors (1.3.1) (ruby), google-cloud-errors (1.3.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(315): Creating possibility state for google-cloud-errors (~> 1.0) universal-darwin-23 (1 remaining)
+BUNDLER(316): Attempting to activate [google-cloud-errors (1.3.1) (ruby), google-cloud-errors (1.3.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(316): Found existing spec ([google-cloud-errors (1.3.1) (ruby), google-cloud-errors (1.3.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(316): Creating possibility state for digest-crc (~> 0.4) universal-darwin-23 (2 remaining)
+BUNDLER(317): Attempting to activate [digest-crc (0.6.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(317): Found existing spec ([digest-crc (0.6.5) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(317): Creating possibility state for tty-cursor (~> 0.7) universal-darwin-23 (1 remaining)
+BUNDLER(318): Attempting to activate [tty-cursor (0.7.1) (ruby), tty-cursor (0.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(318): Found existing spec ([tty-cursor (0.7.1) (ruby), tty-cursor (0.7.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(318): Creating possibility state for rake (>= 12.0.0, < 14.0.0) universal-darwin-21 (1 remaining)
+BUNDLER(319): Attempting to activate [rake (13.0.6) (ruby), rake (13.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(319): Activated rake at [rake (13.0.6) (ruby), rake (13.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(319): Requiring nested dependencies ()
+BUNDLER(319): Creating possibility state for google-apis-storage_v1 (~> 0.19.0) universal-darwin-21 (2 remaining)
+BUNDLER(320): Attempting to activate [google-apis-storage_v1 (0.19.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(320): Activated google-apis-storage_v1 at [google-apis-storage_v1 (0.19.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(320): Requiring nested dependencies (google-apis-core (>= 0.9.0, < 2.a) universal-darwin-21, google-apis-core (>= 0.9.0, < 2.a) universal-darwin-22, google-apis-core (>= 0.9.0, < 2.a) universal-darwin-23)
+BUNDLER(320): Creating possibility state for google-apis-core (>= 0.9.0, < 2.a) universal-darwin-21 (2 remaining)
+BUNDLER(321): Attempting to activate [google-apis-core (0.11.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(321): Found existing spec ([google-apis-core (0.11.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(321): Creating possibility state for rake (>= 12.0.0, < 14.0.0) universal-darwin-22 (1 remaining)
+BUNDLER(322): Attempting to activate [rake (13.0.6) (ruby), rake (13.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(322): Found existing spec ([rake (13.0.6) (ruby), rake (13.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(322): Creating possibility state for google-apis-storage_v1 (~> 0.19.0) universal-darwin-22 (2 remaining)
+BUNDLER(323): Attempting to activate [google-apis-storage_v1 (0.19.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(323): Found existing spec ([google-apis-storage_v1 (0.19.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(323): Creating possibility state for google-apis-core (>= 0.9.0, < 2.a) universal-darwin-22 (2 remaining)
+BUNDLER(324): Attempting to activate [google-apis-core (0.11.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(324): Found existing spec ([google-apis-core (0.11.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(324): Creating possibility state for google-apis-core (>= 0.9.0, < 2.a) universal-darwin-23 (2 remaining)
+BUNDLER(325): Attempting to activate [google-apis-core (0.11.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(325): Found existing spec ([google-apis-core (0.11.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(325): Creating possibility state for rake (>= 12.0.0, < 14.0.0) universal-darwin-23 (1 remaining)
+BUNDLER(326): Attempting to activate [rake (13.0.6) (ruby), rake (13.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(326): Found existing spec ([rake (13.0.6) (ruby), rake (13.0.6) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(326): Creating possibility state for google-apis-storage_v1 (~> 0.19.0) universal-darwin-23 (2 remaining)
+BUNDLER(327): Attempting to activate [google-apis-storage_v1 (0.19.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(327): Found existing spec ([google-apis-storage_v1 (0.19.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(327): Creating possibility state for google-apis-iamcredentials_v1 (~> 0.1) universal-darwin-21 (2 remaining)
+BUNDLER(328): Attempting to activate [google-apis-iamcredentials_v1 (0.17.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(328): Activated google-apis-iamcredentials_v1 at [google-apis-iamcredentials_v1 (0.17.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(328): Requiring nested dependencies (google-apis-core (>= 0.11.0, < 2.a) universal-darwin-21, google-apis-core (>= 0.11.0, < 2.a) universal-darwin-22, google-apis-core (>= 0.11.0, < 2.a) universal-darwin-23)
+BUNDLER(328): Creating possibility state for google-apis-iamcredentials_v1 (~> 0.1) universal-darwin-22 (2 remaining)
+BUNDLER(329): Attempting to activate [google-apis-iamcredentials_v1 (0.17.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(329): Found existing spec ([google-apis-iamcredentials_v1 (0.17.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(329): Creating possibility state for google-apis-iamcredentials_v1 (~> 0.1) universal-darwin-23 (2 remaining)
+BUNDLER(330): Attempting to activate [google-apis-iamcredentials_v1 (0.17.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(330): Found existing spec ([google-apis-iamcredentials_v1 (0.17.0) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(330): Creating possibility state for Ruby  (>= 2.2) universal-darwin-21 (1 remaining)
+BUNDLER(331): Attempting to activate [Ruby  (2.6.10.210) (ruby), Ruby  (2.6.10.210) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(331): Activated Ruby  at [Ruby  (2.6.10.210) (ruby), Ruby  (2.6.10.210) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(331): Requiring nested dependencies ()
+BUNDLER(331): Creating possibility state for RubyGems  (= 3.0.3.1) universal-darwin-21 (1 remaining)
+BUNDLER(332): Attempting to activate [RubyGems  (3.0.3.1) (ruby), RubyGems  (3.0.3.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(332): Activated RubyGems  at [RubyGems  (3.0.3.1) (ruby), RubyGems  (3.0.3.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(332): Requiring nested dependencies ()
+BUNDLER(332): Creating possibility state for Ruby  universal-darwin-21 (1 remaining)
+BUNDLER(333): Attempting to activate [Ruby  (2.6.10.210) (ruby), Ruby  (2.6.10.210) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(333): Found existing spec ([Ruby  (2.6.10.210) (ruby), Ruby  (2.6.10.210) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(333): Creating possibility state for Ruby  (>= 2.3) universal-darwin-21 (1 remaining)
+BUNDLER(334): Attempting to activate [Ruby  (2.6.10.210) (ruby), Ruby  (2.6.10.210) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(334): Found existing spec ([Ruby  (2.6.10.210) (ruby), Ruby  (2.6.10.210) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(334): Creating possibility state for RubyGems  (= 3.0.3.1) universal-darwin-22 (1 remaining)
+BUNDLER(335): Attempting to activate [RubyGems  (3.0.3.1) (ruby), RubyGems  (3.0.3.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(335): Found existing spec ([RubyGems  (3.0.3.1) (ruby), RubyGems  (3.0.3.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(335): Creating possibility state for Ruby  universal-darwin-22 (1 remaining)
+BUNDLER(336): Attempting to activate [Ruby  (2.6.10.210) (ruby), Ruby  (2.6.10.210) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(336): Found existing spec ([Ruby  (2.6.10.210) (ruby), Ruby  (2.6.10.210) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(336): Creating possibility state for Ruby  (>= 2.2) universal-darwin-22 (1 remaining)
+BUNDLER(337): Attempting to activate [Ruby  (2.6.10.210) (ruby), Ruby  (2.6.10.210) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(337): Found existing spec ([Ruby  (2.6.10.210) (ruby), Ruby  (2.6.10.210) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(337): Creating possibility state for Ruby  (>= 2.3) universal-darwin-22 (1 remaining)
+BUNDLER(338): Attempting to activate [Ruby  (2.6.10.210) (ruby), Ruby  (2.6.10.210) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(338): Found existing spec ([Ruby  (2.6.10.210) (ruby), Ruby  (2.6.10.210) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(338): Creating possibility state for Ruby  universal-darwin-23 (1 remaining)
+BUNDLER(339): Attempting to activate [Ruby  (2.6.10.210) (ruby), Ruby  (2.6.10.210) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(339): Found existing spec ([Ruby  (2.6.10.210) (ruby), Ruby  (2.6.10.210) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(339): Creating possibility state for RubyGems  (= 3.0.3.1) universal-darwin-23 (1 remaining)
+BUNDLER(340): Attempting to activate [RubyGems  (3.0.3.1) (ruby), RubyGems  (3.0.3.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(340): Found existing spec ([RubyGems  (3.0.3.1) (ruby), RubyGems  (3.0.3.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(340): Creating possibility state for Ruby  (>= 2.3) universal-darwin-23 (1 remaining)
+BUNDLER(341): Attempting to activate [Ruby  (2.6.10.210) (ruby), Ruby  (2.6.10.210) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(341): Found existing spec ([Ruby  (2.6.10.210) (ruby), Ruby  (2.6.10.210) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(341): Creating possibility state for Ruby  (>= 2.2) universal-darwin-23 (1 remaining)
+BUNDLER(342): Attempting to activate [Ruby  (2.6.10.210) (ruby), Ruby  (2.6.10.210) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(342): Found existing spec ([Ruby  (2.6.10.210) (ruby), Ruby  (2.6.10.210) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(342): Creating possibility state for bundler (>= 1.12.0, < 3.0.0) universal-darwin-21 (2 remaining)
+BUNDLER(343): Attempting to activate [bundler (2.2.22) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(343): Activated bundler at [bundler (2.2.22) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(343): Requiring nested dependencies (Ruby  (>= 2.3) universal-darwin-21, RubyGems  (>= 2.5.2) universal-darwin-21, Ruby  (>= 2.3) universal-darwin-22, RubyGems  (>= 2.5.2) universal-darwin-22, Ruby  (>= 2.3) universal-darwin-23, RubyGems  (>= 2.5.2) universal-darwin-23)
+BUNDLER(343): Creating possibility state for RubyGems  (>= 2.5.2) universal-darwin-21 (1 remaining)
+BUNDLER(344): Attempting to activate [RubyGems  (3.0.3.1) (ruby), RubyGems  (3.0.3.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(344): Found existing spec ([RubyGems  (3.0.3.1) (ruby), RubyGems  (3.0.3.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(344): Creating possibility state for RubyGems  (>= 2.5.2) universal-darwin-22 (1 remaining)
+BUNDLER(345): Attempting to activate [RubyGems  (3.0.3.1) (ruby), RubyGems  (3.0.3.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(345): Found existing spec ([RubyGems  (3.0.3.1) (ruby), RubyGems  (3.0.3.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(345): Creating possibility state for RubyGems  (>= 2.5.2) universal-darwin-23 (1 remaining)
+BUNDLER(346): Attempting to activate [RubyGems  (3.0.3.1) (ruby), RubyGems  (3.0.3.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(346): Found existing spec ([RubyGems  (3.0.3.1) (ruby), RubyGems  (3.0.3.1) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(346): Creating possibility state for bundler (>= 1.12.0, < 3.0.0) universal-darwin-22 (2 remaining)
+BUNDLER(347): Attempting to activate [bundler (2.2.22) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(347): Found existing spec ([bundler (2.2.22) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+BUNDLER(347): Creating possibility state for bundler (>= 1.12.0, < 3.0.0) universal-darwin-23 (2 remaining)
+BUNDLER(348): Attempting to activate [bundler (2.2.22) (universal-darwin-21, universal-darwin-22, universal-darwin-23)]
+BUNDLER(348): Found existing spec ([bundler (2.2.22) (universal-darwin-21, universal-darwin-22, universal-darwin-23)])
+
+BUNDLER: Finished resolution (348 steps) (Took 0.406849 seconds) (2024-08-17 18:16:15 +0200)
+BUNDLER: Unactivated: 
+BUNDLER: Activated: fastlane, fastlane-plugin-versioning_android, Ruby , RubyGems , xcodeproj, xcpretty, terminal-notifier, terminal-table, plist, CFPropertyList, addressable, multipart-post, word_wrap, optparse, tty-screen, tty-spinner, artifactory, babosa, colored, commander, excon, faraday-cookie_jar, faraday, faraday_middleware, fastimage, gh_inspector, highline, json, mini_magick, naturally, rubyzip, security, xcpretty-travis-formatter, dotenv, bundler, simctl, jwt, google-apis-playcustomapp_v1, google-apis-androidpublisher_v3, google-cloud-storage, emoji_regex, aws-sdk-s3, google-apis-core, public_suffix, unicode-display_width, atomos, claide, colored2, nanaimo, rexml, representable, retriable, mini_mime, googleauth, httpclient, webrick, faraday-em_http, faraday-em_synchrony, faraday-excon, faraday-httpclient, faraday-multipart, faraday-net_http, faraday-net_http_persistent, faraday-patron, faraday-rack, faraday-retry, ruby2_keywords, aws-sdk-core, aws-sdk-kms, aws-sigv4, memoist, multi_json, os, signet, rouge, http-cookie, uber, declarative, trailblazer-option, aws-eventstream, aws-partitions, jmespath, domain_name, unf, unf_ext, tty-cursor, google-cloud-core, google-apis-iamcredentials_v1, google-apis-storage_v1, digest-crc, google-cloud-env, google-cloud-errors, rake
+Using rake 13.0.6
+Using rexml 3.2.6
+Using public_suffix 5.0.3
+Using artifactory 3.0.15
+Using atomos 0.1.3
+Using aws-eventstream 1.2.0
+Using aws-partitions 1.814.0
+Using jmespath 1.6.2
+Using babosa 1.0.4
+Using bundler 2.2.22
+Using claide 1.1.0
+Using colored 1.2
+Using colored2 3.1.2
+Using highline 2.0.3
+Using declarative 0.0.20
+Using dotenv 2.8.1
+Using emoji_regex 3.2.3
+Using excon 0.102.0
+Using faraday-em_http 1.0.0
+Using faraday-em_synchrony 1.0.0
+Using faraday-excon 1.1.0
+Using faraday-httpclient 1.0.1
+Using multipart-post 2.3.0
+Using faraday-net_http 1.0.1
+Using faraday-net_http_persistent 1.2.0
+Using faraday-patron 1.0.0
+Using faraday-rack 1.0.0
+Using faraday-retry 1.0.3
+Fetching digest-crc 0.6.5
+Fetching unf_ext 0.0.8.2
+Using ruby2_keywords 0.0.5
+Using fastimage 2.2.7
+Using gh_inspector 1.1.3
+Using jwt 2.7.1
+Using memoist 0.16.2
+Using multi_json 1.15.0
+Using os 1.1.4
+Using httpclient 2.8.3
+Using mini_mime 1.1.5
+Using trailblazer-option 0.1.2
+Using uber 0.1.0
+Using retriable 3.1.2
+Using webrick 1.8.1
+Using google-cloud-errors 1.3.1
+Using mini_magick 4.12.0
+Using naturally 2.2.1
+Using optparse 0.1.1
+Using plist 3.7.0
+Using rubyzip 2.3.2
+Using security 0.1.3
+Using terminal-notifier 2.0.0
+Fetching json 2.6.3
+Using unicode-display_width 1.8.0
+Using tty-screen 0.8.1
+Using tty-cursor 0.7.1
+Using word_wrap 1.0.0
+Using nanaimo 0.3.0
+Using rouge 2.0.7
+Using fastlane-plugin-versioning_android 0.1.0
+Using CFPropertyList 3.0.6
+Using addressable 2.8.5
+Using aws-sigv4 1.6.0
+Using representable 3.2.0
+Using terminal-table 1.8.0
+Using tty-spinner 0.9.3
+Using xcpretty 0.3.0
+Using simctl 1.6.10
+Using aws-sdk-core 3.181.0
+Using xcpretty-travis-formatter 1.0.1
+Using aws-sdk-kms 1.71.0
+Using aws-sdk-s3 1.134.0
+Using commander 4.6.0
+Using faraday-multipart 1.0.4
+Using xcodeproj 1.22.0
+Using faraday 1.10.3
+Using faraday_middleware 1.2.0
+Using signet 0.17.0
+Using google-cloud-env 1.6.0
+Using googleauth 1.7.0
+Using google-cloud-core 1.6.0
+Using google-apis-core 0.11.1
+Using google-apis-androidpublisher_v3 0.49.0
+Using google-apis-playcustomapp_v1 0.13.0
+Using google-apis-iamcredentials_v1 0.17.0
+Using google-apis-storage_v1 0.19.0
