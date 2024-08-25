@@ -7,7 +7,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import RNBootSplash from 'react-native-bootsplash';
 import {
   configureFonts,
-  DarkTheme as PaperDarkTheme,
+  MD3DarkTheme as PaperDarkTheme,
   Provider as PaperProvider,
 } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
