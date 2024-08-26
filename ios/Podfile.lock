@@ -2586,7 +2586,7 @@ PODS:
     - React-perflogger (= 0.75.1)
     - React-utils (= 0.75.1)
   - RecaptchaInterop (100.0.0)
-  - RNBootSplash (6.1.1):
+  - RNBootSplash (6.1.2):
     - React-Core
   - RNCAsyncStorage (1.24.0):
     - React-Core
@@ -2714,7 +2714,7 @@ PODS:
     - Yoga
   - RNSharedElement (0.8.9):
     - React-Core
-  - RNSVG (15.5.0):
+  - RNSVG (15.6.0):
     - React-Core
   - RNVectorIcons (10.1.0):
     - DoubleConversion
@@ -3085,7 +3085,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 57df86fcb566f22498b9b26e014bda040d132672
   ReactCommon: d01a4f92f35656f0f7c87a4657cd4b1e37ab81a9
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
-  RNBootSplash: 5951974a5271183d06d3279bd4b9d7d093f4e2fc
+  RNBootSplash: 4cb5ac8f6eeb5c30b0d2d3a44b8f40f80bcf8b45
   RNCAsyncStorage: ec53e44dc3e75b44aa2a9f37618a49c3bc080a7a
   RNCMaskedView: 090213d32d8b3bb83a4dcb7d12c18f0152591906
   RNFBApp: 10819a4f67d634fe34aa607c6d1e8a8aef019308
@@ -3095,7 +3095,7 @@ SPEC CHECKSUMS:
   RNReanimated: 6792857fec44fa16499a15b8ab8f9347542e6ade
   RNScreens: 8207577fadeac585c5451073033de93b577dbf80
   RNSharedElement: 3fd05877bd6bc95f71b332801bf4356ca69ab7f6
-  RNSVG: b986585e367f4a49d8aa43065066cc9c290b3d9b
+  RNSVG: 5da7a24f31968ec74f0b091e3440080f347e279b
   RNVectorIcons: 530723208857d41d2c3599513995ebc1fe215fcc
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   TextToSpeech: 2b930ec3756afde499061f4f01ea895e1f75dccb

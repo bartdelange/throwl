@@ -1,6 +1,8 @@
 import React from 'react';
 import { Dimensions, View } from 'react-native';
-import BouncyCheckbox from 'react-native-bouncy-checkbox';
+import BouncyCheckbox, {
+  BouncyCheckboxHandle,
+} from 'react-native-bouncy-checkbox';
 import { List, Text } from 'react-native-paper';
 import { User } from '~/models/user';
 import { makeStyles } from './styles';
@@ -18,7 +20,7 @@ export const PlayerItem: React.FC<PlayerItemProps> = ({
   onPress = () => null,
   position,
 }) => {
-  const bouncyCheckboxRef = React.useRef<BouncyCheckbox>();
+  const bouncyCheckboxRef = React.useRef<BouncyCheckboxHandle>(null);
   const styles = makeStyles();
 
   return (
@@ -27,7 +29,7 @@ export const PlayerItem: React.FC<PlayerItemProps> = ({
       key={player.id}
       title={player.name}
       onPress={() => {
-        bouncyCheckboxRef.current?.onPress();
+        bouncyCheckboxRef.current?.onCheckboxPress();
       }}
       right={_ => (
         <BouncyCheckbox
@@ -51,8 +53,8 @@ export const PlayerItem: React.FC<PlayerItemProps> = ({
           }
           size={Math.max(Dimensions.get('window').width * 0.05, 24)}
           textStyle={styles.player}
+          useBuiltInState={false}
           isChecked={selected}
-          disableBuiltInState
           onPress={() => {
             onPress();
           }}
