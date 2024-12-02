@@ -43,7 +43,7 @@
     "react-native-interactable": "^2.0.1",
     "react-native-keep-awake": "^4.0.0",
     "react-native-keyboard-aware-scroll-view": "APSL/react-native-keyboard-aware-scroll-view#pull/501/head",
-    "react-native-pager-view": "^6.4.1",
+    "react-native-pager-view": "^6.6.0",
     "react-native-paper": "^5.12.5",
     "react-native-progress": "oblador/react-native-progress#pull/258/head",
     "react-native-reanimated": "^3.15.1",
