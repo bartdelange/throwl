@@ -1,28 +1,32 @@
 import { Dimensions, Platform, StyleSheet } from 'react-native';
+import { useAppTheme } from '~/App/theming.tsx';
 
 export const makeStyles = (textSize: number) => {
-  const { height } = Dimensions.get('window');
+    const { height } = Dimensions.get('window');
+    const { colors } = useAppTheme();
 
-  return StyleSheet.create({
-    scoreStatHeader: {
-      fontSize: textSize,
-      marginTop: height * 0.0125,
-      marginBottom: height * 0.0125,
-      ...Platform.select({
-        default: {
-          fontWeight: 'bold',
+    return StyleSheet.create({
+        scoreStatHeader: {
+            fontSize: textSize,
+            marginTop: height * 0.0125,
+            marginBottom: height * 0.0125,
+            color: colors.onSecondary,
+            ...Platform.select({
+                default: {
+                    fontWeight: 'bold',
+                },
+                android: {
+                    fontFamily: 'Karbon-Bold',
+                },
+            }),
         },
-        android: {
-          fontFamily: 'Karbon-Bold',
+        scoreItem: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
         },
-      }),
-    },
-    scoreItem: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-    },
-    scoreItemText: {
-      fontSize: Math.max(textSize * 0.5, 18),
-    },
-  });
+        scoreItemText: {
+            fontSize: Math.max(textSize * 0.5, 18),
+            color: colors.onSecondary,
+        },
+    });
 };

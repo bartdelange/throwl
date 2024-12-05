@@ -6,10 +6,11 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { AppLogoDark, AppLogoLight } from '../AppLogo';
 import { makeStyles } from './styles';
+import { useAppTheme } from '~/App/theming.tsx';
 
 interface LogoButtonProps extends Pick<PressableProps, 'onPress'> {
   mode?: 'dark' | 'light';
@@ -29,7 +30,7 @@ export const LogoButton: React.FC<LogoButtonProps> = ({
   disabled,
   onPress,
 }: LogoButtonProps) => {
-  const theme = useTheme();
+  const theme = useAppTheme();
   const styles = makeStyles();
   return (
     <Pressable

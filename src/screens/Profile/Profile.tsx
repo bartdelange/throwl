@@ -1,12 +1,6 @@
 import React from 'react';
 import { ScrollView, TextInput, View } from 'react-native';
-import {
-  ActivityIndicator,
-  Divider,
-  Portal,
-  Text,
-  useTheme,
-} from 'react-native-paper';
+import { Divider, Text } from 'react-native-paper';
 import { AuthContext } from '~/context/AuthContext';
 import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
 import { makeStyles } from './styles';
@@ -20,6 +14,7 @@ import { RootStackParamList, UNAUTHENTICATED_SCREEN } from '#/navigation';
 import { LogoButton } from '~/components/LogoButton/LogoButton';
 import { AppModal } from '~/components/AppModal/AppModal';
 import { Loader } from '~/components/Loader/Loader';
+import { useAppTheme } from '~/App/theming.tsx';
 
 export const ProfileScreen = () => {
   const navigator =
@@ -46,7 +41,7 @@ export const ProfileScreen = () => {
   const confirmPasswordInputRef = React.useRef<TextInput>(null);
   const emailInputRef = React.useRef<TextInput>(null);
   const styles = makeStyles();
-  const { colors } = useTheme();
+  const { colors } = useAppTheme();
 
   const reauthenticate = async (currentPassword: string) => {
     const firebaseUser = auth().currentUser;

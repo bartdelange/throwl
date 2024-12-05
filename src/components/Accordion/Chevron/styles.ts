@@ -1,8 +1,8 @@
 import { StyleSheet } from 'react-native';
-import { useTheme } from 'react-native-paper';
+import { useAppTheme } from '~/App/theming.tsx';
 
 export const makeStyles = () => {
-  const { colors } = useTheme();
+  const { colors } = useAppTheme();
   const size = 30;
 
   return StyleSheet.create({

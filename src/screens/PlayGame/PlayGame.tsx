@@ -12,10 +12,11 @@ import {
 } from 'react-native';
 import Confetti from 'react-native-confetti';
 import { Col, Grid, Row } from 'react-native-easy-grid';
-import { Appbar, IconButton, Text, useTheme } from 'react-native-paper';
+import { Appbar, IconButton, Text } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import KeepAwake from 'react-native-keep-awake';
 import Tts from 'react-native-tts';
+import { useAppTheme } from '~/App/theming.tsx';
 
 import { AppLogoArrowLight } from '~/components/AppLogo';
 import { AppModal } from '~/components/AppModal/AppModal';
@@ -46,7 +47,7 @@ export const PlayGameScreen: React.FC<any> = () => {
     userId: route.params.players[0].id,
     throws: [],
   });
-  const { colors } = useTheme();
+  const { colors } = useAppTheme();
   const { width } = Dimensions.get('window');
   const insets = useSafeAreaInsets();
   const styles = makeStyles();
@@ -118,8 +119,10 @@ export const PlayGameScreen: React.FC<any> = () => {
   const speak = async (words: string) => {
     try {
       await Tts.setDefaultLanguage('en-US');
-      await Tts.setDefaultRate(0.45);
-      await Tts.speak(words);
+      // @ts-ignore Options fields are optional as far as the documentation is concerned
+      Tts.speak(words, {
+        rate: 0.45,
+      });
     } catch (err) {
       console.error(`speaking error `, err);
     }
@@ -325,7 +328,7 @@ export const PlayGameScreen: React.FC<any> = () => {
             <IconButton
               icon="restore"
               size={iconSize}
-              color={colors.primary}
+              iconColor={colors.primary}
               onPress={undoThrow}
               rippleColor="rgba(255, 255, 255, .95)"
               style={[
@@ -472,7 +475,7 @@ export const PlayGameScreen: React.FC<any> = () => {
             <IconButton
               icon="logout-variant"
               size={iconSize * 1.5}
-              color={colors.primary}
+              iconColor={colors.primary}
               onPress={() => {
                 setGameFinishedPopup(false);
                 navigator.popToTop();
@@ -481,7 +484,7 @@ export const PlayGameScreen: React.FC<any> = () => {
             <IconButton
               icon="chart-line"
               size={iconSize * 1.5}
-              color={colors.success}
+              iconColor={colors.success}
               onPress={async () => {
                 setGameFinishedPopup(false);
                 navigator.push(GAME_DETAIL_SCREEN, {
@@ -492,7 +495,7 @@ export const PlayGameScreen: React.FC<any> = () => {
             <IconButton
               icon="restore"
               size={iconSize * 1.5}
-              color={colors.error}
+              iconColor={colors.error}
               onPress={undoThrow}
               style={[
                 styles.undoButton,
@@ -520,7 +523,7 @@ export const PlayGameScreen: React.FC<any> = () => {
             <IconButton
               icon="check"
               size={iconSize * 1.5}
-              color={colors.success}
+              iconColor={colors.success}
               onPress={() =>
                 droppingOutUserIndex != null
                   ? dropOutUser(route.params.players[droppingOutUserIndex].id)
@@ -530,7 +533,7 @@ export const PlayGameScreen: React.FC<any> = () => {
             <IconButton
               icon="close"
               size={iconSize * 1.5}
-              color={colors.error}
+              iconColor={colors.error}
               onPress={() => setDroppingOutUserIndex(undefined)}
             />
           </View>

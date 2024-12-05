@@ -8,7 +8,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { ActivityIndicator, Portal, Text, useTheme } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import isEmail from 'validator/es/lib/isEmail';
 import { AppModal } from '~/components/AppModal/AppModal';
@@ -17,6 +17,7 @@ import { RootStackParamList } from '~/constants/navigation';
 import { AuthContext } from '~/context/AuthContext';
 import { FormInput } from '~/components/FormInput/FormInput';
 import { Loader } from '~/components/Loader/Loader';
+import { useAppTheme } from '~/App/theming.tsx';
 
 export const SignUpTab = () => {
   const [working, setWorking] = React.useState(false);
@@ -28,7 +29,7 @@ export const SignUpTab = () => {
   const [subError, setSubError] = React.useState<string>();
   const [modalOpen, setModalOpen] = React.useState<boolean>();
   const nav = useNavigation<StackNavigationProp<RootStackParamList>>();
-  const { colors } = useTheme();
+  const { colors } = useAppTheme();
 
   const passwordInputRef = React.useRef<TextInput>(null);
   const confirmPasswordInputRef = React.useRef<TextInput>(null);
