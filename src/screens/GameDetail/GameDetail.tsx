@@ -10,10 +10,11 @@ import {
   SafeAreaView,
   View,
 } from 'react-native';
-import { Appbar, Text, useTheme } from 'react-native-paper';
+import { Appbar, Text } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Accordion } from '~/components/Accordion';
 
+import { Accordion } from '~/components/Accordion';
+import { useAppTheme } from '~/App/theming.tsx';
 import { ClickableDartboard } from '~/components/ClickableDartboard/ClickableDartboard';
 import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
 import { ScoreHelper } from '~/lib/score_helper';
@@ -31,7 +32,7 @@ export const GameDetailScreen: React.FC<any> = () => {
   const route = useRoute<RouteProp<RootStackParamList, 'GAME_DETAIL'>>();
   const game = route.params.game;
 
-  const { colors } = useTheme();
+  const { colors } = useAppTheme();
   const insets = useSafeAreaInsets();
 
   const textSize = Math.max(Dimensions.get('window').width * 0.04, 24);

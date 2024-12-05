@@ -1,48 +1,52 @@
 import { Platform, StyleSheet } from 'react-native';
-import { useTheme } from 'react-native-paper';
+import { useAppTheme } from '~/App/theming.tsx';
 
 export const makeStyles = () => {
-  const { colors } = useTheme();
+    const { colors } = useAppTheme();
 
-  return StyleSheet.create({
-    container: {
-      marginTop: 16,
-      backgroundColor: colors.accent,
-      padding: 16,
-      borderTopLeftRadius: 8,
-      borderTopRightRadius: 8,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    },
-    title: {
-      fontSize: 16,
-      ...Platform.select({
-        default: {
-          fontWeight: 'bold',
+    return StyleSheet.create({
+        wrapper: {
+            marginTop: 16,
+            backgroundColor: colors.secondary,
+            borderRadius: 8,
+            overflow: 'hidden',
         },
-        android: {
-          fontFamily: 'Karbon-Bold',
+        container: {
+            paddingVertical: 16,
+            paddingLeft: 8,
+            flexDirection: 'row',
+            backgroundColor: colors.secondary,
+            alignItems: 'center',
+            justifyContent: 'space-between',
         },
-      }),
-      flex: 2,
-    },
-    subtitle: {
-      fontSize: 16,
-      ...Platform.select({
-        default: {
-          fontWeight: 'bold',
+        title: {
+            fontSize: 16,
+            ...Platform.select({
+                default: {
+                    fontWeight: 'bold',
+                },
+                android: {
+                    fontFamily: 'Karbon-Bold',
+                },
+            }),
+            flex: 2,
         },
-        android: {
-          fontFamily: 'Karbon-Bold',
+        subtitle: {
+            fontSize: 16,
+            ...Platform.select({
+                default: {
+                    fontWeight: 'bold',
+                },
+                android: {
+                    fontFamily: 'Karbon-Bold',
+                },
+            }),
         },
-      }),
-    },
-    content: {
-      overflow: 'hidden',
-      backgroundColor: colors.accent,
-      borderBottomLeftRadius: 8,
-      borderBottomRightRadius: 8,
-    },
-  });
+        content: {
+            overflow: 'hidden',
+            backgroundColor: colors.secondary,
+            borderBottomLeftRadius: 8,
+            borderBottomRightRadius: 8,
+        },
+    });
 };

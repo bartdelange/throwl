@@ -1,99 +1,93 @@
-import { Dimensions, Platform, StyleSheet } from 'react-native';
-import { useTheme } from 'react-native-paper';
+import { Platform, StyleSheet } from 'react-native';
+import { useAppTheme } from '~/App/theming.tsx';
 
 export const makeStyles = () => {
-  const { colors } = useTheme();
-  return StyleSheet.create({
-    modalContainer: {
-      justifyContent: 'center',
-      alignContent: 'center',
-      alignItems: 'center',
-    },
-    surface: {
-      backgroundColor: 'white',
-      padding: 20,
-      alignContent: 'center',
-      alignItems: 'center',
-      minWidth: Dimensions.get('window').width * 0.5,
-      width: 500,
-      maxWidth: '90%',
-      elevation: 4,
-      borderRadius: 10,
-      borderWidth: 1,
-    },
-    closeIcon: {
-      position: 'absolute',
-      top: 5,
-      right: 5,
-      width: 50,
-      height: 50,
-    },
-    titleWrapper: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      maxWidth: '90%',
-    },
-    icon: {
-      fontSize: 48,
-      ...Platform.select({
-        default: {
-          fontWeight: 'bold',
+    const { colors } = useAppTheme();
+
+    return StyleSheet.create({
+        modalContainer: {
+            padding: 20,
+            width: '100%',
         },
-        android: {
-          fontFamily: 'Karbon-Bold',
+        surface: {
+            alignItems: 'center',
+            elevation: 4,
+            borderRadius: 10,
+            borderWidth: 1,
         },
-      }),
-      color: colors.success,
-      marginVertical: 10,
-      paddingBottom: 10,
-      marginRight: 15,
-    },
-    title: {
-      fontSize: 48,
-      ...Platform.select({
-        default: {
-          fontWeight: 'bold',
+        closeIcon: {
+            position: 'absolute',
+            top: 5,
+            right: 5,
+            width: 50,
+            height: 50,
         },
-        android: {
-          fontFamily: 'Karbon-Bold',
+        titleWrapper: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            maxWidth: '90%',
         },
-      }),
-      color: colors.success,
-      marginVertical: 10,
-    },
-    subTitleWrapper: {
-      justifyContent: 'center',
-      marginVertical: 10,
-      paddingBottom: 10,
-    },
-    subTitle: {
-      fontSize: 24,
-      ...Platform.select({
-        default: {
-          fontWeight: 'bold',
+        icon: {
+            fontSize: 48,
+            ...Platform.select({
+                default: {
+                    fontWeight: 'bold',
+                },
+                android: {
+                    fontFamily: 'Karbon-Bold',
+                },
+            }),
+            color: colors.success,
+            marginVertical: 10,
+            paddingBottom: 10,
+            marginRight: 15,
         },
-        android: {
-          fontFamily: 'Karbon-Bold',
+        title: {
+            fontSize: 48,
+            ...Platform.select({
+                default: {
+                    fontWeight: 'bold',
+                },
+                android: {
+                    fontFamily: 'Karbon-Bold',
+                },
+            }),
+            color: colors.success,
+            marginVertical: 10,
         },
-      }),
-      color: colors.primary,
-      textAlign: 'center',
-    },
-    customContentWrapper: {
-      justifyContent: 'center',
-      alignContent: 'center',
-      alignItems: 'stretch',
-      alignSelf: 'stretch',
-      flexGrow: 1,
-      width: '100%',
-    },
-    actionsWrapper: {
-      justifyContent: 'center',
-      alignContent: 'center',
-      alignItems: 'stretch',
-      alignSelf: 'stretch',
-      flexGrow: 1,
-    },
-  });
+        subTitleWrapper: {
+            justifyContent: 'center',
+            marginVertical: 10,
+            paddingBottom: 10,
+        },
+        subTitle: {
+            fontSize: 24,
+            ...Platform.select({
+                default: {
+                    fontWeight: 'bold',
+                },
+                android: {
+                    fontFamily: 'Karbon-Bold',
+                },
+            }),
+            color: colors.primary,
+            textAlign: 'center',
+        },
+        customContentWrapper: {
+            justifyContent: 'center',
+            alignContent: 'center',
+            alignItems: 'stretch',
+            alignSelf: 'stretch',
+            flexGrow: 1,
+            width: '100%',
+        },
+        actionsWrapper: {
+            justifyContent: 'center',
+            alignContent: 'center',
+            alignItems: 'stretch',
+            alignSelf: 'stretch',
+            flexGrow: 1,
+        },
+    });
 };

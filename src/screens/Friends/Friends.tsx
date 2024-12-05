@@ -1,12 +1,6 @@
 import React from 'react';
-import { FlatList, ScrollView, View } from 'react-native';
-import {
-  ActivityIndicator,
-  Divider,
-  Portal,
-  Text,
-  useTheme,
-} from 'react-native-paper';
+import { ScrollView, View } from 'react-native';
+import { Divider, Text } from 'react-native-paper';
 import { AuthContext } from '~/context/AuthContext';
 import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
 import { makeStyles } from './styles';
@@ -21,6 +15,7 @@ import auth from '@react-native-firebase/auth';
 import { AppModal } from '~/components/AppModal/AppModal';
 import { Loader } from '~/components/Loader/Loader';
 import { Friend } from '~/models/user';
+import { useAppTheme } from '~/App/theming.tsx';
 
 export const FriendsScreen = () => {
   const navigator =
@@ -46,7 +41,7 @@ export const FriendsScreen = () => {
   const [friendEmail, setFriendEmail] = React.useState<string>('');
   const [error, setError] = React.useState<string>();
   const [status, setStatus] = React.useState<string>();
-  const { colors } = useTheme();
+  const { colors } = useAppTheme();
   const styles = makeStyles();
 
   React.useEffect(() => {

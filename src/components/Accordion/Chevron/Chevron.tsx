@@ -1,18 +1,17 @@
 import React from 'react';
-import { useTheme } from 'react-native-paper';
 import Svg, { Path } from 'react-native-svg';
 import Animated, {
   interpolate,
+  SharedValue,
   useAnimatedStyle,
 } from 'react-native-reanimated';
 import { makeStyles } from './styles';
 
 interface ChevronProps {
-  progress: Animated.SharedValue<number>;
+  progress: SharedValue<number>;
 }
 
 export const Chevron = ({ progress }: ChevronProps) => {
-  const { colors } = useTheme();
   const styles = makeStyles();
   const style = useAnimatedStyle(() => ({
     transform: [

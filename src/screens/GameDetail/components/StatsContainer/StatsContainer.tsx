@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Text, ThemeProvider } from 'react-native-paper';
-import { theme } from '~/App/App';
+import { paperTheme } from '~/App/theming';
 import { ThrowCount, ThrowStats, TurnStats } from '~/lib/score_helper';
 import { Throw } from '~/models/throw';
 import { makeStyles } from './styles';
@@ -27,8 +27,8 @@ export const StatsContainer: React.FC<ScoreContainerProps> = ({
   return (
     <ThemeProvider
       theme={{
-        ...theme,
-        colors: { ...theme.colors, text: theme.colors.primary },
+        ...paperTheme,
+        colors: { ...paperTheme.colors, text: paperTheme.colors.primary },
       }}>
       <View>
         <Text style={styles.scoreStatHeader}>Turn stats</Text>
