@@ -1,8 +1,8 @@
 import { Dimensions, Platform, StyleSheet } from 'react-native';
-import { useTheme } from 'react-native-paper';
+import { useAppTheme } from '~/App/theming.tsx';
 
 export const makeStyles = (textSize: number) => {
-  const { colors } = useTheme();
+  const { colors } = useAppTheme();
   const { width, height } = Dimensions.get('window');
 
   return StyleSheet.create({
