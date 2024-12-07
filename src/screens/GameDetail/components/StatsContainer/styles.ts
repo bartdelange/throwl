@@ -10,7 +10,7 @@ export const makeStyles = (textSize: number) => {
             fontSize: textSize,
             marginTop: height * 0.0125,
             marginBottom: height * 0.0125,
-            color: colors.onSecondary,
+            color: colors.primary,
             ...Platform.select({
                 default: {
                     fontWeight: 'bold',
@@ -26,7 +26,7 @@ export const makeStyles = (textSize: number) => {
         },
         scoreItemText: {
             fontSize: Math.max(textSize * 0.5, 18),
-            color: colors.onSecondary,
+            color: colors.primary,
         },
     });
 };

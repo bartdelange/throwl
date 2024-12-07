@@ -2535,29 +2535,7 @@ PODS:
     - Yoga
   - react-native-keep-awake (4.0.0):
     - React
-  - react-native-pager-view (6.6.0):
-    - DoubleConversion
-    - glog
-    - RCT-Folly (= 2024.01.01.00)
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - react-native-pager-view/common (= 6.6.0)
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - Yoga
-  - react-native-pager-view/common (6.6.0):
+  - react-native-pager-view (6.6.1):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.01.01.00)
@@ -3122,7 +3100,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNSVG (15.9.0):
+  - RNSVG (15.10.1):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.01.01.00)
@@ -3142,9 +3120,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNSVG/common (= 15.9.0)
+    - RNSVG/common (= 15.10.1)
     - Yoga
-  - RNSVG/common (15.9.0):
+  - RNSVG/common (15.10.1):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.01.01.00)
@@ -3507,7 +3485,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 6cb36cecef68ec3b4782ea54b0bca45a1e7da9e0
   React-microtasksnativemodule: 9b32138b1be3eb7738ae87d9f89b3450f1fd646e
   react-native-keep-awake: afad8a51dfef9fe9655a6344771be32c8596d774
-  react-native-pager-view: 7cb6c527c7ad17f40ae61f4c44462283e9b076b7
+  react-native-pager-view: cff044332697328e94a01ff9d90b935df95ad164
   react-native-safe-area-context: 976178088bd2b871e3c5361b976c4c32af0a2f82
   React-nativeconfig: f2bddc1e6c2eb793c065b37e12c513fdea88afef
   React-NativeModulesApple: 2dfdd98330431c96e611fbce1bda5dbbc2464a0d
@@ -3545,7 +3523,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 2854fd04f6cbe8082642f1bfe9de5a922d2a52db
   RNReanimated: 7e4feac4e555115d24fd0f5f297f719240c91130
   RNScreens: a3632ba6fe8cbf236cb1e11b36c54b21e4f72f25
-  RNSVG: 731b008dc6588ff5046d69cf4c0bd85192556fa1
+  RNSVG: 359006f9d1f36597b6c80447f1fd6e6f386a919b
   RNVectorIcons: a4790225fbbf0b66b7cc494023c6152629ba6b0c
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   TextToSpeech: 2b930ec3756afde499061f4f01ea895e1f75dccb
