@@ -30,6 +30,7 @@ export const makeStyles = () => {
             backgroundColor: colors.secondary,
             aspectRatio: 1,
             color: colors.primary,
+            paddingBottom: 2,
             borderRadius: Dimensions.get('window').width / 2,
         },
         positionTextStyle: {
