@@ -19,7 +19,7 @@ export const makeStyles = () => {
             marginRight: 20,
         },
         legendText: {
-            color: colors.onSecondary,
+            color: colors.primary,
         },
         legendBall: {
             height: 10,
