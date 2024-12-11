@@ -58,6 +58,7 @@ const Tooltip: React.FC<Props> = props => {
                 .data.split(' - ')
                 .map((val, index) => (
                     <Text
+                        key={index}
                         x={position.x + label.dx}
                         y={
                             position.y -

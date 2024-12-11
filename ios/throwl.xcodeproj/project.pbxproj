@@ -522,6 +522,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 20;
 				DEVELOPMENT_TEAM = 84TKM8S34C;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 84TKM8S34C;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = throwl/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -538,6 +539,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.throwl;
 				PRODUCT_NAME = throwl;
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.throwl";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development com.throwl";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

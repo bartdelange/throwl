@@ -1,13 +1,13 @@
 import {
-  FRIENDS_SCREEN,
-  GAME_DETAIL_SCREEN,
-  HOME_SCREEN,
-  NEW_GAME_SCREEN,
-  PLAY_GAME_SCREEN,
-  PLAYED_GAMES_SCREEN,
-  PROFILE_SCREEN,
-  RootStackParamList,
-  UNAUTHENTICATED_SCREEN,
+    FRIENDS_SCREEN,
+    GAME_DETAIL_SCREEN,
+    HOME_SCREEN,
+    NEW_GAME_SCREEN,
+    PLAY_GAME_SCREEN,
+    PLAYED_GAMES_SCREEN,
+    PROFILE_SCREEN,
+    RootStackParamList,
+    UNAUTHENTICATED_SCREEN,
 } from '#/navigation';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
@@ -21,43 +21,59 @@ import { PlayGameScreen } from '~/screens/PlayGame/PlayGame';
 import { UnauthenticatedScreen } from '~/screens/Unauthenticated/Unauthenticated';
 import { ProfileScreen } from '~/screens/Profile/Profile';
 import { FriendsScreen } from '~/screens/Friends/Friends';
+import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
 
 export const Router = () => {
-  const Stack = createNativeStackNavigator<RootStackParamList>();
-  const { user } = React.useContext(AuthContext);
+    const Stack = createNativeStackNavigator<RootStackParamList>();
+    const { user } = React.useContext(AuthContext);
 
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        header: props => <AppBar {...props} />,
-      }}
-      initialRouteName={user && 'HOME'}>
-      <Stack.Screen
-        name={UNAUTHENTICATED_SCREEN}
-        component={UnauthenticatedScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen name={HOME_SCREEN} component={HomeScreen} />
-      <Stack.Screen name={PROFILE_SCREEN} component={ProfileScreen} />
-      <Stack.Screen name={FRIENDS_SCREEN} component={FriendsScreen} />
-      <Stack.Screen name={NEW_GAME_SCREEN} component={NewGameScreen} />
-      <Stack.Screen
-        name={PLAY_GAME_SCREEN}
-        component={PlayGameScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen name={PLAYED_GAMES_SCREEN} component={PlayedGamesScreen} />
-      <Stack.Screen
-        name={GAME_DETAIL_SCREEN}
-        component={GameDetailScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-    </Stack.Navigator>
-  );
+    return (
+        <Stack.Navigator
+            screenOptions={{
+                header: props => <AppBar {...props} />,
+            }}
+            initialRouteName={user && 'HOME'}>
+            <Stack.Screen
+                name={UNAUTHENTICATED_SCREEN}
+                component={UnauthenticatedScreen}
+                options={{
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen
+                name={HOME_SCREEN}
+                component={gestureHandlerRootHOC(HomeScreen)}
+            />
+            <Stack.Screen
+                name={PROFILE_SCREEN}
+                component={gestureHandlerRootHOC(ProfileScreen)}
+            />
+            <Stack.Screen
+                name={FRIENDS_SCREEN}
+                component={gestureHandlerRootHOC(FriendsScreen)}
+            />
+            <Stack.Screen
+                name={NEW_GAME_SCREEN}
+                component={gestureHandlerRootHOC(NewGameScreen)}
+            />
+            <Stack.Screen
+                name={PLAY_GAME_SCREEN}
+                component={gestureHandlerRootHOC(PlayGameScreen)}
+                options={{
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen
+                name={PLAYED_GAMES_SCREEN}
+                component={gestureHandlerRootHOC(PlayedGamesScreen)}
+            />
+            <Stack.Screen
+                name={GAME_DETAIL_SCREEN}
+                component={gestureHandlerRootHOC(GameDetailScreen)}
+                options={{
+                    headerShown: false,
+                }}
+            />
+        </Stack.Navigator>
+    );
 };

@@ -60,7 +60,6 @@ export const GraphContainer: React.FC<ScoreContainerProps> = ({ turns }) => {
                     text: paperTheme.colors.onPrimary,
                 },
             }}>
-            {/* @ts-ignore */}
             <Chart
                 data={scoreValues}
                 style={{ flex: 1 }}
