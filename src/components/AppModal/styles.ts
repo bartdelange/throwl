@@ -1,4 +1,4 @@
-import { Platform, StyleSheet } from 'react-native';
+import { Dimensions, Platform, StyleSheet } from 'react-native';
 import { useAppTheme } from '~/App/theming.tsx';
 
 export const makeStyles = () => {
@@ -13,7 +13,6 @@ export const makeStyles = () => {
             alignItems: 'center',
             elevation: 4,
             borderRadius: 10,
-            borderWidth: 1,
         },
         closeIcon: {
             position: 'absolute',
@@ -26,10 +25,12 @@ export const makeStyles = () => {
             flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'center',
-            maxWidth: '90%',
+            maxWidth: '70%',
+            width: '100%',
+            height: 75,
         },
         icon: {
-            fontSize: 48,
+            fontSize: Dimensions.get('screen').width * 0.05,
             ...Platform.select({
                 default: {
                     fontWeight: 'bold',
@@ -40,11 +41,10 @@ export const makeStyles = () => {
             }),
             color: colors.success,
             marginVertical: 10,
-            paddingBottom: 10,
             marginRight: 15,
         },
         title: {
-            fontSize: 48,
+            fontSize: Dimensions.get('screen').width * 0.05,
             ...Platform.select({
                 default: {
                     fontWeight: 'bold',

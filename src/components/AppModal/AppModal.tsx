@@ -40,6 +40,9 @@ export const AppModal: React.FC<AppModalProps> = ({
                         {titleIcon && (
                             <MaterialCommunityIcons
                                 name={titleIcon}
+                                numberOfLines={1}
+                                allowFontScaling={false}
+                                adjustsFontSizeToFit={true}
                                 style={[
                                     styles.icon,
                                     titleColor ? { color: titleColor } : {},
@@ -48,7 +51,8 @@ export const AppModal: React.FC<AppModalProps> = ({
                         )}
                         <Text
                             numberOfLines={1}
-                            adjustsFontSizeToFit
+                            allowFontScaling={false}
+                            adjustsFontSizeToFit={true}
                             style={[
                                 styles.title,
                                 titleColor ? { color: titleColor } : {},

@@ -27,7 +27,7 @@ export const makeStyles = () =>
             fontSize: 48,
             flex: 1,
             marginRight: '25%',
-            includeFontPadding: false,
+            includeFontPadding: true,
             ...Platform.select({
                 default: {
                     fontWeight: 'bold',

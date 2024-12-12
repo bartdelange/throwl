@@ -32,14 +32,15 @@ export const makeStyles = () => {
             color: colors.primary,
             paddingBottom: 2,
             borderRadius: Dimensions.get('window').width / 2,
+            height: Math.max(Dimensions.get('window').width * 0.03, 18),
+            width: Math.max(Dimensions.get('window').width * 0.03, 18),
         },
         positionTextStyle: {
             textAlign: 'center',
             includeFontPadding: false,
             paddingTop: Dimensions.get('window').width * 0.005,
-            height: Math.max(Dimensions.get('window').width * 0.03, 18),
-            fontSize: Math.max(Dimensions.get('window').width * 0.03, 18),
             color: 'white',
+            fontSize: Math.max(Dimensions.get('window').width * 0.03, 18),
         },
     });
 };

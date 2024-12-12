@@ -104,8 +104,10 @@ export const SignInTab = () => {
             <KeyboardAwareScrollView
                 resetScrollToCoords={{ x: 0, y: 0 }}
                 scrollEnabled={true}
+                viewIsInsideTabBar
                 extraScrollHeight={80}
                 extraHeight={80}
+                style={styles.keyboardAwareViewWrapper}
                 contentContainerStyle={styles.content}>
                 <Text style={styles.heading}>SIGN IN</Text>
                 <FormInput
@@ -134,7 +136,10 @@ export const SignInTab = () => {
                     onSubmitEditing={onSubmit}
                 />
                 <Text
-                    style={{ color: 'white', textDecorationLine: 'underline' }}
+                    style={{
+                        color: 'white',
+                        textDecorationLine: 'underline',
+                    }}
                     onPress={resetPassword}>
                     Forgot password?
                 </Text>
@@ -143,7 +148,6 @@ export const SignInTab = () => {
                     label="GO"
                     onPress={onSubmit}
                 />
-                <View style={styles.spacer} />
             </KeyboardAwareScrollView>
             <Loader working={working} />
         </View>
@@ -156,12 +160,15 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         alignItems: 'center',
     },
+    keyboardAwareViewWrapper: {
+        height: '100%',
+    },
     content: {
         paddingHorizontal:
             (Dimensions.get('window').width -
                 Math.min(Dimensions.get('window').width * 0.9, 500)) /
             2,
-        marginTop: '15%',
+        paddingTop: '15%',
         justifyContent: 'center',
         alignContent: 'center',
         alignItems: 'center',
