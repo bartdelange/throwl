@@ -357,7 +357,9 @@ export const PlayGameScreen: React.FC<any> = () => {
                 <SafeAreaView style={styles.scoreWrapper}>
                     <View style={styles.currentTurnScoreContainer}>
                         {[0, 1, 2].map(thrw => (
-                            <View style={styles.currentThrowContainer}>
+                            <View
+                                style={styles.currentThrowContainer}
+                                key={thrw}>
                                 <Text style={styles.currentThrowNumberText}>
                                     {thrw + 1}
                                 </Text>

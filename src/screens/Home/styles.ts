@@ -14,7 +14,7 @@ export const makeStyles = () =>
         },
         userWelcome: {
             paddingHorizontal: '20%',
-            fontSize: 72,
+            fontSize: 172,
             justifyContent: 'center',
             textAlign: 'center',
         },
