@@ -115,12 +115,6 @@ jobs:
         with:
           xcode-version: 15.4.0
 
-      - name: Testing
-        run: echo $MATCH_PASSWORD
-        env:
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-
-
       - name: Distribute app to TestFlight 🚀
         working-directory: ios
         run: bundle exec fastlane beta
