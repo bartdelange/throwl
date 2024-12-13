@@ -4,10 +4,26 @@ on:
     tags:
       - '*'
   workflow_dispatch:
+    inputs:
+      deploy:
+        description: 'A username passed from the caller workflow'
+        default: 'both'
+        type: choice
+        required: false
+        options:
+          - ios
+          - android
+          - both
+      skip_test:
+        description: 'A username passed from the caller workflow'
+        default: true
+        type: boolean
+        required: false
 
 jobs:
   install-and-test:
     runs-on: ubuntu-latest
+    if: ${{ !inputs.skip_test }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -27,6 +43,7 @@ jobs:
     name: Deploying to Play Store
     needs: install-and-test
     runs-on: ubuntu-latest
+    if: ${{ inputs.deploy == 'both' || inputs.deploy == 'android' }}
 
     steps:
       - name: Checkout repository
@@ -87,6 +104,7 @@ jobs:
     name: Deploying to App Store
     needs: install-and-test
     runs-on: macos-latest
+    if: ${{ inputs.deploy == 'both' || inputs.deploy == 'ios' }}
 
     steps:
       - name: Checkout repository
