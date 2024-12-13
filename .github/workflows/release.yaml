@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       deploy:
-        description: 'A username passed from the caller workflow'
+        description: 'What to deploy'
         default: 'both'
         type: choice
         required: false
@@ -15,7 +15,7 @@ on:
           - android
           - both
       skip_test:
-        description: 'A username passed from the caller workflow'
+        description: 'Skip tests?'
         default: true
         type: boolean
         required: false
