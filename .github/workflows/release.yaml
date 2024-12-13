@@ -16,7 +16,7 @@ on:
           - both
       skip_test:
         description: 'Skip tests?'
-        default: true
+        default: false
         type: boolean
         required: false
 
