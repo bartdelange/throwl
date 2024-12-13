@@ -30,10 +30,10 @@ jobs:
       - name: Install npm dependencies
         run: npm ci
 
-      - name: Use Ruby v3.2.3
+      - name: Use Ruby v3.3.6
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.2.3'
+          ruby-version: '3.3.6'
           bundler-cache: true
 
       - name: Use JAVA 22
@@ -85,10 +85,10 @@ jobs:
       - name: Install npm dependencies
         run: npm ci
 
-      - name: Use Ruby v3.2.3
+      - name: Use Ruby v3.3.6
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.2.3'
+          ruby-version: '3.3.6'
           bundler-cache: true
 
       - name: Bundle install
