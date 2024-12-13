@@ -125,7 +125,7 @@ jobs:
           DEVELOPER_PORTAL_TEAM_ID: ${{ secrets.DEVELOPER_PORTAL_TEAM_ID }}
           FASTLANE_APPLE_ID: ${{ secrets.FASTLANE_APPLE_ID }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          GIT_AUTHORIZATION: ${{ secrets.GIT_AUTHORIZATION }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
           APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
           APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
