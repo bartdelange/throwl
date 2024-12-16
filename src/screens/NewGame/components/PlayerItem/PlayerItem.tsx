@@ -8,7 +8,7 @@ import { User } from '~/models/user';
 import { makeStyles } from './styles';
 
 interface PlayerItemProps {
-    player: Omit<User, 'friends'>;
+    player: Omit<User, 'friends' | 'email' | 'type'>;
     selected: boolean;
     onPress?: () => void;
     position?: number;

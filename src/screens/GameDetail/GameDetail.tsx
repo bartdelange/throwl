@@ -18,10 +18,11 @@ import { useAppTheme } from '~/App/theming.tsx';
 import { ClickableDartboard } from '~/components/ClickableDartboard/ClickableDartboard';
 import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
 import { ScoreHelper } from '~/lib/score_helper';
-import { User } from '~/models/user';
+import { GuestUser, User } from '~/models/user';
 import { GraphContainer } from '~/screens/GameDetail/components/GraphContainer/GraphContainer';
 import { StatsContainer } from '~/screens/GameDetail/components/StatsContainer/StatsContainer';
 import { makeStyles } from './styles';
+import { GameService } from '~/services/game_service.ts';
 
 export const GameDetailScreen: React.FC<any> = () => {
     const [selectedUserId, setSelectedUserId] = React.useState<string>();
@@ -45,7 +46,12 @@ export const GameDetailScreen: React.FC<any> = () => {
                     <Pressable
                         onPress={() =>
                             navigator.push(NEW_GAME_SCREEN, {
-                                selectedUsers: game.players.map(u => u.id),
+                                selectedUsers: game.players
+                                    .filter(u => u.type === 'user')
+                                    .map(u => u.id),
+                                guestUsers: game.players
+                                    .filter(u => u.type === 'guest_user')
+                                    .map(u => u.name),
                             })
                         }>
                         <View style={styles.dartboard}>
@@ -55,13 +61,14 @@ export const GameDetailScreen: React.FC<any> = () => {
                     </Pressable>
                 </View>
                 <SafeAreaView style={styles.playerListWrapper}>
-                    <FlatList<User>
+                    <FlatList<User | GuestUser>
                         alwaysBounceVertical={false}
                         data={game.players}
                         style={styles.playerList}
-                        renderItem={({ item: user }) => {
+                        renderItem={({ item }) => {
+                            const parsedPlayer = GameService.stubPlayer(item);
                             const userTurns = game.turns.filter(
-                                t => t.userId === user.id
+                                t => t.userId === parsedPlayer.id
                             );
                             const userThrows = userTurns
                                 .filter(turn => turn.isValid)
@@ -88,7 +95,7 @@ export const GameDetailScreen: React.FC<any> = () => {
 
                             return (
                                 <Accordion
-                                    title={user.name}
+                                    title={parsedPlayer.name}
                                     titleStyle={styles.playerName}
                                     subtitle={
                                         userScore.score === 0
@@ -96,19 +103,19 @@ export const GameDetailScreen: React.FC<any> = () => {
                                             : `Remaining score: ${userScore.score}`
                                     }
                                     subtitleStyle={styles.scoreText}
-                                    open={selectedUserId === user.id}
+                                    open={selectedUserId === parsedPlayer.id}
                                     onChange={() => {
                                         setSelectedUserId(current => {
                                             setHeatmap(
-                                                current === user.id
+                                                current === parsedPlayer.id
                                                     ? undefined
                                                     : ScoreHelper.calculateHeatmap(
                                                           throwCount
                                                       )
                                             );
-                                            return current === user.id
+                                            return current === parsedPlayer.id
                                                 ? undefined
-                                                : user.id;
+                                                : parsedPlayer.id;
                                         });
                                     }}>
                                     <View style={styles.accordionContent}>
