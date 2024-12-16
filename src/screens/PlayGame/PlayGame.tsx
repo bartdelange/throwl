@@ -1,6 +1,12 @@
-import { GAME_DETAIL_SCREEN, RootStackParamList } from '#/navigation';
+import {
+    GAME_DETAIL_SCREEN,
+    HOME_SCREEN,
+    NEW_GAME_SCREEN,
+    PLAYED_GAMES_SCREEN,
+    RootStackParamList,
+} from '#/navigation';
 import { useNavigation, useRoute } from '@react-navigation/core';
-import { RouteProp } from '@react-navigation/native';
+import { RouteProp, StackActions } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect } from 'react';
 import {
@@ -26,7 +32,7 @@ import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
 import { ScoreHelper } from '~/lib/score_helper';
 import { DartboardScoreType, Throw } from '~/models/throw';
 import { Turn } from '~/models/turn';
-import { User } from '~/models/user';
+import { User, GuestUser } from '~/models/user';
 import { GameService } from '~/services/game_service';
 import { makeStyles } from './styles';
 import { DartFinishers } from '#/dart-finishers.ts';
@@ -45,7 +51,7 @@ export const PlayGameScreen: React.FC<any> = () => {
     const [activeUserIndex, setActiveUserIndex] = React.useState<number>(0);
     const [turns, setTurns] = React.useState<Turn[]>([]);
     const [currentTurn, setCurrentTurn] = React.useState<Turn>({
-        userId: route.params.players[0].id,
+        userId: GameService.stubPlayer(route.params.players[0]).id,
         throws: [],
     });
     const [turnNeeded, setTurnNeeded] = React.useState<
@@ -88,7 +94,7 @@ export const PlayGameScreen: React.FC<any> = () => {
                     false,
                     route.params.players.findIndex(player => {
                         return (
-                            player.id ===
+                            GameService.stubPlayer(player).id ===
                             activeGame.turns[activeGame.turns.length - 1]
                                 ?.userId
                         );
@@ -96,7 +102,9 @@ export const PlayGameScreen: React.FC<any> = () => {
                 );
             }
             setCurrentTurn({
-                userId: route.params.players[nextUserIndex].id,
+                userId: GameService.stubPlayer(
+                    route.params.players[nextUserIndex]
+                ).id,
                 throws: [],
             });
         }
@@ -158,27 +166,24 @@ export const PlayGameScreen: React.FC<any> = () => {
         const newTurns = [...turns, turn];
         setTurns(newTurns);
         const nextUserIndex = rotateUsers();
+        const nextUser = GameService.stubPlayer(
+            route.params.players[nextUserIndex]
+        );
         setCurrentTurn({
-            userId: route.params.players[nextUserIndex].id,
+            userId: nextUser.id,
             throws: [],
         });
 
         const userScoreLeft =
             route.params.startingScore -
             ScoreHelper.calculateScore(
-                newTurns.filter(
-                    t =>
-                        t.userId === route.params.players[nextUserIndex].id &&
-                        t.isValid
-                )
+                newTurns.filter(t => t.userId === nextUser.id && t.isValid)
             );
 
         calculateThrowsNeeded(userScoreLeft, []);
         if (userScoreLeft <= 170) {
             await speak(
-                `${
-                    route.params.players[nextUserIndex].name.split(' ')[0]
-                } you need ${userScoreLeft}`
+                `${nextUser.name.split(' ')[0]} you need ${userScoreLeft}`
             );
         }
         await persist(newTurns);
@@ -187,11 +192,12 @@ export const PlayGameScreen: React.FC<any> = () => {
     const finishGame = async (turn: Turn) => {
         setConfettiing(true);
         const newTurns = [...turns, turn];
+        const winningUser = GameService.stubPlayer(
+            route.params.players[activeUserIndex]
+        );
         setGameFinished(true);
         setGameFinishedPopup(true);
-        speak(
-            `${route.params.players[activeUserIndex].name.split(' ')[0]} has won!`
-        );
+        speak(`${winningUser.name.split(' ')[0]} has won!`);
         await persist(newTurns, true);
     };
 
@@ -267,12 +273,15 @@ export const PlayGameScreen: React.FC<any> = () => {
             return navigator.popToTop();
         }
         const oldUserIndex = route.params.players.findIndex(
-            u => u.id === userId
+            u => GameService.stubPlayer(u).id === userId
         );
         const newUserIndex =
             oldUserIndex === route.params.players.length - 1 ? 0 : oldUserIndex;
         const newTurns = turns.filter(t => t.userId !== userId);
-        const newPlayers = route.params.players.filter(u => u.id !== userId);
+        const newPlayers = route.params.players.filter(
+            u => GameService.stubPlayer(u).id !== userId
+        );
+        const newNextPlayer = GameService.stubPlayer(newPlayers[newUserIndex]);
         setTurns(newTurns);
         navigator.setParams({
             ...route.params,
@@ -281,7 +290,7 @@ export const PlayGameScreen: React.FC<any> = () => {
         setActiveUserIndex(newUserIndex);
         if (oldUserIndex === activeUserIndex) {
             setCurrentTurn({
-                userId: newPlayers[newUserIndex].id,
+                userId: newNextPlayer.id,
                 throws: [],
             });
         }
@@ -289,9 +298,7 @@ export const PlayGameScreen: React.FC<any> = () => {
         const userScoreLeft =
             route.params.startingScore -
             ScoreHelper.calculateScore(
-                turns.filter(
-                    t => t.userId === newPlayers[newUserIndex].id && t.isValid
-                )
+                turns.filter(t => t.userId === newNextPlayer.id && t.isValid)
             );
 
         calculateThrowsNeeded(userScoreLeft, []);
@@ -458,7 +465,7 @@ export const PlayGameScreen: React.FC<any> = () => {
                                 </Text>
                             </Col>
                         </Row>
-                        <FlatList<User>
+                        <FlatList<User | GuestUser>
                             onScrollToIndexFailed={() => {}}
                             ref={scoreTableRef}
                             data={route.params.players}
@@ -466,9 +473,12 @@ export const PlayGameScreen: React.FC<any> = () => {
                                 width: '95%',
                             }}
                             renderItem={({ item: user, index }) => {
+                                const parsedUser = GameService.stubPlayer(user);
                                 const userScore =
                                     ScoreHelper.calculateScoreStatsForUser(
-                                        turns.filter(t => t.userId === user.id),
+                                        turns.filter(
+                                            t => t.userId === parsedUser.id
+                                        ),
                                         route.params.startingScore,
                                         activeUserIndex === index
                                             ? currentTurn
@@ -477,7 +487,7 @@ export const PlayGameScreen: React.FC<any> = () => {
                                 return (
                                     <SwipeActions
                                         bounce={index === 0}
-                                        key={user.id}
+                                        key={parsedUser.id}
                                         rightActions={[
                                             {
                                                 icon: 'delete',
@@ -507,7 +517,7 @@ export const PlayGameScreen: React.FC<any> = () => {
                                                         styles.scoreTableCell,
                                                         styles.scoreTableBoldCell,
                                                     ]}>
-                                                    {user.name}
+                                                    {parsedUser.name}
                                                 </Text>
                                             </Col>
                                             <Col
@@ -578,7 +588,11 @@ export const PlayGameScreen: React.FC<any> = () => {
             <AppModal
                 title="WINNER"
                 titleIcon="crown"
-                subTitle={route.params.players[activeUserIndex].name}
+                subTitle={
+                    GameService.stubPlayer(
+                        route.params.players[activeUserIndex]
+                    ).name
+                }
                 visible={gameFinishedPopup}
                 onDismiss={() => {
                     setGameFinishedPopup(false);
@@ -605,8 +619,20 @@ export const PlayGameScreen: React.FC<any> = () => {
                             iconColor={colors.success}
                             onPress={async () => {
                                 setGameFinishedPopup(false);
-                                navigator.push(GAME_DETAIL_SCREEN, {
-                                    game: await GameService.getById(gameId!),
+                                navigator.reset({
+                                    index: 0,
+                                    routes: [
+                                        { name: HOME_SCREEN },
+                                        { name: PLAYED_GAMES_SCREEN },
+                                        {
+                                            name: GAME_DETAIL_SCREEN,
+                                            params: {
+                                                game: await GameService.getById(
+                                                    gameId!
+                                                ),
+                                            },
+                                        },
+                                    ],
                                 });
                             }}
                         />
@@ -631,9 +657,9 @@ export const PlayGameScreen: React.FC<any> = () => {
                 subTitle={`Are you sure you wish to drop out${
                     droppingOutUserIndex != null
                         ? ` ${
-                              route.params.players[
-                                  droppingOutUserIndex
-                              ].name.split(' ')[0]
+                              GameService.stubPlayer(
+                                  route.params.players[droppingOutUserIndex]
+                              ).name.split(' ')[0]
                           }`
                         : ''
                 }?`}
@@ -651,9 +677,11 @@ export const PlayGameScreen: React.FC<any> = () => {
                             onPress={() =>
                                 droppingOutUserIndex != null
                                     ? dropOutUser(
-                                          route.params.players[
-                                              droppingOutUserIndex
-                                          ].id
+                                          GameService.stubPlayer(
+                                              route.params.players[
+                                                  droppingOutUserIndex
+                                              ]
+                                          ).id
                                       )
                                     : null
                             }
