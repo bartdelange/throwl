@@ -99,5 +99,15 @@ export const makeStyles = () => {
             minHeight: '20%',
             paddingVertical: Dimensions.get('window').width < 500 ? 0 : '5%',
         },
+
+        input: {
+            marginVertical: '5%',
+            width: '75%',
+            alignSelf: 'center',
+        },
+        button: {
+            marginBottom: '10%',
+            alignSelf: 'center',
+        },
     });
 };
