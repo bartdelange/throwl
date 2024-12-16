@@ -37,7 +37,7 @@ jobs:
     name: Deploying to Play Store
     needs: install-and-test
     runs-on: ubuntu-latest
-    if: ${{ inputs == null || inputs.deploy == 'both' || inputs.deploy == 'android' }}
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.deploy == 'both' || inputs.deploy == 'android' }}
 
     steps:
       - name: Checkout repository
@@ -98,7 +98,7 @@ jobs:
     name: Deploying to App Store
     needs: install-and-test
     runs-on: macos-latest
-    if: ${{ inputs == null || inputs.deploy == 'both' || inputs.deploy == 'ios' }}
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.deploy == 'both' || inputs.deploy == 'ios' }}
 
     steps:
       - name: Checkout repository
