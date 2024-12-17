@@ -29,6 +29,7 @@ runs:
           NM-
 
     - name: Install npm dependencies
+      shell: bash
       if: steps.node_modules-cache.outputs.cache-hit != 'true'
       run: npm ci
 
@@ -38,6 +39,7 @@ runs:
         ruby-version: '3.3.6'
 
     - name: Install bundle
+      shell: bash
       if: ${{ inputs.bundle }}
       working-directory: ${{ inputs.working_directory }}
       run: bundle install --jobs 4 --retry 3
