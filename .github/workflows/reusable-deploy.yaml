@@ -51,7 +51,7 @@ on:
 
 jobs:
   build_and_deploy:
-    name: Build and deploy to ${{ inputs.store }},
+    name: Build and Deploy to ${{ inputs.store }},
     runs-on: ${{ inputs.os }}
     permissions:
       contents: read
