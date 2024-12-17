@@ -36,15 +36,17 @@ jobs:
     needs: install-and-test
     strategy:
       matrix:
+        os: [ ubuntu-latest, macos-latest ]
+        exclude:
+          - os: ${{ !(github.event_name != 'workflow_dispatch' || inputs.deploy == 'both' || inputs.deploy == 'android') && 'ubuntu-latest' }}
+          - os: ${{ !(github.event_name != 'workflow_dispatch' || inputs.deploy == 'both' || inputs.deploy == 'ios') && 'macos-latest' }}
         include:
           - os: ubuntu-latest
             working_directory: android
             store: Google Play 🤖
-            deploy: ${{ github.event_name != 'workflow_dispatch' || inputs.deploy == 'both' || inputs.deploy == 'android' }}
           - os: ubuntu-latest
             working_directory: ios
             store: App Store 📱
-            deploy: ${{ github.event_name != 'workflow_dispatch' || inputs.deploy == 'both' || inputs.deploy == 'ios' }}
     uses: ./.github/workflows/reusable-deploy.yaml
     with:
       os: ${{ matrix.os }}

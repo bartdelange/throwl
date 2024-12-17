@@ -13,10 +13,6 @@ on:
         type: string
         required: true
         description: One of `ios` or `android`
-      deploy:
-        type: boolean
-        required: false
-        default: true
 
     secrets:
       # iOS
@@ -57,7 +53,6 @@ jobs:
   build_and_deploy:
     name: Build and deploy to ${{ inputs.store }},
     runs-on: ${{ inputs.os }}
-    if: ${{ inputs.deploy }}
     steps:
       - name: Setup directory and install required packages
         uses: ./.github/workflows/reusable-setup.yaml
