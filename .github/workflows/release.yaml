@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup directory and install required packages
-        uses: ./.github/workflows/reusable-setup.yaml
+        uses: ./.github/workflows/reusable-setup/
         with:
           os: ubuntu-latest
           bundle: false
