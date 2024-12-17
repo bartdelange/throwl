@@ -1,0 +1,52 @@
+name: Install packages from NPM,
+
+on:
+  workflow_call:
+    inputs:
+      os:
+        type: string
+        required: true
+      bundle:
+        type: boolean
+        required: true
+      working_directory:
+        type: string
+        required: false
+        description: One of `ios` or `android`
+
+jobs:
+  setup-packages:
+    name: Setup packages
+    runs-on: ${{ inputs.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        id: node_modules-cache
+        with:
+          path: |
+            **/node_modules
+          key: NM-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            NM-
+
+      - name: Install npm dependencies
+        if: steps.node_modules-cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Use Ruby v3.3.6
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3.6'
+
+      - name: Install bundle
+        if: ${{ inputs.bundle }}
+        working-directory: ${{ inputs.working_directory }}
+        run: bundle install --jobs 4 --retry 3

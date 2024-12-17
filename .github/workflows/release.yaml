@@ -19,117 +19,37 @@ jobs:
   install-and-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - name: Setup directory and install required packages
+        uses: ./.github/workflows/reusable-setup.yaml
         with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Install npm dependencies
-        run: npm ci
+          os: ubuntu-latest
+          bundle: false
 
       - name: Run tests
         run: npm test
 
-  deploy-android:
-    name: Deploying to Play Store
+  deploy:
+    name: Deploying to ${{ matrix.store }}
     needs: install-and-test
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.deploy == 'both' || inputs.deploy == 'android' }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            working_directory: android
+            store: Google Play 🤖
+          - os: ubuntu-latest
+            working_directory: ios
+            store: App Store 📱
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - name: Deploy to ${{ matrix.store }}
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.deploy == 'both' || inputs.deploy == matrix.working_directory }}
+        uses: ./.github/workflows/reusable-deploy.yaml
         with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Install npm dependencies
-        run: npm ci
-
-      - name: Use Ruby v3.3.6
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.3.6'
-          bundler-cache: true
-
-      - name: Use JAVA 22
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu' # See 'Supported distributions' for available options
-          java-version: '22.0.2'
-
-      - name: Install bundle
-        working-directory: android
-        run: bundle config path vendor/bundle; bundle install --jobs 4 --retry 3
-
-      - name: Configure Keystore
-        working-directory: android
-        run: |
-          echo "$ANDROID_KEYSTORE_FILE" > keystore.jks.b64
-          base64 -d -i keystore.jks.b64 > app/keystore.jks
-          echo "storeFile=keystore.jks" >> keystore.properties
-          echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> keystore.properties
-          echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> keystore.properties
-          echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> keystore.properties
-        env:
-          ANDROID_KEYSTORE_FILE: ${{ secrets.ANDROID_KEYSTORE_FILE }}
-          KEYSTORE_KEY_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
-          KEYSTORE_KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          KEYSTORE_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-
-      - name: Create Google Play Config file
-        working-directory: android
-        run: |
-          echo "$PLAY_CONFIG_JSON" > playstore_config.json.b64
-          base64 -d -i playstore_config.json.b64 > playstore_config.json
-        env:
-          PLAY_CONFIG_JSON: ${{ secrets.PLAY_CONFIG_JSON }}
-
-      - name: Distribute app to Beta track 🚀
-        working-directory: android
-        run: bundle exec fastlane beta
-
-  deploy-ios:
-    name: Deploying to App Store
-    needs: install-and-test
-    runs-on: macos-latest
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.deploy == 'both' || inputs.deploy == 'ios' }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Install npm dependencies
-        run: npm ci
-
-      - name: Use Ruby v3.3.6
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.3.6'
-          bundler-cache: true
-
-      - name: Bundle install
-        working-directory: ios
-        run: bundle install
-
-      - name: Use latest xcode
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: 15.4.0
-
-      - name: Distribute app to TestFlight 🚀
-        working-directory: ios
-        run: bundle exec fastlane beta
+          os: ${{ matrix.os }}
+          working_directory: ${{ matrix.working_directory }}
+          store: ${{ matrix.store }}
         env:
           APP_STORE_CONNECT_TEAM_ID: ${{ secrets.APP_STORE_CONNECT_TEAM_ID }}
           DEVELOPER_APP_ID: ${{ secrets.DEVELOPER_APP_ID }}
