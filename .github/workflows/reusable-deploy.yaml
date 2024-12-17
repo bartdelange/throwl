@@ -17,37 +17,37 @@ on:
     secrets:
       # iOS
       APP_STORE_CONNECT_TEAM_ID:
-        required: true
+        required: false
       DEVELOPER_APP_ID:
-        required: true
+        required: false
       DEVELOPER_APP_IDENTIFIER:
-        required: true
+        required: false
       DEVELOPER_PORTAL_TEAM_ID:
-        required: true
+        required: false
       FASTLANE_APPLE_ID:
-        required: true
+        required: false
       MATCH_PASSWORD:
-        required: true
+        required: false
       MATCH_GIT_BASIC_AUTHORIZATION:
-        required: true
+        required: false
       APPLE_KEY_ID:
-        required: true
+        required: false
       APPLE_ISSUER_ID:
-        required: true
+        required: false
       APPLE_KEY_CONTENT:
-        required: true
+        required: false
 
       # Android
       ANDROID_KEYSTORE_FILE:
-        required: true
+        required: false
       KEYSTORE_KEY_ALIAS:
-        required: true
+        required: false
       KEYSTORE_KEY_PASSWORD:
-        required: true
+        required: false
       KEYSTORE_STORE_PASSWORD:
-        required: true
+        required: false
       PLAY_CONFIG_JSON:
-        required: true
+        required: false
 
 jobs:
   build_and_deploy:

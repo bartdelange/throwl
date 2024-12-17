@@ -32,30 +32,33 @@ jobs:
         run: npm test
 
   deploy:
-    name: Building and deploying to ${{ matrix.store }}
+    name: Building and deploying to Google Play 🤖
     needs: install-and-test
-    strategy:
-      matrix:
-        os: [ ubuntu-latest, macos-latest ]
-        exclude:
-          - os: ${{ !(github.event_name != 'workflow_dispatch' || inputs.deploy == 'both' || inputs.deploy == 'android') && 'ubuntu-latest' }}
-          - os: ${{ !(github.event_name != 'workflow_dispatch' || inputs.deploy == 'both' || inputs.deploy == 'ios') && 'macos-latest' }}
-        include:
-          - os: ubuntu-latest
-            working_directory: android
-            store: Google Play 🤖
-          - os: ubuntu-latest
-            working_directory: ios
-            store: App Store 📱
     uses: ./.github/workflows/reusable-deploy.yaml
     permissions:
       contents: read
     with:
-      os: ${{ matrix.os }}
-      working_directory: ${{ matrix.working_directory }}
-      store: ${{ matrix.store }}
+      os: ubuntu-latest
+      working_directory: android
+      store: Google Play Store
     secrets:
-      # iOS
+      ANDROID_KEYSTORE_FILE: ${{ secrets.ANDROID_KEYSTORE_FILE }}
+      KEYSTORE_KEY_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
+      KEYSTORE_KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      KEYSTORE_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      PLAY_CONFIG_JSON: ${{ secrets.PLAY_CONFIG_JSON }}
+
+  deploy_ios:
+    name: Building and deploying to TestFight 📱
+    needs: install-and-test
+    uses: ./.github/workflows/reusable-deploy.yaml
+    permissions:
+      contents: read
+    with:
+      os: macos-latest
+      working_directory: ios
+      store: TestFight
+    secrets:
       APP_STORE_CONNECT_TEAM_ID: ${{ secrets.APP_STORE_CONNECT_TEAM_ID }}
       DEVELOPER_APP_ID: ${{ secrets.DEVELOPER_APP_ID }}
       DEVELOPER_APP_IDENTIFIER: ${{ secrets.DEVELOPER_APP_IDENTIFIER }}
@@ -66,10 +69,3 @@ jobs:
       APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
       APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
       APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
-
-      # Android
-      ANDROID_KEYSTORE_FILE: ${{ secrets.ANDROID_KEYSTORE_FILE }}
-      KEYSTORE_KEY_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
-      KEYSTORE_KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-      KEYSTORE_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-      PLAY_CONFIG_JSON: ${{ secrets.PLAY_CONFIG_JSON }}
