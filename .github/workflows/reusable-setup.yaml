@@ -1,4 +1,4 @@
-name: Install packages from NPM,
+name: Setup action jobs
 
 on:
   workflow_call:
@@ -19,9 +19,6 @@ jobs:
     name: Setup packages
     runs-on: ${{ inputs.os }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
