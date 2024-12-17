@@ -55,7 +55,7 @@ jobs:
     runs-on: ${{ inputs.os }}
     steps:
       - name: Setup directory and install required packages
-        uses: ./.github/workflows/reusable-setup/
+        uses: ./.github/actions/reusable-setup/
         with:
           os: ubuntu-latest
           working_directory: ${{ inputs.working_directory }}
