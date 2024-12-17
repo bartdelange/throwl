@@ -48,6 +48,8 @@ jobs:
             working_directory: ios
             store: App Store 📱
     uses: ./.github/workflows/reusable-deploy.yaml
+    permissions:
+      contents: read
     with:
       os: ${{ matrix.os }}
       working_directory: ${{ matrix.working_directory }}
