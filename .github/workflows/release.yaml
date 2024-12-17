@@ -19,6 +19,9 @@ jobs:
   install-and-test:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Setup directory and install required packages
         uses: ./.github/workflows/reusable-setup.yaml
         with:
@@ -29,9 +32,8 @@ jobs:
         run: npm test
 
   deploy:
-    name: Deploying to ${{ matrix.store }}
+    name: Building and deploying to ${{ matrix.store }}
     needs: install-and-test
-    runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
@@ -41,23 +43,27 @@ jobs:
           - os: ubuntu-latest
             working_directory: ios
             store: App Store 📱
-
-    steps:
-      - name: Deploy to ${{ matrix.store }}
-        if: ${{ github.event_name != 'workflow_dispatch' || inputs.deploy == 'both' || inputs.deploy == matrix.working_directory }}
-        uses: ./.github/workflows/reusable-deploy.yaml
-        with:
-          os: ${{ matrix.os }}
-          working_directory: ${{ matrix.working_directory }}
-          store: ${{ matrix.store }}
-        env:
-          APP_STORE_CONNECT_TEAM_ID: ${{ secrets.APP_STORE_CONNECT_TEAM_ID }}
-          DEVELOPER_APP_ID: ${{ secrets.DEVELOPER_APP_ID }}
-          DEVELOPER_APP_IDENTIFIER: ${{ secrets.DEVELOPER_APP_IDENTIFIER }}
-          DEVELOPER_PORTAL_TEAM_ID: ${{ secrets.DEVELOPER_PORTAL_TEAM_ID }}
-          FASTLANE_APPLE_ID: ${{ secrets.FASTLANE_APPLE_ID }}
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
-          APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
-          APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
-          APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
+    uses: ./.github/workflows/reusable-deploy.yaml
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.deploy == 'both' || inputs.deploy == matrix.working_directory }}
+    with:
+      os: ${{ matrix.os }}
+      working_directory: ${{ matrix.working_directory }}
+      store: ${{ matrix.store }}
+    secrets:
+      # iOS
+      APP_STORE_CONNECT_TEAM_ID: ${{ secrets.APP_STORE_CONNECT_TEAM_ID }}
+      DEVELOPER_APP_ID: ${{ secrets.DEVELOPER_APP_ID }}
+      DEVELOPER_APP_IDENTIFIER: ${{ secrets.DEVELOPER_APP_IDENTIFIER }}
+      DEVELOPER_PORTAL_TEAM_ID: ${{ secrets.DEVELOPER_PORTAL_TEAM_ID }}
+      FASTLANE_APPLE_ID: ${{ secrets.FASTLANE_APPLE_ID }}
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+      APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
+      APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+      APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
+      # Android
+      ANDROID_KEYSTORE_FILE: ${{ secrets.ANDROID_KEYSTORE_FILE }}
+      KEYSTORE_KEY_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
+      KEYSTORE_KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      KEYSTORE_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      PLAY_CONFIG_JSON: ${{ secrets.PLAY_CONFIG_JSON }}

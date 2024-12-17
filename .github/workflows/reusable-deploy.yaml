@@ -1,4 +1,4 @@
-name: Build and deploy to ${{ inputs.store }},
+name: Build and deploy
 
 on:
   workflow_call:
@@ -13,6 +13,41 @@ on:
         type: string
         required: true
         description: One of `ios` or `android`
+
+    secrets:
+      # iOS
+      APP_STORE_CONNECT_TEAM_ID:
+        required: true
+      DEVELOPER_APP_ID:
+        required: true
+      DEVELOPER_APP_IDENTIFIER:
+        required: true
+      DEVELOPER_PORTAL_TEAM_ID:
+        required: true
+      FASTLANE_APPLE_ID:
+        required: true
+      MATCH_PASSWORD:
+        required: true
+      MATCH_GIT_BASIC_AUTHORIZATION:
+        required: true
+      APPLE_KEY_ID:
+        required: true
+      APPLE_ISSUER_ID:
+        required: true
+      APPLE_KEY_CONTENT:
+        required: true
+
+      # Android
+      ANDROID_KEYSTORE_FILE:
+        required: true
+      KEYSTORE_KEY_ALIAS:
+        required: true
+      KEYSTORE_KEY_PASSWORD:
+        required: true
+      KEYSTORE_STORE_PASSWORD:
+        required: true
+      PLAY_CONFIG_JSON:
+        required: true
 
 jobs:
   build_and_deploy:
@@ -57,7 +92,7 @@ jobs:
           echo "$PLAY_CONFIG_JSON" > playstore_config.json.b64
           base64 -d -i playstore_config.json.b64 > playstore_config.json
         env:
-          PLAY_CONFIG_JSON: ${{ secrets.PLAY_CONFIG_JSON }}
+          PLAY_CONFIG_JSON: ${{ env.PLAY_CONFIG_JSON }}
       #endregion
 
       #region iOS
@@ -71,3 +106,14 @@ jobs:
       - name: Distribute app to ${{ inputs.store }} 🚀
         working-directory: ${{ inputs.working_directory }}
         run: bundle exec fastlane beta
+        env:
+          APP_STORE_CONNECT_TEAM_ID: ${{ (input.working_directory == 'ios' && secrets.APP_STORE_CONNECT_TEAM_ID) || '' }}
+          DEVELOPER_APP_ID: ${{ (input.working_directory == 'ios' && secrets.DEVELOPER_APP_ID) || '' }}
+          DEVELOPER_APP_IDENTIFIER: ${{ (input.working_directory == 'ios' && secrets.DEVELOPER_APP_IDENTIFIER) || '' }}
+          DEVELOPER_PORTAL_TEAM_ID: ${{ (input.working_directory == 'ios' && secrets.DEVELOPER_PORTAL_TEAM_ID) || '' }}
+          FASTLANE_APPLE_ID: ${{ (input.working_directory == 'ios' && secrets.FASTLANE_APPLE_ID) || '' }}
+          MATCH_PASSWORD: ${{ (input.working_directory == 'ios' && secrets.MATCH_PASSWORD) || '' }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ (input.working_directory == 'ios' && secrets.MATCH_GIT_BASIC_AUTHORIZATION) || '' }}
+          APPLE_KEY_ID: ${{ (input.working_directory == 'ios' && secrets.APPLE_KEY_ID) || '' }}
+          APPLE_ISSUER_ID: ${{ (input.working_directory == 'ios' && secrets.APPLE_ISSUER_ID) || '' }}
+          APPLE_KEY_CONTENT: ${{ (input.working_directory == 'ios' && secrets.APPLE_KEY_CONTENT) || '' }}
