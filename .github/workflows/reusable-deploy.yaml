@@ -59,6 +59,9 @@ jobs:
       group: ${{ github.workflow }}-${{ inputs.os }}
       cancel-in-progress: true
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Setup directory and install required packages
         uses: ./.github/actions/reusable-setup/
         with:
