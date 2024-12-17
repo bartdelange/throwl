@@ -53,6 +53,11 @@ jobs:
   build_and_deploy:
     name: Build and deploy to ${{ inputs.store }},
     runs-on: ${{ inputs.os }}
+    permissions:
+      contents: read
+    concurrency:
+      group: ${{ github.workflow }}-${{ inputs.os }}
+      cancel-in-progress: true
     steps:
       - name: Setup directory and install required packages
         uses: ./.github/actions/reusable-setup/
@@ -60,7 +65,6 @@ jobs:
           os: ubuntu-latest
           working_directory: ${{ inputs.working_directory }}
           bundle: true
-
       #region Android
       - name: Use JAVA 22
         if: ${{ inputs.working_directory == 'android' }}
