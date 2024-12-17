@@ -32,7 +32,7 @@ jobs:
         run: npm test
 
   deploy:
-    name: Building and deploying to Google Play 🤖
+    name: Building/Deploying - Google Play 🤖
     needs: install-and-test
     uses: ./.github/workflows/reusable-deploy.yaml
     permissions:
@@ -49,7 +49,7 @@ jobs:
       PLAY_CONFIG_JSON: ${{ secrets.PLAY_CONFIG_JSON }}
 
   deploy_ios:
-    name: Building and deploying to TestFight 📱
+    name: Building/Deploying - TestFight 📱
     needs: install-and-test
     uses: ./.github/workflows/reusable-deploy.yaml
     permissions:
