@@ -40,11 +40,12 @@ jobs:
           - os: ubuntu-latest
             working_directory: android
             store: Google Play 🤖
+            deploy: ${{ github.event_name != 'workflow_dispatch' || inputs.deploy == 'both' || inputs.deploy == 'android' }}
           - os: ubuntu-latest
             working_directory: ios
             store: App Store 📱
+            deploy: ${{ github.event_name != 'workflow_dispatch' || inputs.deploy == 'both' || inputs.deploy == 'ios' }}
     uses: ./.github/workflows/reusable-deploy.yaml
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.deploy == 'both' || inputs.deploy == matrix.working_directory }}
     with:
       os: ${{ matrix.os }}
       working_directory: ${{ matrix.working_directory }}
@@ -61,6 +62,7 @@ jobs:
       APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
       APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
       APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
+
       # Android
       ANDROID_KEYSTORE_FILE: ${{ secrets.ANDROID_KEYSTORE_FILE }}
       KEYSTORE_KEY_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
