@@ -37,6 +37,7 @@ runs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.3.6'
+        bundler-cache: true
 
     - name: Install bundle
       shell: bash
