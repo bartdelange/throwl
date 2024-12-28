@@ -46,9 +46,9 @@ export const GameDetailScreen: React.FC<any> = () => {
                     <Pressable
                         onPress={() =>
                             navigator.push(NEW_GAME_SCREEN, {
-                                selectedUsers: game.players
-                                    .filter(u => u.type === 'user')
-                                    .map(u => u.id),
+                                selectedUsers: game.players.map(u =>
+                                    u.type === 'user' ? u.id : u.name
+                                ),
                                 guestUsers: game.players
                                     .filter(u => u.type === 'guest_user')
                                     .map(u => u.name),

@@ -65,6 +65,7 @@ export const NewGameScreen: React.FC = () => {
                     return selectedUsers(current);
                 });
             }
+            1;
         },
         []
     );
