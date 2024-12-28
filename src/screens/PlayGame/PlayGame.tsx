@@ -1,12 +1,11 @@
 import {
     GAME_DETAIL_SCREEN,
     HOME_SCREEN,
-    NEW_GAME_SCREEN,
     PLAYED_GAMES_SCREEN,
     RootStackParamList,
 } from '#/navigation';
 import { useNavigation, useRoute } from '@react-navigation/core';
-import { RouteProp, StackActions } from '@react-navigation/native';
+import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect } from 'react';
 import {
