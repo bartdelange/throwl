@@ -93,8 +93,8 @@ android {
         applicationId "com.throwl"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 27
-        versionName "3.3.4"
+        versionCode 28
+        versionName "3.3.5"
 
         ndk {
             debugSymbolLevel 'FULL'
