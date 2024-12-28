@@ -73,9 +73,9 @@ jobs:
           echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> keystore.properties
         env:
           KEYSTORE_FILE: ${{ secrets.ANDROID_KEYSTORE_FILE }}
-          KEYSTORE_KEY_ALIAS: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
-          KEYSTORE_KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          KEYSTORE_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEYSTORE_KEY_ALIAS: ${{ secrets.ANDROID_KEYSTORE_KEY_ALIAS }}
+          KEYSTORE_KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_KEY_PASSWORD }}
+          KEYSTORE_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_STORE_PASSWORD }}
 
       - name: Create Google Play Config file
         if: ${{ inputs.working_directory == 'android' }}
