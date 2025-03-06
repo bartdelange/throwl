@@ -60,7 +60,7 @@
     "@babel/core": "^7.26.0",
     "@babel/preset-env": "^7.26.0",
     "@babel/runtime": "^7.26.0",
-    "@react-native-community/cli": "16.0.0",
+    "@react-native-community/cli": "17.0.0",
     "@react-native-community/cli-platform-android": "16.0.0",
     "@react-native-community/cli-platform-ios": "16.0.0",
     "@react-native/babel-preset": "^0.76.5",
