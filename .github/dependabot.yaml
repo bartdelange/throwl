@@ -27,7 +27,7 @@ updates:
       reviewers:
        - "bartdelange"
       schedule:
-          interval: 'weekly
+          interval: 'weekly'
       groups:
           version-updates:
               applies-to: version-updates
