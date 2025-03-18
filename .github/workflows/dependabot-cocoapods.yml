@@ -1,0 +1,58 @@
+name: Update Cocoapods Dependencies after Dependabot package upgrade
+on:
+  push:
+    branches:
+      - dependabot/npm_and_yarn/**
+  pull_request:
+    branches:
+      - dependabot/npm_and_yarn/**
+
+jobs:
+  run:
+    name: Run pod install
+    runs-on: macos-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        id: node_modules-cache
+        with:
+          path: |
+            **/node_modules
+            key: NM-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            NM-
+      - uses: actions/setup-node@v1
+        with:
+            node-version-file: .nvmrc
+            check-latest: true
+            cache: 'npm'
+
+      - name: Install Packages
+        run: npm ci
+
+      - name: Cache pods
+        uses: actions/cache@v1
+        with:
+          path: ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Install Cocoapods Packages
+        run: pushd ios && pod install --verbose && popd
+
+      - name: Generate Commit Message
+        id: generate_commit_message
+        # eg: ⬆️ Bump Cocoapods Packages for apple-signin-auth-1.4.0
+        run: |
+          branch=${GITHUB_REF#refs/heads/}
+          # add `[dependabot skip]` prefix so Dependabot force pushes any rebases over our changes triggering the action again
+          commit_message="[dependabot skip] :arrow_up: Bump Cocoapods Packages for${branch//dependabot\/npm_and_yarn\// }"
+          echo ::set-output name=commit_message::$commit_message
+
+      - uses: stefanzweifel/git-auto-commit-action@v4.1.1
+        with:
+          branch: ${{ github.head_ref }}
+          commit_message: ${{ steps.generate_commit_message.outputs.commit_message }}
