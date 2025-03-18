@@ -20,7 +20,7 @@ jobs:
         with:
           path: |
             **/node_modules
-            key: NM-${{ hashFiles('**/package-lock.json') }}
+          key: NM-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             NM-
       - uses: actions/setup-node@v1
