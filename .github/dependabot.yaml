@@ -29,3 +29,37 @@ updates:
       labels:
           - 'npm'
           - 'dependencies'
+    - package-ecosystem: 'ruby'
+      directory: '/ios'
+      reviewers:
+       - "bartdelange"
+      schedule:
+          interval: 'weekly'
+      groups:
+          version-updates:
+              applies-to: version-updates
+          security-updates:
+              applies-to: security-updates
+      commit-message:
+          prefix: 'chore(IOS Ruby Dependency Updates): '
+      labels:
+          - 'ios'
+          - 'ruby'
+          - 'dependencies'
+    - package-ecosystem: 'ruby'
+      directory: '/android'
+      reviewers:
+       - "bartdelange"
+      schedule:
+          interval: 'weekly'
+      groups:
+          version-updates:
+              applies-to: version-updates
+          security-updates:
+              applies-to: security-updates
+      commit-message:
+          prefix: 'chore(Android Ruby Dependency Updates): '
+      labels:
+          - 'android'
+          - 'ruby'
+          - 'dependencies'
