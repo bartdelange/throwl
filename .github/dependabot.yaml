@@ -2,6 +2,8 @@ version: 2
 updates:
     - package-ecosystem: 'npm'
       directory: '/'
+      reviewers:
+       - @bartdelange
       schedule:
           interval: 'weekly'
       groups:
