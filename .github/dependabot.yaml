@@ -1,6 +1,22 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "daily"
+    - package-ecosystem: 'npm'
+      directory: '/'
+      schedule:
+          interval: 'weekly'
+      groups:
+          version-updates:
+              applies-to: version-updates
+              update-types:
+                  - 'minor'
+                  - 'patch'
+          security-updates:
+              applies-to: security-updates
+              update-types:
+                  - 'minor'
+                  - 'patch'
+      commit-message:
+          prefix: 'chore(NPM Dependency Updates): '
+      labels:
+          - 'npm'
+          - 'dependencies'
