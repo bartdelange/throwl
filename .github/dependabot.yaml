@@ -7,8 +7,15 @@ updates:
       schedule:
           interval: 'weekly'
       groups:
-          version-updates:
+          production-version-updates:
               applies-to: version-updates
+              dependency-type: "development"
+              update-types:
+                  - 'minor'
+                  - 'patch'
+          development-version-updates:
+              applies-to: version-updates
+              dependency-type: "development"
               update-types:
                   - 'minor'
                   - 'patch'
