@@ -23,7 +23,7 @@ jobs:
           key: NM-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             NM-
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v4
         with:
             node-version-file: .nvmrc
             check-latest: true
