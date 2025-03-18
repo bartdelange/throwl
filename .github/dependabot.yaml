@@ -22,7 +22,7 @@ updates:
       labels:
           - 'npm'
           - 'dependencies'
-    - package-ecosystem: 'ruby'
+    - package-ecosystem: 'bundler'
       directory: '/ios'
       reviewers:
        - "bartdelange"
@@ -39,7 +39,7 @@ updates:
           - 'ios'
           - 'ruby'
           - 'dependencies'
-    - package-ecosystem: 'ruby'
+    - package-ecosystem: 'bundler'
       directory: '/android'
       reviewers:
        - "bartdelange"
