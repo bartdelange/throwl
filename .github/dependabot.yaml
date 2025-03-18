@@ -3,7 +3,7 @@ updates:
     - package-ecosystem: 'npm'
       directory: '/'
       reviewers:
-       - @bartdelange
+       - "bartdelange"
       schedule:
           interval: 'weekly'
       groups:
