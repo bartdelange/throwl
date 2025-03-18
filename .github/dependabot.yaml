@@ -27,12 +27,18 @@ updates:
       reviewers:
        - "bartdelange"
       schedule:
-          interval: 'weekly'
+          interval: 'weekly
       groups:
           version-updates:
               applies-to: version-updates
+              update-types:
+                  - "minor"
+                  - "patch"
           security-updates:
               applies-to: security-updates
+              update-types:
+                  - "minor"
+                  - "patch"
       commit-message:
           prefix: 'chore(IOS Ruby Dependency Updates): '
       labels:
@@ -48,8 +54,14 @@ updates:
       groups:
           version-updates:
               applies-to: version-updates
+              update-types:
+                  - "minor"
+                  - "patch"
           security-updates:
               applies-to: security-updates
+              update-types:
+                  - "minor"
+                  - "patch"
       commit-message:
           prefix: 'chore(Android Ruby Dependency Updates): '
       labels:
