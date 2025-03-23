@@ -13,24 +13,14 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v2
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        id: node_modules-cache
-        with:
-          path: |
-            **/node_modules
-          key: NM-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            NM-
-      - uses: actions/setup-node@v4
-        with:
-            node-version-file: .nvmrc
-            check-latest: true
-            cache: 'npm'
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Install Packages
-        run: npm ci
+      - name: Setup directory and install required packages
+        uses: ./.github/actions/reusable-setup/
+        with:
+          os: ubuntu-latest
+          bundle: false
 
       - name: Cache pods
         uses: actions/cache@v4
