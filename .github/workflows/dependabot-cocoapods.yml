@@ -25,9 +25,9 @@ jobs:
             NM-
       - uses: actions/setup-node@v1
         with:
-            node-version-file: .nvmrc
-            check-latest: true
-            cache: 'npm'
+          node-version-file: .nvmrc
+          check-latest: true
+          cache: 'npm'
 
       - name: Install Packages
         run: npm ci
