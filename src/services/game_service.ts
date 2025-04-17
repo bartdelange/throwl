@@ -32,14 +32,11 @@ export class GameService extends FirebaseService {
         );
 
         if (afterDocumentId) {
-            q = query(
-                gamesCollection,
-                startAfter(doc(gamesCollection, afterDocumentId))
-            );
+            q = query(q, startAfter(doc(gamesCollection, afterDocumentId)));
         }
 
         if (take && take > 0) {
-            q = query(gamesCollection, limit(take));
+            q = query(q, limit(take));
         }
 
         const data = await getDocs(q);
