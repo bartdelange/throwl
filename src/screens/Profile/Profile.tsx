@@ -6,7 +6,11 @@ import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
 import { makeStyles } from './styles';
 import { UserService } from '~/services/user_service';
 import { FormInput } from '~/components/FormInput/FormInput';
-import auth from '@react-native-firebase/auth';
+import {
+    EmailAuthProvider,
+    getAuth,
+    signOut,
+} from '@react-native-firebase/auth';
 import isEmail from 'validator/es/lib/isEmail';
 import { useNavigation } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -21,12 +25,10 @@ export const ProfileScreen = () => {
         useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const { user } = React.useContext(AuthContext);
     if (!user) {
-        auth()
-            .signOut()
-            .finally(() => {
-                navigator.popToTop();
-                navigator.replace(UNAUTHENTICATED_SCREEN);
-            });
+        signOut(getAuth()).finally(() => {
+            navigator.popToTop();
+            navigator.replace(UNAUTHENTICATED_SCREEN);
+        });
         return <View />;
     }
     const [working, setWorking] = React.useState(false);
@@ -44,12 +46,12 @@ export const ProfileScreen = () => {
     const { colors } = useAppTheme();
 
     const reauthenticate = async (currentPassword: string) => {
-        const firebaseUser = auth().currentUser;
+        const firebaseUser = getAuth().currentUser;
         if (!firebaseUser || !firebaseUser.email) {
             return false;
         }
 
-        const cred = auth.EmailAuthProvider.credential(
+        const cred = EmailAuthProvider.credential(
             firebaseUser.email,
             currentPassword
         );
@@ -63,7 +65,7 @@ export const ProfileScreen = () => {
 
     const updateImportantUserData = async () => {
         setWorking(true);
-        const firebaseUser = auth().currentUser;
+        const firebaseUser = getAuth().currentUser;
         if (!firebaseUser) return;
         if (!(await reauthenticate(currentPassword))) {
             setError(
