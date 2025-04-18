@@ -1,5 +1,5 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React from 'react';
+import React, { JSX } from 'react';
 import { Animated, Dimensions, View } from 'react-native';
 import { Divider, IconButton } from 'react-native-paper';
 import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';

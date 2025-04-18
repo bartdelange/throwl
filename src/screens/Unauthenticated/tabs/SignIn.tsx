@@ -15,7 +15,7 @@ import { RootStackParamList } from '~/constants/navigation';
 import { AuthContext } from '~/context/AuthContext';
 import { FormInput } from '~/components/FormInput/FormInput.tsx';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import auth from '@react-native-firebase/auth';
+import { getAuth, sendPasswordResetEmail } from '@react-native-firebase/auth';
 import { Loader } from '~/components/Loader/Loader';
 import { useAppTheme } from '~/App/theming.tsx';
 
@@ -74,7 +74,7 @@ export const SignInTab = () => {
             return setError('Please enter an email');
         }
         try {
-            await auth().sendPasswordResetEmail(email);
+            await sendPasswordResetEmail(getAuth(), email);
             setStatus(
                 "An email has been send to the provided address if it's known to us"
             );

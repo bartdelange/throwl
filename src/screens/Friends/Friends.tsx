@@ -11,7 +11,7 @@ import { LogoButton } from '~/components/LogoButton/LogoButton';
 import { useNavigation } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList, UNAUTHENTICATED_SCREEN } from '#/navigation';
-import auth from '@react-native-firebase/auth';
+import { getAuth, signOut } from '@react-native-firebase/auth';
 import { AppModal } from '~/components/AppModal/AppModal';
 import { Loader } from '~/components/Loader/Loader';
 import { Friend } from '~/models/user';
@@ -22,12 +22,10 @@ export const FriendsScreen = () => {
         useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const { user } = React.useContext(AuthContext);
     if (!user) {
-        auth()
-            .signOut()
-            .finally(() => {
-                navigator.popToTop();
-                navigator.replace(UNAUTHENTICATED_SCREEN);
-            });
+        signOut(getAuth()).finally(() => {
+            navigator.popToTop();
+            navigator.replace(UNAUTHENTICATED_SCREEN);
+        });
         return <View />;
     }
 
