@@ -1,40 +1,50 @@
-import firestore from '@react-native-firebase/firestore';
+import {
+    query,
+    where,
+    doc,
+    getDocs,
+    limit,
+    startAfter,
+    orderBy,
+    addDoc,
+    getDoc,
+    updateDoc,
+    deleteDoc,
+} from '@react-native-firebase/firestore';
 import { Game } from '~/models/game';
 import { Turn } from '~/models/turn';
 import { GuestUser, User } from '~/models/user';
 import { UserService } from '~/services/user_service';
+import { FirebaseService } from '~/services/firebase_service.ts';
 
-export class GameService {
+export class GameService extends FirebaseService {
     public static async getOwnGames(
         userId: string,
-        limit?: number,
+        take?: number,
         afterDocumentId?: string
     ) {
-        let query = firestore()
-            .collection('games')
-            .where(
-                'players',
-                'array-contains',
-                firestore().collection('users').doc(userId)
-            )
-            .orderBy('started', 'desc');
+        const gamesCollection = this.getCollection('games');
+        const usersCollection = this.getCollection('users');
+        let q = query(
+            gamesCollection,
+            where('players', 'array-contains', doc(usersCollection, userId)),
+            orderBy('started', 'desc')
+        );
 
         if (afterDocumentId) {
-            query = query.startAfter(
-                await firestore().collection('games').doc(afterDocumentId).get()
-            );
+            q = query(q, startAfter(doc(gamesCollection, afterDocumentId)));
         }
 
-        if (limit && limit > 0) {
-            query = query.limit(limit);
+        if (take && take > 0) {
+            q = query(q, limit(take));
         }
 
-        const data = await query.get();
+        const data = await getDocs(q);
         const games: Promise<Game>[] = [];
         for (const documentSnapshot of data.docs) {
             games.push(
                 new Promise<Game>(async resolve => {
-                    const gameData = (await documentSnapshot.data()) as Omit<
+                    const gameData = documentSnapshot.data() as Omit<
                         Game,
                         'id'
                     >;
@@ -65,33 +75,34 @@ export class GameService {
         started: Date,
         startingScore: number
     ): Promise<Game> {
-        const newGame = await firestore()
-            .collection('games')
-            .add({
-                players: players.map(u => {
-                    if (u.type === 'user') {
-                        return firestore().collection('users').doc(u.id);
-                    }
+        const gamesCollection = this.getCollection('games');
+        const usersCollection = this.getCollection('users');
 
-                    return u.name;
-                }),
-                turns: turns.length
-                    ? turns.map(t => ({
-                          ...t,
-                          userId: firestore().collection('users').doc(t.userId),
-                      }))
-                    : [],
-                started,
-                finished: null,
-                startingScore,
-            });
+        const newGame = await addDoc(gamesCollection, {
+            players: players.map(u => {
+                if (u.type === 'user') {
+                    return doc(usersCollection, u.id);
+                }
+
+                return u.name;
+            }),
+            turns: turns.length
+                ? turns.map(t => ({
+                      ...t,
+                      userId: doc(usersCollection, t.userId),
+                  }))
+                : [],
+            started,
+            finished: null,
+            startingScore,
+        });
         return await this.getById(newGame.id);
     }
 
     public static async getById(uid: string): Promise<Game> {
-        const gameDoc = await firestore().collection('games').doc(uid).get();
+        const gameDocData = await getDoc(doc(this.getCollection('games'), uid));
 
-        return this.parseGame(uid, gameDoc.data());
+        return this.parseGame(uid, gameDocData.data());
     }
 
     public static async update(
@@ -101,31 +112,31 @@ export class GameService {
         startingScore: number,
         finished?: Date
     ): Promise<Game> {
-        await firestore()
-            .collection('games')
-            .doc(uid)
-            .update({
-                players: players.map(u => {
-                    if (u.type === 'user') {
-                        return firestore().collection('users').doc(u.id);
-                    }
+        const gamesCollection = this.getCollection('games');
+        const usersCollection = this.getCollection('users');
 
-                    return u.name;
-                }),
-                turns: turns.length
-                    ? turns.map(t => ({
-                          ...t,
-                          userId: firestore().collection('users').doc(t.userId),
-                      }))
-                    : [],
-                startingScore,
-                finished: finished || null,
-            });
+        await updateDoc(doc(gamesCollection, uid), {
+            players: players.map(u => {
+                if (u.type === 'user') {
+                    return doc(usersCollection, u.id);
+                }
+
+                return u.name;
+            }),
+            turns: turns.length
+                ? turns.map(t => ({
+                      ...t,
+                      userId: doc(usersCollection, t.userId),
+                  }))
+                : [],
+            startingScore,
+            finished: finished || null,
+        });
         return await this.getById(uid);
     }
 
     public static async delete(uid: string): Promise<boolean> {
-        await firestore().collection('games').doc(uid).delete();
+        await deleteDoc(doc(this.getCollection('games'), uid));
         return true;
     }
 
