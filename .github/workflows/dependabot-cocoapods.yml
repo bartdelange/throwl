@@ -31,7 +31,7 @@ jobs:
             ${{ runner.os }}-pods-
 
       - name: Install Cocoapods Packages
-        run: pushd ios && pod install --verbose && popd
+        run: pushd ios && pod update && pod install --verbose --repo-update && popd
 
       - name: Generate Commit Message
         id: generate_commit_message
