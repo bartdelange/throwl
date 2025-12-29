@@ -32,7 +32,7 @@ runs:
     - name: Install npm dependencies
       shell: bash
       if: steps.node_modules-cache.outputs.cache-hit != 'true'
-      run: npm ci
+      run: yarn install --frozen-lockfile
 
     - name: Use Ruby v3.3.6
       uses: ruby/setup-ruby@v1
