@@ -48,7 +48,7 @@
     "react-native-paper": "^5.14.5",
     "react-native-progress": "^5.0.1",
     "react-native-reanimated": "^4.2.1",
-    "react-native-responsive-linechart": "github:bartdelange/react-native-responsive-linechart",
+    "react-native-responsive-linechart": "https://github.com/bartdelange/react-native-responsive-linechart.git",
     "react-native-safe-area-context": "^5.6.2",
     "react-native-screens": "^4.19.0",
     "react-native-svg": "^15.15.1",
