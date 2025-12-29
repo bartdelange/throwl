@@ -8457,9 +8457,9 @@ react-native-reanimated@^4.2.1:
     react-native-is-edge-to-edge "1.2.1"
     semver "7.7.3"
 
-"react-native-responsive-linechart@github:bartdelange/react-native-responsive-linechart":
+"react-native-responsive-linechart@https://github.com/bartdelange/react-native-responsive-linechart.git":
   version "5.7.1"
-  resolved "git+ssh://git@github.com/bartdelange/react-native-responsive-linechart.git#5d03ca1db25649193464ec5fd819f54445c5b30e"
+  resolved "https://github.com/bartdelange/react-native-responsive-linechart.git#5d03ca1db25649193464ec5fd819f54445c5b30e"
   dependencies:
     "@yr/monotone-cubic-spline" "^1.0.3"
     deepmerge "^4.3.1"
