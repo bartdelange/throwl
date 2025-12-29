@@ -8,33 +8,31 @@ import { useNavigation, useRoute } from '@react-navigation/core';
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect } from 'react';
-import {
-    Dimensions,
-    FlatList,
-    Pressable,
-    SafeAreaView,
-    View,
-} from 'react-native';
+import { Dimensions, FlatList, Pressable, View } from 'react-native';
 import Confetti from 'react-native-confetti';
-import { Col, Grid, Row } from 'react-native-easy-grid';
 import { Appbar, IconButton, Text } from 'react-native-paper';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import KeepAwake from 'react-native-keep-awake';
+import {
+    SafeAreaView,
+    useSafeAreaInsets,
+} from 'react-native-safe-area-context';
+import {
+    activateKeepAwake,
+    deactivateKeepAwake,
+} from '@sayem314/react-native-keep-awake';
 import Tts from 'react-native-tts';
 import { useAppTheme } from '~/App/theming.tsx';
 
-import { AppLogoArrowLight } from '~/components/AppLogo';
 import { AppModal } from '~/components/AppModal/AppModal';
 import { ClickableDartboard } from '~/components/ClickableDartboard/ClickableDartboard';
-import { SwipeActions } from '~/components/Swipeable/SwipeActions';
 import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
 import { ScoreHelper } from '~/lib/score_helper';
 import { DartboardScoreType, Throw } from '~/models/throw';
 import { Turn } from '~/models/turn';
-import { User, GuestUser } from '~/models/user';
 import { GameService } from '~/services/game_service';
 import { makeStyles } from './styles';
 import { DartFinishers } from '#/dart-finishers.ts';
+import { TurnIndicatorBar } from '~/screens/PlayGame/components/TurnIndicatorBar/TurnIndicatorBar.tsx';
+import { ScoreTable } from '~/screens/PlayGame/components/ScoreTable/ScoreTable.tsx';
 
 export const PlayGameScreen: React.FC<any> = () => {
     const navigator =
@@ -75,9 +73,9 @@ export const PlayGameScreen: React.FC<any> = () => {
 
     // Wake lock
     useEffect(() => {
-        KeepAwake.activate();
+        activateKeepAwake();
         return () => {
-            KeepAwake.deactivate();
+            deactivateKeepAwake();
         };
     });
 
@@ -354,233 +352,30 @@ export const PlayGameScreen: React.FC<any> = () => {
                                 y: evt.nativeEvent.pageY,
                             }
                         )
-                    }>
+                    }
+                >
                     <View style={styles.dartboardWrapper}>
                         <Text style={styles.missText}>MISS</Text>
                         <ClickableDartboard onClick={onThrow} />
                     </View>
                 </Pressable>
                 <SafeAreaView style={styles.scoreWrapper}>
-                    <View style={styles.currentTurnScoreContainer}>
-                        {[0, 1, 2].map(thrw => (
-                            <View
-                                style={styles.currentThrowContainer}
-                                key={thrw}>
-                                <Text style={styles.currentThrowNumberText}>
-                                    {thrw + 1}
-                                </Text>
-                                <Text
-                                    style={
-                                        styles.currentThrowNumberTextSuperScript
-                                    }>
-                                    st
-                                </Text>
-                                <Text style={styles.currentThrowScoreText}>
-                                    {ScoreHelper.createScoreString(
-                                        currentTurn.throws[thrw]
-                                    )}
-                                </Text>
-
-                                {turnNeeded[thrw] && (
-                                    <Text style={styles.neededScoreText}>
-                                        [
-                                        {ScoreHelper.createScoreString(
-                                            turnNeeded[thrw]
-                                        )}
-                                        ]
-                                    </Text>
-                                )}
-                            </View>
-                        ))}
-                        <IconButton
-                            icon="restore"
-                            size={iconSize}
-                            iconColor={colors.primary}
-                            onPress={undoThrow}
-                            rippleColor="rgba(255, 255, 255, .95)"
-                            style={[
-                                styles.undoButton,
-                                {
-                                    paddingRight: iconSize * 0.067,
-                                },
-                            ]}
-                        />
-                    </View>
-                    <Grid style={styles.scoreTable}>
-                        <Row style={styles.scoreTableHead}>
-                            <Col style={styles.scoreTableCol} size={2}>
-                                <Text
-                                    style={[
-                                        styles.scoreTableCell,
-                                        styles.scoreTableBoldCell,
-                                    ]}>
-                                    Name
-                                </Text>
-                            </Col>
-                            <Col style={styles.scoreTableCol} size={1}>
-                                <Text
-                                    style={[
-                                        styles.scoreTableCell,
-                                        styles.scoreTableCenterCell,
-                                    ]}>
-                                    Darts
-                                </Text>
-                            </Col>
-                            <Col style={styles.scoreTableCol} size={1}>
-                                <Text
-                                    style={[
-                                        styles.scoreTableCell,
-                                        styles.scoreTableCenterCell,
-                                    ]}>
-                                    Last
-                                </Text>
-                            </Col>
-                            <Col style={styles.scoreTableCol} size={1}>
-                                <Text
-                                    style={[
-                                        styles.scoreTableCell,
-                                        styles.scoreTableCenterCell,
-                                    ]}>
-                                    Avg
-                                </Text>
-                            </Col>
-                            <Col style={styles.scoreTableCol} size={1.5}>
-                                <Text
-                                    style={[
-                                        styles.scoreTableCell,
-                                        styles.scoreTableCenterCell,
-                                    ]}>
-                                    Valid Avg
-                                </Text>
-                            </Col>
-                            <Col style={styles.scoreTableCol} size={1}>
-                                <Text
-                                    style={[
-                                        styles.scoreTableCell,
-                                        styles.scoreTableBoldCell,
-                                        styles.scoreTableCenterCell,
-                                    ]}>
-                                    Score
-                                </Text>
-                            </Col>
-                        </Row>
-                        <FlatList<User | GuestUser>
-                            onScrollToIndexFailed={() => {}}
-                            ref={scoreTableRef}
-                            data={route.params.players}
-                            style={{
-                                width: '95%',
-                            }}
-                            renderItem={({ item: user, index }) => {
-                                const parsedUser = GameService.stubPlayer(user);
-                                const userScore =
-                                    ScoreHelper.calculateScoreStatsForUser(
-                                        turns.filter(
-                                            t => t.userId === parsedUser.id
-                                        ),
-                                        route.params.startingScore,
-                                        activeUserIndex === index
-                                            ? currentTurn
-                                            : undefined
-                                    );
-                                return (
-                                    <SwipeActions
-                                        bounce={index === 0}
-                                        key={parsedUser.id}
-                                        rightActions={[
-                                            {
-                                                icon: 'delete',
-                                                onPress: () =>
-                                                    setDroppingOutUserIndex(
-                                                        index
-                                                    ),
-                                            },
-                                        ]}>
-                                        <Row style={styles.scoreTableRow}>
-                                            {activeUserIndex === index && (
-                                                <View
-                                                    style={
-                                                        styles.activeUserIcon
-                                                    }>
-                                                    <AppLogoArrowLight
-                                                        width={width * 0.02}
-                                                    />
-                                                </View>
-                                            )}
-                                            <Col
-                                                style={styles.scoreTableCol}
-                                                size={2}>
-                                                <Text
-                                                    numberOfLines={1}
-                                                    style={[
-                                                        styles.scoreTableCell,
-                                                        styles.scoreTableBoldCell,
-                                                    ]}>
-                                                    {parsedUser.name}
-                                                </Text>
-                                            </Col>
-                                            <Col
-                                                style={styles.scoreTableCol}
-                                                size={1}>
-                                                <Text
-                                                    style={[
-                                                        styles.scoreTableCell,
-                                                        styles.scoreTableCenterCell,
-                                                    ]}>
-                                                    {userScore.throws}
-                                                </Text>
-                                            </Col>
-                                            <Col
-                                                style={styles.scoreTableCol}
-                                                size={1}>
-                                                <Text
-                                                    style={[
-                                                        styles.scoreTableCell,
-                                                        styles.scoreTableCenterCell,
-                                                    ]}>
-                                                    {userScore.last}
-                                                </Text>
-                                            </Col>
-                                            <Col
-                                                style={styles.scoreTableCol}
-                                                size={1}>
-                                                <Text
-                                                    style={[
-                                                        styles.scoreTableCell,
-                                                        styles.scoreTableCenterCell,
-                                                    ]}>
-                                                    {userScore.avg}
-                                                </Text>
-                                            </Col>
-                                            <Col
-                                                style={styles.scoreTableCol}
-                                                size={1.5}>
-                                                <Text
-                                                    style={[
-                                                        styles.scoreTableCell,
-                                                        styles.scoreTableCenterCell,
-                                                    ]}>
-                                                    {userScore.validAvg}
-                                                </Text>
-                                            </Col>
-                                            <Col
-                                                style={styles.scoreTableCol}
-                                                size={1}>
-                                                <Text
-                                                    style={[
-                                                        styles.scoreTableCell,
-                                                        styles.scoreTableBoldCell,
-                                                        styles.scoreTableCenterCell,
-                                                    ]}>
-                                                    {userScore.score}
-                                                </Text>
-                                            </Col>
-                                        </Row>
-                                    </SwipeActions>
-                                );
-                            }}
-                        />
-                    </Grid>
+                    <TurnIndicatorBar
+                        currentTurn={currentTurn}
+                        turnNeeded={turnNeeded}
+                        iconSize={iconSize}
+                        undoThrow={undoThrow}
+                    />
+                    <ScoreTable
+                        turns={turns}
+                        activeUserIndex={activeUserIndex}
+                        scoreTableRef={scoreTableRef}
+                        players={route.params.players}
+                        startingScore={route.params.startingScore}
+                        currentTurn={currentTurn}
+                        width={width}
+                        setDroppingOutUserIndex={setDroppingOutUserIndex}
+                    />
                 </SafeAreaView>
             </View>
             <Confetti timeout={5} size={2} ref={confettiRef} untilStopped />
@@ -602,7 +397,8 @@ export const PlayGameScreen: React.FC<any> = () => {
                         style={{
                             flexDirection: 'row',
                             justifyContent: 'center',
-                        }}>
+                        }}
+                    >
                         <IconButton
                             icon="logout-variant"
                             size={iconSize * 1.5}
@@ -668,7 +464,8 @@ export const PlayGameScreen: React.FC<any> = () => {
                         style={{
                             flexDirection: 'row',
                             justifyContent: 'center',
-                        }}>
+                        }}
+                    >
                         <IconButton
                             icon="check"
                             size={iconSize * 1.5}
