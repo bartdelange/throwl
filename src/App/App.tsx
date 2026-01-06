@@ -8,18 +8,22 @@ import { Preloader } from '~/components/Preloader/Preloader';
 
 import { AuthProvider } from '~/context/AuthContext';
 import { Router } from './Router';
-import { LogBox } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { navigationTheme, paperTheme } from './theming';
 
-LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']);
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: paperTheme.colors.background },
+  gestureHandlerRootView: { flex: 1 },
+});
+
 export default function App() {
   useEffect(() => {
     RNBootSplash.hide({ fade: true });
   }, []);
 
   return (
-    <SafeAreaProvider style={{ flex: 1, backgroundColor: paperTheme.colors.background }}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
+    <SafeAreaProvider style={styles.container}>
+      <GestureHandlerRootView style={styles.gestureHandlerRootView}>
         <PaperProvider theme={paperTheme}>
           <NavigationContainer theme={navigationTheme}>
             <AuthProvider>

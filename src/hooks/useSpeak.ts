@@ -32,6 +32,7 @@ export const useSpeak = (opts?: { language?: string; rate?: number }) => {
         // @ts-expect-error options are version-dependent
         Tts.speak(words, { rate });
       } catch (err) {
+        // eslint-disable-next-line no-console
         console.error('speaking error', err);
       }
     },

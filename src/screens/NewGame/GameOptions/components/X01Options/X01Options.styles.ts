@@ -27,23 +27,23 @@ export const useStyles = () => {
           justifyContent: 'center',
           flexDirection: 'column',
           height: Math.max(height * 0.06, 50),
-          borderColor: colors.onPrimary,
+          borderColor: colors.onBackground,
         },
         scorePreviewWrapper: {
           flex: 2.4,
         },
         scoreRemoveButton: {
           textAlign: 'center',
-          color: colors.onPrimary,
+          color: colors.onBackground,
           fontSize: Math.max(width * 0.05, 24),
         },
         scoreButtonText: {
           textAlign: 'center',
           includeFontPadding: false,
-          color: colors.onPrimary,
+          color: colors.onBackground,
           fontSize: Math.max(width * 0.05, 24),
         },
       }),
-    [height, colors.onPrimary, width],
+    [height, colors.onBackground, width],
   );
 };

@@ -27,7 +27,7 @@ export const useStyles = () => {
         },
         player: {
           paddingVertical: 5,
-          color: colors.onPrimary,
+          color: colors.onBackground,
           ...Platform.select({
             default: {
               fontWeight: 'bold',
@@ -56,6 +56,6 @@ export const useStyles = () => {
           alignSelf: 'center',
         },
       }),
-    [colors.onPrimary],
+    [colors.onBackground],
   );
 };

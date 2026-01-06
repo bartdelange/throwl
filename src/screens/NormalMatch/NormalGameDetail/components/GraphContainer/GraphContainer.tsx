@@ -89,10 +89,12 @@ export const GraphContainer: FC<ScoreContainerProps> = ({ turns }) => {
       </View>
       <View style={styles.legend}>
         <View style={styles.legendEntry}>
+          {/* eslint-disable-next-line react-native/no-color-literals,react-native/no-inline-styles */}
           <View style={[styles.legendBall, { backgroundColor: '#03a9f4' }]} />
           <Text style={styles.legendText}>Score</Text>
         </View>
         <View style={styles.legendEntry}>
+          {/* eslint-disable-next-line react-native/no-color-literals,react-native/no-inline-styles */}
           <View style={[styles.legendBall, { backgroundColor: '#8bc34a' }]} />
           <Text style={styles.legendText}>Average</Text>
         </View>

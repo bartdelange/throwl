@@ -64,7 +64,7 @@ export class DoublesGameHelper {
     expectedNext: Throw | undefined,
     opts: DoublesOptions,
   ): { isThrowValid: boolean; reason?: 'out' | 'wrong_target' } {
-    if (thrw.type === DartboardScoreType.Out) return { isThrowValid: false, reason: 'out' };
+    if (thrw.type === DartboardScoreType.Out) return { isThrowValid: true, reason: 'out' };
 
     if (opts.endOnInvalid && expectedNext && !this.sameTarget(thrw, expectedNext)) {
       return { isThrowValid: false, reason: 'wrong_target' };

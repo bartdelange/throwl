@@ -12,7 +12,7 @@ export const useStyles = () => {
       borderRadius: size / 2,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: colors.primary,
+      backgroundColor: colors.background,
     },
   });
 };

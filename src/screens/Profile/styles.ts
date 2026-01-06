@@ -1,53 +1,33 @@
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { useMemo } from 'react';
 
-export const useStyles = () =>
-  StyleSheet.create({
-    layout: {
-      flexDirection: 'column',
-      alignContent: 'center',
-      alignItems: 'center',
-    },
-    content: {
-      paddingHorizontal: '10%',
-      paddingBottom: '5%',
-      height: '100%',
-      flexShrink: 1,
-    },
-    header: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginBottom: '5%',
-      marginTop: '15%',
-    },
-    firstHeader: {
-      marginTop: 0,
-    },
-    heading: {
-      fontSize: 48,
-      flex: 1,
-      marginRight: '25%',
-      includeFontPadding: true,
-      ...Platform.select({
-        default: {
-          fontWeight: 'bold',
+export const useStyles = () => {
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        layout: {
+          // flexDirection: 'column',
+          // alignContent: 'center',
+          // alignItems: 'center',
+          // paddingBottom: '15%',
+          margin: 0,
+          padding: 0,
         },
-        android: {
-          fontFamily: 'Karbon-Bold',
+        content: {
+          margin: 0,
+          padding: 0,
+          paddingHorizontal: '10%',
+          paddingBottom: '5%',
+        },
+        section: {
+          flexGrow: 1,
+          marginBottom: '15%',
+        },
+        input: {
+          alignItems: 'flex-start',
+          marginBottom: '2.5%',
         },
       }),
-    },
-    divider: {
-      height: 3,
-      backgroundColor: 'white',
-      marginBottom: '5%',
-    },
-    section: {
-      flexGrow: 1,
-      paddingVertical: '10%',
-    },
-    input: {
-      alignItems: 'flex-start',
-      marginBottom: '2.5%',
-    },
-  });
+    [],
+  );
+};

@@ -63,18 +63,7 @@ export const UnauthenticatedScreen = () => {
             });
 
           const dividedButtons = buttons.reduce(
-            (r, button) =>
-              r.concat(
-                button,
-                <Divider
-                  key="divider"
-                  style={{
-                    width: Math.max(width * 0.005, 2),
-                    height: '100%',
-                    backgroundColor: 'white',
-                  }}
-                />,
-              ),
+            (r, button) => r.concat(button, <Divider key="divider" style={styles.buttonDivider} />),
             [<></>],
           );
           dividedButtons.shift();

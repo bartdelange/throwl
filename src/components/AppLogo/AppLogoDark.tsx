@@ -2,6 +2,11 @@ import React from 'react';
 import { DimensionValue, View } from 'react-native';
 import Svg, { G, Path } from 'react-native-svg';
 
+const style = ({ width, height }: { width?: DimensionValue; height?: DimensionValue }) => ({
+  aspectRatio: 1,
+  width: width,
+  height: height,
+});
 export const AppLogoDark = ({
   width,
   height,
@@ -10,7 +15,7 @@ export const AppLogoDark = ({
   height?: DimensionValue;
 }) => {
   return (
-    <View style={{ aspectRatio: 1, width: width, height: height }}>
+    <View style={style({ width, height })}>
       <Svg viewBox="0 0 622.98 622.92">
         <G>
           <Path

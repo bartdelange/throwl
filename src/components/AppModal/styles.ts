@@ -1,7 +1,8 @@
-import { Dimensions, Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, useWindowDimensions } from 'react-native';
 import { useAppTheme } from '~/App/theming.tsx';
 
 export const useStyles = () => {
+  const { width, height } = useWindowDimensions();
   const { colors } = useAppTheme();
 
   return StyleSheet.create({
@@ -30,7 +31,7 @@ export const useStyles = () => {
       height: 75,
     },
     icon: {
-      fontSize: Dimensions.get('screen').width * 0.05,
+      fontSize: width * 0.05,
       ...Platform.select({
         default: {
           fontWeight: 'bold',
@@ -44,7 +45,7 @@ export const useStyles = () => {
       marginRight: 15,
     },
     title: {
-      fontSize: Dimensions.get('screen').width * 0.05,
+      fontSize: width * 0.05,
       ...Platform.select({
         default: {
           fontWeight: 'bold',
@@ -88,6 +89,10 @@ export const useStyles = () => {
       alignItems: 'stretch',
       alignSelf: 'stretch',
       flexGrow: 1,
+    },
+    scrollView: {
+      maxHeight: height * 0.5,
+      paddingHorizontal: 10,
     },
   });
 };

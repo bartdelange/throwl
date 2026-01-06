@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android --terminal=iTerm",
+    "ios:env": "node scripts/write-xcode-env.js",
     "ios": "react-native run-ios --terminal=iTerm",
     "start": "react-native start",
     "test": "jest --passWithNoTests",

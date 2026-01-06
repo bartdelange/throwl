@@ -31,7 +31,7 @@ export const useStyles = () => {
     divider: {
       marginTop: 50,
       height: 3,
-      backgroundColor: 'white',
+      backgroundColor: colors.onBackground,
     },
     list: {
       height: '80%',
@@ -39,7 +39,7 @@ export const useStyles = () => {
     },
     listItem: {
       flexDirection: 'row',
-      backgroundColor: colors.primary,
+      backgroundColor: colors.background,
       paddingVertical: height * 0.02,
       paddingHorizontal: width * 0.02,
       alignItems: 'center',

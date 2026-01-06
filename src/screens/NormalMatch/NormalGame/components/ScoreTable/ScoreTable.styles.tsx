@@ -11,25 +11,28 @@ export const useStyles = () => {
     scoreTable: {
       flex: 1,
       width: '100%',
-      backgroundColor: colors.primary,
+      backgroundColor: colors.background,
     },
     scoreTableHead: {
       borderTopWidth: 1,
-      borderTopColor: 'white',
+      borderTopColor: colors.onBackground,
       borderBottomWidth: 1,
-      borderBottomColor: 'white',
+      borderBottomColor: colors.onBackground,
       width: '90%',
       alignSelf: 'center',
       height: textSize * 1.25,
       alignItems: 'center',
       justifyContent: 'center',
     },
+    scoreTablePlayerList: {
+      width: '95%',
+    },
     scoreTableRow: {
       height: textSize * 1.25,
       alignItems: 'center',
       position: 'relative',
       paddingLeft: width * 0.05,
-      backgroundColor: colors.primary,
+      backgroundColor: colors.background,
     },
     scoreTableCol: {
       flexDirection: 'row',

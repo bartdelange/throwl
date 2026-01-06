@@ -17,7 +17,7 @@ export const FullScreenLayout: FC<PropsWithChildren<FullScreenLayoutProps>> = ({
   size = 'safe',
 }: PropsWithChildren<FullScreenLayoutProps>) => {
   const { colors } = useAppTheme();
-  const styles = useStyles();
+  const styles = useStyles(size);
   if (size === 'safe') {
     return (
       <SafeAreaView

@@ -2,6 +2,11 @@ import React from 'react';
 import { DimensionValue, StyleProp, View, ViewStyle } from 'react-native';
 import Svg, { G, Path } from 'react-native-svg';
 
+const computeStyle = ({ width, height }: { width?: DimensionValue; height?: DimensionValue }) => ({
+  aspectRatio: 1,
+  width: width,
+  height: height,
+});
 export const AppLogoLightLoader = ({
   style,
   width,
@@ -12,16 +17,7 @@ export const AppLogoLightLoader = ({
   height?: DimensionValue;
 }) => {
   return (
-    <View
-      style={[
-        style,
-        {
-          aspectRatio: 1,
-          width: width,
-          height: height,
-        },
-      ]}
-    >
+    <View style={[style, computeStyle({ width, height })]}>
       <Svg
         viewBox="0 0 650 650"
         fillRule="evenodd"

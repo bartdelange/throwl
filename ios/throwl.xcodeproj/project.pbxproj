@@ -298,7 +298,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\n\n# Load nvm\nif [ -s \"$HOME/.nvm/nvm.sh\" ]; then\n  . \"$HOME/.nvm/nvm.sh\"\nelif [ -x \"$(command -v brew)\" ] && [ -s \"$(brew --prefix nvm)/nvm.sh\" ]; then\n  . \"$(brew --prefix nvm)/nvm.sh\"\nfi\n\n# Use Node version from repo root .nvmrc (one level above ios/)\nROOT_NVMRC=\"$PROJECT_DIR/../.nvmrc\"\n\nif command -v nvm >/dev/null 2>&1 && [ -f \"$ROOT_NVMRC\" ]; then\n  NODE_VER=\"$(cat \"$ROOT_NVMRC\" | tr -d ' \\t\\r\\n')\"\n  nvm use --silent \"$NODE_VER\" >/dev/null 2>&1 || nvm install \"$NODE_VER\"\nelse\n  echo \"warning: nvm or $ROOT_NVMRC not found; using whatever 'node' is on PATH\"\nfi\n\nexport NODE_BINARY=\"$(command -v node)\"\n\necho \"=== RN bundle node ===\"\necho \"cwd=$(pwd)\"\necho \"NODE_BINARY=$NODE_BINARY\"\n\"$NODE_BINARY\" -v || true\necho \"======================\"\n\n# Only keep if you truly need it\n# export NODE_OPTIONS=--openssl-legacy-provider\n\n\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n";
+			shellScript = "set -e\n\nexport NODE_BINARY=\"${NODE_BINARY:-node}\"\n\n\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n";
 		};
 		043B46729677131DA4D10A70 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
