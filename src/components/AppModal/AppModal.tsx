@@ -1,5 +1,5 @@
 import React, { FC, ReactNode } from 'react';
-import { Dimensions, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { IconButton, Modal, Portal, Surface, Text } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useStyles } from './styles';
@@ -57,14 +57,7 @@ export const AppModal: FC<AppModalProps> = ({
               <Text style={styles.subTitle}>{subTitle}</Text>
             </View>
           )}
-          <ScrollView
-            alwaysBounceVertical={false}
-            nestedScrollEnabled
-            style={{
-              maxHeight: Dimensions.get('window').height * 0.5,
-              paddingHorizontal: 10,
-            }}
-          >
+          <ScrollView alwaysBounceVertical={false} nestedScrollEnabled style={styles.scrollView}>
             {customContent && <View style={styles.customContentWrapper}>{customContent}</View>}
           </ScrollView>
           {actions && <View style={styles.actionsWrapper}>{actions}</View>}

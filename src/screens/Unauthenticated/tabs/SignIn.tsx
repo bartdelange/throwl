@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useRef, useState } from 'react';
-import { Dimensions, Platform, StyleSheet, TextInput, View } from 'react-native';
+import { TextInput, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { AppModal } from '~/components/AppModal/AppModal';
 import { LogoButton } from '~/components/LogoButton/LogoButton';
@@ -13,6 +13,7 @@ import { getAuth, sendPasswordResetEmail } from '@react-native-firebase/auth';
 import { Loader } from '~/components/Loader/Loader';
 import { useAppTheme } from '~/App/theming.tsx';
 import { getAuthErrorCode } from '~/lib/firebaseAuthError.ts';
+import { useStyles } from '~/screens/Unauthenticated/tabs/SignIn.styles.ts';
 
 const SIGN_IN_MESSAGES: Record<string, string> = {
   'auth/invalid-email': 'Please check your email again, it might be badly formatted',
@@ -32,6 +33,7 @@ export const SignInTab = () => {
   const { login } = useAuthContext();
   const nav = useNavigation<StackNavigationProp<RootStackParamList>>();
   const { colors } = useAppTheme();
+  const styles = useStyles();
 
   const onSubmit = async () => {
     if (!email || !password) {
@@ -119,13 +121,7 @@ export const SignInTab = () => {
           returnKeyType="go"
           onSubmitEditing={onSubmit}
         />
-        <Text
-          style={{
-            color: 'white',
-            textDecorationLine: 'underline',
-          }}
-          onPress={resetPassword}
-        >
+        <Text style={styles.forgotPasswordLink} onPress={resetPassword}>
           Forgot password?
         </Text>
         <LogoButton style={styles.button} label="GO" onPress={onSubmit} />
@@ -134,41 +130,3 @@ export const SignInTab = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  parent: {
-    justifyContent: 'center',
-    alignContent: 'center',
-    alignItems: 'center',
-  },
-  keyboardAwareViewWrapper: {
-    height: '100%',
-  },
-  content: {
-    paddingHorizontal:
-      (Dimensions.get('window').width - Math.min(Dimensions.get('window').width * 0.9, 500)) / 2,
-    paddingTop: '15%',
-    justifyContent: 'center',
-    alignContent: 'center',
-    alignItems: 'center',
-  },
-  heading: {
-    fontSize: Math.max(Dimensions.get('window').width * 0.1, 24),
-    ...Platform.select({
-      default: {
-        fontWeight: 'bold',
-      },
-      android: {
-        fontFamily: 'Karbon-Bold',
-      },
-    }),
-    marginBottom: '10%',
-    color: 'white',
-  },
-  input: {
-    marginBottom: 20,
-  },
-  button: {
-    marginTop: Dimensions.get('window').height * 0.05,
-  },
-});

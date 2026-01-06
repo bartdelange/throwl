@@ -47,6 +47,6 @@ export const Preloader: FC<PropsWithChildren> = ({ children }) => {
       </View>
     </FullScreenLayout>
   ) : (
-    <View style={{ width: '100%', height: '100%' }}>{children}</View>
+    <View style={styles.loadedWrapper}>{children}</View>
   );
 };

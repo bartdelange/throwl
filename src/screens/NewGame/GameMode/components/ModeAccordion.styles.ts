@@ -26,19 +26,19 @@ export const useStyles = () => {
         },
         title: {
           fontSize: Math.max(Dimensions.get('window').width * 0.05, 24),
-          color: colors.onPrimary,
+          color: colors.onBackground,
         },
         itemTitle: {
           fontSize: Math.max(Dimensions.get('window').width * 0.035, 18),
-          color: colors.onPrimary,
+          color: colors.onBackground,
           paddingBottom: 10,
         },
         itemDescription: {
           fontSize: Math.max(Dimensions.get('window').width * 0.02, 12),
-          color: colors.onPrimary,
+          color: colors.onBackground,
         },
         accordionContainer: { marginLeft: -32 },
       }),
-    [colors.onPrimary],
+    [colors.onBackground],
   );
 };

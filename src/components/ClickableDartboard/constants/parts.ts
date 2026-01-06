@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { DartboardScoreType } from '~/models/throw';
 
 interface part {

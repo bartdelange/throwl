@@ -1,5 +1,5 @@
 import { AppModal } from '~/components/AppModal/AppModal.tsx';
-import { Dimensions, View } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { useAppTheme } from '~/App/theming.tsx';
 import { FC } from 'react';
@@ -10,6 +10,13 @@ interface DropOutModelProps {
   playerName: string;
   visible: boolean;
 }
+const styles = StyleSheet.create({
+  actionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+});
+
 export const DropOutModel: FC<DropOutModelProps> = ({
   dropOutUser,
   cancel,
@@ -27,12 +34,7 @@ export const DropOutModel: FC<DropOutModelProps> = ({
       subTitle={`Are you sure you wish to drop out ${playerName}?`}
       visible={visible}
       actions={
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-          }}
-        >
+        <View style={styles.actionContainer}>
           <IconButton
             icon="check"
             size={iconSize * 1.5}

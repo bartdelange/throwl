@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { DartboardScoreType, Throw } from '~/models/throw.ts';
 
 export const DartFinishers: { [key: number]: Throw[] } = {
