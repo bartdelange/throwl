@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Dimensions, Platform, StyleSheet, TextInput, View } from 'react-native';
+import { TextInput, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import isEmail from 'validator/es/lib/isEmail';
@@ -13,6 +13,7 @@ import { FormInput } from '~/components/FormInput/FormInput';
 import { Loader } from '~/components/Loader/Loader';
 import { useAppTheme } from '~/App/theming.tsx';
 import { getAuthErrorCode } from '~/lib/firebaseAuthError.ts';
+import { useStyles } from '~/screens/Unauthenticated/tabs/SignUp.styles.ts';
 
 type SignUpErrorMsg = { error: string; subError?: string };
 
@@ -48,6 +49,7 @@ export const SignUpTab = () => {
   const [modalOpen, setModalOpen] = useState<boolean>();
   const nav = useNavigation<StackNavigationProp<RootStackParamList>>();
   const { colors } = useAppTheme();
+  const styles = useStyles();
 
   const passwordInputRef = useRef<TextInput>(null);
   const confirmPasswordInputRef = useRef<TextInput>(null);
@@ -167,47 +169,3 @@ export const SignUpTab = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  parent: {
-    justifyContent: 'center',
-    alignContent: 'center',
-    alignItems: 'center',
-  },
-  keyboardAwareViewWrapper: {
-    height: '100%',
-  },
-  content: {
-    paddingHorizontal:
-      (Dimensions.get('window').width - Math.min(Dimensions.get('window').width * 0.9, 500)) / 2,
-    marginTop: '15%',
-    justifyContent: 'center',
-    alignContent: 'center',
-    alignItems: 'center',
-  },
-  heading: {
-    fontSize: Math.max(Dimensions.get('window').width * 0.1, 24),
-    ...Platform.select({
-      default: {
-        fontWeight: 'bold',
-      },
-      android: {
-        fontFamily: 'Karbon-Bold',
-      },
-    }),
-    marginBottom: '10%',
-    color: 'white',
-  },
-  subError: {
-    textAlign: 'center',
-    fontSize: 20,
-    color: '#020202',
-    marginBottom: 10,
-  },
-  input: {
-    marginBottom: 20,
-  },
-  button: {
-    marginTop: Dimensions.get('window').height * 0.05,
-  },
-});

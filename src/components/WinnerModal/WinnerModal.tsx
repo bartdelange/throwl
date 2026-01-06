@@ -31,12 +31,7 @@ export const WinnerModal: FC<WinnerModalProps> = ({
       subTitle={winnerName}
       visible={visible}
       actions={
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-          }}
-        >
+        <View style={styles.buttonContainer}>
           <IconButton
             icon="logout-variant"
             size={iconSize * 1.5}
@@ -54,12 +49,7 @@ export const WinnerModal: FC<WinnerModalProps> = ({
             size={iconSize * 1.5}
             iconColor={colors.error}
             onPress={onUndoPress}
-            style={[
-              styles.undoButton,
-              {
-                backgroundColor: 'transparent',
-              },
-            ]}
+            style={[styles.undoButton, styles.transparent]}
           />
         </View>
       }

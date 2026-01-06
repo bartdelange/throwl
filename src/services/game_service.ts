@@ -2,6 +2,7 @@ import {
   addDoc,
   deleteDoc,
   doc,
+  type FirebaseFirestoreTypes,
   getDoc,
   getDocs,
   limit,
@@ -10,7 +11,6 @@ import {
   startAfter,
   updateDoc,
   where,
-  type FirebaseFirestoreTypes,
 } from '@react-native-firebase/firestore';
 
 import { DoublesOptions, Game, GameOptions, X01Options } from '~/models/game';

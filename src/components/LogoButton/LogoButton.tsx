@@ -1,9 +1,16 @@
 import React, { FC } from 'react';
-import { Pressable, PressableProps, StyleProp, View, ViewStyle } from 'react-native';
+import {
+  Platform,
+  Pressable,
+  PressableProps,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
 import { Text } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { AppLogoDark, AppLogoLight } from '../AppLogo';
-import { useStyles } from './styles';
 import { useAppTheme } from '~/App/theming.tsx';
 
 interface LogoButtonProps extends Pick<PressableProps, 'onPress'> {
@@ -15,6 +22,29 @@ interface LogoButtonProps extends Pick<PressableProps, 'onPress'> {
   disabled?: boolean;
 }
 
+const styles = StyleSheet.create({
+  button: {
+    width: 'auto',
+    alignContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  logo: {
+    marginRight: 20,
+  },
+  text: {
+    ...Platform.select({
+      default: {
+        fontWeight: 'bold',
+      },
+      android: {
+        fontFamily: 'Karbon-Bold',
+      },
+    }),
+    marginTop: 5,
+  },
+});
+
 export const LogoButton: FC<LogoButtonProps> = ({
   mode = 'dark',
   label,
@@ -25,7 +55,6 @@ export const LogoButton: FC<LogoButtonProps> = ({
   onPress,
 }: LogoButtonProps) => {
   const theme = useAppTheme();
-  const styles = useStyles();
   return (
     <Pressable
       onPress={disabled ? undefined : onPress}
@@ -49,6 +78,7 @@ export const LogoButton: FC<LogoButtonProps> = ({
       <Text
         style={[
           styles.text,
+          // eslint-disable-next-line react-native/no-color-literals,react-native/no-inline-styles
           {
             fontSize: size / 2,
             color: mode === 'light' ? theme.colors.primary : 'white',

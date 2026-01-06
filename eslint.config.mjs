@@ -13,6 +13,7 @@ export default [
             'ios/**',
             'build/**',
             'dist/**',
+            'scripts/**',
         ],
     },
     js.configs.recommended,

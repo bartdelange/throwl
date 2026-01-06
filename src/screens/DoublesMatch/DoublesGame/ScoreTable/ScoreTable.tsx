@@ -51,9 +51,7 @@ export const ScoreTable: FC<ScoreTableProps> = ({
         onScrollToIndexFailed={() => {}}
         ref={scoreTableRef}
         data={players}
-        style={{
-          width: '95%',
-        }}
+        style={styles.scoreTabelPlayerList}
         renderItem={({ item: user, index }) => {
           const parsedUser = GameService.stubPlayer(user);
           const userScore = GameHelper.calculateDoublesGameScoreStatsForUser(

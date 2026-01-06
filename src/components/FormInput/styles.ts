@@ -31,7 +31,7 @@ export const useStyles = (labelColor?: string) => {
       fontSize: 16,
       borderRadius: 100,
       minWidth: '100%',
-      backgroundColor: colors.onPrimary,
+      backgroundColor: colors.onBackground,
       color: colors.primary,
     },
   });

@@ -7,7 +7,7 @@ export const useStyles = () => {
   return StyleSheet.create({
     player: {
       paddingVertical: 5,
-      color: 'white',
+      color: colors.onBackground,
       ...Platform.select({
         default: {
           fontWeight: 'bold',
@@ -19,7 +19,7 @@ export const useStyles = () => {
       fontSize: Math.max(Dimensions.get('window').width * 0.05, 24),
     },
     iconStyle: {
-      borderColor: 'white',
+      borderColor: colors.onBackground,
       borderRadius: Dimensions.get('window').width * 0.01,
     },
     positionStyle: {
@@ -39,7 +39,7 @@ export const useStyles = () => {
       textAlign: 'center',
       includeFontPadding: false,
       paddingTop: Dimensions.get('window').width * 0.005,
-      color: 'white',
+      color: colors.onBackground,
       fontSize: Math.max(Dimensions.get('window').width * 0.03, 18),
     },
   });

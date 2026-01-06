@@ -32,7 +32,7 @@ export const useStyles = () => {
         },
         tooltip: {
           marginBottom: 10,
-          backgroundColor: colors.primary,
+          backgroundColor: colors.background,
           paddingHorizontal: 6,
           paddingVertical: 4,
           borderRadius: 4,
@@ -43,13 +43,13 @@ export const useStyles = () => {
         },
         tooltipTextHeader: {
           fontSize: 18,
-          color: colors.onPrimary,
+          color: colors.onBackground,
         },
         tooltipText: {
           fontSize: 12,
-          color: colors.onPrimary,
+          color: colors.onBackground,
         },
       }),
-    [colors.onPrimary, colors.primary],
+    [colors.background, colors.onBackground, colors.primary],
   );
 };

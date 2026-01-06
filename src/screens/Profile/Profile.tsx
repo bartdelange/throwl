@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, TextInput, View } from 'react-native';
-import { Divider, Text } from 'react-native-paper';
 import { useAuthContext } from '~/context/AuthContext';
 import { FullScreenLayout } from '~/layouts/FullScreen/FullScreen';
 import { useStyles } from './styles';
@@ -15,6 +14,7 @@ import { LogoButton } from '~/components/LogoButton/LogoButton';
 import { AppModal } from '~/components/AppModal/AppModal';
 import { Loader } from '~/components/Loader/Loader';
 import { useAppTheme } from '~/App/theming.tsx';
+import { AppHeader } from '~/components/AppHeader/AppHeader.tsx';
 
 export const ProfileScreen = () => {
   const navigator = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -130,106 +130,88 @@ export const ProfileScreen = () => {
   };
 
   return (
-    <FullScreenLayout style={styles.layout}>
-      <ScrollView style={styles.content}>
-        <View style={[styles.header, styles.firstHeader]}>
-          <Text
-            numberOfLines={1}
-            allowFontScaling={false}
-            adjustsFontSizeToFit={true}
-            style={styles.heading}
-          >
-            Your profile
-          </Text>
+    <ScrollView>
+      <FullScreenLayout style={styles.layout}>
+        <View style={styles.content}>
+          <AppHeader title="Your profile" />
+          <View style={styles.section}>
+            <FormInput
+              style={styles.input}
+              label="NAME"
+              value={name}
+              onChangeText={setName}
+              returnKeyType="go"
+              onSubmitEditing={updateTrivialUserData}
+            />
+            <LogoButton label="UPDATE" onPress={updateTrivialUserData} />
+          </View>
+          <AppHeader title="Your security information" />
+          <View style={styles.section}>
+            <FormInput
+              style={styles.input}
+              label="CURRENT PASSWORD"
+              value={currentPassword}
+              onChangeText={setCurrentPassword}
+              secureTextEntry
+              textContentType="password"
+              onSubmitEditing={() => {
+                emailInputRef.current?.focus();
+              }}
+              returnKeyType="go"
+            />
+            <FormInput
+              style={styles.input}
+              label="EMAIL"
+              value={email}
+              onChangeText={setEmail}
+              ref={emailInputRef}
+              onSubmitEditing={() => {
+                confirmPasswordInputRef.current?.focus();
+              }}
+              placeholder={'john@doe.com'}
+              returnKeyType="next"
+              keyboardType="email-address"
+              textContentType="emailAddress"
+            />
+            <FormInput
+              style={styles.input}
+              label="NEW PASSWORD"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              textContentType="password"
+              ref={passwordInputRef}
+              onSubmitEditing={() => {
+                confirmPasswordInputRef.current?.focus();
+              }}
+              returnKeyType="next"
+            />
+            <FormInput
+              style={styles.input}
+              label="CONFIRM PASSWORD"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry
+              textContentType="password"
+              ref={confirmPasswordInputRef}
+              onSubmitEditing={updateImportantUserData}
+              returnKeyType="go"
+            />
+            <LogoButton label="UPDATE" onPress={updateImportantUserData} />
+          </View>
         </View>
-        <Divider style={styles.divider} />
-        <View style={styles.section}>
-          <FormInput
-            style={styles.input}
-            label="NAME"
-            value={name}
-            onChangeText={setName}
-            returnKeyType="go"
-            onSubmitEditing={updateTrivialUserData}
-          />
-          <LogoButton label="UPDATE" onPress={updateTrivialUserData} />
-        </View>
-        <View style={styles.header}>
-          <Text
-            numberOfLines={2}
-            allowFontScaling={false}
-            adjustsFontSizeToFit={true}
-            style={styles.heading}
-          >
-            Your security information
-          </Text>
-        </View>
-        <Divider style={styles.divider} />
-        <View style={styles.section}>
-          <FormInput
-            style={styles.input}
-            label="CURRENT PASSWORD"
-            value={currentPassword}
-            onChangeText={setCurrentPassword}
-            secureTextEntry
-            textContentType="password"
-            onSubmitEditing={() => {
-              emailInputRef.current?.focus();
-            }}
-            returnKeyType="go"
-          />
-          <FormInput
-            style={styles.input}
-            label="EMAIL"
-            value={email}
-            onChangeText={setEmail}
-            ref={emailInputRef}
-            onSubmitEditing={() => {
-              confirmPasswordInputRef.current?.focus();
-            }}
-            placeholder={'john@doe.com'}
-            returnKeyType="next"
-            keyboardType="email-address"
-            textContentType="emailAddress"
-          />
-          <FormInput
-            style={styles.input}
-            label="NEW PASSWORD"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            textContentType="password"
-            ref={passwordInputRef}
-            onSubmitEditing={() => {
-              confirmPasswordInputRef.current?.focus();
-            }}
-            returnKeyType="next"
-          />
-          <FormInput
-            style={styles.input}
-            label="CONFIRM PASSWORD"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            secureTextEntry
-            textContentType="password"
-            ref={confirmPasswordInputRef}
-            onSubmitEditing={updateImportantUserData}
-            returnKeyType="go"
-          />
-          <LogoButton label="UPDATE" onPress={updateImportantUserData} />
-        </View>
-      </ScrollView>
-      <AppModal
-        visible={modalOpen}
-        title="ERROR"
-        titleColor={colors.error}
-        titleIcon="alert-circle"
-        subTitle={error}
-        onDismiss={() => {
-          setModalOpen(false);
-        }}
-      />
-      <Loader working={working} />
-    </FullScreenLayout>
+        <AppModal
+          visible={modalOpen}
+          title="ERROR"
+          titleColor={colors.error}
+          titleIcon="alert-circle"
+          subTitle={error}
+          onDismiss={() => {
+            setModalOpen(false);
+          }}
+        />
+        <Loader working={working} />
+      </FullScreenLayout>
+    </ScrollView>
   );
 };

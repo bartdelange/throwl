@@ -44,7 +44,7 @@ export const useStyles = (textSize: number) => {
     },
     playerListWrapper: {
       flex: 1,
-      backgroundColor: colors.primary,
+      backgroundColor: colors.background,
       borderTopStartRadius: 25,
       borderTopEndRadius: 25,
       alignItems: 'center',
@@ -58,8 +58,8 @@ export const useStyles = (textSize: number) => {
       borderBottomEndRadius: 25,
     },
     rowBorderWrapper: {
-      backgroundColor: colors.primary,
-      borderBottomColor: colors.onPrimary,
+      backgroundColor: colors.background,
+      borderBottomColor: colors.onBackground,
       borderBottomWidth: 2,
     },
     accordion: {
@@ -115,7 +115,7 @@ export const useStyles = (textSize: number) => {
       minWidth: width < 500 ? width - height * 0.075 : 0, // width - all the margin/padding applied above
     },
     graph: {
-      backgroundColor: colors.primary,
+      backgroundColor: colors.background,
       aspectRatio: 1,
     },
   });

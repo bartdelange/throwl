@@ -42,7 +42,7 @@ export const useStyles = () => {
     },
     scoreWrapper: {
       flex: 1,
-      backgroundColor: colors.primary,
+      backgroundColor: colors.background,
       borderTopStartRadius: 25,
       borderTopEndRadius: 25,
       alignItems: 'center',

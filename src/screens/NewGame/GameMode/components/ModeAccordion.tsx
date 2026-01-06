@@ -35,8 +35,8 @@ export const ModeAccordion: FC<{
       right={() => (
         <Checkbox.Android
           status={open ? 'checked' : 'unchecked'}
-          color={colors.onPrimary}
-          uncheckedColor={colors.onPrimary}
+          color={colors.onBackground}
+          uncheckedColor={colors.onBackground}
         />
       )}
       onPress={setOpen}

@@ -35,18 +35,18 @@ export const useStyles = () => {
       height: 50,
       width: 120,
       marginLeft: 24,
-      backgroundColor: colors.primary,
+      backgroundColor: colors.background,
       borderRadius: 4,
       justifyContent: 'center',
       alignItems: 'center',
     },
     tooltipTextHeader: {
       fontSize: 18,
-      color: colors.onPrimary,
+      color: colors.onBackground,
     },
     tooltipText: {
       fontSize: 12,
-      color: colors.onPrimary,
+      color: colors.onBackground,
     },
   });
 };

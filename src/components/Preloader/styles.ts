@@ -21,4 +21,5 @@ export const useStyles = () =>
       left: 0,
     },
     progressLogo: { position: 'absolute', top: 25, left: 25 },
+    loadedWrapper: { width: '100%', height: '100%' },
   });

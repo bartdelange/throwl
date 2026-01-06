@@ -4,6 +4,7 @@ import { Appbar, Menu } from 'react-native-paper';
 import { FRIENDS_SCREEN, PROFILE_SCREEN, UNAUTHENTICATED_SCREEN } from '~/constants/navigation';
 import { useAuthContext } from '~/context/AuthContext';
 import { useAppTheme } from '~/App/theming.tsx';
+import { useStyles } from '~/components/AppBar/AppBar.styles.ts';
 
 export const AppBar: FC<NativeStackHeaderProps> = ({
   navigation,
@@ -14,6 +15,7 @@ export const AppBar: FC<NativeStackHeaderProps> = ({
   const closeMenu = () => setVisible(false);
   const { logout } = useAuthContext();
   const { colors } = useAppTheme();
+  const styles = useStyles();
 
   const menuItemTheme = useMemo(
     () => ({ colors: { onSurface: colors.onSurfaceVariant } }),
@@ -21,7 +23,7 @@ export const AppBar: FC<NativeStackHeaderProps> = ({
   );
 
   return (
-    <Appbar.Header style={{ backgroundColor: colors.background, elevation: 0 }}>
+    <Appbar.Header style={styles.header}>
       {back ? <Appbar.BackAction color="white" onPress={navigation.goBack} /> : null}
       <Appbar.Content title="" />
       {!back ? (

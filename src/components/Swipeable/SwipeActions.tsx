@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
   actionIcon: {
     padding: '25%',
   },
+  actionIconInner: { fontSize: 100 },
   rightAction: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -82,7 +83,7 @@ const RightActions: FC<{
               <MaterialCommunityIcons
                 name={action.icon}
                 adjustsFontSizeToFit
-                style={{ fontSize: 100 }}
+                style={styles.actionIconInner}
                 color={action.iconColor || 'white'}
               />
             </Reanimated.View>

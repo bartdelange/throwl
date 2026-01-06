@@ -27,8 +27,8 @@ export const DoublesOptionsView: FC<DoublesOptionsProps> = ({ saveOptions, optio
         right={() => (
           <Checkbox.Android
             status={options[option] ? 'checked' : 'unchecked'}
-            color={colors.onPrimary}
-            uncheckedColor={colors.onPrimary}
+            color={colors.onBackground}
+            uncheckedColor={colors.onBackground}
             onPress={onValueChange(option)}
           />
         )}
