@@ -1,13 +1,9 @@
-import React from 'react';
+import React, { FC, PropsWithChildren, useEffect } from 'react';
 import { StyleProp, TextStyle, View } from 'react-native';
 
-import { makeStyles } from './styles';
+import { useStyles } from './styles';
 import { List } from 'react-native-paper';
-import {
-  useSharedValue,
-  useDerivedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import { useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Chevron } from '~/components/Accordion';
 
 interface AccordionProps {
@@ -19,7 +15,7 @@ interface AccordionProps {
   onChange?: () => void;
 }
 
-export const Accordion: React.FC<React.PropsWithChildren<AccordionProps>> = ({
+export const Accordion: FC<PropsWithChildren<AccordionProps>> = ({
   title,
   titleStyle,
   subtitle,
@@ -28,15 +24,13 @@ export const Accordion: React.FC<React.PropsWithChildren<AccordionProps>> = ({
   onChange = () => null,
   children,
 }) => {
-  const styles = makeStyles();
+  const styles = useStyles();
   const open = useSharedValue(false);
-  const progress = useDerivedValue<number>(() =>
-    open.value ? withSpring(1) : withSpring(0)
-  );
+  const progress = useDerivedValue<number>(() => (open.value ? withSpring(1) : withSpring(0)));
 
-  React.useEffect(() => {
+  useEffect(() => {
     open.set(!!isOpen);
-  }, [isOpen]);
+  }, [isOpen, open]);
 
   return (
     <View style={styles.wrapper}>
@@ -46,10 +40,11 @@ export const Accordion: React.FC<React.PropsWithChildren<AccordionProps>> = ({
         titleStyle={[styles.title, titleStyle]}
         style={styles.container}
         descriptionStyle={[styles.subtitle, subtitleStyle]}
-        right={_ => <Chevron progress={progress} />}
+        right={() => <Chevron progress={progress} />}
         expanded={isOpen}
-        onPress={onChange}>
-        <View style={[styles.content]}>{children}</View>
+        onPress={onChange}
+      >
+        <View style={styles.content}>{children}</View>
       </List.Accordion>
     </View>
   );
