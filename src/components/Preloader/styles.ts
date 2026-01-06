@@ -1,6 +1,6 @@
 import { Dimensions, StyleSheet } from 'react-native';
 
-export const makeStyles = () =>
+export const useStyles = () =>
   StyleSheet.create({
     layout: {
       alignContent: 'center',

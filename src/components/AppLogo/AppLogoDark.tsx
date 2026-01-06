@@ -1,13 +1,13 @@
 import React from 'react';
-import { View } from 'react-native';
+import { DimensionValue, View } from 'react-native';
 import Svg, { G, Path } from 'react-native-svg';
 
 export const AppLogoDark = ({
   width,
   height,
 }: {
-  width?: string | number;
-  height?: string | number;
+  width?: DimensionValue;
+  height?: DimensionValue;
 }) => {
   return (
     <View style={{ aspectRatio: 1, width: width, height: height }}>

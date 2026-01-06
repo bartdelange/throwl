@@ -1,13 +1,14 @@
 import React from 'react';
 import { View } from 'react-native';
 import Svg, { G, Path } from 'react-native-svg';
+import { DimensionValue } from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 
 export const AppLogoLight = ({
   width,
   height,
 }: {
-  width?: string | number;
-  height?: string | number;
+  width?: DimensionValue;
+  height?: DimensionValue;
 }) => {
   return (
     <View style={{ aspectRatio: 1, width: width, height: height }}>
@@ -18,7 +19,8 @@ export const AppLogoLight = ({
         strokeLinejoin="round"
         width="100%"
         height="100%"
-        strokeMiterlimit={2}>
+        strokeMiterlimit={2}
+      >
         <G transform="matrix(1.04287,0,0,1.04338,-256.479,-264.827)">
           <G>
             <G>

@@ -1,6 +1,6 @@
 import { Platform, StyleSheet } from 'react-native';
 
-export const makeStyles = () =>
+export const useStyles = () =>
   StyleSheet.create({
     button: {
       width: 'auto',

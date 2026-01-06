@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, View } from 'react-native';
+import { DimensionValue, StyleProp, View, ViewStyle } from 'react-native';
 import Svg, { G, Path } from 'react-native-svg';
 
 export const AppLogoLightLoader = ({
@@ -7,9 +7,9 @@ export const AppLogoLightLoader = ({
   width,
   height,
 }: {
-  style?: StyleProp<any>;
-  width?: string | number;
-  height?: string | number;
+  style?: StyleProp<ViewStyle>;
+  width?: DimensionValue;
+  height?: DimensionValue;
 }) => {
   return (
     <View
@@ -20,13 +20,15 @@ export const AppLogoLightLoader = ({
           width: width,
           height: height,
         },
-      ]}>
+      ]}
+    >
       <Svg
         viewBox="0 0 650 650"
         fillRule="evenodd"
         clipRule="evenodd"
         strokeLinejoin="round"
-        strokeMiterlimit={2}>
+        strokeMiterlimit={2}
+      >
         <G transform="matrix(1.04287,0,0,1.04338,-256.479,-264.827)">
           <G>
             <G>

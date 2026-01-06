@@ -1,7 +1,7 @@
 import { Dimensions, Platform, StyleSheet } from 'react-native';
 import { useAppTheme } from '~/App/theming.tsx';
 
-export const makeStyles = () => {
+export const useStyles = () => {
   const { colors } = useAppTheme();
   const { width, height } = Dimensions.get('window');
 

@@ -9,4 +9,5 @@ export enum DartboardScoreType {
 export interface Throw {
   type: DartboardScoreType;
   score: number;
+  isValid?: boolean;
 }
