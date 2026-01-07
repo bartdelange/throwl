@@ -46,7 +46,7 @@ export const DoublesOptionsView: FC<DoublesOptionsProps> = ({ saveOptions, optio
   return (
     <List.Section>
       {renderOption('quickMatch', 'Quick Match', 'Play until Double 10 instead of Double 1')}
-      {renderOption('skipBull', 'Skip bull', "Bull and Bull's Eye aren't required to win")}
+      {renderOption('skipBull', 'Skip bull', "Single Bull and Bull aren't required to win")}
       {renderOption(
         'endOnInvalid',
         'End turn on invalid throw',

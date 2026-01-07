@@ -49,7 +49,7 @@ export const GameModeScreen: FC = () => {
           title={'Doubles'}
           description={'Doubles darts game.'}
           descriptionSubtext={
-            'You throw consecutive doubles from highest (D20) to lowest (D1) ending on bull and bullseye.'
+            'You throw consecutive doubles from highest (D20) to lowest (D1) ending on single Bull and Bull.'
           }
           open={openIndex === 1}
           setOpen={onPickMode('doubles')}

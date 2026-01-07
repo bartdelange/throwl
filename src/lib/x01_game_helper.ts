@@ -6,7 +6,6 @@ export class X01GameHelper {
   static checkThrowValidity(currentTurn: Turn, userScore: number, startingScore: number): boolean {
     const remainingScore = startingScore - userScore;
 
-    // Finish must be double or bull(50)
     if (remainingScore === 0) {
       const lastThrow = currentTurn.throws[currentTurn.throws.length - 1];
       return (
