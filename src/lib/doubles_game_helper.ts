@@ -45,10 +45,14 @@ export class DoublesGameHelper {
     const validProgress = this.getValidProgressThrows(allTurns, userId);
 
     let nextIndex = 0;
-    for (; nextIndex < targets.length; nextIndex++) {
+
+    for (const thrw of validProgress) {
+      if (nextIndex >= targets.length) break;
+
       const needed = targets[nextIndex];
-      const hit = validProgress.some(v => this.sameTarget(v, needed));
-      if (!hit) break;
+      if (this.sameTarget(thrw, needed)) {
+        nextIndex++;
+      }
     }
 
     return {
