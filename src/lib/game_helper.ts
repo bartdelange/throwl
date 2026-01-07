@@ -6,14 +6,14 @@ export type TurnNeeded = [Throw | undefined, Throw | undefined, Throw | undefine
 
 export class GameHelper {
   static getThrowCounts = GameStatsHelper.getThrowCounts;
+  static calculateInNormalGameScoreStatsForUser =
+    GameStatsHelper.calculateInNormalGameScoreStatsForUser;
+  static calculateInDoublesGameScoreStatsForUser =
+    GameStatsHelper.calculateInDoublesGameScoreStatsForUser;
   static calculateHeatmap = GameStatsHelper.calculateHeatmap;
-  static getThrowStats = GameStatsHelper.getThrowStats;
-  static getNormalGameTurnStats = GameStatsHelper.getNormalGameTurnStats;
-  static getDoublesGameTurnStats = GameStatsHelper.getDoublesGameTurnStats;
-  static calculateNormalGameScoreStatsForUser =
-    GameStatsHelper.calculateNormalGameScoreStatsForUser;
-  static calculateDoublesGameScoreStatsForUser =
-    GameStatsHelper.calculateDoublesGameScoreStatsForUser;
+  static getPostNormalGameThrowStats = GameStatsHelper.getPostNormalGameThrowStats;
+  static getPostNormalGameTurnStats = GameStatsHelper.getPostNormalGameTurnStats;
+  static getPostDoublesGameTurnStats = GameStatsHelper.getPostDoublesGameTurnStats;
 
   static calculateTurnScore(turn: Turn): number {
     if (!turn) return 0;
