@@ -118,8 +118,9 @@ export const DoublesGameScreen: FC = () => {
 
           <ScoreTable
             scoreTableRef={scoreTableRef}
-            turns={controller.turns}
             players={players}
+            gameOptions={gameOptions}
+            turns={controller.turns}
             activeUserIndex={controller.activePlayerIndex}
             currentTurn={controller.currentTurn}
             width={width}
