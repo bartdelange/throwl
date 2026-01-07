@@ -9,11 +9,13 @@ import { GameHelper } from '~/lib/game_helper.ts';
 import { Turn } from '~/models/turn.ts';
 import { AppLogoArrowLight } from '~/components/AppLogo';
 import { SwipeActions } from '~/components/Swipeable/SwipeActions.tsx';
+import { DoublesOptions } from '~/models/game.ts';
 
 interface ScoreTableProps {
   scoreTableRef: RefObject<FlatList<User | GuestUser> | null>;
-  turns: Turn[];
+  gameOptions: DoublesOptions;
   players: (User | GuestUser)[];
+  turns: Turn[];
   activeUserIndex: number;
   currentTurn: Turn;
   width: number;
@@ -22,8 +24,9 @@ interface ScoreTableProps {
 
 export const ScoreTable: FC<ScoreTableProps> = ({
   scoreTableRef,
-  turns,
   players,
+  gameOptions,
+  turns,
   activeUserIndex,
   currentTurn,
   width,
@@ -54,8 +57,9 @@ export const ScoreTable: FC<ScoreTableProps> = ({
         style={styles.scoreTabelPlayerList}
         renderItem={({ item: user, index }) => {
           const parsedUser = GameService.stubPlayer(user);
-          const userScore = GameHelper.calculateDoublesGameScoreStatsForUser(
+          const userScore = GameHelper.calculateInDoublesGameScoreStatsForUser(
             turns.filter(t => t.userId === parsedUser.id),
+            gameOptions,
             activeUserIndex === index ? currentTurn : undefined,
           );
           return (

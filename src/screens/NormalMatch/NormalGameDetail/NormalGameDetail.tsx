@@ -66,15 +66,15 @@ export const NormalGameDetailScreen: FC = () => {
                 .flatMap(turn => turn.throws)
                 .filter(thrw => thrw.score !== 0);
               const throwCount = GameHelper.getThrowCounts(userThrows);
-              const userScore = GameHelper.calculateNormalGameScoreStatsForUser(
+              const userScore = GameHelper.calculateInNormalGameScoreStatsForUser(
                 userTurns,
                 gameOptions.startingScore,
               );
-              const turnStats = GameHelper.getNormalGameTurnStats(
+              const turnStats = GameHelper.getPostNormalGameTurnStats(
                 userTurns,
                 gameOptions.startingScore,
               );
-              const throwStats = GameHelper.getThrowStats(userTurns);
+              const throwStats = GameHelper.getPostNormalGameThrowStats(userTurns);
               const lastThrown =
                 userTurns[userTurns.length - 1].throws[
                   userTurns[userTurns.length - 1].throws.length - 1
