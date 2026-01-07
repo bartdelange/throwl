@@ -66,7 +66,7 @@ export const DoublesGameDetailScreen: FC = () => {
                 .flatMap(turn => turn.throws)
                 .filter(thrw => thrw.score !== 0);
               const throwCount = GameHelper.getThrowCounts(userThrows);
-              const turnStats = GameHelper.getDoublesGameTurnStats(userTurns, gameOptions);
+              const turnStats = GameHelper.getPostDoublesGameTurnStats(userTurns, gameOptions);
               const neededDouble = DoublesGameHelper.getNextDoubleNeeded(
                 userTurns,
                 parsedPlayer.id,

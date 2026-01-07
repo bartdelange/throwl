@@ -92,7 +92,7 @@ export class GameStatsHelper {
     return generatedHeatmap;
   }
 
-  static getThrowStats(turns: Turn[]): ThrowStats {
+  static getPostNormalGameThrowStats(turns: Turn[]): ThrowStats {
     const throws = (turns ?? []).flatMap(t => t.throws ?? []);
 
     const doubles = throws.reduce<number>(
@@ -111,7 +111,7 @@ export class GameStatsHelper {
     return { triples, doubles, out };
   }
 
-  static getNormalGameTurnStats(userTurns: Turn[], startingScore: number): NormalGameTurnStats {
+  static getPostNormalGameTurnStats(userTurns: Turn[], startingScore: number): NormalGameTurnStats {
     let score = startingScore;
 
     let totalTurns = 0;
@@ -160,7 +160,7 @@ export class GameStatsHelper {
     };
   }
 
-  static getDoublesGameTurnStats(turns: Turn[], options: DoublesOptions): DoublesGameTurnStats {
+  static getPostDoublesGameTurnStats(turns: Turn[], options: DoublesOptions): DoublesGameTurnStats {
     const targets = DoublesGameHelper.buildTargets(options);
 
     const totalTurns = turns.length;
@@ -221,7 +221,7 @@ export class GameStatsHelper {
     };
   }
 
-  static calculateNormalGameScoreStatsForUser(
+  static calculateInNormalGameScoreStatsForUser(
     userTurns: Turn[],
     startingScore: number,
     currentTurn?: Turn,
@@ -243,7 +243,7 @@ export class GameStatsHelper {
     };
   }
 
-  static calculateDoublesGameScoreStatsForUser(
+  static calculateInDoublesGameScoreStatsForUser(
     userTurns: Turn[],
     options: DoublesOptions,
     currentTurn?: Turn,
@@ -283,8 +283,9 @@ export class GameStatsHelper {
       }
     }
 
+    // successfulTargetsHit + 1 because the totalDartsThrown also includes the
     const avgDartsPerDouble =
-      successfulTargetsHit > 0 ? totalDartsThrown / successfulTargetsHit : totalDartsThrown;
+      successfulTargetsHit > 0 ? totalDartsThrown / (successfulTargetsHit + 1) : totalDartsThrown;
 
     return {
       last: GameHelper.calculateTurnScore(userTurns[userTurns.length - 1]),

@@ -66,7 +66,7 @@ export const ScoreTable: FC<ScoreTableProps> = ({
         style={styles.scoreTablePlayerList}
         renderItem={({ item: user, index }) => {
           const parsedUser = GameService.stubPlayer(user);
-          const userScore = GameHelper.calculateNormalGameScoreStatsForUser(
+          const userScore = GameHelper.calculateInNormalGameScoreStatsForUser(
             turns.filter(t => t.userId === parsedUser.id),
             startingScore,
             activeUserIndex === index ? currentTurn : undefined,
