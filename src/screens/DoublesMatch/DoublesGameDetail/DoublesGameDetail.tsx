@@ -63,7 +63,6 @@ export const DoublesGameDetailScreen: FC = () => {
               const parsedPlayer = GameService.stubPlayer(item);
               const userTurns = game.turns.filter(t => t.userId === parsedPlayer.id);
               const userThrows = userTurns
-                .filter(turn => turn.isValid)
                 .flatMap(turn => turn.throws)
                 .filter(thrw => thrw.score !== 0);
               const throwCount = GameHelper.getThrowCounts(userThrows);
@@ -81,7 +80,7 @@ export const DoublesGameDetailScreen: FC = () => {
                   subtitle={
                     neededDouble.isComplete
                       ? 'Winner'
-                      : `On double : ${neededDouble.next && GameHelper.createScoreString(neededDouble.next)}`
+                      : `Still needed: ${neededDouble.next && GameHelper.createScoreString(neededDouble.next)}`
                   }
                   subtitleStyle={styles.scoreText}
                   open={selectedUserId === parsedPlayer.id}
