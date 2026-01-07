@@ -168,7 +168,6 @@ export class GameStatsHelper {
 
     let invalidTrows = 0;
     let notOnTarget = 0;
-
     let successfulTargetsHit = 0;
 
     let streak = 0;
@@ -180,19 +179,14 @@ export class GameStatsHelper {
     const isThrowValid = (th: Throw) => th?.isValid !== false;
 
     for (const turn of turns) {
-      if (turn.isValid === false) {
-        for (const thr of turn.throws ?? []) {
-          if (!isThrowValid(thr)) invalidTrows++;
-        }
-        streak = 0;
-        continue;
-      }
+      // If you want streaks to never span turns, reset here (optional).
+      // streak = 0;
 
       for (const thrw of turn.throws ?? []) {
         if (!isThrowValid(thrw)) invalidTrows++;
 
         const expected = targets[nextIndex];
-        if (!expected) continue;
+        if (!expected) break; // game finished; there shouldn't be more throws in a finished game
 
         const success = isThrowValid(thrw) && DoublesGameHelper.sameTarget(thrw, expected);
 
@@ -208,6 +202,9 @@ export class GameStatsHelper {
           streak = 0;
         }
       }
+
+      // If you DO want invalid turns to break streaks regardless of what happened inside:
+      // if (turn.isValid === false) streak = 0;
     }
 
     const avgDartsPerDouble =
@@ -248,42 +245,46 @@ export class GameStatsHelper {
 
   static calculateDoublesGameScoreStatsForUser(
     userTurns: Turn[],
+    options: DoublesOptions,
     currentTurn?: Turn,
   ): DoublesGameUserScoreStats {
-    const ordered: Array<{ turn: Turn; thr: Throw }> = [];
+    const targets = DoublesGameHelper.buildTargets(options);
 
+    // Flatten all throws in order
+    const ordered: Throw[] = [];
     for (const turn of userTurns ?? []) {
-      for (const thr of turn.throws ?? []) ordered.push({ turn, thr });
+      for (const thr of turn.throws ?? []) ordered.push(thr);
     }
     if (currentTurn) {
-      for (const thr of currentTurn.throws ?? []) ordered.push({ turn: currentTurn, thr });
+      for (const thr of currentTurn.throws ?? []) ordered.push(thr);
     }
 
     const totalDartsThrown = ordered.length;
 
-    const isSuccessfulDoubleHit = ({ turn, thr }: { turn: Turn; thr: Throw }) => {
-      const turnValid = turn.isValid !== false;
-      const throwValid = thr.isValid !== false;
+    const isThrowValid = (th: Throw) => th?.isValid !== false;
 
-      const isDoubleType =
-        thr.type === DartboardScoreType.Double || thr.type === DartboardScoreType.Bull;
+    let nextIndex = 0;
+    let successfulTargetsHit = 0;
+    let onCurrentDouble = 0;
 
-      return turnValid && throwValid && isDoubleType;
-    };
+    for (const thr of ordered) {
+      const expected = targets[nextIndex];
+      if (!expected) break; // completed all targets
 
-    const doublesHit = ordered.reduce((acc, x) => acc + (isSuccessfulDoubleHit(x) ? 1 : 0), 0);
-    const avgDartsPerDouble = doublesHit > 0 ? totalDartsThrown / doublesHit : totalDartsThrown;
+      const success = isThrowValid(thr) && DoublesGameHelper.sameTarget(thr, expected);
 
-    let lastSuccessfulIdx = -1;
-    for (let i = ordered.length - 1; i >= 0; i--) {
-      if (isSuccessfulDoubleHit(ordered[i])) {
-        lastSuccessfulIdx = i;
-        break;
+      if (success) {
+        successfulTargetsHit++;
+        nextIndex++;
+        onCurrentDouble = 0; // reset for next target
+      } else {
+        // invalid or miss both count as an attempt on the current target
+        onCurrentDouble++;
       }
     }
 
-    const onCurrentDouble =
-      lastSuccessfulIdx === -1 ? totalDartsThrown : totalDartsThrown - lastSuccessfulIdx - 1;
+    const avgDartsPerDouble =
+      successfulTargetsHit > 0 ? totalDartsThrown / successfulTargetsHit : totalDartsThrown;
 
     return {
       last: GameHelper.calculateTurnScore(userTurns[userTurns.length - 1]),
