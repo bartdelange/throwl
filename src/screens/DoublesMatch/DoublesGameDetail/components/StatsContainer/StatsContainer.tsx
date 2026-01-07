@@ -25,6 +25,7 @@ export const StatsContainer: FC<ScoreContainerProps> = ({ textSize, turnStats })
       }}
     >
       <View>
+        <Text style={styles.scoreStatHeader}>Turn stats</Text>
         <View style={styles.scoreItem}>
           <Text style={styles.scoreItemText} numberOfLines={1}>
             Total turns taken
@@ -67,7 +68,7 @@ export const StatsContainer: FC<ScoreContainerProps> = ({ textSize, turnStats })
         </View>
         <View style={styles.scoreItem}>
           <Text style={styles.scoreItemText} numberOfLines={1}>
-            Times you threw consecutive doubles
+            Times you threw a streak
           </Text>
           <Text style={styles.scoreItemText} numberOfLines={1}>
             {turnStats.consecutiveDoublesAmount}
@@ -75,7 +76,7 @@ export const StatsContainer: FC<ScoreContainerProps> = ({ textSize, turnStats })
         </View>
         <View style={styles.scoreItem}>
           <Text style={styles.scoreItemText} numberOfLines={1}>
-            Highest consecutive double streak
+            Highest double streak
           </Text>
           <Text style={styles.scoreItemText} numberOfLines={1}>
             {turnStats.consecutiveDoublesStreak}

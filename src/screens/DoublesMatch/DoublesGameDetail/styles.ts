@@ -106,12 +106,12 @@ export const useStyles = (textSize: number) => {
       flex: 1,
       paddingTop: 0,
       padding: height * 0.0125,
+      paddingBottom: 32,
     },
     graphContainer: {
       flex: 1,
       paddingTop: 0,
       padding: height * 0.0125,
-      aspectRatio: 1,
       minWidth: width < 500 ? width - height * 0.075 : 0, // width - all the margin/padding applied above
     },
     graph: {
