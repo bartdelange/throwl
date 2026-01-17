@@ -9,7 +9,8 @@ inputs:
   working_directory:
     type: string
     required: false
-    description: One of `ios` or `android`
+    description: One of `apps/throwl/ios` or `apps/throwl/android`
+
 runs:
   using: 'composite'
   steps:
@@ -17,7 +18,7 @@ runs:
       with:
         node-version-file: .nvmrc
         check-latest: true
-        cache: 'npm'
+        cache: 'yarn'
 
     - name: Cache node_modules
       uses: actions/cache@v4
@@ -25,11 +26,11 @@ runs:
       with:
         path: |
           **/node_modules
-        key: NM-${{ hashFiles('**/package-lock.json') }}
+        key: NM-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
           NM-
 
-    - name: Install npm dependencies
+    - name: Install dependencies
       shell: bash
       if: steps.node_modules-cache.outputs.cache-hit != 'true'
       run: yarn install --frozen-lockfile
