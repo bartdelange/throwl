@@ -1,0 +1,9 @@
+{
+  "name": "@throwl/shared-data-access-game",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/data-access/game/src",
+  "projectType": "library",
+  "tags": ["type:shared", "type:data-access", "scope:game"],
+  "// targets": "to see all targets run: nx show project @throwl/shared-data-access-game --web",
+  "targets": {}
+}

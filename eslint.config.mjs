@@ -1,78 +1,113 @@
-import js from '@eslint/js';
-import globals from 'globals';
-import tseslint from 'typescript-eslint';
-import pluginReact from 'eslint-plugin-react';
-import pluginReactHooks from 'eslint-plugin-react-hooks';
-import pluginReactNative from 'eslint-plugin-react-native';
+import nx from '@nx/eslint-plugin';
 
 export default [
-    {
-        ignores: [
-            'node_modules/**',
-            'android/**',
-            'ios/**',
-            'build/**',
-            'dist/**',
-            'scripts/**',
-        ],
-    },
-    js.configs.recommended,
-    ...tseslint.configs.recommended,
-    pluginReact.configs.flat.recommended,
-    {
-        files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-        languageOptions: {
-            globals: {
-                ...globals.browser,
-                ...globals.node,
-                __DEV__: 'readonly',
-                __dirname: 'readonly',
-                __filename: 'readonly',
+  ...nx.configs['flat/base'],
+  ...nx.configs['flat/typescript'],
+  ...nx.configs['flat/javascript'],
+  {
+    ignores: [
+      '**/dist',
+      '**/out-tsc',
+      'jest.config.cts',
+      '.babelrc.js',
+      'metro.config.js',
+    ],
+  },
+  {
+    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+    rules: {
+      '@nx/enforce-module-boundaries': [
+        'error',
+        {
+          enforceBuildableLibDependency: true,
+          allow: [],
+          banTransitiveDependencies: false,
+
+          depConstraints: [
+            // ----------------------------
+            // Apps
+            // ----------------------------
+            {
+              sourceTag: 'type:app',
+              onlyDependOnLibsWithTags: ['type:feature', 'type:shared'],
             },
-            ecmaVersion: 'latest',
-            sourceType: 'module',
-            parserOptions: {
-                ecmaFeatures: { jsx: true },
+
+            // ----------------------------
+            // Features
+            // ----------------------------
+            {
+              sourceTag: 'type:feature',
+              onlyDependOnLibsWithTags: [
+                'type:shared',
+                // (optional) allow depending on other features:
+                // If you want ZERO feature->feature coupling, remove 'type:feature'
+                // and instead create "feature-aggregate" or "shared" libs.
+                'type:feature',
+              ],
             },
-        },
-        plugins: {
-            'react-hooks': pluginReactHooks,
-            'react-native': pluginReactNative,
-        },
-        rules: {
-            // React Native
-            'react-native/no-unused-styles': 'error',
-            'react-native/split-platform-components': 'error',
-            'react-native/no-inline-styles': 'warn',
-            'react-native/no-color-literals': 'warn',
-            'react-native/no-single-element-style-arrays': 'error',
 
-            // React Hooks
-            'react-hooks/rules-of-hooks': 'error',
-            "react-hooks/exhaustive-deps": "error",
+            // Uncomment to enforce "feature-auth can't import feature-settings"
+            // {
+            //   sourceTag: 'type:feature',
+            //   onlyDependOnLibsWithTags: ['type:shared', 'type:feature', 'scope:auth']
+            // },
 
-            // React
-            'react/react-in-jsx-scope': 'off',
-            'react/prop-types': 'off',
-            'react/display-name': 'off',
+            // ----------------------------
+            // Shared (general)
+            // ----------------------------
+            {
+              sourceTag: 'type:shared',
+              onlyDependOnLibsWithTags: ['type:shared'],
+            },
 
-            // General
-            'no-console': 'warn',
-            'no-debugger': 'error',
-            "@typescript-eslint/no-unused-vars": [
-              "error",
-              {
-                "varsIgnorePattern": "^_",
-                "argsIgnorePattern": "^_"
-              }
-            ],
-            'prefer-const': 'error',
-            'no-var': 'error',
-            'no-duplicate-imports': 'error',
-            'max-lines': ['warn', { max: 300, skipBlankLines: true }],
+            // ----------------------------
+            // Shared domain (pure)
+            // ----------------------------
+            {
+              sourceTag: 'type:shared-domain',
+              onlyDependOnLibsWithTags: ['type:shared-domain'],
+            },
+
+            // ----------------------------
+            // Shared UI (should not pull data-access)
+            // ----------------------------
+            {
+              sourceTag: 'type:shared-ui',
+              onlyDependOnLibsWithTags: [
+                'type:shared',
+                'type:shared-ui',
+                'type:shared-domain',
+              ],
+            },
+
+            // ----------------------------
+            // Data access (allowed to use domain + shared utils, but not UI)
+            // ----------------------------
+            {
+              sourceTag: 'type:data-access',
+              onlyDependOnLibsWithTags: [
+                'type:shared',
+                'type:shared-domain',
+                'type:data-access',
+              ],
+            },
+          ],
         },
-        settings: {
-            react: { version: 'detect' },
-        },
+      ],
     },
+  },
+  {
+    files: [
+      '**/*.ts',
+      '**/*.tsx',
+      '**/*.cts',
+      '**/*.mts',
+      '**/*.js',
+      '**/*.jsx',
+      '**/*.cjs',
+      '**/*.mjs',
+    ],
+    // Override or add rules here
+    rules: {},
+  },
 ];

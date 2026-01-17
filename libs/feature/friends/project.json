@@ -1,0 +1,9 @@
+{
+  "name": "@throwl/feature-friends",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/feature/friends/src",
+  "projectType": "library",
+  "tags": ["type:feature", "scope:friends"],
+  "// targets": "to see all targets run: nx show project @throwl/feature-friends --web",
+  "targets": {}
+}

@@ -1,17 +1,64 @@
 {
-  "extends": "@react-native/typescript-config",
-  "compilerOptions": {
-    "baseUrl": "./src",
-    "types": ["jest"],
-    "paths": {
-      "~/*": [
-        "*"
-      ],
-      "#/*": [
-        "constants/*"
-      ]
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
+  "files": [],
+  "references": [
+    {
+      "path": "./apps/throwl"
+    },
+    {
+      "path": "./libs/feature/auth"
+    },
+    {
+      "path": "./libs/feature/new-game"
+    },
+    {
+      "path": "./libs/feature/game-x01"
+    },
+    {
+      "path": "./libs/feature/game-doubles"
+    },
+    {
+      "path": "./libs/feature/home"
+    },
+    {
+      "path": "./libs/feature/settings"
+    },
+    {
+      "path": "./libs/feature/friends"
+    },
+    {
+      "path": "./libs/feature/played-games"
+    },
+    {
+      "path": "./libs/shared/domain/models"
+    },
+    {
+      "path": "./libs/shared/domain/game-rules"
+    },
+    {
+      "path": "./libs/shared/ui"
+    },
+    {
+      "path": "./libs/shared/hooks"
+    },
+    {
+      "path": "./libs/shared/theme"
+    },
+    {
+      "path": "./libs/shared/layouts"
+    },
+    {
+      "path": "./libs/shared/constants"
+    },
+    {
+      "path": "./libs/shared/data-access/firebase"
+    },
+    {
+      "path": "./libs/shared/data-access/user"
+    },
+    {
+      "path": "./libs/shared/data-access/game"
     }
-  },
-  "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["**/node_modules", "**/Pods"]
+  ]
 }

@@ -1,0 +1,9 @@
+{
+  "name": "@throwl/shared-hooks",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/hooks/src",
+  "projectType": "library",
+  "tags": ["type:shared", "scope:hooks"],
+  "// targets": "to see all targets run: nx show project @throwl/shared-hooks --web",
+  "targets": {}
+}

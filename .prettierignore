@@ -1,13 +1,5 @@
-node_modules
-android
-ios
-build
-dist
-coverage
-*.snap
-*.md
-*.json
-*.lock
-*.log
-.DS_Store
-eslint.config.mjs
+# Add files here to ignore them from prettier formatting
+/dist
+/coverage
+/.nx/cache
+/.nx/workspace-data

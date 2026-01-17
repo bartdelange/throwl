@@ -1,0 +1,9 @@
+{
+  "name": "@throwl/shared-layouts",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/layouts/src",
+  "projectType": "library",
+  "tags": ["type:shared", "scope:layouts"],
+  "// targets": "to see all targets run: nx show project @throwl/shared-layouts --web",
+  "targets": {}
+}

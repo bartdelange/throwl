@@ -1,0 +1,58 @@
+{
+  "name": "@throwl/throwl",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/throwl/src",
+  "projectType": "application",
+  "tags": ["type:app", "scope:throwl"],
+  "// targets": "to see all targets run: nx show project @throwl/feature-auth --web",
+  "targets": {
+    "run-ios": {
+      "executor": "@nx/react-native:run-ios",
+      "dependsOn": ["writeXcodeEnv"]
+    },
+    "build-ios": {
+      "executor": "@nx/react-native:build-ios",
+      "dependsOn": ["writeXcodeEnv"]
+    },
+    "writeXcodeEnv": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "env -u PREFIX node ../scripts/write-xcode-env.js"
+      }
+    },
+    "setAndroidVersion": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "cd android && bundle exec fastlane update_version version={args.version}"
+      }
+    },
+    "setIosVersion": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "cd ios && bundle exec fastlane update_version version={args.version}"
+      }
+    },
+    "syncNativeVersions": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "commands": [
+          "nx run throwl:setAndroidVersion --version={args.version}",
+          "nx run throwl:setIosVersion --version={args.version}",
+          "git add -A"
+        ],
+        "parallel": false
+      }
+    },
+    "release": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "release-it"
+      }
+    }
+  }
+}

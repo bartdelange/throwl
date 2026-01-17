@@ -1,0 +1,9 @@
+{
+  "name": "@throwl/shared-theme",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/theme/src",
+  "projectType": "library",
+  "tags": ["type:shared", "scope:theme"],
+  "// targets": "to see all targets run: nx show project @throwl/shared-theme --web",
+  "targets": {}
+}
