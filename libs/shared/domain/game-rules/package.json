@@ -1,0 +1,12 @@
+{
+  "name": "@throwl/shared-domain-game-rules",
+  "version": "0.0.1",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "@throwl/source": "./src/index.ts"
+    }
+  },
+  "private": true
+}
