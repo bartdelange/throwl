@@ -53,6 +53,20 @@
         "cwd": "{projectRoot}",
         "command": "release-it"
       }
+    },
+    "deploy:android": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/throwl/android",
+        "command": "bundle exec fastlane deploy"
+      }
+    },
+    "deploy:ios": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/throwl/ios",
+        "command": "bundle exec fastlane deploy"
+      }
     }
   }
 }

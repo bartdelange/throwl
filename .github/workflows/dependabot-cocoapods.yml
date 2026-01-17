@@ -25,20 +25,18 @@ jobs:
       - name: Cache pods
         uses: actions/cache@v4
         with:
-          path: ios/Pods
+          path: apps/throwl/ios/Pods
           key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-pods-
 
       - name: Install Cocoapods Packages
-        run: pushd ios && pod update && pod install --verbose --repo-update && popd
+        run: pushd apps/throwl/ios && pod update && pod install --verbose --repo-update && popd
 
       - name: Generate Commit Message
         id: generate_commit_message
-        # eg: ⬆️ Bump Cocoapods Packages for apple-signin-auth-1.4.0
         run: |
           branch=${GITHUB_REF#refs/heads/}
-          # add `[dependabot skip]` prefix so Dependabot force pushes any rebases over our changes triggering the action again
           commit_message="[dependabot skip] :arrow_up: Bump Cocoapods Packages for${branch//dependabot\/npm_and_yarn\// }"
           echo ::set-output name=commit_message::$commit_message
 

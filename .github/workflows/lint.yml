@@ -2,20 +2,32 @@ name: Code Quality
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
   pull_request:
-    branches:
-      - master
+    branches: [master]
+
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # IMPORTANT for nx affected
+
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
+
       - run: yarn install --frozen-lockfile
-      - run: yarn lint:check
-      - run: yarn prettier:check
+
+      - name: Lint (affected)
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            yarn nx affected --target=lint --base=origin/master --head=HEAD
+          else
+            yarn nx affected --target=lint --base=HEAD~1 --head=HEAD
+          fi
+
+      - name: Prettier (repo)
+        run: yarn prettier:check

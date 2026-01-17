@@ -1,5 +1,9 @@
 version: 2
+
 updates:
+  # ───────────────────────────────────────────────
+  # JavaScript / TypeScript (Yarn via yarn.lock)
+  # ───────────────────────────────────────────────
   - package-ecosystem: 'npm'
     directory: '/'
     reviewers:
@@ -18,7 +22,23 @@ updates:
           - 'minor'
           - 'patch'
     commit-message:
-      prefix: 'chore(NPM Dependency Updates): '
+      prefix: 'chore(deps): '
     labels:
-      - 'npm'
       - 'dependencies'
+      - 'javascript'
+
+  # ───────────────────────────────────────────────
+  # iOS / CocoaPods
+  # ───────────────────────────────────────────────
+  - package-ecosystem: 'cocoapods'
+    directory: '/apps/throwl/ios'
+    reviewers:
+      - 'bartdelange'
+    schedule:
+      interval: 'weekly'
+    commit-message:
+      prefix: 'chore(pods): '
+    labels:
+      - 'dependencies'
+      - 'ios'
+      - 'cocoapods'

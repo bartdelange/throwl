@@ -9,6 +9,7 @@ on:
       store:
         type: string
         required: true
+        description: One of `ios` or `android`
       working_directory:
         type: string
         required: true
@@ -41,7 +42,7 @@ jobs:
     permissions:
       contents: read
     concurrency:
-      group: ${{ github.workflow }}-${{ inputs.os }}
+      group: ${{ github.workflow }}-${{ inputs.os }}-${{ inputs.working_directory }}
       cancel-in-progress: true
     steps:
       - name: Checkout repository
@@ -55,14 +56,14 @@ jobs:
           bundle: true
       #region Android
       - name: Use JAVA 22
-        if: ${{ inputs.working_directory == 'android' }}
+        if: ${{ endsWith(inputs.working_directory, '/android') }}
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu' # See 'Supported distributions' for available options
           java-version: '22.0.2'
 
       - name: Configure Keystore
-        if: ${{ inputs.working_directory == 'android' }}
+        if: ${{ endsWith(inputs.working_directory, '/android') }}
         working-directory: ${{ inputs.working_directory }}
         run: |
           echo "$KEYSTORE_FILE" > keystore.jks.b64
@@ -78,7 +79,7 @@ jobs:
           KEYSTORE_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_STORE_PASSWORD }}
 
       - name: Create Google Play Config file
-        if: ${{ inputs.working_directory == 'android' }}
+        if: ${{ endsWith(inputs.working_directory, '/android') }}
         working-directory: ${{ inputs.working_directory }}
         run: |
           echo "$PLAY_CONFIG_JSON" > playstore_config.json.b64
@@ -89,7 +90,7 @@ jobs:
 
       #region iOS
       - name: Use latest xcode
-        if: ${{ inputs.working_directory == 'ios' }}
+        if: ${{ endsWith(inputs.working_directory, '/ios') }}
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable

@@ -10,10 +10,7 @@ on:
         default: 'both'
         type: choice
         required: false
-        options:
-          - ios
-          - android
-          - both
+        options: [ios, android, both]
 
 jobs:
   install-and-test:
@@ -28,8 +25,8 @@ jobs:
           os: ubuntu-latest
           bundle: false
 
-      - name: Run tests
-        run: npm test
+      - name: Run tests (Nx)
+        run: yarn nx affected --target=test --base=origin/master --head=HEAD
 
   deploy_android:
     name: Continuous Deployment
@@ -40,7 +37,7 @@ jobs:
       contents: read
     with:
       os: ubuntu-latest
-      working_directory: android
+      working_directory: apps/throwl/android
       store: Google Play Store
     secrets:
       ANDROID_KEYSTORE_FILE: ${{ secrets.ANDROID_KEYSTORE_FILE }}
@@ -58,7 +55,7 @@ jobs:
       contents: read
     with:
       os: macos-latest
-      working_directory: ios
+      working_directory: apps/throwl/ios
       store: TestFight
     secrets:
       IOS_APP_STORE_CONNECT_TEAM_ID: ${{ secrets.APP_STORE_CONNECT_TEAM_ID }}
