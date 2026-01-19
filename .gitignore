@@ -140,7 +140,7 @@ local.properties
 # -----------------------------------------------------------------------------
 # Secrets / signing material (DO NOT COMMIT)
 # -----------------------------------------------------------------------------
-**/.env/
+**/.env
 **/release.keystore
 **/debug.keystore
 **/keystore.properties
