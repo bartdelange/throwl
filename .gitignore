@@ -1,55 +1,103 @@
-# See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+# -----------------------------------------------------------------------------
+# Git ignore rules (organized)
+# -----------------------------------------------------------------------------
+# Reference: https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
-# compiled output
-dist
-tmp
-out-tsc
 
-# dependencies
-node_modules
+# -----------------------------------------------------------------------------
+# Build outputs / compiled artifacts
+# -----------------------------------------------------------------------------
+dist/
+tmp/
+out-tsc/
+build/                 # Xcode build output (generic build folder)
+test-output/
+test-output/           # (kept; explicit)
 
-# IDEs and editors
-/.idea
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
 
-# IDE - VSCode
+# -----------------------------------------------------------------------------
+# Coverage / test logs / misc tool output
+# -----------------------------------------------------------------------------
+coverage/
+.sass-cache/
+connect.lock
+libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+typings/
+
+
+# -----------------------------------------------------------------------------
+# Dependencies (Node / Yarn / Ruby)
+# -----------------------------------------------------------------------------
+node_modules/
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+**/vendor/bundle/      # Bundler
+**/Pods/               # CocoaPods
+
+
+# -----------------------------------------------------------------------------
+# Nx workspace caches
+# -----------------------------------------------------------------------------
+.nx/cache/
+.nx/workspace-data/
+
+
+# -----------------------------------------------------------------------------
+# IDEs / editors (general)
+# -----------------------------------------------------------------------------
+.idea/
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# misc
-/.sass-cache
-/connect.lock
-/coverage
-/libpeerconnection.log
-npm-debug.log
-yarn-error.log
-testem.log
-/typings
+.project
+.classpath
+.settings/
+.c9/
+*.launch
+*.sublime-workspace
 
-# System Files
+
+# -----------------------------------------------------------------------------
+# OS / system files
+# -----------------------------------------------------------------------------
 .DS_Store
 Thumbs.db
 
-.nx/cache
-.nx/workspace-data
 
-# React Native
+# -----------------------------------------------------------------------------
+# React Native / Metro
+# -----------------------------------------------------------------------------
+.metro-health-check*
 
-# OSX
-#
-.DS_Store
 
-# Xcode
-#
-build/
+# -----------------------------------------------------------------------------
+# iOS / Xcode
+# -----------------------------------------------------------------------------
+DerivedData/
+xcuserdata/             # root-level fallback
+**/xcuserdata/          # any nested xcuserdata folders
+*.xccheckout
+*.xcuserstate
+*.moved-aside
+*.hmap
+*.ipa
+
+# Local env file (Xcode build env overrides)
+**/.xcode.env.local
+
+# Xcode project user state (keep defaults where applicable)
 *.pbxuser
 !default.pbxuser
 *.mode1v3
@@ -58,65 +106,46 @@ build/
 !default.mode2v3
 *.perspectivev3
 !default.perspectivev3
-xcuserdata
-*.xccheckout
-*.moved-aside
-DerivedData
-*.hmap
-*.ipa
-*.xcuserstate
-**/.xcode.env.local
 
-# Android/IntelliJ
-#
-build/
-.idea
-.gradle
+
+# -----------------------------------------------------------------------------
+# Android / Gradle / IntelliJ
+# -----------------------------------------------------------------------------
+.gradle/
 local.properties
 *.iml
 *.hprof
 .cxx/
+
+# Keystores (ignore by default, but allow the common debug keystore if desired)
 *.keystore
 !debug.keystore
 
-# node.js
-#
-node_modules/
-npm-debug.log
-yarn-error.log
 
-# fastlane
-#
-# It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
-# screenshots whenever they are needed.
-# For more information about the recommended setup visit:
-# https://docs.fastlane.tools/best-practices/source-control/
-
+# -----------------------------------------------------------------------------
+# fastlane artifacts (generated)
+# -----------------------------------------------------------------------------
 **/fastlane/report.xml
 **/fastlane/Preview.html
-**/fastlane/screenshots
-**/fastlane/test_output
+**/fastlane/screenshots/
+**/fastlane/test_output/
 
-# Bundle artifact
+
+# -----------------------------------------------------------------------------
+# React Native bundle artifact
+# -----------------------------------------------------------------------------
 *.jsbundle
 
-# Ruby / CocoaPods
-**/Pods/
-**/vendor/bundle/
 
-# Temporary files created by Metro to check the health of the file watcher
-.metro-health-check*
-
-# testing
-/coverage
-
-
-test-output
-
-.yarn/*
-!.yarn/cache
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
+# -----------------------------------------------------------------------------
+# Secrets / signing material (DO NOT COMMIT)
+# -----------------------------------------------------------------------------
+**/release.keystore
+**/debug.keystore
+**/keystore.properties
+**/google-services.json
+**/GoogleService-Info.plist
+**/*.p12
+**/*.cer
+**/*.mobileprovision
+**/*.certSigningRequest
