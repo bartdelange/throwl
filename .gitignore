@@ -7,12 +7,11 @@
 # -----------------------------------------------------------------------------
 # Build outputs / compiled artifacts
 # -----------------------------------------------------------------------------
-dist/
-tmp/
-out-tsc/
-build/                 # Xcode build output (generic build folder)
-test-output/
-test-output/           # (kept; explicit)
+**/build/
+**/dist/
+**/out/
+**/out-tsc/
+**/test-output/
 
 
 # -----------------------------------------------------------------------------
@@ -93,6 +92,7 @@ xcuserdata/             # root-level fallback
 *.moved-aside
 *.hmap
 *.ipa
+**/Pods
 
 # Local env file (Xcode build env overrides)
 **/.xcode.env.local
