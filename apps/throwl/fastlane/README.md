@@ -1,5 +1,4 @@
-fastlane documentation
-----
+## fastlane documentation
 
 # Installation
 
@@ -31,8 +30,7 @@ Bump marketing version and build number
 
 Build (and optionally upload) a TestFlight release bundle
 
-----
-
+---
 
 ## Android
 
@@ -52,7 +50,7 @@ Bump versionName and versionCode
 
 Build (and optionally upload) a Beta/Release bundle
 
-----
+---
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
 
