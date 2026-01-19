@@ -10,6 +10,7 @@ This document explains how to clone, run, and contribute safely.
 ## Prerequisites
 
 ### Required
+
 - Node.js (use the version from `.nvmrc`)
 - Yarn (this repo uses **Yarn 4**)
 - Git
@@ -17,10 +18,12 @@ This document explains how to clone, run, and contribute safely.
 ### Platform-specific
 
 **Android**
+
 - Android Studio
 - JDK compatible with your Android setup
 
 **iOS (macOS only)**
+
 - Xcode
 - Ruby + Bundler (only needed for CocoaPods / Fastlane)
 
@@ -35,7 +38,7 @@ cd throwl
 
 ### 2. Install dependencies
 
-yarn install
+`yarn install`
 
 > The `postinstall` script runs `patch-package` automatically.
 
@@ -45,14 +48,12 @@ yarn install
 
 ### Android (debug)
 
-yarn nx run @throwl/throwl:run-android
+`nx run @throwl/throwl:run-android`
 
 ### iOS (debug, macOS only)
 
-yarn nx run @throwl/throwl:pod-install  
-yarn nx run @throwl/throwl:run-ios
-
-Fastlane is **not required** for local debug builds.
+`nx run @throwl/throwl:pod-install`  
+`nx run @throwl/throwl:run-ios`
 
 ---
 
@@ -67,20 +68,25 @@ To enable authentication and online features, you must supply your own Firebase 
 1. Create a Firebase project
 2. Register an **Android app** and an **iOS app**
 3. Download the configuration files:
-  - Android: `google-services.json`
-  - iOS: `GoogleService-Info.plist`
+
+- Android: `google-services.json`
+- iOS: `GoogleService-Info.plist`
 
 4. Place the files here:
 
+```
 apps/throwl/android/app/google-services.json  
 apps/throwl/ios/Throwl/GoogleService-Info.plist
+```
 
 Example placeholder files exist:
 
+```
 apps/throwl/android/app/google-services.json.example  
 apps/throwl/ios/Throwl/GoogleService-Info.plist.example
+```
 
-Do **not** commit real Firebase configuration files.
+> Do **not** commit real Firebase configuration files.
 
 ### Option B: Work without Firebase
 
@@ -92,6 +98,7 @@ If you are working on UI, layout, or offline logic, you may stub or bypass Fireb
 ## Signing keys & store distribution
 
 ### Android
+
 - Debug builds use the default debug keystore (no setup required)
 - Release builds require a keystore and `keystore.properties`
 
@@ -104,6 +111,7 @@ The following files must **never** be committed:
 ```
 
 ### iOS
+
 - App Store / TestFlight distribution is handled via Fastlane and Match
 - Signing credentials are **not available** to contributors
 
@@ -128,20 +136,20 @@ GitHub does **not** expose repository secrets to forked pull requests.
 
 ### Lint
 
-yarn lint:check  
-yarn lint:fix
+`yarn run lint:check`  
+`yarn run lint:fix`
 
 ### Format
 
-yarn format
+`yarn run format`
 
 ### Tests
 
-yarn test
+`yarn test`
 
 ### Sync NX libraries (advanced / maintainers)
 
-yarn sync
+`yarn run sync`
 
 ---
 
@@ -172,6 +180,23 @@ If you accidentally commit something sensitive, remove it immediately and notify
 - Keep pull requests focused and small
 - Clearly describe **what changed and why**
 - Include screenshots or recordings for UI changes when relevant
+
+---
+
+## Git hooks (Husky)
+
+This repo uses Husky to run checks before commits.
+
+Husky is installed automatically when you run:
+
+`yarn install`
+
+- The pre-commit hook runs `lint-staged` to ensure code quality.
+- The pre-push hook runs `yarn test:affected` to ensure tests pass before pushing.
+
+If hooks are not running for any reason, you can reinstall them manually:
+
+`yarn run prepare`
 
 ---
 
