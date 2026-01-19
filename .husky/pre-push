@@ -1,1 +1,1 @@
-yarn lint:check
+yarn test:affected

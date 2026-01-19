@@ -8,11 +8,13 @@
     "lint:fix": "nx run-many --target=lint --all --parallel --maxParallel=5 --fix",
     "format": "nx format:write",
     "test": "nx run-many --target=test --all --parallel --maxParallel=5",
+    "test:affected": "nx affected --target=test --parallel --maxParallel=5",
     "postinstall": "patch-package",
     "sync": "yarn sync:libs && yarn sync:jest-libs && yarn sync:typecheck",
     "sync:libs": "node scripts/sync-nx-packages.mjs",
     "sync:jest-libs": "node scripts/patch-lib-jest-configs.mjs",
-    "sync:typecheck": "node scripts/add-typecheck-target.mjs"
+    "sync:typecheck": "node scripts/add-typecheck-target.mjs",
+    "prepare": "husky"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
