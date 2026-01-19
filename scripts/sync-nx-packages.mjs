@@ -54,6 +54,8 @@ function ensureLibPackageJson({ projectJsonPath, importPath }) {
     exports: {
       '.': {
         types: './src/index.ts',
+        default: './src/index.ts',
+        'react-native': './src/index.ts',
         [CONDITION]: './src/index.ts',
       },
     },
@@ -74,6 +76,8 @@ function ensureLibPackageJson({ projectJsonPath, importPath }) {
   current.exports = current.exports ?? {};
   current.exports['.'] = current.exports['.'] ?? {};
   current.exports['.'].types = './src/index.ts';
+  current.exports['.'].default = './src/index.ts';
+  current.exports['.']['react-native'] = './src/index.ts';
   current.exports['.'][CONDITION] = './src/index.ts';
 
   writeJson(pkgPath, current);

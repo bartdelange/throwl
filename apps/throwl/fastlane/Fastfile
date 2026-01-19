@@ -1,0 +1,88 @@
+default_platform(:ios)
+
+DEVELOPER_APP_IDENTIFIER = ENV.fetch("DEVELOPER_APP_IDENTIFIER", nil)
+APPLE_ISSUER_ID = ENV.fetch("APPLE_ISSUER_ID", nil)
+APPLE_KEY_ID = ENV.fetch("APPLE_KEY_ID", nil)
+APPLE_KEY_CONTENT = ENV.fetch("APPLE_KEY_CONTENT", nil)
+
+platform :ios do
+  desc "Bump marketing version and build number"
+  lane :bump_version do |options|
+    increment_version_number(
+      version_number: options.fetch(:version),
+      xcodeproj: "ios/Throwl.xcodeproj"
+    )
+    increment_build_number(xcodeproj: "ios/Throwl.xcodeproj")
+  end
+
+  desc "Build (and optionally upload) a TestFlight release bundle"
+  lane :beta do
+    setup_ci
+
+    cocoapods(
+      clean_install: true,
+      podfile: "ios/Podfile"
+    )
+
+    api_key = app_store_connect_api_key(
+      key_id: APPLE_KEY_ID,
+      issuer_id: APPLE_ISSUER_ID,
+      key_content: APPLE_KEY_CONTENT,
+      duration: 1200,
+      in_house: false
+    )
+
+    match(
+      type: "appstore",
+      app_identifier: DEVELOPER_APP_IDENTIFIER,
+      api_key: api_key
+    )
+
+    build_app(
+      scheme: "throwl",
+      workspace: "ios/Throwl.xcworkspace",
+      clean: true,
+      export_method: "app-store",
+      output_directory: "fastlane/output"
+    )
+
+    upload_to_testflight(
+      api_key: api_key,
+      app_identifier: DEVELOPER_APP_IDENTIFIER,
+      skip_waiting_for_build_processing: true,
+      skip_submission: true,
+      distribute_external: false,
+      notify_external_testers: false
+    )
+  end
+end
+
+platform :android do
+  desc "Bump versionName and versionCode"
+  lane :bump_version do |options|
+    android_set_version_name(version_name: options.fetch(:version))
+    android_set_version_code
+  end
+
+  desc "Build (and optionally upload) a Beta/Release bundle"
+  lane :beta do |options|
+    upload = options.fetch(:upload, ENV.fetch("UPLOAD", "true")).to_s.downcase == "true"
+
+    gradle(
+      project_dir: "android",
+      task: "bundleRelease"
+    )
+
+    aab_path = "android/app/build/outputs/bundle/release/app-release.aab"
+
+    if upload
+      upload_to_play_store(
+        aab: aab_path,
+        track: "internal"
+      )
+    else
+      UI.important("UPLOAD=false -> skipping upload_to_play_store (dry run)")
+      UI.message("Built AAB should be at: #{aab_path}")
+    end
+  end
+end

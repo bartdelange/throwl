@@ -6614,7 +6614,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@throwl/shared-domain-models@workspace:libs/shared/domain/models":
+"@throwl/shared-domain-models@workspace:*, @throwl/shared-domain-models@workspace:libs/shared/domain/models":
   version: 0.0.0-use.local
   resolution: "@throwl/shared-domain-models@workspace:libs/shared/domain/models"
   languageName: unknown
@@ -6668,6 +6668,7 @@ __metadata:
     "@react-navigation/native-stack": "npm:^7.9.1"
     "@react-navigation/stack": "npm:^7.6.14"
     "@sayem314/react-native-keep-awake": "npm:^1.4.0"
+    "@throwl/shared-domain-models": "workspace:*"
     "@types/babel__core": "npm:^7"
     "@types/react-native-confetti": "npm:^0.1.4"
     "@types/validator": "npm:^13.15.10"

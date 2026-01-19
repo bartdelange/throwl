@@ -3,22 +3,29 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/throwl/src",
   "projectType": "application",
-  "tags": ["type:app", "scope:throwl"],
+  "tags": [
+    "type:app",
+    "scope:throwl"
+  ],
   "// targets": "to see all targets run: nx show project @throwl/feature-auth --web",
   "targets": {
     "run-ios": {
       "executor": "@nx/react-native:run-ios",
-      "dependsOn": ["writeXcodeEnv"]
+      "dependsOn": [
+        "writeXcodeEnv"
+      ]
     },
     "build-ios": {
       "executor": "@nx/react-native:build-ios",
-      "dependsOn": ["writeXcodeEnv"]
+      "dependsOn": [
+        "writeXcodeEnv"
+      ]
     },
     "writeXcodeEnv": {
       "executor": "nx:run-commands",
       "options": {
         "cwd": "{projectRoot}",
-        "command": "env -u PREFIX node ../scripts/write-xcode-env.js"
+        "command": "env -u PREFIX node ../../scripts/write-xcode-env.js"
       }
     },
     "setAndroidVersion": {
@@ -66,6 +73,14 @@
       "options": {
         "cwd": "apps/throwl/ios",
         "command": "bundle exec fastlane deploy"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "cwd": "{workspaceRoot}",
+        "command": "tsc -p apps/throwl/tsconfig.json --noEmit"
       }
     }
   }

@@ -1,4 +1,5 @@
 name: Update Cocoapods Dependencies after Dependabot package upgrade
+
 on:
   push:
     branches:
@@ -12,6 +13,7 @@ jobs:
     name: Run pod install
     runs-on: macos-latest
     timeout-minutes: 15
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -20,7 +22,7 @@ jobs:
         uses: ./.github/actions/reusable-setup/
         with:
           os: ubuntu-latest
-          bundle: false
+          bundle: true
 
       - name: Cache pods
         uses: actions/cache@v4
@@ -30,15 +32,20 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pods-
 
+      # IMPORTANT: run pods through bundler so CocoaPods version is controlled by apps/throwl/Gemfile
       - name: Install Cocoapods Packages
-        run: pushd apps/throwl/ios && pod update && pod install --verbose --repo-update && popd
+        run: |
+          pushd apps/throwl/ios
+          bundle exec pod update
+          bundle exec pod install --verbose --repo-update
+          popd
 
       - name: Generate Commit Message
         id: generate_commit_message
         run: |
           branch=${GITHUB_REF#refs/heads/}
           commit_message="[dependabot skip] :arrow_up: Bump Cocoapods Packages for${branch//dependabot\/npm_and_yarn\// }"
-          echo ::set-output name=commit_message::$commit_message
+          echo "commit_message=$commit_message" >> "$GITHUB_OUTPUT"
 
       - uses: stefanzweifel/git-auto-commit-action@v4.1.1
         with:

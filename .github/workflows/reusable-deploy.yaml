@@ -6,14 +6,16 @@ on:
       os:
         type: string
         required: true
+
       store:
         type: string
         required: true
-        description: One of `ios` or `android`
+        description: Friendly store name (e.g. "Google Play Store" or "TestFlight")
+
       working_directory:
         type: string
         required: true
-        description: One of `ios` or `android`
+        description: One of `apps/throwl/ios` or `apps/throwl/android`
 
     secrets:
       # iOS
@@ -27,6 +29,7 @@ on:
       IOS_APPLE_KEY_ID:
       IOS_APPLE_ISSUER_ID:
       IOS_APPLE_KEY_CONTENT:
+      IOS_GOOGLE_SERVICE_INFO_PLIST_B64:
 
       # Android
       ANDROID_KEYSTORE_FILE:
@@ -34,16 +37,18 @@ on:
       ANDROID_KEYSTORE_KEY_PASSWORD:
       ANDROID_KEYSTORE_STORE_PASSWORD:
       ANDROID_PLAY_CONFIG_JSON:
+      ANDROID_GOOGLE_SERVICES_JSON_B64:
 
 jobs:
   build_and_deploy:
-    name: Build and Deploy to ${{ inputs.store }},
+    name: Build and Deploy to ${{ inputs.store }}
     runs-on: ${{ inputs.os }}
     permissions:
       contents: read
     concurrency:
       group: ${{ github.workflow }}-${{ inputs.os }}-${{ inputs.working_directory }}
       cancel-in-progress: true
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -52,26 +57,38 @@ jobs:
         uses: ./.github/actions/reusable-setup/
         with:
           os: ubuntu-latest
-          working_directory: ${{ inputs.working_directory }}
           bundle: true
+
       #region Android
       - name: Use JAVA 22
         if: ${{ endsWith(inputs.working_directory, '/android') }}
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu' # See 'Supported distributions' for available options
-          java-version: '22.0.2'
+          distribution: "zulu"
+          java-version: "22.0.2"
 
       - name: Configure Keystore
         if: ${{ endsWith(inputs.working_directory, '/android') }}
         working-directory: ${{ inputs.working_directory }}
         run: |
-          echo "$KEYSTORE_FILE" > keystore.jks.b64
-          base64 -d -i keystore.jks.b64 > app/keystore.jks
-          echo "storeFile=keystore.jks" >> keystore.properties
-          echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> keystore.properties
-          echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> keystore.properties
-          echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> keystore.properties
+          python3 - <<'PY'
+          import base64, os, pathlib
+
+          wd = pathlib.Path(".")
+          app_dir = wd / "app"
+          app_dir.mkdir(parents=True, exist_ok=True)
+
+          # keystore
+          ks_b64 = os.environ["KEYSTORE_FILE"]
+          (app_dir / "keystore.jks").write_bytes(base64.b64decode(ks_b64))
+
+          # keystore.properties (created in android/)
+          with open(wd / "keystore.properties", "a", encoding="utf-8") as f:
+            f.write("storeFile=keystore.jks\n")
+            f.write(f"keyAlias={os.environ['KEYSTORE_KEY_ALIAS']}\n")
+            f.write(f"storePassword={os.environ['KEYSTORE_STORE_PASSWORD']}\n")
+            f.write(f"keyPassword={os.environ['KEYSTORE_KEY_PASSWORD']}\n")
+          PY
         env:
           KEYSTORE_FILE: ${{ secrets.ANDROID_KEYSTORE_FILE }}
           KEYSTORE_KEY_ALIAS: ${{ secrets.ANDROID_KEYSTORE_KEY_ALIAS }}
@@ -82,13 +99,53 @@ jobs:
         if: ${{ endsWith(inputs.working_directory, '/android') }}
         working-directory: ${{ inputs.working_directory }}
         run: |
-          echo "$PLAY_CONFIG_JSON" > playstore_config.json.b64
-          base64 -d -i playstore_config.json.b64 > playstore_config.json
+          python3 - <<'PY'
+          import base64, os, pathlib
+
+          wd = pathlib.Path(".")
+          play_b64 = os.environ["PLAY_CONFIG_JSON"]
+          (wd / "playstore_config.json").write_bytes(base64.b64decode(play_b64))
+          PY
         env:
           PLAY_CONFIG_JSON: ${{ secrets.ANDROID_PLAY_CONFIG_JSON }}
+
+      - name: Create google-services.json (Firebase)
+        if: ${{ endsWith(inputs.working_directory, '/android') }}
+        working-directory: ${{ inputs.working_directory }}
+        run: |
+          python3 - <<'PY'
+          import base64, os, pathlib
+
+          wd = pathlib.Path(".")
+          app_dir = wd / "app"
+          app_dir.mkdir(parents=True, exist_ok=True)
+
+          gs_b64 = os.environ["GOOGLE_SERVICES_JSON_B64"]
+          (app_dir / "google-services.json").write_bytes(base64.b64decode(gs_b64))
+          PY
+        env:
+          GOOGLE_SERVICES_JSON_B64: ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON_B64 }}
       #endregion
 
       #region iOS
+      - name: Create GoogleService-Info.plist (Firebase)
+        if: ${{ endsWith(inputs.working_directory, '/ios') }}
+        working-directory: ${{ inputs.working_directory }}
+        run: |
+          python3 - <<'PY'
+          import base64, os, pathlib
+
+          wd = pathlib.Path(".")
+          # expected path: ios/Throwl/GoogleService-Info.plist
+          target = wd / "Throwl" / "GoogleService-Info.plist"
+          target.parent.mkdir(parents=True, exist_ok=True)
+
+          plist_b64 = os.environ["GOOGLE_SERVICE_INFO_PLIST_B64"]
+          target.write_bytes(base64.b64decode(plist_b64))
+          PY
+        env:
+          GOOGLE_SERVICE_INFO_PLIST_B64: ${{ secrets.IOS_GOOGLE_SERVICE_INFO_PLIST_B64 }}
+
       - name: Use latest xcode
         if: ${{ endsWith(inputs.working_directory, '/ios') }}
         uses: maxim-lobanov/setup-xcode@v1
@@ -97,16 +154,22 @@ jobs:
       #endregion
 
       - name: Distribute app to ${{ inputs.store }} 🚀
-        working-directory: ${{ inputs.working_directory }}
-        run: bundle exec fastlane beta
+        working-directory: apps/throwl
+        run: |
+          if [[ "${{ inputs.working_directory }}" == *"/ios" ]]; then
+            bundle exec fastlane ios beta
+          else
+            bundle exec fastlane android beta
+          fi
         env:
-          APP_STORE_CONNECT_TEAM_ID: ${{ (inputs.working_directory == 'ios' && secrets.IOS_APP_STORE_CONNECT_TEAM_ID) || '' }}
-          DEVELOPER_APP_ID: ${{ (inputs.working_directory == 'ios' && secrets.IOS_DEVELOPER_APP_ID) || '' }}
-          DEVELOPER_APP_IDENTIFIER: ${{ (inputs.working_directory == 'ios' && secrets.IOS_DEVELOPER_APP_IDENTIFIER) || '' }}
-          DEVELOPER_PORTAL_TEAM_ID: ${{ (inputs.working_directory == 'ios' && secrets.IOS_DEVELOPER_PORTAL_TEAM_ID) || '' }}
-          FASTLANE_APPLE_ID: ${{ (inputs.working_directory == 'ios' && secrets.IOS_FASTLANE_APPLE_ID) || '' }}
-          MATCH_PASSWORD: ${{ (inputs.working_directory == 'ios' && secrets.IOS_MATCH_PASSWORD) || '' }}
-          MATCH_GIT_BASIC_AUTHORIZATION: ${{ (inputs.working_directory == 'ios' && secrets.IOS_MATCH_GIT_BASIC_AUTHORIZATION) || '' }}
-          APPLE_KEY_ID: ${{ (inputs.working_directory == 'ios' && secrets.IOS_APPLE_KEY_ID) || '' }}
-          APPLE_ISSUER_ID: ${{ (inputs.working_directory == 'ios' && secrets.IOS_APPLE_ISSUER_ID) || '' }}
-          APPLE_KEY_CONTENT: ${{ (inputs.working_directory == 'ios' && secrets.IOS_APPLE_KEY_CONTENT) || '' }}
+          # iOS (only set when iOS)
+          APP_STORE_CONNECT_TEAM_ID: ${{ (endsWith(inputs.working_directory, '/ios') && secrets.IOS_APP_STORE_CONNECT_TEAM_ID) || '' }}
+          DEVELOPER_APP_ID: ${{ (endsWith(inputs.working_directory, '/ios') && secrets.IOS_DEVELOPER_APP_ID) || '' }}
+          DEVELOPER_APP_IDENTIFIER: ${{ (endsWith(inputs.working_directory, '/ios') && secrets.IOS_DEVELOPER_APP_IDENTIFIER) || '' }}
+          DEVELOPER_PORTAL_TEAM_ID: ${{ (endsWith(inputs.working_directory, '/ios') && secrets.IOS_DEVELOPER_PORTAL_TEAM_ID) || '' }}
+          FASTLANE_APPLE_ID: ${{ (endsWith(inputs.working_directory, '/ios') && secrets.IOS_FASTLANE_APPLE_ID) || '' }}
+          MATCH_PASSWORD: ${{ (endsWith(inputs.working_directory, '/ios') && secrets.IOS_MATCH_PASSWORD) || '' }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ (endsWith(inputs.working_directory, '/ios') && secrets.IOS_MATCH_GIT_BASIC_AUTHORIZATION) || '' }}
+          APPLE_KEY_ID: ${{ (endsWith(inputs.working_directory, '/ios') && secrets.IOS_APPLE_KEY_ID) || '' }}
+          APPLE_ISSUER_ID: ${{ (endsWith(inputs.working_directory, '/ios') && secrets.IOS_APPLE_ISSUER_ID) || '' }}
+          APPLE_KEY_CONTENT: ${{ (endsWith(inputs.working_directory, '/ios') && secrets.IOS_APPLE_KEY_CONTENT) || '' }}
