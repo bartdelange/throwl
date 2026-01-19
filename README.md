@@ -1,102 +1,102 @@
 # Throwl
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+This repository contains the **Throwl** monorepo, managed with Nx and Yarn.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+The workspace is intentionally opinionated. Code generation is followed by a
+mandatory normalization step to keep configuration, exports, and conventions
+consistent across the repo.
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/react-native?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+---
 
-## Run tasks
+## Running the app
 
-To run the dev server for your app, use:
+Run the iOS app:
 
-```sh
-npx nx serve throwl
-```
+`nx run @throwl/throwl:run-ios`
 
-To create a production bundle:
+Run the Android app:
 
-```sh
-npx nx build throwl
-```
+`nx run @throwl/throwl:run-android`
 
-To see all available targets to run for a project, run:
+To see all available targets for a project:
 
-```sh
-npx nx show project throwl
-```
+`nx show project @throwl/throwl`
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+Targets are either inferred automatically or defined in `project.json` /
+`package.json`.
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
 
-## Add new projects
+## Generating code (important)
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
+We use Nx generators to create apps and libraries, **but generation is never the
+final step**.
 
-Use the plugin's generator to create new projects.
+After every generator run, you must run:
 
-To generate a new application, use:
+`yarn run sync`
 
-```sh
-npx nx g @nx/react-native:app demo
-```
+### Why?
 
-To generate a new library, use:
+Generators intentionally produce generic output.
+`yarn run sync` brings generated code in line with Throwl’s conventions, such as:
 
-```sh
-npx nx g @nx/react:lib mylib
-```
+- workspace-wide TypeScript config alignment
+- path aliases / exports normalization
+- lint / formatting consistency
+- project structure guarantees
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+Skipping this step will leave the workspace in a partially-configured state.
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### Examples
 
-## Set up CI!
+Generate a new app:
 
-### Step 1
+`nx g @nx/react-native:app demo`
+`yarn run sync`
 
-To connect to Nx Cloud, run the following command:
+Generate a new library:
 
-```sh
-npx nx connect
-```
+`nx g @nx/react:lib mylib`
+`yarn run sync`
 
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+If you forget this step, assume something *will* break later.
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
 
-### Step 2
+## Workspace structure
 
-Use the following command to configure a CI workflow for your workspace:
+- apps/ – runnable applications
+- libs/ – shared and feature libraries
+- tools/ – workspace tooling and scripts
+- nx.json, tsconfig.base.json – global configuration
 
-```sh
-npx nx g ci-workflow
-```
+The workspace is designed to scale without sacrificing type safety or clarity.
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
 
-## Install Nx Console
+## CI
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+CI is expected to run tasks through Nx to take advantage of caching and
+dependency-aware execution.
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+If you add or modify projects, ensure they have the correct targets defined
+and that yarn run sync has been applied before pushing.
 
-## Useful links
+---
 
-Learn more:
+## Editor support
 
-- [Learn more about this workspace setup](https://nx.dev/nx-api/react-native?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Nx Console is recommended (VS Code or IntelliJ).
+It provides generator UIs, task runners, and better autocompletion.
 
-And join the Nx community:
+---
 
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## Notes for contributors
+
+- Do not manually copy existing libs or apps
+- Always use generators
+- Always run yarn run sync after generation
+- If something feels “slightly off”, assume sync was skipped
+
+This repo favors **repeatability over convenience**.
