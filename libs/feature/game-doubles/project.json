@@ -3,10 +3,7 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/feature/game-doubles/src",
   "projectType": "library",
-  "tags": [
-    "type:feature",
-    "scope:game-doubles"
-  ],
+  "tags": ["type:feature", "scope:game-doubles"],
   "// targets": "to see all targets run: nx show project @throwl/feature-game-doubles --web",
   "targets": {
     "typecheck": {
