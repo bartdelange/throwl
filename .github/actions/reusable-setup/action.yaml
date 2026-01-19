@@ -1,24 +1,23 @@
 name: Setup action jobs
+
 inputs:
   os:
     type: string
     required: true
+
   bundle:
     type: boolean
     required: true
-  working_directory:
-    type: string
-    required: false
-    description: One of `apps/throwl/ios` or `apps/throwl/android`
+
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - uses: actions/setup-node@v4
       with:
         node-version-file: .nvmrc
         check-latest: true
-        cache: 'yarn'
+        cache: "yarn"
 
     - name: Cache node_modules
       uses: actions/cache@v4
@@ -38,11 +37,12 @@ runs:
     - name: Use Ruby v3.3.6
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: '3.3.6'
+        ruby-version: "3.3.6"
         bundler-cache: true
 
+    # IMPORTANT: Gemfile moved to apps/throwl, so bundle install must run there
     - name: Install bundle
       shell: bash
       if: ${{ inputs.bundle }}
-      working-directory: ${{ inputs.working_directory }}
+      working-directory: apps/throwl
       run: bundle install --jobs 4 --retry 3
