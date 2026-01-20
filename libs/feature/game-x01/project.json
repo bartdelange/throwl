@@ -11,7 +11,7 @@
       "outputs": [],
       "options": {
         "cwd": "{workspaceRoot}",
-        "command": "tsc -p libs/feature/game-x01/tsconfig.json --noEmit"
+        "command": "tsc -p libs/feature/game-x01/tsconfig.lib.json --noEmit"
       }
     }
   }

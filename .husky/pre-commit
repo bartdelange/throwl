@@ -1,1 +1,3 @@
-npx lint-staged
+nx affected -t lint,typecheck  --parallel --maxParallel=5
+nx format --affected
+git update-index --again

@@ -15,12 +15,6 @@
     "sync:jest-libs": "node scripts/patch-lib-jest-configs.mjs",
     "sync:typecheck": "node scripts/add-typecheck-target.mjs"
   },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "nx affected -t lint --parallel --maxParallel=5",
-      "nx format --affected"
-    ]
-  },
   "workspaces": [
     "apps/*",
     "libs/**"
@@ -77,7 +71,6 @@
     "jest-util": "^30.0.2",
     "jiti": "2.4.2",
     "jsdom": "~22.1.0",
-    "lint-staged": "^16.2.7",
     "metro-config": "~0.82.4",
     "metro-resolver": "~0.82.4",
     "nx": "22.3.3",

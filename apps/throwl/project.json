@@ -73,7 +73,7 @@
       "outputs": [],
       "options": {
         "cwd": "{workspaceRoot}",
-        "command": "tsc -p apps/throwl/tsconfig.json --noEmit"
+        "command": "tsc -p apps/throwl/tsconfig.app.json --noEmit"
       }
     }
   }

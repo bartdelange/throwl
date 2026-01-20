@@ -11,7 +11,7 @@
       "outputs": [],
       "options": {
         "cwd": "{workspaceRoot}",
-        "command": "tsc -p libs/shared/ui/tsconfig.json --noEmit"
+        "command": "tsc -p libs/shared/ui/tsconfig.lib.json --noEmit"
       }
     }
   }

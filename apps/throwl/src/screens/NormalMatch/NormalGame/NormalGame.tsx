@@ -1,10 +1,10 @@
 import {
+  DartFinishers,
   HOME_SCREEN,
   NORMAL_GAME_DETAIL_SCREEN,
   NORMAL_GAME_SCREEN,
   PLAYED_GAMES_SCREEN,
   RootStackParamList,
-  DartFinishers,
 } from '@throwl/shared-constants';
 import { useNavigation, useRoute } from '@react-navigation/core';
 import { RouteProp } from '@react-navigation/native';
