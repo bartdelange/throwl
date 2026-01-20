@@ -2,7 +2,7 @@ import {
   NEW_GAME_SCREEN,
   NORMAL_GAME_DETAIL_SCREEN,
   RootStackParamList,
-} from '../../../constants/navigation';
+} from '@throwl/shared-constants';
 import { useNavigation, useRoute } from '@react-navigation/core';
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';

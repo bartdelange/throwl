@@ -10,7 +10,7 @@ import {
   PROFILE_SCREEN,
   RootStackParamList,
   UNAUTHENTICATED_SCREEN,
-} from '../constants/navigation';
+} from '@throwl/shared-constants';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { AppBar } from '../components/AppBar/AppBar';

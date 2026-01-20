@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+/* eslint-disable-file max-lines */
 import { DartboardScoreType, Throw } from '@throwl/shared-domain-models';
 
 export const DartFinishers: { [key: number]: Throw[] } = {

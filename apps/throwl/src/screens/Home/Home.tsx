@@ -9,7 +9,7 @@ import {
   NEW_GAME_SCREEN,
   PLAYED_GAMES_SCREEN,
   RootStackParamList,
-} from '../../constants/navigation';
+} from '@throwl/shared-constants';
 import { useAuthContext } from '../../context/AuthContext';
 import { FullScreenLayout } from '../../layouts/FullScreen/FullScreen';
 import { useStyles } from './styles';

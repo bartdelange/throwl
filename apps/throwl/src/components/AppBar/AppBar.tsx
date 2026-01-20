@@ -5,7 +5,7 @@ import {
   FRIENDS_SCREEN,
   PROFILE_SCREEN,
   UNAUTHENTICATED_SCREEN,
-} from '../../constants/navigation';
+} from '@throwl/shared-constants';
 import { useAuthContext } from '../../context/AuthContext';
 import { useAppTheme } from '../../App/theming';
 import { useStyles } from './AppBar.styles';

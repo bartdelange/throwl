@@ -16,7 +16,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   RootStackParamList,
   UNAUTHENTICATED_SCREEN,
-} from '../../constants/navigation';
+} from '@throwl/shared-constants';
 import { LogoButton } from '../../components/LogoButton/LogoButton';
 import { AppModal } from '../../components/AppModal/AppModal';
 import { Loader } from '../../components/Loader/Loader';

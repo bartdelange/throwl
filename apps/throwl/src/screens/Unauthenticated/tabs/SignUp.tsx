@@ -7,7 +7,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import isEmail from 'validator/es/lib/isEmail';
 import { AppModal } from '../../../components/AppModal/AppModal';
 import { LogoButton } from '../../../components/LogoButton/LogoButton';
-import { RootStackParamList } from '../../../constants/navigation';
+import { RootStackParamList } from '@throwl/shared-constants';
 import { useAuthContext } from '../../../context/AuthContext';
 import { FormInput } from '../../../components/FormInput/FormInput';
 import { Loader } from '../../../components/Loader/Loader';
