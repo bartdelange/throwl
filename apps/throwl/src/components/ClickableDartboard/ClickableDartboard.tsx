@@ -3,7 +3,6 @@ import interpolateColor from 'color-interpolate';
 import Svg, { Path } from 'react-native-svg';
 import { Throw } from '@throwl/shared-domain-models';
 import { numberParts } from './constants/numbers';
-
 import { parts } from './constants/parts';
 
 export interface ClickablePart extends Throw {

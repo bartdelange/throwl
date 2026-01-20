@@ -12,7 +12,7 @@ import {
   HOME_SCREEN,
   NORMAL_GAME_SCREEN,
   RootStackParamList,
-} from '../../../constants/navigation';
+} from '@throwl/shared-constants';
 import { useAuthContext } from '../../../context/AuthContext';
 import { Friend, GuestUser, User } from '@throwl/shared-domain-models';
 import { PlayerItem } from './components/PlayerItem/PlayerItem';

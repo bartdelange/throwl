@@ -7,7 +7,7 @@ import { NewGameProvider } from '../../context/NewGameContext';
 import { AppBar } from '../../components/AppBar/AppBar';
 import { useRoute } from '@react-navigation/native';
 import { RouteProp } from '@react-navigation/core';
-import { RootStackParamList } from '../../constants/navigation';
+import { RootStackParamList } from '@throwl/shared-constants';
 
 export enum GameFlowStackNames {
   GAME_MODE = 'GameMode',

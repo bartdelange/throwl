@@ -39,7 +39,7 @@ platform :ios do
     )
 
     build_app(
-      scheme: "throwl",
+      scheme: "Throwl",
       workspace: "ios/Throwl.xcworkspace",
       clean: true,
       export_method: "app-store",

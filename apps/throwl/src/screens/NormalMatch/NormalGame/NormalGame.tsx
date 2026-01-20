@@ -4,7 +4,8 @@ import {
   NORMAL_GAME_SCREEN,
   PLAYED_GAMES_SCREEN,
   RootStackParamList,
-} from '../../../constants/navigation';
+  DartFinishers,
+} from '@throwl/shared-constants';
 import { useNavigation, useRoute } from '@react-navigation/core';
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -31,7 +32,6 @@ import { DropOutModel } from '../../../components/DropOutModel/DropOutModel';
 import { WinnerModal } from '../../../components/WinnerModal/WinnerModal';
 import { useSpeak } from '../../../hooks/useSpeak';
 import { useStyles } from './styles';
-import { DartFinishers } from '../../../constants/dart-finishers';
 import { GameService } from '../../../services/game_service';
 import { useX01GameController } from '../../../hooks/useX01GameController';
 

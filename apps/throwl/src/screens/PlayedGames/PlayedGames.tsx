@@ -4,7 +4,7 @@ import {
   NORMAL_GAME_DETAIL_SCREEN,
   NORMAL_GAME_SCREEN,
   RootStackParamList,
-} from '../../constants/navigation';
+} from '@throwl/shared-constants';
 import { useNavigation } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { format } from 'date-fns';

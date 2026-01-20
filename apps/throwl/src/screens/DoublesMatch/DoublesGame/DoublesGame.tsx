@@ -7,7 +7,7 @@ import {
   HOME_SCREEN,
   PLAYED_GAMES_SCREEN,
   RootStackParamList,
-} from '../../../constants/navigation';
+} from '@throwl/shared-constants';
 import { RouteProp } from '@react-navigation/native';
 import { Dimensions, FlatList, Pressable, View } from 'react-native';
 import { DartboardScoreType, Turn } from '@throwl/shared-domain-models';
