@@ -31,7 +31,7 @@ runs:
     - name: Install dependencies
       shell: bash
       if: steps.node_modules-cache.outputs.cache-hit != 'true'
-      run: yarn install --frozen-lockfile
+      run: yarn install --immutable --immutable-cache --check-cache
 
     - name: Use Ruby v3.3.6
       uses: ruby/setup-ruby@v1
