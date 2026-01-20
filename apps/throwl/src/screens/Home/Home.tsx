@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React from 'react';
+
 import { Dimensions, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { AppLogoLight } from '../../components/AppLogo';

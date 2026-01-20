@@ -12,7 +12,7 @@ import {
   UNAUTHENTICATED_SCREEN,
 } from '@throwl/shared-constants';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React from 'react';
+
 import { AppBar } from '../components/AppBar/AppBar';
 import { useAuthContext } from '../context/AuthContext';
 import { NormalGameDetailScreen } from '../screens/NormalMatch/NormalGameDetail/NormalGameDetail';

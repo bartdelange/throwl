@@ -37,9 +37,9 @@ function pickTsConfig(projectRootAbs) {
   // Prefer a dedicated typecheck config if you want one later
   const candidates = [
     'tsconfig.typecheck.json',
-    'tsconfig.json',
     'tsconfig.lib.json',
     'tsconfig.app.json',
+    'tsconfig.json',
   ];
   for (const c of candidates) {
     const abs = path.join(projectRootAbs, c);
