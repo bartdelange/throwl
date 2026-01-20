@@ -30,4 +30,4 @@ jobs:
           fi
 
       - name: Prettier (repo)
-        run: nx format:check --affected
+        run: yarn nx format:check --affected
