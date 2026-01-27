@@ -23,7 +23,7 @@ import { GuestUser, User, X01Options } from '@throwl/shared-domain-models';
 import { GraphContainer } from './components/GraphContainer/GraphContainer';
 import { StatsContainer } from './components/StatsContainer/StatsContainer';
 import { useStyles } from './styles';
-import { GameService } from '../../../services/game_service';
+import { GameService } from '@throwl/shared-data-access';
 
 export const NormalGameDetailScreen: FC = () => {
   const [selectedUserId, setSelectedUserId] = useState<string>();

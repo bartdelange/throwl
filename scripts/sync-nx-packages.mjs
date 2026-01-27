@@ -5,6 +5,7 @@ import path from 'node:path';
 const ROOT = process.cwd();
 const LIBS_DIR = path.join(ROOT, 'libs');
 const ROOT_PRESET = path.join(ROOT, 'jest.preset.js');
+const TSCONFIG_BASE = path.join(ROOT, 'tsconfig.base.json');
 
 const CONDITION = '@throwl/source';
 
@@ -123,6 +124,52 @@ function generateJestPreset(moduleNameMapperEntries) {
   fs.writeFileSync(ROOT_PRESET, lines.join('\n'), 'utf8');
 }
 
+/**
+ * Remove @throwl/* entries from tsconfig.base.json compilerOptions.paths.
+ * This makes TS5090 go away without needing baseUrl, because paths is the trigger.
+ */
+function evictThrowlPathsFromTsconfigBase() {
+  if (!exists(TSCONFIG_BASE)) {
+    return {
+      touched: false,
+      removed: 0,
+      reason: 'tsconfig.base.json not found',
+    };
+  }
+
+  const cfg = readJson(TSCONFIG_BASE);
+  const co = (cfg.compilerOptions = cfg.compilerOptions ?? {});
+  const paths = co.paths;
+
+  if (!paths || typeof paths !== 'object') {
+    return {
+      touched: false,
+      removed: 0,
+      reason: 'no compilerOptions.paths present',
+    };
+  }
+
+  let removed = 0;
+  for (const key of Object.keys(paths)) {
+    if (typeof key === 'string' && key.startsWith('@throwl/')) {
+      delete paths[key];
+      removed++;
+    }
+  }
+
+  // If empty, remove paths entirely
+  if (Object.keys(paths).length === 0) {
+    delete co.paths;
+  }
+
+  if (removed > 0) {
+    writeJson(TSCONFIG_BASE, cfg);
+    return { touched: true, removed, reason: 'removed @throwl/* from paths' };
+  }
+
+  return { touched: false, removed: 0, reason: 'no @throwl/* keys to remove' };
+}
+
 function main() {
   const projectFiles = findProjectJsonFiles();
 
@@ -142,7 +189,6 @@ function main() {
     const proj = readJson(pj);
 
     // Nx project.json uses "name" as project name; importPath may or may not exist.
-    // In your setup: project.json name is the package name (e.g. "@throwl/shared-ui").
     // Prefer importPath if present, else fallback to name if it looks like @throwl/*
     const importPath =
       proj.importPath ||
@@ -170,12 +216,17 @@ function main() {
 
   generateJestPreset(mapper);
 
+  const tsRes = evictThrowlPathsFromTsconfigBase();
+
   console.log(
     `✅ Synced libs: package.json exports (created ${pkgCreated}, updated ${pkgUpdated})`,
   );
   console.log(`✅ Ensured src/index.ts (created ${indexCreated})`);
   console.log(
     `✅ Regenerated jest.preset.js with ${Object.keys(mapper).length} moduleNameMapper entries`,
+  );
+  console.log(
+    `✅ tsconfig.base.json paths cleanup: ${tsRes.reason} (removed ${tsRes.removed})`,
   );
 }
 

@@ -1,7 +1,8 @@
 /* eslint-disable-file max-lines */
 import { DartboardScoreType, Throw } from '@throwl/shared-domain-models';
 
-export const DartFinishers: { [key: number]: Throw[] } = {
+export type IDartFinishers = Record<number, Throw[]>;
+export const DartFinishers: IDartFinishers = {
   170: [
     { type: DartboardScoreType.Triple, score: 20 },
     { type: DartboardScoreType.Triple, score: 20 },

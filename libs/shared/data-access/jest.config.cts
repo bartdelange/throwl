@@ -1,8 +1,8 @@
-const rootPreset = require('../../../../jest.preset.js');
+const rootPreset = require('../../../jest.preset.js');
 /// <reference types="jest" />
 /// <reference types="node" />
 module.exports = {
-  displayName: '@throwl/shared-data-access-user',
+  displayName: 'data-access',
   preset: 'react-native',
   resolver: '@nx/jest/plugins/resolver',
   moduleFileExtensions: ['ts', 'js', 'html', 'tsx', 'jsx'],
@@ -22,5 +22,5 @@ module.exports = {
       'react-native/jest/assetFileTransformer.js',
     ),
   },
-  coverageDirectory: '../../../../coverage/libs/shared/data-access/user',
+  coverageDirectory: '../../../coverage/libs/shared/data-access',
 };

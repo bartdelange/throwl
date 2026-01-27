@@ -31,7 +31,7 @@ import { WinnerModal } from '../../../components/WinnerModal/WinnerModal';
 import { useSpeak } from '../../../hooks/useSpeak';
 import { useAppTheme } from '../../../App/theming';
 import { ScoreTable } from './ScoreTable/ScoreTable';
-import { GameService } from '../../../services/game_service';
+import { GameService } from '@throwl/shared-data-access';
 import { useDoublesGameController } from '../../../hooks/useDoublesGameController';
 
 export const DoublesGameScreen: FC = () => {

@@ -6590,21 +6590,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@throwl/shared-data-access-firebase@workspace:libs/shared/data-access/firebase":
+"@throwl/shared-data-access@workspace:*, @throwl/shared-data-access@workspace:libs/shared/data-access":
   version: 0.0.0-use.local
-  resolution: "@throwl/shared-data-access-firebase@workspace:libs/shared/data-access/firebase"
-  languageName: unknown
-  linkType: soft
-
-"@throwl/shared-data-access-game@workspace:libs/shared/data-access/game":
-  version: 0.0.0-use.local
-  resolution: "@throwl/shared-data-access-game@workspace:libs/shared/data-access/game"
-  languageName: unknown
-  linkType: soft
-
-"@throwl/shared-data-access-user@workspace:libs/shared/data-access/user":
-  version: 0.0.0-use.local
-  resolution: "@throwl/shared-data-access-user@workspace:libs/shared/data-access/user"
+  resolution: "@throwl/shared-data-access@workspace:libs/shared/data-access"
   languageName: unknown
   linkType: soft
 
@@ -6669,6 +6657,7 @@ __metadata:
     "@react-navigation/stack": "npm:^7.6.14"
     "@sayem314/react-native-keep-awake": "npm:^1.4.0"
     "@throwl/shared-constants": "workspace:*"
+    "@throwl/shared-data-access": "workspace:*"
     "@throwl/shared-domain-models": "workspace:*"
     "@types/babel__core": "npm:^7"
     "@types/react-native-confetti": "npm:^0.1.4"

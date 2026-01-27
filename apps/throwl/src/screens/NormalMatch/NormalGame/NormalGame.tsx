@@ -32,7 +32,7 @@ import { DropOutModel } from '../../../components/DropOutModel/DropOutModel';
 import { WinnerModal } from '../../../components/WinnerModal/WinnerModal';
 import { useSpeak } from '../../../hooks/useSpeak';
 import { useStyles } from './styles';
-import { GameService } from '../../../services/game_service';
+import { GameService } from '@throwl/shared-data-access';
 import { useX01GameController } from '../../../hooks/useX01GameController';
 
 export const NormalGameScreen: FC = () => {

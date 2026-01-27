@@ -1,10 +1,10 @@
 import { render } from '@testing-library/react-native';
 
-import User from './user';
+import App from './App';
 
-describe('User', () => {
+describe(App.name, () => {
   it('should render successfully', () => {
-    const { root } = render(<User />);
+    const { root } = render(<App />);
     expect(root).toBeTruthy();
   });
 });

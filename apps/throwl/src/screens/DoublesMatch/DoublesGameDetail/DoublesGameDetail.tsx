@@ -23,7 +23,7 @@ import { DoublesOptions, GuestUser, User } from '@throwl/shared-domain-models';
 import { GraphContainer } from './components/GraphContainer/GraphContainer';
 import { StatsContainer } from './components/StatsContainer/StatsContainer';
 import { useStyles } from './styles';
-import { GameService } from '../../../services/game_service';
+import { GameService } from '@throwl/shared-data-access';
 import { DoublesGameHelper } from '../../../lib/doubles_game_helper';
 
 export const DoublesGameDetailScreen: FC = () => {
