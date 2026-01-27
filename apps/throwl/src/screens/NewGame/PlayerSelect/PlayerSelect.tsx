@@ -17,7 +17,7 @@ import { useAuthContext } from '../../../context/AuthContext';
 import { Friend, GuestUser, User } from '@throwl/shared-domain-models';
 import { PlayerItem } from './components/PlayerItem/PlayerItem';
 import { useAppTheme } from '../../../App/theming';
-import { GameService } from '../../../services/game_service';
+import { GameService } from '@throwl/shared-data-access';
 import { FormInput } from '../../../components/FormInput/FormInput';
 import { useStyles } from './PlayerSelect.styles';
 import { useNewGame } from '../../../context/NewGameContext';

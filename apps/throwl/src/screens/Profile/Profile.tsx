@@ -3,7 +3,7 @@ import { ScrollView, TextInput, View } from 'react-native';
 import { useAuthContext } from '../../context/AuthContext';
 import { FullScreenLayout } from '../../layouts/FullScreen/FullScreen';
 import { useStyles } from './styles';
-import { UserService } from '../../services/user_service';
+import { UserService } from '@throwl/shared-data-access';
 import { FormInput } from '../../components/FormInput/FormInput';
 import {
   EmailAuthProvider,

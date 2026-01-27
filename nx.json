@@ -66,10 +66,5 @@
         "serveStaticTargetName": "serve-static"
       }
     }
-  ],
-  "targetDefaults": {
-    "test": {
-      "dependsOn": ["^build"]
-    }
-  }
+  ]
 }

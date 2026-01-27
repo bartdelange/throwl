@@ -15,7 +15,7 @@ import React, {
   useState,
 } from 'react';
 import { User } from '@throwl/shared-domain-models';
-import { UserService } from '../services/user_service';
+import { UserService } from '@throwl/shared-data-access';
 
 interface AuthContextProps {
   user?: User;

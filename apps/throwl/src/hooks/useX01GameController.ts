@@ -12,6 +12,7 @@ import { FlatList } from 'react-native';
 import { GuestUser, Throw, Turn, User } from '@throwl/shared-domain-models';
 import { GameHelper, TurnNeeded } from '../lib/game_helper';
 import { X01GameHelper } from '../lib/x01_game_helper';
+import { IDartFinishers } from '@throwl/shared-constants';
 
 type PlayerBase = { id: string; name: string };
 
@@ -20,7 +21,7 @@ export function useX01GameController<TPlayer extends PlayerBase>(args: {
   setPlayers: Dispatch<SetStateAction<TPlayer[]>>;
 
   startingScore: number;
-  finishers: Record<number, Throw[] | undefined>;
+  finishers: IDartFinishers;
   activeGame?: { id: string; turns: Turn[] } | undefined;
 
   scoreTableRef: RefObject<FlatList<User | GuestUser> | null>;

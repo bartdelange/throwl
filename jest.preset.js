@@ -6,6 +6,18 @@ const nxPreset = require('@nx/jest/preset').default;
  */
 module.exports = {
   ...nxPreset,
+
+  transformIgnorePatterns: [
+    'node_modules/(?!(react-native' +
+      '|@react-native' +
+      '|@react-navigation' +
+      '|react-native-gesture-handler' +
+      '|react-native-reanimated' +
+      '|react-native-screens' +
+      '|react-native-safe-area-context' +
+      ')/)',
+  ],
+
   moduleNameMapper: {
     ...(nxPreset.moduleNameMapper || {}),
 
@@ -25,12 +37,8 @@ module.exports = {
       '<rootDir>/libs/feature/settings/src/index.ts',
     '^@throwl\\/shared-constants$':
       '<rootDir>/libs/shared/constants/src/index.ts',
-    '^@throwl\\/shared-data-access-firebase$':
-      '<rootDir>/libs/shared/data-access/firebase/src/index.ts',
-    '^@throwl\\/shared-data-access-game$':
-      '<rootDir>/libs/shared/data-access/game/src/index.ts',
-    '^@throwl\\/shared-data-access-user$':
-      '<rootDir>/libs/shared/data-access/user/src/index.ts',
+    '^@throwl\\/shared-data-access$':
+      '<rootDir>/libs/shared/data-access/src/index.ts',
     '^@throwl\\/shared-domain-game-rules$':
       '<rootDir>/libs/shared/domain/game-rules/src/index.ts',
     '^@throwl\\/shared-domain-models$':

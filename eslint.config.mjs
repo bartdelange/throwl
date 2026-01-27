@@ -84,11 +84,11 @@ export default [
             // Data access (allowed to use domain + shared utils, but not UI)
             // ----------------------------
             {
-              sourceTag: 'type:data-access',
+              sourceTag: 'scope:data-access',
               onlyDependOnLibsWithTags: [
                 'type:shared',
                 'type:shared-domain',
-                'type:data-access',
+                'scope:data-access',
               ],
             },
           ],

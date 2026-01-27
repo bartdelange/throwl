@@ -4,7 +4,7 @@ import { Col, Grid, Row } from 'react-native-easy-grid';
 import { useStyles } from './ScoreTable.styles';
 import { GuestUser, Turn, User } from '@throwl/shared-domain-models';
 import { FlatList, View } from 'react-native';
-import { GameService } from '../../../../../services/game_service';
+import { GameService } from '@throwl/shared-data-access';
 import { GameHelper } from '../../../../../lib/game_helper';
 import { AppLogoArrowLight } from '../../../../../components/AppLogo';
 import { SwipeActions } from '../../../../../components/Swipeable/SwipeActions';

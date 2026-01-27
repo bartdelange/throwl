@@ -150,3 +150,9 @@ local.properties
 **/*.cer
 **/*.mobileprovision
 **/*.certSigningRequest
+## Nested node_modules
+
+node_modules/
+## Nested node_modules
+
+node_modules/

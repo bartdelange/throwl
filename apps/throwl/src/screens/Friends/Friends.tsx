@@ -4,7 +4,7 @@ import { Divider, Text } from 'react-native-paper';
 import { useAuthContext } from '../../context/AuthContext';
 import { FullScreenLayout } from '../../layouts/FullScreen/FullScreen';
 import { useStyles } from './styles';
-import { UserService } from '../../services/user_service';
+import { UserService } from '@throwl/shared-data-access';
 import {
   SwipeableProps,
   SwipeActions,

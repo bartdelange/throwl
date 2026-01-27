@@ -1,5 +1,5 @@
 {
-  "name": "@throwl/shared-data-access-game",
+  "name": "@throwl/shared-data-access",
   "version": "0.0.1",
   "types": "./src/index.ts",
   "exports": {

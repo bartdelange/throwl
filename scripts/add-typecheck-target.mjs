@@ -85,7 +85,7 @@ for (const file of projectJsonFiles) {
     outputs: [],
     options: {
       cwd: '{workspaceRoot}',
-      command: `tsc -p ${projectRootRel}/${tsconfig} --noEmit`,
+      command: `tsc -p ./${projectRootRel}/${tsconfig} --noEmit`,
     },
   };
 
@@ -93,4 +93,4 @@ for (const file of projectJsonFiles) {
   changed++;
 }
 
-console.log(`Done. Added typecheck to ${changed} project(s).`);
+console.log(`✅ Added typecheck to ${changed} project(s).`);

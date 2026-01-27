@@ -23,7 +23,7 @@ import { SwipeActions } from '../../components/Swipeable/SwipeActions';
 import { useAuthContext } from '../../context/AuthContext';
 import { FullScreenLayout } from '../../layouts/FullScreen/FullScreen';
 import { Game } from '@throwl/shared-domain-models';
-import { GameService } from '../../services/game_service';
+import { GameService } from '@throwl/shared-data-access';
 import { useStyles } from './styles';
 import { AppHeader } from '../../components/AppHeader/AppHeader';
 
