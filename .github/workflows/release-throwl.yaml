@@ -27,7 +27,7 @@ jobs:
           bundle: false
 
       - name: Run tests (Nx)
-        run: yarn nx affected --target=test --base=origin/master --head=HEAD
+        run: yarn nx run-many --target=test --all --parallel --maxParallel=5
 
   deploy_android:
     name: Continuous Deployment (Android)
