@@ -7,17 +7,6 @@ const nxPreset = require('@nx/jest/preset').default;
 module.exports = {
   ...nxPreset,
 
-  transformIgnorePatterns: [
-    'node_modules/(?!(react-native' +
-      '|@react-native' +
-      '|@react-navigation' +
-      '|react-native-gesture-handler' +
-      '|react-native-reanimated' +
-      '|react-native-screens' +
-      '|react-native-safe-area-context' +
-      ')/)',
-  ],
-
   moduleNameMapper: {
     ...(nxPreset.moduleNameMapper || {}),
 

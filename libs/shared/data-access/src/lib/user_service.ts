@@ -61,7 +61,8 @@ export class UserService extends FirebaseService {
   }
 
   public static async getById(uid: string): Promise<User> {
-    const userDoc = await getDoc(doc(this.getCollection('users'), uid));
+    const uDoc = doc(this.getCollection('users'), uid);
+    const userDoc = await getDoc(uDoc);
 
     return this.parseUser(uid, userDoc.data() as UserDoc | undefined);
   }
