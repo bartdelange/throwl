@@ -9,6 +9,16 @@ module.exports = {
   moduleFileExtensions: ['ts', 'js', 'html', 'tsx', 'jsx'],
   moduleNameMapper: rootPreset.moduleNameMapper,
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
+  transformIgnorePatterns: [
+    'node_modules/(?!(react-native' +
+      '|@react-native' +
+      '|@react-navigation' +
+      '|react-native-gesture-handler' +
+      '|react-native-reanimated' +
+      '|react-native-screens' +
+      '|react-native-safe-area-context' +
+      ')/)',
+  ],
   transform: {
     '^.+\.(js|ts|tsx)$': [
       'babel-jest',
