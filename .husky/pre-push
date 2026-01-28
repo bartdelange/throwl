@@ -1,1 +1,44 @@
-yarn test:affected
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+set -eu
+
+# Optional but recommended: make sure remote refs exist (cheap and avoids "unknown revision")
+# Comment out if you hate fetches during push.
+git fetch --quiet --no-tags origin 2>/dev/null || true
+
+HEAD_REF="HEAD"
+BASE_REF=""
+
+# 1) Prefer upstream if it exists (works after you've pushed with -u once)
+if git rev-parse --verify --quiet '@{upstream}' >/dev/null 2>&1; then
+  BASE_REF='@{upstream}'
+else
+  # 2) No upstream (e.g. first push). Pick a sensible mainline ref.
+  # Try origin/main, then origin/master.
+  if git rev-parse --verify --quiet 'origin/main' >/dev/null 2>&1; then
+    MAINLINE='origin/main'
+  elif git rev-parse --verify --quiet 'origin/master' >/dev/null 2>&1; then
+    MAINLINE='origin/master'
+  else
+    MAINLINE=''
+  fi
+
+  if [ -n "$MAINLINE" ]; then
+    # Use merge-base so you only diff from the branch point, not entire history.
+    BASE_REF="$(git merge-base "$MAINLINE" "$HEAD_REF")"
+  else
+    # 3) Last-resort fallback (e.g. repo without origin refs available)
+    if git rev-parse --verify --quiet 'HEAD~1' >/dev/null 2>&1; then
+      BASE_REF='HEAD~1'
+    else
+      # Initial commit case: nothing to compare; just run tests (or skip)
+      echo "pre-push: No base ref available (initial commit). Running full tests."
+      yarn test
+      exit 0
+    fi
+  fi
+fi
+
+echo "pre-push: nx affected base=$BASE_REF head=$HEAD_REF"
+yarn nx affected --target=test --parallel --maxParallel=5 --base="$BASE_REF" --head="$HEAD_REF"
