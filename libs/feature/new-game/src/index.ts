@@ -1,1 +1,2 @@
-export * from './lib/new-game';
+export * from './feature/NewGameContext';
+export * from './ui/NewGame/NewGame';

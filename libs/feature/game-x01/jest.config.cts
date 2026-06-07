@@ -23,4 +23,5 @@ module.exports = {
     ),
   },
   coverageDirectory: '../../../coverage/libs/feature/game-x01',
+  passWithNoTests: true,
 };

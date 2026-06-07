@@ -6536,51 +6536,111 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@throwl/feature-auth@workspace:libs/feature/auth":
+"@throwl/feature-auth@workspace:*, @throwl/feature-auth@workspace:libs/feature/auth":
   version: 0.0.0-use.local
   resolution: "@throwl/feature-auth@workspace:libs/feature/auth"
+  dependencies:
+    "@throwl/shared-constants": "workspace:*"
+    "@throwl/shared-data-access-user": "workspace:*"
+    "@throwl/shared-domain-models": "workspace:*"
+    "@throwl/shared-layouts": "workspace:*"
+    "@throwl/shared-theme": "workspace:*"
+    "@throwl/shared-ui": "workspace:*"
   languageName: unknown
   linkType: soft
 
-"@throwl/feature-friends@workspace:libs/feature/friends":
+"@throwl/feature-friends@workspace:*, @throwl/feature-friends@workspace:libs/feature/friends":
   version: 0.0.0-use.local
   resolution: "@throwl/feature-friends@workspace:libs/feature/friends"
+  dependencies:
+    "@throwl/feature-auth": "workspace:*"
+    "@throwl/shared-constants": "workspace:*"
+    "@throwl/shared-data-access-user": "workspace:*"
+    "@throwl/shared-domain-models": "workspace:*"
+    "@throwl/shared-layouts": "workspace:*"
+    "@throwl/shared-theme": "workspace:*"
+    "@throwl/shared-ui": "workspace:*"
   languageName: unknown
   linkType: soft
 
-"@throwl/feature-game-doubles@workspace:libs/feature/game-doubles":
+"@throwl/feature-game-doubles@workspace:*, @throwl/feature-game-doubles@workspace:libs/feature/game-doubles":
   version: 0.0.0-use.local
   resolution: "@throwl/feature-game-doubles@workspace:libs/feature/game-doubles"
+  dependencies:
+    "@throwl/shared-constants": "workspace:*"
+    "@throwl/shared-data-access-game": "workspace:*"
+    "@throwl/shared-domain-game-rules": "workspace:*"
+    "@throwl/shared-domain-models": "workspace:*"
+    "@throwl/shared-hooks": "workspace:*"
+    "@throwl/shared-layouts": "workspace:*"
+    "@throwl/shared-theme": "workspace:*"
+    "@throwl/shared-ui": "workspace:*"
   languageName: unknown
   linkType: soft
 
-"@throwl/feature-game-x01@workspace:libs/feature/game-x01":
+"@throwl/feature-game-x01@workspace:*, @throwl/feature-game-x01@workspace:libs/feature/game-x01":
   version: 0.0.0-use.local
   resolution: "@throwl/feature-game-x01@workspace:libs/feature/game-x01"
+  dependencies:
+    "@throwl/shared-constants": "workspace:*"
+    "@throwl/shared-data-access-game": "workspace:*"
+    "@throwl/shared-domain-game-rules": "workspace:*"
+    "@throwl/shared-domain-models": "workspace:*"
+    "@throwl/shared-hooks": "workspace:*"
+    "@throwl/shared-layouts": "workspace:*"
+    "@throwl/shared-theme": "workspace:*"
+    "@throwl/shared-ui": "workspace:*"
   languageName: unknown
   linkType: soft
 
-"@throwl/feature-home@workspace:libs/feature/home":
+"@throwl/feature-home@workspace:*, @throwl/feature-home@workspace:libs/feature/home":
   version: 0.0.0-use.local
   resolution: "@throwl/feature-home@workspace:libs/feature/home"
+  dependencies:
+    "@throwl/feature-auth": "workspace:*"
+    "@throwl/shared-constants": "workspace:*"
+    "@throwl/shared-layouts": "workspace:*"
+    "@throwl/shared-ui": "workspace:*"
   languageName: unknown
   linkType: soft
 
-"@throwl/feature-new-game@workspace:libs/feature/new-game":
+"@throwl/feature-new-game@workspace:*, @throwl/feature-new-game@workspace:libs/feature/new-game":
   version: 0.0.0-use.local
   resolution: "@throwl/feature-new-game@workspace:libs/feature/new-game"
+  dependencies:
+    "@throwl/feature-auth": "workspace:*"
+    "@throwl/shared-constants": "workspace:*"
+    "@throwl/shared-data-access-game": "workspace:*"
+    "@throwl/shared-domain-models": "workspace:*"
+    "@throwl/shared-layouts": "workspace:*"
+    "@throwl/shared-theme": "workspace:*"
+    "@throwl/shared-ui": "workspace:*"
   languageName: unknown
   linkType: soft
 
-"@throwl/feature-played-games@workspace:libs/feature/played-games":
+"@throwl/feature-played-games@workspace:*, @throwl/feature-played-games@workspace:libs/feature/played-games":
   version: 0.0.0-use.local
   resolution: "@throwl/feature-played-games@workspace:libs/feature/played-games"
+  dependencies:
+    "@throwl/feature-auth": "workspace:*"
+    "@throwl/shared-constants": "workspace:*"
+    "@throwl/shared-data-access-game": "workspace:*"
+    "@throwl/shared-domain-models": "workspace:*"
+    "@throwl/shared-layouts": "workspace:*"
+    "@throwl/shared-ui": "workspace:*"
   languageName: unknown
   linkType: soft
 
-"@throwl/feature-settings@workspace:libs/feature/settings":
+"@throwl/feature-profile@workspace:*, @throwl/feature-profile@workspace:libs/feature/profile":
   version: 0.0.0-use.local
-  resolution: "@throwl/feature-settings@workspace:libs/feature/settings"
+  resolution: "@throwl/feature-profile@workspace:libs/feature/profile"
+  dependencies:
+    "@throwl/feature-auth": "workspace:*"
+    "@throwl/shared-constants": "workspace:*"
+    "@throwl/shared-data-access-user": "workspace:*"
+    "@throwl/shared-layouts": "workspace:*"
+    "@throwl/shared-theme": "workspace:*"
+    "@throwl/shared-ui": "workspace:*"
   languageName: unknown
   linkType: soft
 
@@ -6590,13 +6650,32 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@throwl/shared-data-access@workspace:*, @throwl/shared-data-access@workspace:libs/shared/data-access":
+"@throwl/shared-data-access-firebase@workspace:*, @throwl/shared-data-access-firebase@workspace:libs/shared/data-access-firebase":
   version: 0.0.0-use.local
-  resolution: "@throwl/shared-data-access@workspace:libs/shared/data-access"
+  resolution: "@throwl/shared-data-access-firebase@workspace:libs/shared/data-access-firebase"
   languageName: unknown
   linkType: soft
 
-"@throwl/shared-domain-game-rules@workspace:libs/shared/domain/game-rules":
+"@throwl/shared-data-access-game@workspace:*, @throwl/shared-data-access-game@workspace:libs/shared/data-access-game":
+  version: 0.0.0-use.local
+  resolution: "@throwl/shared-data-access-game@workspace:libs/shared/data-access-game"
+  dependencies:
+    "@throwl/shared-data-access-firebase": "workspace:*"
+    "@throwl/shared-data-access-user": "workspace:*"
+    "@throwl/shared-domain-models": "workspace:*"
+  languageName: unknown
+  linkType: soft
+
+"@throwl/shared-data-access-user@workspace:*, @throwl/shared-data-access-user@workspace:libs/shared/data-access-user":
+  version: 0.0.0-use.local
+  resolution: "@throwl/shared-data-access-user@workspace:libs/shared/data-access-user"
+  dependencies:
+    "@throwl/shared-data-access-firebase": "workspace:*"
+    "@throwl/shared-domain-models": "workspace:*"
+  languageName: unknown
+  linkType: soft
+
+"@throwl/shared-domain-game-rules@workspace:*, @throwl/shared-domain-game-rules@workspace:libs/shared/domain/game-rules":
   version: 0.0.0-use.local
   resolution: "@throwl/shared-domain-game-rules@workspace:libs/shared/domain/game-rules"
   languageName: unknown
@@ -6608,25 +6687,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@throwl/shared-hooks@workspace:libs/shared/hooks":
+"@throwl/shared-hooks@workspace:*, @throwl/shared-hooks@workspace:libs/shared/hooks":
   version: 0.0.0-use.local
   resolution: "@throwl/shared-hooks@workspace:libs/shared/hooks"
   languageName: unknown
   linkType: soft
 
-"@throwl/shared-layouts@workspace:libs/shared/layouts":
+"@throwl/shared-layouts@workspace:*, @throwl/shared-layouts@workspace:libs/shared/layouts":
   version: 0.0.0-use.local
   resolution: "@throwl/shared-layouts@workspace:libs/shared/layouts"
   languageName: unknown
   linkType: soft
 
-"@throwl/shared-theme@workspace:libs/shared/theme":
+"@throwl/shared-theme@workspace:*, @throwl/shared-theme@workspace:libs/shared/theme":
   version: 0.0.0-use.local
   resolution: "@throwl/shared-theme@workspace:libs/shared/theme"
   languageName: unknown
   linkType: soft
 
-"@throwl/shared-ui@workspace:libs/shared/ui":
+"@throwl/shared-ui@workspace:*, @throwl/shared-ui@workspace:libs/shared/ui":
   version: 0.0.0-use.local
   resolution: "@throwl/shared-ui@workspace:libs/shared/ui"
   languageName: unknown
@@ -6656,9 +6735,22 @@ __metadata:
     "@react-navigation/native-stack": "npm:^7.9.1"
     "@react-navigation/stack": "npm:^7.6.14"
     "@sayem314/react-native-keep-awake": "npm:^1.4.0"
+    "@throwl/feature-auth": "workspace:*"
+    "@throwl/feature-friends": "workspace:*"
+    "@throwl/feature-game-doubles": "workspace:*"
+    "@throwl/feature-game-x01": "workspace:*"
+    "@throwl/feature-home": "workspace:*"
+    "@throwl/feature-new-game": "workspace:*"
+    "@throwl/feature-played-games": "workspace:*"
+    "@throwl/feature-profile": "workspace:*"
     "@throwl/shared-constants": "workspace:*"
-    "@throwl/shared-data-access": "workspace:*"
+    "@throwl/shared-data-access-game": "workspace:*"
+    "@throwl/shared-data-access-user": "workspace:*"
+    "@throwl/shared-domain-game-rules": "workspace:*"
     "@throwl/shared-domain-models": "workspace:*"
+    "@throwl/shared-layouts": "workspace:*"
+    "@throwl/shared-theme": "workspace:*"
+    "@throwl/shared-ui": "workspace:*"
     "@types/babel__core": "npm:^7"
     "@types/react-native-confetti": "npm:^0.1.4"
     "@types/validator": "npm:^13.15.10"

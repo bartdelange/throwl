@@ -1,1 +1,1 @@
-export * from './lib/friends';
+export * from './ui/Friends/Friends';

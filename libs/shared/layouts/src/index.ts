@@ -1,1 +1,1 @@
-export * from './lib/FullScreen/FullScreen';
+export * from './ui/FullScreen/FullScreen';

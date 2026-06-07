@@ -23,4 +23,5 @@ module.exports = {
     ),
   },
   coverageDirectory: '../../../coverage/libs/feature/played-games',
+  passWithNoTests: true,
 };

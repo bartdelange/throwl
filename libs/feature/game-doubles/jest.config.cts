@@ -23,4 +23,5 @@ module.exports = {
     ),
   },
   coverageDirectory: '../../../coverage/libs/feature/game-doubles',
+  passWithNoTests: true,
 };

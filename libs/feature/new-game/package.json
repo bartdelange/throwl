@@ -10,5 +10,14 @@
       "react-native": "./src/index.ts"
     }
   },
+  "dependencies": {
+    "@throwl/feature-auth": "workspace:*",
+    "@throwl/shared-constants": "workspace:*",
+    "@throwl/shared-data-access-game": "workspace:*",
+    "@throwl/shared-domain-models": "workspace:*",
+    "@throwl/shared-layouts": "workspace:*",
+    "@throwl/shared-theme": "workspace:*",
+    "@throwl/shared-ui": "workspace:*"
+  },
   "private": true
 }
