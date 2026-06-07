@@ -23,4 +23,5 @@ module.exports = {
     ),
   },
   coverageDirectory: '../../../coverage/libs/shared/layouts',
+  passWithNoTests: true,
 };

@@ -1,1 +1,1 @@
-export * from './lib/played-games';
+export { default as PlayedGamesScreen } from './ui/PlayedGames/PlayedGames';

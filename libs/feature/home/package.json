@@ -10,5 +10,11 @@
       "react-native": "./src/index.ts"
     }
   },
+  "dependencies": {
+    "@throwl/feature-auth": "workspace:*",
+    "@throwl/shared-constants": "workspace:*",
+    "@throwl/shared-layouts": "workspace:*",
+    "@throwl/shared-ui": "workspace:*"
+  },
   "private": true
 }

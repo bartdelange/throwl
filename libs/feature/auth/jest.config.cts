@@ -23,4 +23,5 @@ module.exports = {
     ),
   },
   coverageDirectory: '../../../coverage/libs/feature/auth',
+  passWithNoTests: true,
 };

@@ -23,4 +23,5 @@ module.exports = {
     ),
   },
   coverageDirectory: '../../../coverage/libs/feature/new-game',
+  passWithNoTests: true,
 };

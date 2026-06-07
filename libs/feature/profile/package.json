@@ -1,0 +1,22 @@
+{
+  "name": "@throwl/feature-profile",
+  "version": "0.0.1",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "@throwl/source": "./src/index.ts",
+      "default": "./src/index.ts",
+      "react-native": "./src/index.ts"
+    }
+  },
+  "dependencies": {
+    "@throwl/feature-auth": "workspace:*",
+    "@throwl/shared-constants": "workspace:*",
+    "@throwl/shared-data-access-user": "workspace:*",
+    "@throwl/shared-layouts": "workspace:*",
+    "@throwl/shared-theme": "workspace:*",
+    "@throwl/shared-ui": "workspace:*"
+  },
+  "private": true
+}

@@ -14,17 +14,20 @@ import {
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { AppBar } from '@throwl/shared-ui';
-import { useAuthContext } from '../context/AuthContext';
-import { NormalGameDetailScreen } from '../screens/NormalMatch/NormalGameDetail/NormalGameDetail';
-import { HomeScreen } from '../screens/Home/Home';
-import { NewGameScreen } from '../screens/NewGame/NewGame';
-import PlayedGamesScreen from '../screens/PlayedGames/PlayedGames';
-import { NormalGameScreen } from '../screens/NormalMatch/NormalGame/NormalGame';
-import { UnauthenticatedScreen } from '../screens/Unauthenticated/Unauthenticated';
-import { ProfileScreen } from '../screens/Profile/Profile';
-import FriendsScreen from '../screens/Friends/Friends';
-import { DoublesGameScreen } from '../screens/DoublesMatch/DoublesGame/DoublesGame';
-import { DoublesGameDetailScreen } from '../screens/DoublesMatch/DoublesGameDetail/DoublesGameDetail';
+import { useAuthContext, UnauthenticatedScreen } from '@throwl/feature-auth';
+import {
+  NormalGameDetailScreen,
+  NormalGameScreen,
+} from '@throwl/feature-game-x01';
+import { HomeScreen } from '@throwl/feature-home';
+import { NewGameScreen } from '@throwl/feature-new-game';
+import { PlayedGamesScreen } from '@throwl/feature-played-games';
+import { ProfileScreen } from '@throwl/feature-profile';
+import { FriendsScreen } from '@throwl/feature-friends';
+import {
+  DoublesGameScreen,
+  DoublesGameDetailScreen,
+} from '@throwl/feature-game-doubles';
 
 export const Router = () => {
   const Stack = createNativeStackNavigator<RootStackParamList>();

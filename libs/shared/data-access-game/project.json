@@ -1,0 +1,17 @@
+{
+  "name": "@throwl/shared-data-access-game",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/data-access-game/src",
+  "projectType": "library",
+  "tags": ["type:shared", "scope:data-access"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "cwd": "{workspaceRoot}",
+        "command": "tsc -p ./libs/shared/data-access-game/tsconfig.lib.json --noEmit"
+      }
+    }
+  }
+}

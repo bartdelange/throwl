@@ -1,1 +1,1 @@
-export * from './lib/home';
+export * from './ui/Home/Home';

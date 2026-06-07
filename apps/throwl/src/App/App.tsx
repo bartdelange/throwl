@@ -6,7 +6,7 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Preloader } from '@throwl/shared-ui';
 
-import { AuthProvider, useAuthContext } from '../context/AuthContext';
+import { AuthProvider, useAuthContext } from '@throwl/feature-auth';
 import { Router } from './Router';
 import { StyleSheet } from 'react-native';
 import { navigationTheme, paperTheme } from '@throwl/shared-theme';

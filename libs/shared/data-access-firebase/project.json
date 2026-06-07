@@ -1,0 +1,17 @@
+{
+  "name": "@throwl/shared-data-access-firebase",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/data-access-firebase/src",
+  "projectType": "library",
+  "tags": ["type:shared", "scope:data-access"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "cwd": "{workspaceRoot}",
+        "command": "tsc -p ./libs/shared/data-access-firebase/tsconfig.lib.json --noEmit"
+      }
+    }
+  }
+}
