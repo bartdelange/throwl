@@ -1,10 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, TextInput, View } from 'react-native';
 import { useAuthContext } from '../../context/AuthContext';
-import { FullScreenLayout } from '../../layouts/FullScreen/FullScreen';
+import { FullScreenLayout } from '@throwl/shared-layouts';
 import { useStyles } from './styles';
 import { UserService } from '@throwl/shared-data-access';
-import { FormInput } from '../../components/FormInput/FormInput';
+import {
+  FormInput,
+  LogoButton,
+  AppModal,
+  Loader,
+  AppHeader,
+} from '@throwl/shared-ui';
 import {
   EmailAuthProvider,
   getAuth,
@@ -17,11 +23,7 @@ import {
   RootStackParamList,
   UNAUTHENTICATED_SCREEN,
 } from '@throwl/shared-constants';
-import { LogoButton } from '../../components/LogoButton/LogoButton';
-import { AppModal } from '../../components/AppModal/AppModal';
-import { Loader } from '../../components/Loader/Loader';
-import { useAppTheme } from '../../App/theming';
-import { AppHeader } from '../../components/AppHeader/AppHeader';
+import { useAppTheme } from '@throwl/shared-theme';
 
 export const ProfileScreen = () => {
   const navigator =

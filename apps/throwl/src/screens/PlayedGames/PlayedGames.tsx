@@ -19,13 +19,12 @@ import {
 } from 'react-native';
 import { Text, TouchableRipple } from 'react-native-paper';
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
-import { SwipeActions } from '../../components/Swipeable/SwipeActions';
+import { SwipeActions, AppHeader } from '@throwl/shared-ui';
 import { useAuthContext } from '../../context/AuthContext';
-import { FullScreenLayout } from '../../layouts/FullScreen/FullScreen';
+import { FullScreenLayout } from '@throwl/shared-layouts';
 import { Game } from '@throwl/shared-domain-models';
 import { GameService } from '@throwl/shared-data-access';
 import { useStyles } from './styles';
-import { AppHeader } from '../../components/AppHeader/AppHeader';
 
 const PlayedGamesScreen: FC = () => {
   const [fetchingMore, setFetchingMore] = useState<boolean>(false);

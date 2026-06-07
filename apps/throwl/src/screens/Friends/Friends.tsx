@@ -2,15 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { Divider, Text } from 'react-native-paper';
 import { useAuthContext } from '../../context/AuthContext';
-import { FullScreenLayout } from '../../layouts/FullScreen/FullScreen';
+import { FullScreenLayout } from '@throwl/shared-layouts';
 import { useStyles } from './styles';
 import { UserService } from '@throwl/shared-data-access';
 import {
   SwipeableProps,
   SwipeActions,
-} from '../../components/Swipeable/SwipeActions';
-import { FormInput } from '../../components/FormInput/FormInput';
-import { LogoButton } from '../../components/LogoButton/LogoButton';
+  FormInput,
+  LogoButton,
+  Loader,
+  AppModal,
+} from '@throwl/shared-ui';
 import { useNavigation } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
@@ -18,10 +20,8 @@ import {
   UNAUTHENTICATED_SCREEN,
 } from '@throwl/shared-constants';
 import { getAuth, signOut } from '@react-native-firebase/auth';
-import { AppModal } from '../../components/AppModal/AppModal';
-import { Loader } from '../../components/Loader/Loader';
 import { Friend } from '@throwl/shared-domain-models';
-import { useAppTheme } from '../../App/theming';
+import { useAppTheme } from '@throwl/shared-theme';
 
 export const FriendsScreen = () => {
   const navigator =

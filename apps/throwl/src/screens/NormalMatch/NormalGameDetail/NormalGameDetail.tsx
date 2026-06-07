@@ -14,10 +14,9 @@ import {
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 
-import { Accordion } from '../../../components/Accordion';
-import { useAppTheme } from '../../../App/theming';
-import { ClickableDartboard } from '../../../components/ClickableDartboard/ClickableDartboard';
-import { FullScreenLayout } from '../../../layouts/FullScreen/FullScreen';
+import { Accordion, ClickableDartboard } from '@throwl/shared-ui';
+import { useAppTheme } from '@throwl/shared-theme';
+import { FullScreenLayout } from '@throwl/shared-layouts';
 import { GameHelper } from '../../../lib/game_helper';
 import { GuestUser, User, X01Options } from '@throwl/shared-domain-models';
 import { GraphContainer } from './components/GraphContainer/GraphContainer';

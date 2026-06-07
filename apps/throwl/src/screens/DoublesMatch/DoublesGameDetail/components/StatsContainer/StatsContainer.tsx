@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { View } from 'react-native';
 import { Text, ThemeProvider } from 'react-native-paper';
-import { paperTheme, useAppTheme } from '../../../../../App/theming';
+import { paperTheme, useAppTheme } from '@throwl/shared-theme';
 import { useStyles } from './styles';
 import { DoublesGameTurnStats } from '../../../../../lib/game_stats_helper';
 

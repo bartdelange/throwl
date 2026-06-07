@@ -1,5 +1,5 @@
 import { Dimensions, Platform, StyleSheet } from 'react-native';
-import { useAppTheme } from '../../../../../App/theming';
+import { useAppTheme } from '@throwl/shared-theme';
 
 export const useStyles = (textSize: number) => {
   const { height } = Dimensions.get('window');

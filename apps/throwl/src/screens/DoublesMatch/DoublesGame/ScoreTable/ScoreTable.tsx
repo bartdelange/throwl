@@ -11,8 +11,7 @@ import {
 import { FlatList, View } from 'react-native';
 import { GameService } from '@throwl/shared-data-access';
 import { GameHelper } from '../../../../lib/game_helper';
-import { AppLogoArrowLight } from '../../../../components/AppLogo';
-import { SwipeActions } from '../../../../components/Swipeable/SwipeActions';
+import { AppLogoArrowLight, SwipeActions } from '@throwl/shared-ui';
 
 interface ScoreTableProps {
   scoreTableRef: RefObject<FlatList<User | GuestUser> | null>;

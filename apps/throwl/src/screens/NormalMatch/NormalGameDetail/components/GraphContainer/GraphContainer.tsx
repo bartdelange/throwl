@@ -5,7 +5,7 @@ import { GameHelper } from '../../../../../lib/game_helper';
 import { Turn } from '@throwl/shared-domain-models';
 import { useStyles } from './styles';
 import { View } from 'react-native';
-import { useAppTheme } from '../../../../../App/theming';
+import { useAppTheme } from '@throwl/shared-theme';
 
 interface ScoreContainerProps {
   turns: Turn[];

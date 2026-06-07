@@ -4,10 +4,15 @@ import { GameModeScreen } from './GameMode/GameMode';
 import { GameOptionsScreen } from './GameOptions/GameOptions';
 import { PlayerSelectScreen } from './PlayerSelect/PlayerSelect';
 import { NewGameProvider } from '../../context/NewGameContext';
-import { AppBar } from '../../components/AppBar/AppBar';
+import { AppBar } from '@throwl/shared-ui';
 import { useRoute } from '@react-navigation/native';
 import { RouteProp } from '@react-navigation/core';
-import { RootStackParamList } from '@throwl/shared-constants';
+import {
+  RootStackParamList,
+  FRIENDS_SCREEN,
+  PROFILE_SCREEN,
+} from '@throwl/shared-constants';
+import { useAuthContext } from '../../context/AuthContext';
 
 export enum GameFlowStackNames {
   GAME_MODE = 'GameMode',
@@ -28,6 +33,7 @@ const StepStack = createNativeStackNavigator<StepperParamList>();
 
 export const NewGameScreen: FC = () => {
   const route = useRoute<RouteProp<RootStackParamList, 'NEW_GAME'>>();
+  const { logout } = useAuthContext();
   const gameOptions = route.params?.gameOptions;
 
   return (
@@ -36,7 +42,16 @@ export const NewGameScreen: FC = () => {
     >
       <StepStack.Navigator
         screenOptions={{
-          header: (props) => <AppBar {...props} />,
+          header: (props) => (
+            <AppBar
+              {...props}
+              onFriendsPress={() => props.navigation.push(FRIENDS_SCREEN)}
+              onSettingsPress={() => props.navigation.push(PROFILE_SCREEN)}
+              onSignOut={() => {
+                void logout();
+              }}
+            />
+          ),
         }}
       >
         <StepStack.Screen

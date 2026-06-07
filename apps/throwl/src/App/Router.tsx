@@ -13,7 +13,7 @@ import {
 } from '@throwl/shared-constants';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { AppBar } from '../components/AppBar/AppBar';
+import { AppBar } from '@throwl/shared-ui';
 import { useAuthContext } from '../context/AuthContext';
 import { NormalGameDetailScreen } from '../screens/NormalMatch/NormalGameDetail/NormalGameDetail';
 import { HomeScreen } from '../screens/Home/Home';
@@ -28,12 +28,21 @@ import { DoublesGameDetailScreen } from '../screens/DoublesMatch/DoublesGameDeta
 
 export const Router = () => {
   const Stack = createNativeStackNavigator<RootStackParamList>();
-  const { user } = useAuthContext();
+  const { user, logout } = useAuthContext();
 
   return (
     <Stack.Navigator
       screenOptions={{
-        header: (props) => <AppBar {...props} />,
+        header: (props) => (
+          <AppBar
+            {...props}
+            onFriendsPress={() => props.navigation.push(FRIENDS_SCREEN)}
+            onSettingsPress={() => props.navigation.push(PROFILE_SCREEN)}
+            onSignOut={() => {
+              void logout();
+            }}
+          />
+        ),
       }}
       initialRouteName={user && 'HOME'}
     >

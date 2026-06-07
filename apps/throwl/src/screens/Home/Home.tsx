@@ -3,15 +3,14 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Dimensions, View } from 'react-native';
 import { Text } from 'react-native-paper';
-import { AppLogoLight } from '../../components/AppLogo';
-import { LogoButton } from '../../components/LogoButton/LogoButton';
+import { AppLogoLight, LogoButton } from '@throwl/shared-ui';
 import {
   NEW_GAME_SCREEN,
   PLAYED_GAMES_SCREEN,
   RootStackParamList,
 } from '@throwl/shared-constants';
 import { useAuthContext } from '../../context/AuthContext';
-import { FullScreenLayout } from '../../layouts/FullScreen/FullScreen';
+import { FullScreenLayout } from '@throwl/shared-layouts';
 import { useStyles } from './styles';
 
 export const HomeScreen = () => {

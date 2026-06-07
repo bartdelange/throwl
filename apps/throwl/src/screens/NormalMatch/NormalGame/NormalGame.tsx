@@ -22,18 +22,21 @@ import {
   deactivateKeepAwake,
 } from '@sayem314/react-native-keep-awake';
 
-import { useAppTheme } from '../../../App/theming';
-import { ClickableDartboard } from '../../../components/ClickableDartboard/ClickableDartboard';
-import { FullScreenLayout } from '../../../layouts/FullScreen/FullScreen';
+import { useAppTheme } from '@throwl/shared-theme';
+import {
+  ClickableDartboard,
+  TurnIndicatorBar,
+  WinnerModal,
+} from '@throwl/shared-ui';
+import { FullScreenLayout } from '@throwl/shared-layouts';
 import { DartboardScoreType, Turn } from '@throwl/shared-domain-models';
-import { TurnIndicatorBar } from '../../../components/TurnIndicatorBar/TurnIndicatorBar';
 import { ScoreTable } from './components/ScoreTable/ScoreTable';
 import { DropOutModel } from '../../../components/DropOutModel/DropOutModel';
-import { WinnerModal } from '../../../components/WinnerModal/WinnerModal';
 import { useSpeak } from '../../../hooks/useSpeak';
 import { useStyles } from './styles';
 import { GameService } from '@throwl/shared-data-access';
 import { useX01GameController } from '../../../hooks/useX01GameController';
+import { GameHelper } from '../../../lib/game_helper';
 
 export const NormalGameScreen: FC = () => {
   const navigation =
@@ -123,6 +126,7 @@ export const NormalGameScreen: FC = () => {
             turnNeeded={controller.turnNeeded}
             iconSize={iconSize}
             undoThrow={controller.undoThrow}
+            createScoreString={GameHelper.createScoreString}
           />
 
           <ScoreTable

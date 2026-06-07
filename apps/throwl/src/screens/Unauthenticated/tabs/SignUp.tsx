@@ -5,13 +5,10 @@ import { TextInput, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import isEmail from 'validator/es/lib/isEmail';
-import { AppModal } from '../../../components/AppModal/AppModal';
-import { LogoButton } from '../../../components/LogoButton/LogoButton';
+import { AppModal, LogoButton, FormInput, Loader } from '@throwl/shared-ui';
 import { RootStackParamList } from '@throwl/shared-constants';
 import { useAuthContext } from '../../../context/AuthContext';
-import { FormInput } from '../../../components/FormInput/FormInput';
-import { Loader } from '../../../components/Loader/Loader';
-import { useAppTheme } from '../../../App/theming';
+import { useAppTheme } from '@throwl/shared-theme';
 import { getAuthErrorCode } from '../../../lib/firebaseAuthError';
 import { useStyles } from './SignUp.styles';
 

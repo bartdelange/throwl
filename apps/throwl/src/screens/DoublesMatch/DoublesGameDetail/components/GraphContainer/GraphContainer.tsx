@@ -3,7 +3,7 @@ import { Text } from 'react-native-paper';
 import { DoublesOptions, Turn } from '@throwl/shared-domain-models';
 import { useStyles } from './styles';
 import { View } from 'react-native';
-import { useAppTheme } from '../../../../../App/theming';
+import { useAppTheme } from '@throwl/shared-theme';
 import { BarChart, barDataItem } from 'react-native-gifted-charts';
 import { GameHelper } from '../../../../../lib/game_helper';
 import { DoublesGameHelper } from '../../../../../lib/doubles_game_helper';
