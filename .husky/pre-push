@@ -1,10 +1,7 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 set -eu
 
-# Optional but recommended: make sure remote refs exist (cheap and avoids "unknown revision")
-# Comment out if you hate fetches during push.
+# 0) Make sure remote refs exist (cheap and avoids "unknown revision")
 git fetch --quiet --no-tags origin 2>/dev/null || true
 
 HEAD_REF="HEAD"
