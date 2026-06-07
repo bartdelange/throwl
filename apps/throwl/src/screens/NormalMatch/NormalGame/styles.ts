@@ -1,5 +1,5 @@
 import { Platform, StyleSheet, useWindowDimensions } from 'react-native';
-import { useAppTheme } from '../../../App/theming';
+import { useAppTheme } from '@throwl/shared-theme';
 
 export const useStyles = () => {
   const { colors } = useAppTheme();

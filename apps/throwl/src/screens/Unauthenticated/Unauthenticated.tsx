@@ -2,7 +2,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import React, { JSX } from 'react';
 import { Animated, Dimensions, View } from 'react-native';
 import { Divider, IconButton } from 'react-native-paper';
-import { FullScreenLayout } from '../../layouts/FullScreen/FullScreen';
+import { FullScreenLayout } from '@throwl/shared-layouts';
 import { SignInTab } from './tabs/SignIn';
 import { useStyles } from './styles';
 import { SignUpTab } from './tabs/SignUp';

@@ -1,5 +1,5 @@
 import { Dimensions, StyleSheet } from 'react-native';
-import { useAppTheme } from '../../../../App/theming';
+import { useAppTheme } from '@throwl/shared-theme';
 import { useMemo } from 'react';
 
 export const useStyles = () => {

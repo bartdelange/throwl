@@ -3,15 +3,12 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useRef, useState } from 'react';
 import { TextInput, View } from 'react-native';
 import { Text } from 'react-native-paper';
-import { AppModal } from '../../../components/AppModal/AppModal';
-import { LogoButton } from '../../../components/LogoButton/LogoButton';
+import { AppModal, LogoButton, FormInput, Loader } from '@throwl/shared-ui';
 import { RootStackParamList } from '@throwl/shared-constants';
 import { useAuthContext } from '../../../context/AuthContext';
-import { FormInput } from '../../../components/FormInput/FormInput';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { getAuth, sendPasswordResetEmail } from '@react-native-firebase/auth';
-import { Loader } from '../../../components/Loader/Loader';
-import { useAppTheme } from '../../../App/theming';
+import { useAppTheme } from '@throwl/shared-theme';
 import { getAuthErrorCode } from '../../../lib/firebaseAuthError';
 import { useStyles } from './SignIn.styles';
 

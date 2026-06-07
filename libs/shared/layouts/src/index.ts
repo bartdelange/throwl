@@ -1,1 +1,1 @@
-export * from './lib/layouts';
+export * from './lib/FullScreen/FullScreen';

@@ -6,10 +6,9 @@ import { useNewGame } from '../../../context/NewGameContext';
 import { DoublesOptionsView } from './components/DoublesOptions/DoublesOptions';
 import { X01OptionsView } from './components/X01Options/X01Options';
 import { DoublesOptions, X01Options } from '@throwl/shared-domain-models';
-import { AppHeader } from '../../../components/AppHeader/AppHeader';
-import { FullScreenLayout } from '../../../layouts/FullScreen/FullScreen';
+import { AppHeader, LogoButton } from '@throwl/shared-ui';
+import { FullScreenLayout } from '@throwl/shared-layouts';
 import { View } from 'react-native';
-import { LogoButton } from '../../../components/LogoButton/LogoButton';
 import { useStyles } from './GameOptions.styles';
 
 export const GameOptionsScreen: FC = () => {

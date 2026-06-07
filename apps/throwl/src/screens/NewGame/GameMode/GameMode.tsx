@@ -5,10 +5,9 @@ import { GameFlowStackNames, StepperParamList } from '../NewGame';
 import { useNewGame } from '../../../context/NewGameContext';
 import { GameMode } from '@throwl/shared-domain-models';
 import { ModeAccordion } from './components/ModeAccordion';
-import { LogoButton } from '../../../components/LogoButton/LogoButton';
-import { AppHeader } from '../../../components/AppHeader/AppHeader';
+import { LogoButton, AppHeader } from '@throwl/shared-ui';
 import { View } from 'react-native';
-import { FullScreenLayout } from '../../../layouts/FullScreen/FullScreen';
+import { FullScreenLayout } from '@throwl/shared-layouts';
 import { useStyles } from './GameMode.styles';
 
 export const GameModeScreen: FC = () => {

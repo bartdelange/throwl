@@ -5,8 +5,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Dimensions, FlatList, TouchableOpacity, View } from 'react-native';
 import { Menu, Text } from 'react-native-paper';
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
-import { AppModal } from '../../../components/AppModal/AppModal';
-import { LogoButton } from '../../../components/LogoButton/LogoButton';
+import { AppModal, LogoButton, FormInput, AppHeader } from '@throwl/shared-ui';
 import {
   DOUBLES_GAME_SCREEN,
   HOME_SCREEN,
@@ -16,13 +15,11 @@ import {
 import { useAuthContext } from '../../../context/AuthContext';
 import { Friend, GuestUser, User } from '@throwl/shared-domain-models';
 import { PlayerItem } from './components/PlayerItem/PlayerItem';
-import { useAppTheme } from '../../../App/theming';
+import { useAppTheme } from '@throwl/shared-theme';
 import { GameService } from '@throwl/shared-data-access';
-import { FormInput } from '../../../components/FormInput/FormInput';
 import { useStyles } from './PlayerSelect.styles';
 import { useNewGame } from '../../../context/NewGameContext';
-import { AppHeader } from '../../../components/AppHeader/AppHeader';
-import { FullScreenLayout } from '../../../layouts/FullScreen/FullScreen';
+import { FullScreenLayout } from '@throwl/shared-layouts';
 
 export const PlayerSelectScreen = () => {
   const navigator =

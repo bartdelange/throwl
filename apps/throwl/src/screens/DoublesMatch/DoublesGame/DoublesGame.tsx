@@ -12,14 +12,18 @@ import { RouteProp } from '@react-navigation/native';
 import { Dimensions, FlatList, Pressable, View } from 'react-native';
 import { DartboardScoreType, Turn } from '@throwl/shared-domain-models';
 import { Appbar, Text } from 'react-native-paper';
-import { ClickableDartboard } from '../../../components/ClickableDartboard/ClickableDartboard';
+import {
+  ClickableDartboard,
+  TurnIndicatorBar,
+  WinnerModal,
+} from '@throwl/shared-ui';
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
-import { TurnIndicatorBar } from '../../../components/TurnIndicatorBar/TurnIndicatorBar';
+import { GameHelper } from '../../../lib/game_helper';
 import Confetti from 'react-native-confetti';
-import { FullScreenLayout } from '../../../layouts/FullScreen/FullScreen';
+import { FullScreenLayout } from '@throwl/shared-layouts';
 import {
   activateKeepAwake,
   deactivateKeepAwake,
@@ -27,9 +31,8 @@ import {
 
 import { useStyles } from './styles';
 import { DropOutModel } from '../../../components/DropOutModel/DropOutModel';
-import { WinnerModal } from '../../../components/WinnerModal/WinnerModal';
 import { useSpeak } from '../../../hooks/useSpeak';
-import { useAppTheme } from '../../../App/theming';
+import { useAppTheme } from '@throwl/shared-theme';
 import { ScoreTable } from './ScoreTable/ScoreTable';
 import { GameService } from '@throwl/shared-data-access';
 import { useDoublesGameController } from '../../../hooks/useDoublesGameController';
@@ -123,6 +126,7 @@ export const DoublesGameScreen: FC = () => {
             turnNeeded={controller.turnNeeded}
             iconSize={iconSize}
             undoThrow={controller.undoThrow}
+            createScoreString={GameHelper.createScoreString}
           />
 
           <ScoreTable

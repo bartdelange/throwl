@@ -1,8 +1,8 @@
-import { AppModal } from '../AppModal/AppModal';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { IconButton } from 'react-native-paper';
-import { useAppTheme } from '../../App/theming';
+import { useAppTheme } from '@throwl/shared-theme';
 import { FC } from 'react';
+import { AppModal } from '@throwl/shared-ui';
 
 interface DropOutModelProps {
   dropOutUser: () => void;

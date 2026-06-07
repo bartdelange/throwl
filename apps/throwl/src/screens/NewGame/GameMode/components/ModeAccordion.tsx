@@ -5,8 +5,8 @@ import {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { Chevron } from '../../../../components/Accordion';
-import { useAppTheme } from '../../../../App/theming';
+import { Chevron } from '@throwl/shared-ui';
+import { useAppTheme } from '@throwl/shared-theme';
 import { useStyles } from './ModeAccordion.styles';
 import { View } from 'react-native';
 

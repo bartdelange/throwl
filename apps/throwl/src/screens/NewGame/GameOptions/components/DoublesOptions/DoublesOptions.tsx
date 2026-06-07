@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Checkbox, List } from 'react-native-paper';
 import { DoublesOptions } from '@throwl/shared-domain-models';
-import { useAppTheme } from '../../../../../App/theming';
+import { useAppTheme } from '@throwl/shared-theme';
 import { useStyles } from './DoublesOptions.styles';
 
 interface DoublesOptionsProps {
