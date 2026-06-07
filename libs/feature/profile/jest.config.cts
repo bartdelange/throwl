@@ -2,7 +2,7 @@ const rootPreset = require('../../../jest.preset.js');
 /// <reference types="jest" />
 /// <reference types="node" />
 module.exports = {
-  displayName: '@throwl/feature-settings',
+  displayName: '@throwl/feature-profile',
   preset: 'react-native',
   resolver: '@nx/jest/plugins/resolver',
   moduleFileExtensions: ['ts', 'js', 'html', 'tsx', 'jsx'],
