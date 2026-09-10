@@ -34,12 +34,12 @@ final step**.
 
 After every generator run, you must run:
 
-`yarn run sync`
+`pnpm run sync`
 
 ### Why?
 
 Generators intentionally produce generic output.
-`yarn run sync` brings generated code in line with Throwl’s conventions, such as:
+`pnpm run sync` brings generated code in line with Throwl’s conventions, such as:
 
 - workspace-wide TypeScript config alignment
 - path aliases / exports normalization
@@ -53,14 +53,14 @@ Skipping this step will leave the workspace in a partially-configured state.
 Generate a new app:
 
 `nx g @nx/react-native:app demo`
-`yarn run sync`
+`pnpm run sync`
 
 Generate a new library:
 
 `nx g @nx/react:lib mylib`
-`yarn run sync`
+`pnpm run sync`
 
-If you forget this step, assume something *will* break later.
+If you forget this step, assume something _will_ break later.
 
 ---
 
@@ -81,7 +81,7 @@ CI is expected to run tasks through Nx to take advantage of caching and
 dependency-aware execution.
 
 If you add or modify projects, ensure they have the correct targets defined
-and that yarn run sync has been applied before pushing.
+and that pnpm run sync has been applied before pushing.
 
 ---
 
@@ -96,7 +96,7 @@ It provides generator UIs, task runners, and better autocompletion.
 
 - Do not manually copy existing libs or apps
 - Always use generators
-- Always run yarn run sync after generation
+- Always run pnpm run sync after generation
 - If something feels “slightly off”, assume sync was skipped
 
 This repo favors **repeatability over convenience**.

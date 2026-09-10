@@ -10,14 +10,7 @@ module.exports = {
   moduleNameMapper: rootPreset.moduleNameMapper,
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native' +
-      '|@react-native' +
-      '|@react-navigation' +
-      '|react-native-gesture-handler' +
-      '|react-native-reanimated' +
-      '|react-native-screens' +
-      '|react-native-safe-area-context' +
-      ')/)',
+    'node_modules/(?!.*(?:react-native|@react-native|@react-navigation))',
   ],
   transform: {
     '^.+\.(js|ts|tsx)$': [

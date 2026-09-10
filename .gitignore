@@ -22,7 +22,6 @@ coverage/
 connect.lock
 libpeerconnection.log
 npm-debug.log
-yarn-error.log
 testem.log
 typings/
 
@@ -31,13 +30,6 @@ typings/
 # Dependencies (Node / Yarn / Ruby)
 # -----------------------------------------------------------------------------
 node_modules/
-.yarn/*
-!.yarn/cache
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
 
 **/vendor/bundle/      # Bundler
 **/Pods/               # CocoaPods

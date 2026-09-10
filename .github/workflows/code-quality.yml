@@ -14,18 +14,22 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.24.0
+
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: 'pnpm'
 
-      - run: yarn install --immutable --check-cache
+      - run: pnpm install --frozen-lockfile
 
       - name: Derive SHAs for Nx affected
         uses: nrwl/nx-set-shas@v4
 
       - name: Lint + Typecheck (affected)
-        run: yarn nx affected --target=lint,typecheck --parallel --maxParallel=5
+        run: pnpm nx affected --target=lint,typecheck --parallel --maxParallel=5
 
       - name: Prettier (affected)
-        run: yarn nx format:check --affected
+        run: pnpm nx format:check --affected

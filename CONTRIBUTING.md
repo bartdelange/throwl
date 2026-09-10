@@ -38,9 +38,9 @@ cd throwl
 
 ### 2. Install dependencies
 
-`yarn install`
+`pnpm install`
 
-> The `postinstall` script runs `patch-package` automatically.
+> pnpm applies the configured dependency patches automatically during installation.
 
 ---
 
@@ -75,14 +75,14 @@ To enable authentication and online features, you must supply your own Firebase 
 4. Place the files here:
 
 ```
-apps/throwl/android/app/google-services.json  
+apps/throwl/android/app/google-services.json
 apps/throwl/ios/Throwl/GoogleService-Info.plist
 ```
 
 Example placeholder files exist:
 
 ```
-apps/throwl/android/app/google-services.json.example  
+apps/throwl/android/app/google-services.json.example
 apps/throwl/ios/Throwl/GoogleService-Info.plist.example
 ```
 
@@ -105,8 +105,8 @@ If you are working on UI, layout, or offline logic, you may stub or bypass Fireb
 The following files must **never** be committed:
 
 ```
-**/*.keystore  
-**/*.jks  
+**/*.keystore
+**/*.jks
 **/keystore.properties
 ```
 
@@ -136,20 +136,21 @@ GitHub does **not** expose repository secrets to forked pull requests.
 
 ### Lint
 
-`yarn run lint:check`  
-`yarn run lint:fix`
+`pnpm run lint:check`
+
+`pnpm run lint:fix`
 
 ### Format
 
-`yarn run format`
+`pnpm run format`
 
 ### Tests
 
-`yarn test`
+`pnpm test`
 
 ### Sync NX libraries (advanced / maintainers)
 
-`yarn run sync`
+`pnpm run sync`
 
 ---
 
@@ -158,15 +159,15 @@ GitHub does **not** expose repository secrets to forked pull requests.
 Never commit any of the following:
 
 ```
-**/google-services.json  
-**/GoogleService-Info.plist  
-**/*.keystore  
-**/*.jks  
-**/keystore.properties  
-**/*.p12  
-**/*.cer  
-**/*.mobileprovision  
-**/*.certSigningRequest  
+**/google-services.json
+**/GoogleService-Info.plist
+**/*.keystore
+**/*.jks
+**/keystore.properties
+**/*.p12
+**/*.cer
+**/*.mobileprovision
+**/*.certSigningRequest
 **/xcuserdata/
 ```
 
@@ -189,14 +190,14 @@ This repo uses Husky to run checks before commits.
 
 Husky is installed automatically when you run:
 
-`yarn install`
+`pnpm install`
 
 - The pre-commit hook runs `lint-staged` to ensure code quality.
-- The pre-push hook runs `yarn test:affected` to ensure tests pass before pushing.
+- The pre-push hook runs `pnpm test:affected` to ensure tests pass before pushing.
 
 If hooks are not running for any reason, you can reinstall them manually:
 
-`yarn run prepare`
+`pnpm run prepare`
 
 ---
 

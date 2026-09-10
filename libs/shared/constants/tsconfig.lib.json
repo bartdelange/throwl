@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../../dist/out-tsc",
+    "outDir": "../../../dist/out-tsc/libs/shared/constants",
     "types": ["node"]
   },
   "exclude": [
@@ -17,5 +17,10 @@
     "jest.config.ts",
     "jest.config.cts"
   ],
-  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"]
+  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"],
+  "references": [
+    {
+      "path": "../domain/models/tsconfig.lib.json"
+    }
+  ]
 }

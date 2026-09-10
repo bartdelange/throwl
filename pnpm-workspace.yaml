@@ -1,0 +1,6 @@
+packages:
+  - 'apps/*'
+  - 'libs/**'
+
+patchedDependencies:
+  react-native-tts@4.1.1: patches/react-native-tts@4.1.1.patch

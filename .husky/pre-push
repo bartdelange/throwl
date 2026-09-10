@@ -31,11 +31,11 @@ else
     else
       # Initial commit case: nothing to compare; just run tests (or skip)
       echo "pre-push: No base ref available (initial commit). Running full tests."
-      yarn test
+      pnpm test
       exit 0
     fi
   fi
 fi
 
 echo "pre-push: nx affected base=$BASE_REF head=$HEAD_REF"
-yarn nx affected --target=test --parallel --maxParallel=5 --base="$BASE_REF" --head="$HEAD_REF"
+pnpm nx affected --target=test --parallel --maxParallel=5 --base="$BASE_REF" --head="$HEAD_REF"

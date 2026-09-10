@@ -1,7 +1,6 @@
 import nx from '@nx/eslint-plugin';
 import baseConfig from '../../eslint.config.mjs';
 import globals from 'globals';
-import pluginReact from 'eslint-plugin-react';
 import pluginReactNative from 'eslint-plugin-react-native';
 
 export default [
@@ -15,7 +14,6 @@ export default [
   {
     ignores: ['public', '.cache', 'node_modules', '**/out-tsc'],
   },
-  pluginReact.configs.flat.recommended,
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     languageOptions: {

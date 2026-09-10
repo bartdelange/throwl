@@ -1,3 +1,5 @@
+import { navigationTheme, paperTheme } from './theme';
+
 jest.mock('@react-navigation/native', () => ({
   DarkTheme: {
     dark: true,
@@ -12,8 +14,6 @@ jest.mock('@react-navigation/native', () => ({
     fonts: {},
   },
 }));
-
-import { navigationTheme, paperTheme } from './theme';
 
 describe('theme', () => {
   it('exports configured paper and navigation themes', () => {

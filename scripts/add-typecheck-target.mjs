@@ -85,7 +85,7 @@ for (const file of projectJsonFiles) {
     outputs: [],
     options: {
       cwd: '{workspaceRoot}',
-      command: `tsc -p ./${projectRootRel}/${tsconfig} --noEmit`,
+      command: `tsc -b ./${projectRootRel}/${tsconfig} --emitDeclarationOnly`,
     },
   };
 

@@ -10,7 +10,7 @@
       "outputs": [],
       "options": {
         "cwd": "{workspaceRoot}",
-        "command": "tsc -p ./libs/shared/data-access-firebase/tsconfig.lib.json --noEmit"
+        "command": "tsc -b ./libs/shared/data-access-firebase/tsconfig.lib.json --emitDeclarationOnly"
       }
     }
   }

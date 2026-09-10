@@ -10,7 +10,7 @@
       "outputs": [],
       "options": {
         "cwd": "{workspaceRoot}",
-        "command": "tsc -p ./libs/feature/profile/tsconfig.lib.json --noEmit"
+        "command": "tsc -b ./libs/feature/profile/tsconfig.lib.json --emitDeclarationOnly"
       }
     }
   }

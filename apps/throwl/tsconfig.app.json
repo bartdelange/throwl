@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
+    "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo",
     "types": ["node"],
     "rootDir": "src",
     "jsx": "react-jsx",
@@ -27,5 +28,55 @@
     "eslint.config.cjs",
     "eslint.config.mjs"
   ],
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.jsx"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.jsx"],
+  "references": [
+    {
+      "path": "../../libs/shared/ui/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/shared/theme/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/shared/layouts/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/shared/domain/models/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/shared/domain/game-rules/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/shared/data-access-user/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/shared/data-access-game/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/shared/constants/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/feature/profile/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/feature/played-games/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/feature/new-game/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/feature/home/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/feature/game-x01/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/feature/game-doubles/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/feature/friends/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/feature/auth/tsconfig.lib.json"
+    }
+  ]
 }

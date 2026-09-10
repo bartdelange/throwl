@@ -9,17 +9,13 @@
     "format": "nx format:write",
     "test": "nx run-many --target=test --all --parallel --maxParallel=5",
     "test:affected": "nx affected --target=test --parallel --maxParallel=5",
-    "postinstall": "patch-package && husky",
-    "sync": "yarn sync:libs && yarn sync:jest-libs && yarn sync:typecheck",
+    "postinstall": "husky",
+    "sync": "pnpm sync:libs && pnpm sync:jest-libs && pnpm sync:typecheck",
     "sync:libs": "node scripts/sync-nx-packages.mjs",
     "sync:jest-libs": "node scripts/patch-lib-jest-configs.mjs",
     "sync:typecheck": "node scripts/add-typecheck-target.mjs"
   },
-  "workspaces": [
-    "apps/*",
-    "libs/**"
-  ],
-  "packageManager": "yarn@4.12.0",
+  "packageManager": "pnpm@10.24.0",
   "devDependencies": {
     "@babel/core": "^7.28.6",
     "@babel/preset-env": "^7.28.6",
@@ -76,7 +72,6 @@
     "metro-config": "~0.82.4",
     "metro-resolver": "~0.82.4",
     "nx": "22.3.3",
-    "patch-package": "^8.0.1",
     "pod-install": "^1.0.9",
     "prettier": "~3.6.2",
     "react": "^19.2.3",

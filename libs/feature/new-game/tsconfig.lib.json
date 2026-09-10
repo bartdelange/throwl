@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../../dist/out-tsc",
+    "outDir": "../../../dist/out-tsc/libs/feature/new-game",
     "types": ["node"]
   },
   "exclude": [
@@ -17,5 +17,28 @@
     "jest.config.ts",
     "jest.config.cts"
   ],
-  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"]
+  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"],
+  "references": [
+    {
+      "path": "../../shared/ui/tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/theme/tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/layouts/tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/domain/models/tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/data-access-game/tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/constants/tsconfig.lib.json"
+    },
+    {
+      "path": "../auth/tsconfig.lib.json"
+    }
+  ]
 }

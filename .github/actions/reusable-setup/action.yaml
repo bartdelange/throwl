@@ -12,11 +12,15 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - uses: pnpm/action-setup@v4
+      with:
+        version: 10.24.0
+
     - uses: actions/setup-node@v4
       with:
         node-version-file: .nvmrc
         check-latest: true
-        cache: 'yarn'
+        cache: 'pnpm'
 
     - name: Cache node_modules
       uses: actions/cache@v4
@@ -24,14 +28,14 @@ runs:
       with:
         path: |
           **/node_modules
-        key: NM-${{ hashFiles('**/yarn.lock') }}
+        key: NM-${{ hashFiles('**/pnpm-lock.yaml') }}
         restore-keys: |
           NM-
 
     - name: Install dependencies
       shell: bash
       if: steps.node_modules-cache.outputs.cache-hit != 'true'
-      run: yarn install --immutable --check-cache
+      run: pnpm install --frozen-lockfile
 
     - name: Use Ruby v3.3.6
       uses: ruby/setup-ruby@v1
