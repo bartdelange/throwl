@@ -10,10 +10,8 @@
     "test": "nx run-many --target=test --all --parallel --maxParallel=5",
     "test:affected": "nx affected --target=test --parallel --maxParallel=5",
     "postinstall": "husky",
-    "sync": "pnpm sync:libs && pnpm sync:jest-libs && pnpm sync:typecheck",
-    "sync:libs": "node scripts/sync-nx-packages.mjs",
-    "sync:jest-libs": "node scripts/patch-lib-jest-configs.mjs",
-    "sync:typecheck": "node scripts/add-typecheck-target.mjs"
+    "sync": "pnpm sync:libs",
+    "sync:libs": "node scripts/sync-nx-packages.mjs"
   },
   "packageManager": "pnpm@10.24.0",
   "devDependencies": {

@@ -27,40 +27,29 @@ Targets are either inferred automatically or defined in `project.json` /
 
 ---
 
-## Generating code (important)
+## Generating code
 
-We use Nx generators to create apps and libraries, **but generation is never the
-final step**.
+Use Nx generators to create apps and libraries. Workspace generator defaults
+configure lint, Jest, project files, and inferred TypeScript typechecking.
 
-After every generator run, you must run:
-
-`pnpm run sync`
-
-### Why?
-
-Generators intentionally produce generic output.
-`pnpm run sync` brings generated code in line with Throwl’s conventions, such as:
-
-- workspace-wide TypeScript config alignment
-- path aliases / exports normalization
-- lint / formatting consistency
-- project structure guarantees
-
-Skipping this step will leave the workspace in a partially-configured state.
+React Native's library generator does not currently create pnpm package exports.
+Run `pnpm run sync` after generating a React Native library to add the private
+workspace-package metadata and public `src/index.ts` export.
 
 ### Examples
 
 Generate a new app:
 
-`nx g @nx/react-native:app demo`
-`pnpm run sync`
+`pnpm nx g @nx/react-native:app demo`
 
 Generate a new library:
 
-`nx g @nx/react:lib mylib`
-`pnpm run sync`
+`pnpm nx g @nx/react:lib libs/mylib --importPath=@throwl/mylib`
 
-If you forget this step, assume something _will_ break later.
+Generate a React Native library:
+
+`pnpm nx g @nx/react-native:lib libs/mylib --importPath=@throwl/mylib`
+`pnpm run sync`
 
 ---
 
@@ -80,8 +69,8 @@ The workspace is designed to scale without sacrificing type safety or clarity.
 CI is expected to run tasks through Nx to take advantage of caching and
 dependency-aware execution.
 
-If you add or modify projects, ensure they have the correct targets defined
-and that pnpm run sync has been applied before pushing.
+If you add or modify projects, verify their inferred targets with
+`pnpm nx show project <project>` before pushing.
 
 ---
 
@@ -96,7 +85,6 @@ It provides generator UIs, task runners, and better autocompletion.
 
 - Do not manually copy existing libs or apps
 - Always use generators
-- Always run pnpm run sync after generation
-- If something feels “slightly off”, assume sync was skipped
+- Run `pnpm run sync` after generating a React Native library
 
 This repo favors **repeatability over convenience**.

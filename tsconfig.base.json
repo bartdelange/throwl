@@ -17,8 +17,5 @@
     "strict": true,
     "target": "es2022",
     "customConditions": ["@throwl/source"]
-  },
-  "nx": {
-    "addTypecheckTarget": false
   }
 }

@@ -148,7 +148,7 @@ GitHub does **not** expose repository secrets to forked pull requests.
 
 `pnpm test`
 
-### Sync NX libraries (advanced / maintainers)
+### Normalize React Native library packages
 
 `pnpm run sync`
 

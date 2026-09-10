@@ -20,7 +20,9 @@
     {
       "plugin": "@nx/js/typescript",
       "options": {
-        "typecheck": false,
+        "typecheck": {
+          "targetName": "typecheck"
+        },
         "build": {
           "targetName": "build",
           "configName": "tsconfig.lib.json",
@@ -66,5 +68,21 @@
         "serveStaticTargetName": "serve-static"
       }
     }
-  ]
+  ],
+  "generators": {
+    "@nx/react": {
+      "library": {
+        "linter": "eslint",
+        "unitTestRunner": "jest",
+        "useProjectJson": true
+      }
+    },
+    "@nx/react-native": {
+      "library": {
+        "linter": "eslint",
+        "unitTestRunner": "jest",
+        "useProjectJson": true
+      }
+    }
+  }
 }
