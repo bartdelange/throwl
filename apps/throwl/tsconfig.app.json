@@ -37,21 +37,6 @@
       "path": "../../libs/shared/theme/tsconfig.lib.json"
     },
     {
-      "path": "../../libs/shared/layouts/tsconfig.lib.json"
-    },
-    {
-      "path": "../../libs/shared/domain/models/tsconfig.lib.json"
-    },
-    {
-      "path": "../../libs/shared/domain/game-rules/tsconfig.lib.json"
-    },
-    {
-      "path": "../../libs/shared/data-access-user/tsconfig.lib.json"
-    },
-    {
-      "path": "../../libs/shared/data-access-game/tsconfig.lib.json"
-    },
-    {
       "path": "../../libs/shared/constants/tsconfig.lib.json"
     },
     {
