@@ -25,7 +25,7 @@ import {
 } from '@throwl/shared-domain-models';
 import { UserService } from '@throwl/shared-data-access-user';
 import { FirebaseService } from '@throwl/shared-data-access-firebase';
-import { QuerySnapshot } from '@firebase/firestore';
+import { getAuth } from '@react-native-firebase/auth';
 
 type FirestorePlayerRef = string | FirebaseFirestoreTypes.DocumentReference;
 
@@ -34,6 +34,8 @@ type FirestoreTurnWrite = Omit<Turn, 'userId'> & {
 };
 
 type FirestoreGameWrite = {
+  owner: string;
+  playerIds: string[];
   players: FirestorePlayerRef[];
   turns: FirestoreTurnWrite[];
   started: Date;
@@ -94,11 +96,10 @@ export class GameService extends FirebaseService {
     afterDocumentId?: string,
   ) {
     const gamesCollection = this.getCollection('games');
-    const usersCollection = this.getCollection('users');
 
     let q = query(
       gamesCollection,
-      where('players', 'array-contains', doc(usersCollection, userId)),
+      where('playerIds', 'array-contains', userId),
       orderBy('started', 'desc'),
     );
 
@@ -113,9 +114,11 @@ export class GameService extends FirebaseService {
       q = query(q, limit(take));
     }
 
-    const data: QuerySnapshot = await getDocs(q);
+    const data = await getDocs(q);
     return Promise.all(
-      data.docs.map((docSnap) => this.parseGame(docSnap.id, docSnap.data())),
+      data.docs.map((docSnap: FirebaseFirestoreTypes.QueryDocumentSnapshot) =>
+        this.parseGame(docSnap.id, docSnap.data()),
+      ),
     );
   }
 
@@ -197,8 +200,15 @@ export class GameService extends FirebaseService {
   }): Promise<Game> {
     const gamesCollection = this.getCollection('games');
     const usersCollection = this.getCollection('users');
+    const ownerId = getAuth().currentUser?.uid;
+    if (!ownerId)
+      throw new Error('A signed-in user is required to create a game');
 
     const docData: FirestoreGameWrite = {
+      owner: ownerId,
+      playerIds: players
+        .filter((u): u is User => u.type === 'user')
+        .map((u) => u.id),
       players: players.map((u) => {
         if (u.type === 'user') return doc(usersCollection, u.id);
         return u.name;
@@ -320,7 +330,7 @@ export class GameService extends FirebaseService {
       // Firestore user ref: DocumentReference has `.id`
       if (typeof player !== 'string' && player?.id) {
         players.push({
-          ...(await UserService.getById(player.id)),
+          ...(await UserService.getPublicById(player.id)),
           type: 'user',
           friends: undefined,
         });

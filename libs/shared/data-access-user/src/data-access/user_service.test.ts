@@ -4,8 +4,8 @@
 import {
   doc,
   getDoc,
-  setDoc,
-  updateDoc,
+  getDocs,
+  writeBatch,
 } from '@react-native-firebase/firestore';
 
 import { FirebaseService } from '@throwl/shared-data-access-firebase';
@@ -26,14 +26,23 @@ jest.mock('@react-native-firebase/firestore', () => ({
   limit: jest.fn(),
   onSnapshot: jest.fn(),
   runTransaction: jest.fn(),
+  writeBatch: jest.fn(),
 }));
 
 describe('UserService (happy flows)', () => {
   const mockUsersCollection = { __collection: 'users' };
+  const batch = {
+    set: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+    commit: jest.fn().mockResolvedValue(undefined),
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
+    (writeBatch as jest.Mock).mockReturnValue(batch);
+    (getDocs as jest.Mock).mockResolvedValue({ docs: [] });
 
     jest
       .spyOn(FirebaseService, 'getCollection')
@@ -53,15 +62,12 @@ describe('UserService (happy flows)', () => {
 
     expect(FirebaseService.getCollection).toHaveBeenCalledWith('users');
     expect(doc).toHaveBeenCalledWith(mockUsersCollection, 'u1');
-    expect(setDoc).toHaveBeenCalledTimes(1);
-
-    const [userRef, payload] = (setDoc as jest.Mock).mock.calls[0];
-    expect(userRef).toMatchObject({ __doc: true, id: 'u1' });
-    expect(payload).toEqual({
-      email: 'a@b.com',
-      name: 'Bart',
-      friends: [],
-    });
+    expect(batch.set).toHaveBeenCalledTimes(3);
+    expect(batch.set).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'u1' }),
+      { email: 'a@b.com', name: 'Bart' },
+    );
+    expect(batch.commit).toHaveBeenCalled();
 
     expect(getByIdSpy).toHaveBeenCalledWith('u1');
     expect(result).toEqual({
@@ -97,28 +103,28 @@ describe('UserService (happy flows)', () => {
   });
 
   it('updateEmail() patches only the email field', async () => {
-    (updateDoc as jest.Mock).mockResolvedValue(undefined);
-
-    await UserService.updateEmail('u1', 'new@mail.com');
+    await UserService.updateEmail('u1', 'old@mail.com', 'new@mail.com');
 
     expect(FirebaseService.getCollection).toHaveBeenCalledWith('users');
     expect(doc).toHaveBeenCalledWith(mockUsersCollection, 'u1');
-    expect(updateDoc).toHaveBeenCalledWith(
+    expect(batch.update).toHaveBeenCalledWith(
       expect.objectContaining({ id: 'u1' }),
       { email: 'new@mail.com' },
+    );
+    expect(batch.delete).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'old@mail.com' }),
     );
   });
 
   it('updateName() patches only the name field', async () => {
-    (updateDoc as jest.Mock).mockResolvedValue(undefined);
-
     await UserService.updateName('u1', 'New Name');
 
     expect(FirebaseService.getCollection).toHaveBeenCalledWith('users');
     expect(doc).toHaveBeenCalledWith(mockUsersCollection, 'u1');
-    expect(updateDoc).toHaveBeenCalledWith(
+    expect(batch.update).toHaveBeenCalledWith(
       expect.objectContaining({ id: 'u1' }),
       { name: 'New Name' },
     );
+    expect(batch.update).toHaveBeenCalledTimes(2);
   });
 });

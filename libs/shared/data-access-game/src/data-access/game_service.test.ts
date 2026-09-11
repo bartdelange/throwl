@@ -32,6 +32,9 @@ jest.mock('@react-native-firebase/firestore', () => ({
   // refs
   doc: jest.fn((col: unknown, id: string) => ({ __doc: true, col, id })),
 }));
+jest.mock('@react-native-firebase/auth', () => ({
+  getAuth: jest.fn(() => ({ currentUser: { uid: 'u1' } })),
+}));
 
 describe(GameService.name, () => {
   const usersCol = { __col: true, name: 'users' };
@@ -87,6 +90,8 @@ describe(GameService.name, () => {
     const [colRef, payload] = (addDoc as jest.Mock).mock.calls[0];
 
     expect(colRef).toBe(gamesCol);
+    expect(payload.owner).toBe('u1');
+    expect(payload.playerIds).toEqual(['u1']);
 
     // players mapping: user -> doc(users, id), guest -> name
     expect(payload.players).toEqual([

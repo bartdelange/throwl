@@ -1,15 +1,12 @@
 import {
-  arrayRemove,
-  arrayUnion,
+  deleteDoc,
   doc,
-  FirebaseFirestoreTypes,
   getDoc,
   getDocs,
   getFirestore,
-  limit,
   onSnapshot,
   query,
-  runTransaction,
+  writeBatch,
   setDoc,
   updateDoc,
   where,
@@ -20,12 +17,15 @@ import { FirebaseService } from '@throwl/shared-data-access-firebase';
 type UserDoc = {
   email: string;
   name: string;
-  friends?: Array<{
-    confirmed: boolean;
-    requester?: FirebaseFirestoreTypes.DocumentReference;
-    user: FirebaseFirestoreTypes.DocumentReference;
-  }>;
 };
+
+type FriendshipDoc = {
+  requester: string;
+  status: 'pending' | 'accepted';
+  userIds: string[];
+};
+type PublicProfileDoc = { name: string };
+type LookupDoc = { user?: { id?: string } };
 
 export class UserService extends FirebaseService {
   public static listenToUserChanges(
@@ -35,15 +35,25 @@ export class UserService extends FirebaseService {
     onCompletion?: () => void,
   ) {
     const usersCollection = this.getCollection('users');
-    return onSnapshot(
+    const refresh = async () => onNext(await this.getById(uid));
+    const unsubscribeUser = onSnapshot(
       doc(usersCollection, uid),
-      async (data) => {
-        const userData = data.data() as UserDoc | undefined;
-        onNext(await this.parseUser(data.id, userData));
-      },
+      refresh,
       onError,
       onCompletion,
     );
+    const unsubscribeFriends = onSnapshot(
+      query(
+        this.getCollection('friendships'),
+        where('userIds', 'array-contains', uid),
+      ),
+      refresh,
+      onError,
+    );
+    return () => {
+      unsubscribeUser();
+      unsubscribeFriends();
+    };
   }
 
   public static async create(
@@ -52,11 +62,14 @@ export class UserService extends FirebaseService {
     name: string,
   ): Promise<User> {
     const usersCollection = this.getCollection('users');
-    await setDoc(doc(usersCollection, uid), {
-      email,
-      name,
-      friends: [],
+    const db = getFirestore();
+    const batch = writeBatch(db);
+    batch.set(doc(usersCollection, uid), { email, name });
+    batch.set(doc(this.getCollection('publicProfiles'), uid), { name });
+    batch.set(doc(this.getCollection('userLookups'), this.lookupKey(email)), {
+      user: doc(usersCollection, uid),
     });
+    await batch.commit();
     return await this.getById(uid);
   }
 
@@ -67,132 +80,79 @@ export class UserService extends FirebaseService {
     return this.parseUser(uid, userDoc.data() as UserDoc | undefined);
   }
 
-  public static async updateEmail(uid: string, email: string) {
-    await updateDoc(doc(this.getCollection('users'), uid), {
-      email,
+  public static async getPublicById(
+    uid: string,
+  ): Promise<Omit<User, 'friends'>> {
+    const profile = await getDoc(
+      doc(this.getCollection('publicProfiles'), uid),
+    );
+    const data = profile.data() as PublicProfileDoc | undefined;
+    if (!data) throw new Error(`Public profile ${uid} does not exist`);
+    return { type: 'user', id: uid, email: '', name: data.name };
+  }
+
+  public static async updateEmail(
+    uid: string,
+    oldEmail: string,
+    email: string,
+  ) {
+    const db = getFirestore();
+    const usersCollection = this.getCollection('users');
+    const batch = writeBatch(db);
+    batch.update(doc(usersCollection, uid), { email });
+    batch.delete(
+      doc(this.getCollection('userLookups'), this.lookupKey(oldEmail)),
+    );
+    batch.set(doc(this.getCollection('userLookups'), this.lookupKey(email)), {
+      user: doc(usersCollection, uid),
     });
+    await batch.commit();
   }
 
   public static async updateName(uid: string, name: string) {
-    await updateDoc(doc(this.getCollection('users'), uid), {
-      name,
-    });
+    const batch = writeBatch(getFirestore());
+    batch.update(doc(this.getCollection('users'), uid), { name });
+    batch.update(doc(this.getCollection('publicProfiles'), uid), { name });
+    await batch.commit();
   }
 
   public static async addFriend(uid: string, friendEmail: string) {
-    const usersCollection = this.getCollection('users');
-    const friendByEmail = await getDocs(
-      query(usersCollection, where('email', '==', friendEmail), limit(1)),
+    const lookup = await getDoc(
+      doc(this.getCollection('userLookups'), this.lookupKey(friendEmail)),
     );
-
-    if (!friendByEmail.docs.length) throw new Error('not found');
-    const friendIdByEmail = friendByEmail.docs[0].id;
+    const friendIdByEmail = (lookup.data() as LookupDoc | undefined)?.user?.id;
+    if (!friendIdByEmail) throw new Error('not found');
     if (friendIdByEmail === uid) throw new Error('same user');
-
-    return runTransaction(getFirestore(), async (transaction) => {
-      transaction.update(doc(usersCollection, uid), {
-        friends: arrayUnion({
-          confirmed: false,
-          requester: doc(usersCollection, uid),
-          user: doc(usersCollection, friendIdByEmail),
-        }),
-      });
-      transaction.update(doc(usersCollection, friendIdByEmail), {
-        friends: arrayUnion({
-          confirmed: false,
-          requester: doc(usersCollection, uid),
-          user: doc(usersCollection, uid),
-        }),
-      });
-    });
+    return setDoc(
+      doc(
+        this.getCollection('friendships'),
+        this.friendshipId(uid, friendIdByEmail),
+      ),
+      {
+        requester: uid,
+        status: 'pending',
+        userIds: [uid, friendIdByEmail],
+      },
+    );
   }
 
   public static async removeFriend(
     uid: string,
     fid: string,
-    requesterId?: string,
+    _requesterId?: string,
   ) {
-    const usersCollection = this.getCollection('users');
-
-    return runTransaction(getFirestore(), async (transaction) => {
-      const userFriend: {
-        confirmed: boolean;
-        requester?: FirebaseFirestoreTypes.DocumentReference<FirebaseFirestoreTypes.DocumentData>;
-        user: FirebaseFirestoreTypes.DocumentReference<FirebaseFirestoreTypes.DocumentData>;
-      } = {
-        confirmed: !requesterId,
-        user: doc(usersCollection, fid),
-      };
-      const friendFriend: {
-        confirmed: boolean;
-        requester?: FirebaseFirestoreTypes.DocumentReference<FirebaseFirestoreTypes.DocumentData>;
-        user: FirebaseFirestoreTypes.DocumentReference<FirebaseFirestoreTypes.DocumentData>;
-      } = {
-        confirmed: !requesterId,
-        user: doc(usersCollection, uid),
-      };
-
-      if (requesterId) {
-        userFriend.requester = doc(usersCollection, requesterId);
-        friendFriend.requester = doc(usersCollection, requesterId);
-      }
-
-      transaction.update(doc(usersCollection, uid), {
-        friends: arrayRemove(userFriend),
-      });
-
-      transaction.update(doc(usersCollection, fid), {
-        friends: arrayRemove(friendFriend),
-      });
-    });
+    return deleteDoc(
+      doc(this.getCollection('friendships'), this.friendshipId(uid, fid)),
+    );
   }
 
   public static async confirmFriend(uid: string, fid: string) {
-    const usersCollection = this.getCollection('users');
-    return runTransaction(getFirestore(), async (transaction) => {
-      const userFriend: {
-        confirmed: boolean;
-        requester?: FirebaseFirestoreTypes.DocumentReference<FirebaseFirestoreTypes.DocumentData>;
-        user: FirebaseFirestoreTypes.DocumentReference<FirebaseFirestoreTypes.DocumentData>;
-      } = {
-        confirmed: false,
-        requester: doc(usersCollection, fid),
-        user: doc(usersCollection, fid),
-      };
-      const friendFriend: {
-        confirmed: boolean;
-        requester?: FirebaseFirestoreTypes.DocumentReference<FirebaseFirestoreTypes.DocumentData>;
-        user: FirebaseFirestoreTypes.DocumentReference<FirebaseFirestoreTypes.DocumentData>;
-      } = {
-        confirmed: false,
-        requester: doc(usersCollection, fid),
-        user: doc(usersCollection, uid),
-      };
-
-      // Remove pending request
-      transaction.update(doc(usersCollection, uid), {
-        friends: arrayRemove(userFriend),
-      });
-
-      transaction.update(doc(usersCollection, fid), {
-        friends: arrayRemove(friendFriend),
-      });
-
-      // Invert
-      delete userFriend.requester;
-      userFriend.confirmed = true;
-      delete friendFriend.requester;
-      friendFriend.confirmed = true;
-
-      // Save confirmed request
-      transaction.update(doc(usersCollection, uid), {
-        friends: arrayUnion(userFriend),
-      });
-
-      transaction.update(doc(usersCollection, fid), {
-        friends: arrayUnion(friendFriend),
-      });
-    });
+    return updateDoc(
+      doc(this.getCollection('friendships'), this.friendshipId(uid, fid)),
+      {
+        status: 'accepted',
+      },
+    );
   }
 
   private static async parseUser(
@@ -204,25 +164,29 @@ export class UserService extends FirebaseService {
     }
 
     const parsedFriends: Friend[] = [];
-
-    if (Array.isArray(user.friends)) {
-      for (const friend of user.friends) {
-        const friendSnap = await friend.user.get();
-        const friendData = friendSnap.data();
-
-        if (!friendData) continue;
-
-        parsedFriends.push({
-          requester: friend.requester?.id,
-          confirmed: friend.confirmed,
-          user: {
-            type: 'user',
-            id: friend.user.id,
-            email: friendData.email,
-            name: friendData.name,
-          },
-        });
-      }
+    const friendships = await getDocs(
+      query(
+        this.getCollection('friendships'),
+        where('userIds', 'array-contains', uid),
+      ),
+    );
+    for (const friendshipSnap of friendships.docs) {
+      const friendship = friendshipSnap.data() as FriendshipDoc;
+      const friendId = friendship.userIds.find(
+        (candidate) => candidate !== uid,
+      );
+      if (!friendId) continue;
+      const profile = await getDoc(
+        doc(this.getCollection('publicProfiles'), friendId),
+      );
+      const friendData = profile.data() as PublicProfileDoc | undefined;
+      if (!friendData) continue;
+      parsedFriends.push({
+        requester:
+          friendship.status === 'pending' ? friendship.requester : undefined,
+        confirmed: friendship.status === 'accepted',
+        user: { type: 'user', id: friendId, email: '', name: friendData.name },
+      });
     }
 
     return {
@@ -232,5 +196,13 @@ export class UserService extends FirebaseService {
       name: user.name,
       friends: parsedFriends,
     };
+  }
+
+  private static lookupKey(email: string) {
+    return email.trim().toLowerCase();
+  }
+
+  private static friendshipId(left: string, right: string) {
+    return [left, right].sort().join('_');
   }
 }

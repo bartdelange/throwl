@@ -1,0 +1,170 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userRef(uid) {
+      return /databases/$(database)/documents/users/$(uid);
+    }
+
+    function isOwnUser(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function validName(name) {
+      return name is string && name.size() > 0 && name.size() <= 80;
+    }
+
+    function validEmail(email) {
+      return email is string && email.size() > 2 && email.size() <= 254;
+    }
+
+    function validUser(data) {
+      return data.keys().hasOnly(['email', 'name'])
+        && validEmail(data.email)
+        && validName(data.name);
+    }
+
+    function validPublicProfile(data) {
+      return data.keys().hasOnly(['name']) && validName(data.name);
+    }
+
+    function validLookup(data, uid) {
+      return data.keys().hasOnly(['user']) && data.user == userRef(uid);
+    }
+
+    function member(data) {
+      return signedIn() && data.userIds.hasAny([request.auth.uid]);
+    }
+
+    function validFriendship(data) {
+      return data.keys().hasOnly(['requester', 'status', 'userIds'])
+        && data.status in ['pending', 'accepted']
+        && data.requester is string
+        && data.userIds is list
+        && data.userIds.size() == 2
+        && data.userIds[0] is string
+        && data.userIds[1] is string
+        && data.userIds[0] != data.userIds[1]
+        && data.userIds.hasAny([data.requester]);
+    }
+
+    function ownsGame(data) {
+      return signedIn() && data.owner == request.auth.uid;
+    }
+
+    function gameMember(data) {
+      return signedIn() && data.playerIds.hasAny([request.auth.uid]);
+    }
+
+    function friendshipId(left, right) {
+      return left < right ? left + '_' + right : right + '_' + left;
+    }
+
+    function permittedPlayer(uid) {
+      return uid == request.auth.uid
+        || (uid is string
+          && exists(/databases/$(database)/documents/friendships/$(friendshipId(request.auth.uid, uid)))
+          && get(/databases/$(database)/documents/friendships/$(friendshipId(request.auth.uid, uid))).data.status == 'accepted');
+    }
+
+    function permittedPlayers(players) {
+      return players.size() > 0 && players.size() <= 4
+        && (players.size() <= 0 || permittedPlayer(players[0]))
+        && (players.size() <= 1 || permittedPlayer(players[1]))
+        && (players.size() <= 2 || permittedPlayer(players[2]))
+        && (players.size() <= 3 || permittedPlayer(players[3]));
+    }
+
+    function validOptions(options) {
+      return options is map
+        && ((options.mode == 'x01'
+              && options.keys().hasOnly(['mode', 'startingScore'])
+              && options.startingScore is int
+              && options.startingScore >= 2
+              && options.startingScore <= 1001)
+            || (options.mode == 'doubles'
+              && options.keys().hasOnly(['mode', 'quickMatch', 'skipBull', 'endOnInvalid'])
+              && options.quickMatch is bool
+              && options.skipBull is bool
+              && options.endOnInvalid is bool));
+    }
+
+    function validGame(data) {
+      return data.keys().hasOnly(['owner', 'playerIds', 'players', 'turns', 'started', 'finished', 'options', 'startingScore'])
+        && data.owner is string
+        && data.playerIds is list
+        && data.playerIds.hasAny([data.owner])
+        && permittedPlayers(data.playerIds)
+        && data.players is list
+        && data.players.size() > 0
+        && data.players.size() <= 16
+        && data.turns is list
+        && data.started is timestamp
+        && (data.finished == null || data.finished is timestamp)
+        && validOptions(data.options)
+        && ((!data.keys().hasAny(['startingScore']) && data.options.mode == 'doubles')
+          || (data.options.mode == 'x01' && data.startingScore == data.options.startingScore));
+    }
+
+    match /users/{uid} {
+      allow get: if isOwnUser(uid);
+      allow list: if false;
+      allow create: if isOwnUser(uid)
+        && validUser(request.resource.data)
+        && request.resource.data.email == request.auth.token.email;
+      allow update: if isOwnUser(uid)
+        && validUser(request.resource.data)
+        && request.resource.data.email == request.auth.token.email;
+      allow delete: if false;
+    }
+
+    match /publicProfiles/{uid} {
+      allow get: if signedIn();
+      allow list: if false;
+      allow create, update: if isOwnUser(uid)
+        && validPublicProfile(request.resource.data)
+        && request.resource.data.name == getAfter(userRef(uid)).data.name;
+      allow delete: if false;
+    }
+
+    match /userLookups/{email} {
+      allow get: if signedIn();
+      allow list: if false;
+      allow create: if signedIn()
+        && email == request.auth.token.email.lower()
+        && validLookup(request.resource.data, request.auth.uid);
+      allow update: if false;
+      allow delete: if signedIn()
+        && resource.data.user == userRef(request.auth.uid);
+    }
+
+    match /friendships/{friendshipId} {
+      allow get, list: if member(resource.data);
+      allow create: if validFriendship(request.resource.data)
+        && request.resource.data.status == 'pending'
+        && request.resource.data.requester == request.auth.uid
+        && member(request.resource.data);
+      allow update: if validFriendship(request.resource.data)
+        && member(resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && resource.data.status == 'pending'
+        && request.resource.data.status == 'accepted'
+        && resource.data.requester != request.auth.uid;
+      allow delete: if member(resource.data);
+    }
+
+    match /games/{gameId} {
+      allow create: if ownsGame(request.resource.data) && validGame(request.resource.data);
+      allow read, delete: if gameMember(resource.data);
+      allow update: if gameMember(resource.data)
+        && validGame(request.resource.data)
+        && request.resource.data.owner == resource.data.owner
+        && request.resource.data.playerIds == resource.data.playerIds
+        && request.resource.data.players == resource.data.players
+        && request.resource.data.started == resource.data.started;
+    }
+  }
+}

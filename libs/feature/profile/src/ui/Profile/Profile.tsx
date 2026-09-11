@@ -70,7 +70,7 @@ export const ProfileScreen = () => {
       await firebaseUser.reauthenticateWithCredential(cred);
       return true;
     } catch {
-      return true;
+      return false;
     }
   };
 
@@ -113,8 +113,10 @@ export const ProfileScreen = () => {
 
     if (email?.length) {
       try {
+        const oldEmail = firebaseUser.email ?? user.email;
         await firebaseUser.updateEmail(email);
-        await UserService.updateEmail(firebaseUser.uid, email);
+        await firebaseUser.getIdToken(true);
+        await UserService.updateEmail(firebaseUser.uid, oldEmail, email);
       } catch {
         failedFields.push('email');
       }
