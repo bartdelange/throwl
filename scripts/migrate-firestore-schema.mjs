@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { applicationDefault, initializeApp } from 'firebase-admin/app';
-import { FieldValue, getFirestore } from 'firebase-admin/firestore';
+import { getFirestore } from 'firebase-admin/firestore';
+import { commitMigrationPlans } from './firestore-migration-operations.mjs';
 
 const args = new Map();
 for (let index = 2; index < process.argv.length; index += 1) {
@@ -35,9 +36,10 @@ const plans = [];
 const errors = [];
 const lookupOwners = new Map();
 const friendships = new Map();
+const canonicalUsers = new Map();
 const userIds = new Set(usersSnapshot.docs.map((item) => item.id));
 const referenceId = (value) =>
-  value && typeof value.path === 'string' && value.path.startsWith('users/')
+  value && typeof value.path === 'string' && /^users\/[^/]+$/.test(value.path)
     ? value.id
     : undefined;
 
@@ -46,7 +48,13 @@ for (const userSnapshot of usersSnapshot.docs) {
   const user = userSnapshot.data();
   const email =
     typeof user.email === 'string' ? user.email.trim().toLowerCase() : '';
-  if (!email || typeof user.name !== 'string') {
+  if (
+    !email ||
+    email.length > 254 ||
+    typeof user.name !== 'string' ||
+    user.name.length === 0 ||
+    user.name.length > 80
+  ) {
     errors.push(`users/${uid} is missing a valid email or name`);
     continue;
   }
@@ -57,9 +65,10 @@ for (const userSnapshot of usersSnapshot.docs) {
     );
   }
   lookupOwners.set(email, uid);
-  plans.push(['set', db.doc(`publicProfiles/${uid}`), { name: user.name }]);
+  canonicalUsers.set(uid, { email: user.email, name: user.name });
+  plans.push(['replace', db.doc(`publicProfiles/${uid}`), { name: user.name }]);
   plans.push([
-    'set',
+    'replace',
     db.doc(`userLookups/${email}`),
     { user: userSnapshot.ref },
   ]);
@@ -103,31 +112,47 @@ for (const [id, friendship] of friendships) {
     errors.push(`legacy friendship ${id} has an invalid requester`);
     continue;
   }
-  plans.push(['set', db.doc(`friendships/${id}`), friendship]);
+  plans.push(['replace', db.doc(`friendships/${id}`), friendship]);
 }
 
 for (const gameSnapshot of gamesSnapshot.docs) {
   const game = gameSnapshot.data();
-  const playerIds = [
-    ...new Set(
-      (Array.isArray(game.players) ? game.players : [])
-        .map(referenceId)
-        .filter(Boolean),
-    ),
-  ];
+  const players = Array.isArray(game.players) ? game.players : [];
+  const playerKeys = players.map((player) =>
+    typeof player === 'string'
+      ? `guest:${player}`
+      : `ref:${player?.path ?? ''}`,
+  );
+  const playerIds = [...new Set(players.map(referenceId).filter(Boolean))];
   const owner = game.owner ?? ownerMap[gameSnapshot.id];
+  const malformedPlayer = players.some(
+    (player) =>
+      !referenceId(player) &&
+      (typeof player !== 'string' || player.length === 0 || player.length > 80),
+  );
+  if (
+    players.length === 0 ||
+    players.length > 16 ||
+    playerIds.length > 10 ||
+    new Set(playerKeys).size !== playerKeys.length ||
+    malformedPlayer
+  ) {
+    errors.push(`games/${gameSnapshot.id} has invalid or duplicate players`);
+    continue;
+  }
   if (!owner || !playerIds.includes(owner)) {
     errors.push(
       `games/${gameSnapshot.id} needs an owner-map entry naming a registered player`,
     );
     continue;
   }
-  plans.push(['set', gameSnapshot.ref, { owner, playerIds }]);
+  plans.push(['merge', gameSnapshot.ref, { owner, playerIds }]);
 }
 
 if (phase === 'finalize') {
   for (const userSnapshot of usersSnapshot.docs) {
-    plans.push(['update', userSnapshot.ref, { friends: FieldValue.delete() }]);
+    const canonicalUser = canonicalUsers.get(userSnapshot.id);
+    if (canonicalUser) plans.push(['replace', userSnapshot.ref, canonicalUser]);
   }
 }
 
@@ -140,15 +165,5 @@ if (errors.length) {
 }
 if (!apply) process.exit(0);
 
-for (let offset = 0; offset < plans.length; offset += 450) {
-  const batch = db.batch();
-  for (const [operation, reference, data] of plans.slice(
-    offset,
-    offset + 450,
-  )) {
-    if (operation === 'update') batch.update(reference, data);
-    else batch.set(reference, data, { merge: true });
-  }
-  await batch.commit();
-}
+await commitMigrationPlans(db, plans);
 console.log('Migration phase completed. Re-running the same command is safe.');

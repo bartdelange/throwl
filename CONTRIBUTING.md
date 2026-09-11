@@ -45,6 +45,11 @@ pnpm test:firestore-rules
 
 ### Schema migration before deploying these rules
 
+Production uses the direct-cutover procedure in
+[`docs/FIRESTORE_CUTOVER.md`](docs/FIRESTORE_CUTOVER.md). The final app must be
+approved and downloadable in both stores before the maintenance window starts;
+do not improvise a rules-first rollout.
+
 The hardened rules introduce `publicProfiles`, exact-key `userLookups`, and
 single-document `friendships`, and add immutable `owner` and `playerIds` fields
 to games. Existing production data must be migrated before the owner deploys
@@ -74,11 +79,12 @@ pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase finalize --owner-map
 pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase finalize --owner-map ./owner-map.json --apply
 ```
 
-`backfill` preserves the legacy `users.friends` arrays while creating the new
-documents and game authorization fields. `finalize` removes those arrays and
-must only run at the hardened-rules cutover. Do not use a downloaded service
-account key. The production owner must perform this migration and rule deploy;
-these commands are never part of CI or the local test suite.
+`backfill` preserves the legacy `users.friends` arrays while creating exact new
+documents and game authorization fields. `finalize` replaces constrained user,
+profile, lookup, and friendship documents with canonical shapes and must only
+run during the write-frozen hardened-rules cutover. Do not use a downloaded
+service account key. The production owner must perform this migration and rule
+deploy; these commands are never part of CI or the local test suite.
 
 ## Development and validation
 
