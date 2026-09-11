@@ -1,214 +1,91 @@
 # Contributing to Throwl
 
-Thanks for your interest in **Throwl** 🎯  
-This repository is public, but some configuration (Firebase, signing) is intentionally **not included**.
+Thanks for contributing. Keep changes focused and never commit credentials,
+production Firebase files, or signing material.
 
-This document explains how to clone, run, and contribute safely.
+## Prerequisites and setup
 
----
+- Node.js `24.18.0` (the version in `.nvmrc`) and Corepack
+- pnpm `10.24.0` (the `packageManager` version in `package.json`)
+- Android Studio and a compatible JDK for Android development
+- On macOS for iOS: current Xcode command-line tools, Ruby, Bundler, and CocoaPods
 
-## Prerequisites
-
-### Required
-
-- Node.js (use the version from `.nvmrc`)
-- Yarn (this repo uses **Yarn 4**)
-- Git
-
-### Platform-specific
-
-**Android**
-
-- Android Studio
-- JDK compatible with your Android setup
-
-**iOS (macOS only)**
-
-- Xcode
-- Ruby + Bundler (only needed for CocoaPods / Fastlane)
-
----
-
-## Setup
-
-### 1. Clone the repository
-
-git clone https://github.com/bartdelange/throwl.git  
-cd throwl
-
-### 2. Install dependencies
-
-`pnpm install`
-
-> pnpm applies the configured dependency patches automatically during installation.
-
----
-
-## Running the app locally
-
-### Android (debug)
-
-`nx run @throwl/throwl:run-android`
-
-### iOS (debug, macOS only)
-
-`nx run @throwl/throwl:pod-install`  
-`nx run @throwl/throwl:run-ios`
-
----
-
-## Firebase setup
-
-This repository **does not include Firebase configuration files**.
-
-To enable authentication and online features, you must supply your own Firebase project.
-
-### Option A: Use your own Firebase project (recommended)
-
-1. Create a Firebase project
-2. Register an **Android app** and an **iOS app**
-3. Download the configuration files:
-
-- Android: `google-services.json`
-- iOS: `GoogleService-Info.plist`
-
-4. Place the files here:
-
-```
-apps/throwl/android/app/google-services.json
-apps/throwl/ios/Throwl/GoogleService-Info.plist
+```sh
+corepack enable
+pnpm install --frozen-lockfile
+pnpm nx show projects
 ```
 
-Example placeholder files exist:
+CI reads `.nvmrc`, so local and hosted Node versions remain aligned.
 
-```
-apps/throwl/android/app/google-services.json.example
-apps/throwl/ios/Throwl/GoogleService-Info.plist.example
-```
+## Firebase contributor setup
 
-> Do **not** commit real Firebase configuration files.
+1. Create your own Firebase project. Do not request production credentials.
+2. Register Android and iOS apps using identifiers you control. If running the
+   unmodified native projects locally, their configured identifiers must match.
+3. Enable **Email/Password** under Firebase Authentication.
+4. Create a Cloud Firestore database.
+5. Download and place the platform configuration files at these ignored paths:
+   - `apps/throwl/android/app/google-services.json`
+   - `apps/throwl/ios/Throwl/GoogleService-Info.plist`
+6. Deploy the repository rules to that contributor project, if desired:
 
-### Option B: Work without Firebase
+   ```sh
+   pnpm firebase use YOUR_NON_PRODUCTION_PROJECT_ID
+   pnpm firebase deploy --only firestore:rules,firestore:indexes
+   ```
 
-If you are working on UI, layout, or offline logic, you may stub or bypass Firebase-related code  
-(see `apps/throwl/src/services/firebase_service.ts`).
+Do not use a service-account key for the app or local rules tests. The test
+command uses the demo project ID `demo-throwl-rules` and the local emulator, so
+it cannot contact a production Firebase project:
 
----
-
-## Signing keys & store distribution
-
-### Android
-
-- Debug builds use the default debug keystore (no setup required)
-- Release builds require a keystore and `keystore.properties`
-
-The following files must **never** be committed:
-
-```
-**/*.keystore
-**/*.jks
-**/keystore.properties
+```sh
+pnpm test:firestore-rules
 ```
 
-### iOS
+### Schema migration before deploying these rules
 
-- App Store / TestFlight distribution is handled via Fastlane and Match
-- Signing credentials are **not available** to contributors
+The hardened rules introduce `publicProfiles`, exact-key `userLookups`, and
+single-document `friendships`, and add immutable `owner` and `playerIds` fields
+to games. Existing production data must be migrated before the owner deploys
+the rules:
 
----
+- for every `users/{uid}`, retain only `email` and `name`, create
+  `publicProfiles/{uid}` with `name`, and create a lowercase-email
+  `userLookups/{email}` containing `user: /users/{uid}`;
+- convert each reciprocal legacy `friends` pair into one
+  `friendships/{sortedUid_sortedUid}` document with `userIds`,
+  `requester`, and `status` (`pending` or `accepted`);
+- for each game, set `owner` to the account that owns the record and set
+  `playerIds` to the UIDs represented by registered-user references in
+  `players` (guest strings are excluded).
 
-## CI behavior (public repo)
+Back up and validate production data first. This repository deliberately does
+not contain or execute an Admin SDK migration because owner selection for old
+games needs product-owner review and production mutation is out of scope.
 
-- Pull requests (including from forks) run:
-  - lint
-  - tests
-  - type checks
+## Development and validation
 
-- Store distribution runs **only**:
-  - on tag pushes
-  - or via manual workflow dispatch
-
-GitHub does **not** expose repository secrets to forked pull requests.
-
----
-
-## Useful workspace commands
-
-### Lint
-
-`pnpm run lint:check`
-
-`pnpm run lint:fix`
-
-### Format
-
-`pnpm run format`
-
-### Tests
-
-`pnpm test`
-
-### Normalize React Native library packages
-
-`pnpm run sync`
-
----
-
-## What not to commit
-
-Never commit any of the following:
-
-```
-**/google-services.json
-**/GoogleService-Info.plist
-**/*.keystore
-**/*.jks
-**/keystore.properties
-**/*.p12
-**/*.cer
-**/*.mobileprovision
-**/*.certSigningRequest
-**/xcuserdata/
+```sh
+pnpm nx run @throwl/throwl:run-android
+pnpm nx run @throwl/throwl:pod-install
+pnpm nx run @throwl/throwl:run-ios
+pnpm lint:check
+pnpm typecheck
+pnpm test
+pnpm test:firestore-rules
+pnpm build
+pnpm format:check
+pnpm sync
 ```
 
-If you accidentally commit something sensitive, remove it immediately and notify the maintainer.
+Android debug builds use debug signing and do not need `keystore.properties`.
+Actual release tasks fail clearly unless release signing is configured. iOS
+store signing and all Fastlane deployment credentials are maintainer-only.
 
----
+Branch from `master`, follow the existing gitmoji/commitlint style, and include
+screenshots for visual changes. Releases currently trigger on every tag (`*`),
+so the owner should protect that tag namespace and `master` with GitHub rulesets.
 
-## Branching & pull requests
-
-- Branch from `master`
-- Keep pull requests focused and small
-- Clearly describe **what changed and why**
-- Include screenshots or recordings for UI changes when relevant
-
----
-
-## Git hooks (Husky)
-
-This repo uses Husky to run checks before commits.
-
-Husky is installed automatically when you run:
-
-`pnpm install`
-
-- The pre-commit hook runs `lint-staged` to ensure code quality.
-- The pre-push hook runs `pnpm test:affected` to ensure tests pass before pushing.
-
-If hooks are not running for any reason, you can reinstall them manually:
-
-`pnpm run prepare`
-
----
-
-## Fastlane (maintainers only)
-
-CI reconstructs Firebase and signing files from GitHub Secrets and runs Fastlane lanes located in:
-
-apps/throwl/fastlane
-
-Contributors do **not** need to run Fastlane locally.
-
----
-
-Thanks for contributing 🚀
+App Check is optional post-publication abuse hardening. Firestore Security Rules,
+not App Check, remain the authorization boundary.

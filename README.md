@@ -1,90 +1,43 @@
 # Throwl
 
-This repository contains the **Throwl** monorepo, managed with Nx and Yarn.
+Throwl is a free React Native darts-scoring app in an Nx monorepo. The workspace
+uses pnpm and includes x01 and doubles games, accounts, friends, and private game
+history backed by Firebase Authentication and Cloud Firestore.
 
-The workspace is intentionally opinionated. Code generation is followed by a
-mandatory normalization step to keep configuration, exports, and conventions
-consistent across the repo.
+## Quick start
 
----
+Use Node.js from `.nvmrc` and pnpm `10.24.0` (declared in `package.json`). Then:
 
-## Running the app
+```sh
+corepack enable
+pnpm install --frozen-lockfile
+pnpm nx run @throwl/throwl:run-android
+# macOS only, after installing CocoaPods:
+pnpm nx run @throwl/throwl:pod-install
+pnpm nx run @throwl/throwl:run-ios
+```
 
-Run the iOS app:
+Firebase platform files are intentionally absent. Follow [CONTRIBUTING.md](CONTRIBUTING.md)
+to create a contributor-owned Firebase project and install its local config.
 
-`nx run @throwl/throwl:run-ios`
+Useful checks:
 
-Run the Android app:
+```sh
+pnpm lint:check
+pnpm typecheck
+pnpm test
+pnpm test:firestore-rules
+pnpm build
+pnpm format:check
+```
 
-`nx run @throwl/throwl:run-android`
+Run `pnpm sync` after generating a React Native library. Inspect available Nx
+targets with `pnpm nx show project @throwl/throwl`.
 
-To see all available targets for a project:
+## License and identity
 
-`nx show project @throwl/throwl`
-
-Targets are either inferred automatically or defined in `project.json` /
-`package.json`.
-
----
-
-## Generating code
-
-Use Nx generators to create apps and libraries. Workspace generator defaults
-configure lint, Jest, project files, and inferred TypeScript typechecking.
-
-React Native's library generator does not currently create pnpm package exports.
-Run `pnpm run sync` after generating a React Native library to add the private
-workspace-package metadata and public `src/index.ts` export.
-
-### Examples
-
-Generate a new app:
-
-`pnpm nx g @nx/react-native:app demo`
-
-Generate a new library:
-
-`pnpm nx g @nx/react:lib libs/mylib --importPath=@throwl/mylib`
-
-Generate a React Native library:
-
-`pnpm nx g @nx/react-native:lib libs/mylib --importPath=@throwl/mylib`
-`pnpm run sync`
-
----
-
-## Workspace structure
-
-- apps/ – runnable applications
-- libs/ – shared and feature libraries
-- tools/ – workspace tooling and scripts
-- nx.json, tsconfig.base.json – global configuration
-
-The workspace is designed to scale without sacrificing type safety or clarity.
-
----
-
-## CI
-
-CI is expected to run tasks through Nx to take advantage of caching and
-dependency-aware execution.
-
-If you add or modify projects, verify their inferred targets with
-`pnpm nx show project <project>` before pushing.
-
----
-
-## Editor support
-
-Nx Console is recommended (VS Code or IntelliJ).
-It provides generator UIs, task runners, and better autocompletion.
-
----
-
-## Notes for contributors
-
-- Do not manually copy existing libs or apps
-- Always use generators
-- Run `pnpm run sync` after generating a React Native library
-
-This repo favors **repeatability over convenience**.
+Project-owned source code is licensed under [Apache-2.0](LICENSE). Third-party
+components and Jost retain their own licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+The Throwl name, logo, app icon, and official store identity are reserved product
+branding, as explained in [TRADEMARKS.md](TRADEMARKS.md). Forks are welcome and
+should adopt their own public-facing identity.
