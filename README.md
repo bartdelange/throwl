@@ -11,8 +11,8 @@ Use Node.js from `.nvmrc` and pnpm `10.24.0` (declared in `package.json`). Then:
 ```sh
 corepack enable
 pnpm install --frozen-lockfile
+pnpm nx run @throwl/throwl:start
 pnpm nx run @throwl/throwl:run-android
-# macOS only, after installing CocoaPods:
 pnpm nx run @throwl/throwl:pod-install
 pnpm nx run @throwl/throwl:run-ios
 ```

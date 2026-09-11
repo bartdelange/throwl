@@ -38,7 +38,6 @@
     "@nx/eslint-plugin": "22.3.3",
     "@nx/jest": "22.3.3",
     "@nx/js": "22.3.3",
-    "@nx/react-native": "22.3.3",
     "@nx/web": "22.3.3",
     "@nx/webpack": "22.3.3",
     "@nx/workspace": "22.3.3",

@@ -4,12 +4,12 @@ module.exports = function (api) {
   return {
     presets: [
       [
-        '@nx/react/babel',
+        '@babel/preset-react',
         {
           runtime: 'automatic',
-          useBuiltIns: 'usage',
         },
       ],
+      ['@babel/preset-typescript'],
     ],
     plugins: [],
     env: {

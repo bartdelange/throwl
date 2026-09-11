@@ -9,7 +9,7 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   moduleNameMapper: {
     ...(rootPreset.moduleNameMapper || {}),
-    '\\.svg$': '@nx/react-native/plugins/jest/svg-mock',
+    '\\.svg$': '<rootDir>/../../../tools/jest/svg-mock.js',
   },
   transform: {
     '^.+\.(js|ts|tsx)$': [

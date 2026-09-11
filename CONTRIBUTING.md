@@ -89,6 +89,7 @@ deploy; these commands are never part of CI or the local test suite.
 ## Development and validation
 
 ```sh
+pnpm nx run @throwl/throwl:start
 pnpm nx run @throwl/throwl:run-android
 pnpm nx run @throwl/throwl:pod-install
 pnpm nx run @throwl/throwl:run-ios

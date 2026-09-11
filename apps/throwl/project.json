@@ -6,13 +6,64 @@
   "tags": ["type:app", "scope:throwl"],
   "// targets": "to see all targets run: nx show project @throwl/feature-auth --web",
   "targets": {
+    "start": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "react-native start"
+      }
+    },
+    "pod-install": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["writeXcodeEnv"],
+      "options": {
+        "cwd": "{projectRoot}/ios",
+        "command": "bundle exec pod install"
+      }
+    },
+    "run-android": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "react-native run-android"
+      }
+    },
     "run-ios": {
-      "executor": "@nx/react-native:run-ios",
-      "dependsOn": ["writeXcodeEnv"]
+      "executor": "nx:run-commands",
+      "dependsOn": ["writeXcodeEnv"],
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "react-native run-ios"
+      }
     },
     "build-ios": {
-      "executor": "@nx/react-native:build-ios",
-      "dependsOn": ["writeXcodeEnv"]
+      "executor": "nx:run-commands",
+      "dependsOn": ["writeXcodeEnv"],
+      "options": {
+        "cwd": "{projectRoot}/ios",
+        "command": "xcodebuild -workspace Throwl.xcworkspace -scheme Throwl -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' build"
+      }
+    },
+    "build-android": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}/android",
+        "command": "./gradlew assembleDebug"
+      }
+    },
+    "bundle": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "react-native bundle --platform ios --dev false --entry-file src/main.tsx --bundle-output /tmp/throwl-main.jsbundle --assets-dest /tmp/throwl-bundle-assets"
+      }
+    },
+    "sync-deps": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{workspaceRoot}",
+        "command": "pnpm sync:libs"
+      }
     },
     "writeXcodeEnv": {
       "executor": "nx:run-commands",
