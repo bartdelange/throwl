@@ -71,11 +71,17 @@ service cloud.firestore {
     }
 
     function permittedPlayers(players) {
-      return players.size() > 0 && players.size() <= 4
+      return players.size() > 0 && players.size() <= 10
         && (players.size() <= 0 || permittedPlayer(players[0]))
         && (players.size() <= 1 || permittedPlayer(players[1]))
         && (players.size() <= 2 || permittedPlayer(players[2]))
-        && (players.size() <= 3 || permittedPlayer(players[3]));
+        && (players.size() <= 3 || permittedPlayer(players[3]))
+        && (players.size() <= 4 || permittedPlayer(players[4]))
+        && (players.size() <= 5 || permittedPlayer(players[5]))
+        && (players.size() <= 6 || permittedPlayer(players[6]))
+        && (players.size() <= 7 || permittedPlayer(players[7]))
+        && (players.size() <= 8 || permittedPlayer(players[8]))
+        && (players.size() <= 9 || permittedPlayer(players[9]));
     }
 
     function validOptions(options) {
@@ -97,7 +103,6 @@ service cloud.firestore {
         && data.owner is string
         && data.playerIds is list
         && data.playerIds.hasAny([data.owner])
-        && permittedPlayers(data.playerIds)
         && data.players is list
         && data.players.size() > 0
         && data.players.size() <= 16
@@ -157,7 +162,9 @@ service cloud.firestore {
     }
 
     match /games/{gameId} {
-      allow create: if ownsGame(request.resource.data) && validGame(request.resource.data);
+      allow create: if ownsGame(request.resource.data)
+        && validGame(request.resource.data)
+        && permittedPlayers(request.resource.data.playerIds);
       allow read, delete: if gameMember(resource.data);
       allow update: if gameMember(resource.data)
         && validGame(request.resource.data)

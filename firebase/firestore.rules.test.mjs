@@ -185,6 +185,19 @@ describe('games', () => {
     await assertSucceeds(deleteDoc(doc(db, 'games', 'alice-bob')));
   });
 
+  test('former friends retain access to their immutable-membership game history', async () => {
+    await env.withSecurityRulesDisabled(async (context) => {
+      await deleteDoc(
+        doc(context.firestore(), 'friendships', friendshipId('alice', 'bob')),
+      );
+    });
+    const db = auth('bob', 'bob@example.test');
+    await assertSucceeds(getDoc(doc(db, 'games', 'alice-bob')));
+    await assertSucceeds(
+      updateDoc(doc(db, 'games', 'alice-bob'), { turns: [] }),
+    );
+  });
+
   test('an unrelated authenticated user cannot access a private game', async () => {
     const db = auth('charlie', 'charlie@example.test');
     await assertFails(getDoc(doc(db, 'games', 'alice-bob')));
