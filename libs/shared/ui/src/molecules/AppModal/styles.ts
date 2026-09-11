@@ -37,7 +37,7 @@ export const useStyles = () => {
           fontWeight: 'bold',
         },
         android: {
-          fontFamily: 'Karbon-Bold',
+          fontFamily: 'Jost',
         },
       }),
       color: colors.success,
@@ -51,7 +51,7 @@ export const useStyles = () => {
           fontWeight: 'bold',
         },
         android: {
-          fontFamily: 'Karbon-Bold',
+          fontFamily: 'Jost',
         },
       }),
       color: colors.success,
@@ -69,7 +69,7 @@ export const useStyles = () => {
           fontWeight: 'bold',
         },
         android: {
-          fontFamily: 'Karbon-Bold',
+          fontFamily: 'Jost',
         },
       }),
       color: colors.primary,

@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
       },
       android: {
-        fontFamily: 'Karbon-Bold',
+        fontFamily: 'Jost',
       },
     }),
     marginTop: 5,

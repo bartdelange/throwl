@@ -26,7 +26,7 @@ export const useStyles = () => {
           fontWeight: 'bold',
         },
         android: {
-          fontFamily: 'Karbon-Bold',
+          fontFamily: 'Jost',
         },
       }),
       flex: 2,
@@ -38,7 +38,7 @@ export const useStyles = () => {
           fontWeight: 'bold',
         },
         android: {
-          fontFamily: 'Karbon-Bold',
+          fontFamily: 'Jost',
         },
       }),
     },

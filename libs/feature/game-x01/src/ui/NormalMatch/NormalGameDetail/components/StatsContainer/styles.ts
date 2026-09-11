@@ -16,7 +16,7 @@ export const useStyles = (textSize: number) => {
           fontWeight: 'bold',
         },
         android: {
-          fontFamily: 'Karbon-Bold',
+          fontFamily: 'Jost',
         },
       }),
     },

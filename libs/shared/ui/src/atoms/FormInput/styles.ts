@@ -18,7 +18,7 @@ export const useStyles = (labelColor?: string) => {
           fontWeight: 'bold',
         },
         android: {
-          fontFamily: 'Karbon-Bold',
+          fontFamily: 'Jost',
         },
       }),
       color: labelColor ?? '#FFFFFF',

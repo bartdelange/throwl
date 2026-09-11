@@ -33,7 +33,7 @@ export const useStyles = () => {
               fontWeight: 'bold',
             },
             android: {
-              fontFamily: 'Karbon-Bold',
+              fontFamily: 'Jost',
             },
           }),
           fontSize: Math.max(Dimensions.get('window').width * 0.05, 24),

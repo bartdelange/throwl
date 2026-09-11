@@ -35,7 +35,7 @@ export const useStyles = (textSize: number) => {
           fontWeight: 'bold',
         },
         android: {
-          fontFamily: 'Karbon-Bold',
+          fontFamily: 'Jost',
         },
       }),
       fontSize: textSize,
@@ -74,7 +74,7 @@ export const useStyles = (textSize: number) => {
           fontWeight: 'bold',
         },
         android: {
-          fontFamily: 'Karbon-Bold',
+          fontFamily: 'Jost',
         },
       }),
       flex: 1,
@@ -88,7 +88,7 @@ export const useStyles = (textSize: number) => {
           fontWeight: 'normal',
         },
         android: {
-          fontFamily: 'Karbon-Regular',
+          fontFamily: 'Jost',
         },
       }),
       color: colors.primary,

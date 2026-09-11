@@ -39,10 +39,7 @@
 	<true/>
 	<key>UIAppFonts</key>
 	<array>
-		<string>Karbon-Bold.otf</string>
-		<string>Karbon-Medium.otf</string>
-		<string>Karbon-Regular.otf</string>
-		<string>Karbon-Semibold.otf</string>
+		<string>Jost-Variable.ttf</string>
 		<string>AntDesign.ttf</string>
 		<string>Entypo.ttf</string>
 		<string>EvilIcons.ttf</string>

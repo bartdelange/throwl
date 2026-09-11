@@ -33,28 +33,28 @@ const fonts: {
   };
 } = {
   heavy: {
-    fontFamily: 'Karbon-Bold',
-    fontWeight: 'normal',
+    fontFamily: 'Jost',
+    fontWeight: '700',
   },
   bold: {
-    fontFamily: 'Karbon-Semibold',
-    fontWeight: 'normal',
+    fontFamily: 'Jost',
+    fontWeight: '600',
   },
   regular: {
-    fontFamily: 'Karbon-Regular',
-    fontWeight: 'normal',
+    fontFamily: 'Jost',
+    fontWeight: '400',
   },
   medium: {
-    fontFamily: 'Karbon-Medium',
-    fontWeight: 'normal',
+    fontFamily: 'Jost',
+    fontWeight: '500',
   },
   light: {
-    fontFamily: 'Karbon-Regular',
-    fontWeight: 'normal',
+    fontFamily: 'Jost',
+    fontWeight: '300',
   },
   thin: {
-    fontFamily: 'Karbon-Regular',
-    fontWeight: 'normal',
+    fontFamily: 'Jost',
+    fontWeight: '200',
   },
 };
 const fontConfig = {
