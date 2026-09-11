@@ -60,9 +60,25 @@ the rules:
   `playerIds` to the UIDs represented by registered-user references in
   `players` (guest strings are excluded).
 
-Back up and validate production data first. This repository deliberately does
-not contain or execute an Admin SDK migration because owner selection for old
-games needs product-owner review and production mutation is out of scope.
+Back up and validate production data first. Prepare a JSON object mapping every
+legacy game document ID to the UID of its owning registered player, for example
+`{"game-id": "owner-uid"}`. The migration refuses ambiguous owners and duplicate
+normalized email addresses. It uses Application Default Credentials, is a dry
+run unless `--apply` is present, and is idempotent:
+
+```sh
+gcloud auth application-default login
+pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase backfill --owner-map ./owner-map.json
+pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase backfill --owner-map ./owner-map.json --apply
+pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase finalize --owner-map ./owner-map.json
+pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase finalize --owner-map ./owner-map.json --apply
+```
+
+`backfill` preserves the legacy `users.friends` arrays while creating the new
+documents and game authorization fields. `finalize` removes those arrays and
+must only run at the hardened-rules cutover. Do not use a downloaded service
+account key. The production owner must perform this migration and rule deploy;
+these commands are never part of CI or the local test suite.
 
 ## Development and validation
 
