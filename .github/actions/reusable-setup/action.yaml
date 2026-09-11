@@ -1,4 +1,5 @@
 name: Setup action jobs
+description: Install the pinned Node, pnpm, Ruby, and optional Bundler dependencies
 
 inputs:
   os:
