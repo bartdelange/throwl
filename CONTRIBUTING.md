@@ -7,7 +7,7 @@ production Firebase files, or signing material.
 
 - Node.js `24.18.0` (the version in `.nvmrc`) and Corepack
 - pnpm `10.24.0` (the `packageManager` version in `package.json`)
-- Android Studio and a compatible JDK for Android development
+- Android Studio, the Android SDK, and JDK 17 or newer (CI uses JDK 22)
 - On macOS for iOS: current Xcode command-line tools, Ruby, Bundler, and CocoaPods
 
 ```sh

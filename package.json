@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "license": "Apache-2.0",
   "private": true,
+  "engines": {
+    "node": "24.18.0"
+  },
   "scripts": {
     "lint:check": "nx run-many --target=lint --all --parallel --maxParallel=5",
     "lint:fix": "nx run-many --target=lint --all --parallel --maxParallel=5 --fix",
