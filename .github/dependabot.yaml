@@ -2,7 +2,7 @@ version: 2
 
 updates:
   # ───────────────────────────────────────────────
-  # JavaScript / TypeScript (Yarn via yarn.lock)
+  # JavaScript / TypeScript (pnpm lockfile)
   # ───────────────────────────────────────────────
   - package-ecosystem: 'npm'
     directory: '/'
@@ -42,3 +42,13 @@ updates:
       - 'dependencies'
       - 'ios'
       - 'cocoapods'
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    commit-message:
+      prefix: 'chore(actions): '
+    labels:
+      - 'dependencies'
+      - 'github-actions'

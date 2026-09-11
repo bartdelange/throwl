@@ -12,18 +12,18 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - uses: pnpm/action-setup@v4
+    - uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
       with:
         version: 10.24.0
 
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
       with:
         node-version-file: .nvmrc
         check-latest: true
         cache: 'pnpm'
 
     - name: Cache node_modules
-      uses: actions/cache@v4
+      uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
       id: node_modules-cache
       with:
         path: |
@@ -38,7 +38,7 @@ runs:
       run: pnpm install --frozen-lockfile
 
     - name: Use Ruby v3.3.6
-      uses: ruby/setup-ruby@v1
+      uses: ruby/setup-ruby@0481980f17b760ef6bca5e8c55809102a0af1e5a # v1.263.0
       with:
         ruby-version: '3.3.6'
         bundler-cache: true

@@ -1,53 +1,31 @@
-name: Update Cocoapods Dependencies after Dependabot package upgrade
+name: Verify CocoaPods lockfile
 
 on:
-  push:
-    branches:
-      - dependabot/npm_and_yarn/**
   pull_request:
-    branches:
-      - dependabot/npm_and_yarn/**
+    branches: [master]
+    paths:
+      - 'pnpm-lock.yaml'
+      - 'apps/throwl/Gemfile.lock'
+      - 'apps/throwl/ios/Podfile'
+      - 'apps/throwl/ios/Podfile.lock'
+
+permissions:
+  contents: read
 
 jobs:
-  run:
-    name: Run pod install
+  verify:
     runs-on: macos-latest
-    timeout-minutes: 15
-
+    timeout-minutes: 20
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup directory and install required packages
-        uses: ./.github/actions/reusable-setup/
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: ./.github/actions/reusable-setup/
         with:
-          os: ubuntu-latest
+          os: macos-latest
           bundle: true
-
-      - name: Cache pods
-        uses: actions/cache@v4
+      - uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
         with:
           path: apps/throwl/ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
-
-      # IMPORTANT: run pods through bundler so CocoaPods version is controlled by apps/throwl/Gemfile
-      - name: Install Cocoapods Packages
-        run: |
-          pushd apps/throwl/ios
-          bundle exec pod update
-          bundle exec pod install --verbose --repo-update
-          popd
-
-      - name: Generate Commit Message
-        id: generate_commit_message
-        run: |
-          branch=${GITHUB_REF#refs/heads/}
-          commit_message="[dependabot skip] :arrow_up: Bump Cocoapods Packages for${branch//dependabot\/npm_and_yarn\// }"
-          echo "commit_message=$commit_message" >> "$GITHUB_OUTPUT"
-
-      - uses: stefanzweifel/git-auto-commit-action@v4.1.1
-        with:
-          branch: ${{ github.head_ref }}
-          commit_message: ${{ steps.generate_commit_message.outputs.commit_message }}
+          key: ${{ runner.os }}-pods-${{ hashFiles('apps/throwl/ios/Podfile.lock') }}
+      - name: Verify locked pods install reproducibly
+        working-directory: apps/throwl/ios
+        run: bundle exec pod install --deployment
