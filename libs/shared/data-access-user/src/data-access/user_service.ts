@@ -123,6 +123,7 @@ export class UserService extends FirebaseService {
     const friendIdByEmail = (lookup.data() as LookupDoc | undefined)?.user?.id;
     if (!friendIdByEmail) throw new Error('not found');
     if (friendIdByEmail === uid) throw new Error('same user');
+    const userIds = [uid, friendIdByEmail].sort();
     return setDoc(
       doc(
         this.getCollection('friendships'),
@@ -131,7 +132,7 @@ export class UserService extends FirebaseService {
       {
         requester: uid,
         status: 'pending',
-        userIds: [uid, friendIdByEmail],
+        userIds,
       },
     );
   }

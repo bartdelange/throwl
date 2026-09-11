@@ -113,6 +113,29 @@ describe('exact lookup and friendships', () => {
     );
   });
 
+  test('friendship IDs must be the canonical sorted participant pair', async () => {
+    const db = auth('alice', 'alice@example.test');
+    const pending = {
+      requester: 'alice',
+      status: 'pending',
+      userIds: ['alice', 'charlie'],
+    };
+    await assertFails(setDoc(doc(db, 'friendships', 'arbitrary'), pending));
+    await assertFails(
+      setDoc(doc(db, 'friendships', 'charlie_alice'), {
+        ...pending,
+        userIds: ['charlie', 'alice'],
+      }),
+    );
+    await assertFails(
+      setDoc(doc(db, 'friendships', 'alice_alice'), {
+        requester: 'alice',
+        status: 'pending',
+        userIds: ['alice', 'alice'],
+      }),
+    );
+  });
+
   test('forged and unrelated friendship writes fail', async () => {
     const db = auth('alice', 'alice@example.test');
     await assertFails(
@@ -171,6 +194,48 @@ describe('games', () => {
         doc(db, 'games', 'forged'),
         x01Game(db, 'alice', ['alice', 'charlie']),
       ),
+    );
+  });
+
+  test('authorization membership must exactly match registered players', async () => {
+    const db = auth('alice', 'alice@example.test');
+
+    const missingDisplayedPlayer = x01Game(db, 'alice', ['alice', 'bob']);
+    missingDisplayedPlayer.players = [userRef(db, 'alice'), 'Guest'];
+    await assertFails(
+      setDoc(doc(db, 'games', 'missing-player'), missingDisplayedPlayer),
+    );
+
+    const hiddenRegisteredPlayer = x01Game(db, 'alice', ['alice']);
+    hiddenRegisteredPlayer.players.push(userRef(db, 'bob'));
+    await assertFails(
+      setDoc(doc(db, 'games', 'hidden-player'), hiddenRegisteredPlayer),
+    );
+
+    const duplicate = x01Game(db, 'alice', ['alice', 'alice']);
+    await assertFails(setDoc(doc(db, 'games', 'duplicate-player'), duplicate));
+
+    const guestMembership = x01Game(db, 'alice', ['alice', 'Guest']);
+    guestMembership.players = [userRef(db, 'alice'), 'Guest'];
+    await assertFails(
+      setDoc(doc(db, 'games', 'guest-membership'), guestMembership),
+    );
+  });
+
+  test('malformed player references and boundary turns are rejected', async () => {
+    const db = auth('alice', 'alice@example.test');
+    const malformedPlayer = x01Game(db, 'alice', ['alice']);
+    malformedPlayer.players = [doc(db, 'publicProfiles', 'alice')];
+    await assertFails(
+      setDoc(doc(db, 'games', 'malformed-player'), malformedPlayer),
+    );
+
+    const malformedTurn = x01Game(db, 'alice', ['alice']);
+    malformedTurn.turns = [
+      { userId: userRef(db, 'alice'), throws: [], unexpected: true },
+    ];
+    await assertFails(
+      setDoc(doc(db, 'games', 'malformed-turn'), malformedTurn),
     );
   });
 

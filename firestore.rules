@@ -48,6 +48,7 @@ service cloud.firestore {
         && data.userIds[0] is string
         && data.userIds[1] is string
         && data.userIds[0] != data.userIds[1]
+        && data.userIds[0] < data.userIds[1]
         && data.userIds.hasAny([data.requester]);
     }
 
@@ -59,15 +60,15 @@ service cloud.firestore {
       return signedIn() && data.playerIds.hasAny([request.auth.uid]);
     }
 
-    function friendshipId(left, right) {
+    function canonicalFriendshipId(left, right) {
       return left < right ? left + '_' + right : right + '_' + left;
     }
 
     function permittedPlayer(uid) {
       return uid == request.auth.uid
         || (uid is string
-          && exists(/databases/$(database)/documents/friendships/$(friendshipId(request.auth.uid, uid)))
-          && get(/databases/$(database)/documents/friendships/$(friendshipId(request.auth.uid, uid))).data.status == 'accepted');
+          && exists(/databases/$(database)/documents/friendships/$(canonicalFriendshipId(request.auth.uid, uid)))
+          && get(/databases/$(database)/documents/friendships/$(canonicalFriendshipId(request.auth.uid, uid))).data.status == 'accepted');
     }
 
     function permittedPlayers(players) {
@@ -82,6 +83,107 @@ service cloud.firestore {
         && (players.size() <= 7 || permittedPlayer(players[7]))
         && (players.size() <= 8 || permittedPlayer(players[8]))
         && (players.size() <= 9 || permittedPlayer(players[9]));
+    }
+
+    function playerIdAt(playerIds, index) {
+      return index < playerIds.size() ? playerIds[index] : '__missing_player__';
+    }
+
+    function validPlayerEntry(player, playerIds) {
+      return (validName(player))
+        || player == userRef(playerIdAt(playerIds, 0))
+        || player == userRef(playerIdAt(playerIds, 1))
+        || player == userRef(playerIdAt(playerIds, 2))
+        || player == userRef(playerIdAt(playerIds, 3))
+        || player == userRef(playerIdAt(playerIds, 4))
+        || player == userRef(playerIdAt(playerIds, 5))
+        || player == userRef(playerIdAt(playerIds, 6))
+        || player == userRef(playerIdAt(playerIds, 7))
+        || player == userRef(playerIdAt(playerIds, 8))
+        || player == userRef(playerIdAt(playerIds, 9));
+    }
+
+    function validPlayerEntries(players, playerIds) {
+      return (players.size() <= 0 || validPlayerEntry(players[0], playerIds))
+        && (players.size() <= 1 || validPlayerEntry(players[1], playerIds))
+        && (players.size() <= 2 || validPlayerEntry(players[2], playerIds))
+        && (players.size() <= 3 || validPlayerEntry(players[3], playerIds))
+        && (players.size() <= 4 || validPlayerEntry(players[4], playerIds))
+        && (players.size() <= 5 || validPlayerEntry(players[5], playerIds))
+        && (players.size() <= 6 || validPlayerEntry(players[6], playerIds))
+        && (players.size() <= 7 || validPlayerEntry(players[7], playerIds))
+        && (players.size() <= 8 || validPlayerEntry(players[8], playerIds))
+        && (players.size() <= 9 || validPlayerEntry(players[9], playerIds))
+        && (players.size() <= 10 || validPlayerEntry(players[10], playerIds))
+        && (players.size() <= 11 || validPlayerEntry(players[11], playerIds))
+        && (players.size() <= 12 || validPlayerEntry(players[12], playerIds))
+        && (players.size() <= 13 || validPlayerEntry(players[13], playerIds))
+        && (players.size() <= 14 || validPlayerEntry(players[14], playerIds))
+        && (players.size() <= 15 || validPlayerEntry(players[15], playerIds));
+    }
+
+    function playerIdsMatchPlayers(players, playerIds) {
+      return playerIds.size() > 0
+        && playerIds.size() <= 10
+        && playerIds.toSet().size() == playerIds.size()
+        && players.toSet().size() == players.size()
+        && validPlayerEntries(players, playerIds)
+        && (playerIds.size() <= 0 || players.hasAny([userRef(playerIds[0])]))
+        && (playerIds.size() <= 1 || players.hasAny([userRef(playerIds[1])]))
+        && (playerIds.size() <= 2 || players.hasAny([userRef(playerIds[2])]))
+        && (playerIds.size() <= 3 || players.hasAny([userRef(playerIds[3])]))
+        && (playerIds.size() <= 4 || players.hasAny([userRef(playerIds[4])]))
+        && (playerIds.size() <= 5 || players.hasAny([userRef(playerIds[5])]))
+        && (playerIds.size() <= 6 || players.hasAny([userRef(playerIds[6])]))
+        && (playerIds.size() <= 7 || players.hasAny([userRef(playerIds[7])]))
+        && (playerIds.size() <= 8 || players.hasAny([userRef(playerIds[8])]))
+        && (playerIds.size() <= 9 || players.hasAny([userRef(playerIds[9])]));
+    }
+
+    function validThrow(thrw) {
+      return thrw is map
+        && thrw.keys().hasOnly(['type', 'score', 'isValid'])
+        && thrw.type in ['single', 'double', 'triple', 'bull', 'out']
+        && thrw.score is int
+        && thrw.score >= 0
+        && thrw.score <= 60
+        && (!thrw.keys().hasAny(['isValid']) || thrw.isValid is bool);
+    }
+
+    function validThrows(throws) {
+      return throws is list
+        && throws.size() <= 3
+        && (throws.size() <= 0 || validThrow(throws[0]))
+        && (throws.size() <= 1 || validThrow(throws[1]))
+        && (throws.size() <= 2 || validThrow(throws[2]));
+    }
+
+    function validTurn(turn, playerIds) {
+      return turn is map
+        && turn.keys().hasOnly(['userId', 'username', 'isValid', 'throws'])
+        && turn.userId is path
+        && (turn.userId == userRef(playerIdAt(playerIds, 0))
+          || turn.userId == userRef(playerIdAt(playerIds, 1))
+          || turn.userId == userRef(playerIdAt(playerIds, 2))
+          || turn.userId == userRef(playerIdAt(playerIds, 3))
+          || turn.userId == userRef(playerIdAt(playerIds, 4))
+          || turn.userId == userRef(playerIdAt(playerIds, 5))
+          || turn.userId == userRef(playerIdAt(playerIds, 6))
+          || turn.userId == userRef(playerIdAt(playerIds, 7))
+          || turn.userId == userRef(playerIdAt(playerIds, 8))
+          || turn.userId == userRef(playerIdAt(playerIds, 9)))
+        && validThrows(turn.throws)
+        && (!turn.keys().hasAny(['username']) || validName(turn.username))
+        && (!turn.keys().hasAny(['isValid']) || turn.isValid is bool);
+    }
+
+    function validTurns(turns, playerIds) {
+      // Historical games can contain many turns; constrain each newly supplied
+      // list to a practical maximum and validate the entries Firestore Rules can
+      // address without unbounded iteration.
+      return turns is list && turns.size() <= 500
+        && (turns.size() <= 0 || validTurn(turns[0], playerIds))
+        && (turns.size() <= 1 || validTurn(turns[turns.size() - 1], playerIds));
     }
 
     function validOptions(options) {
@@ -106,7 +208,8 @@ service cloud.firestore {
         && data.players is list
         && data.players.size() > 0
         && data.players.size() <= 16
-        && data.turns is list
+        && playerIdsMatchPlayers(data.players, data.playerIds)
+        && validTurns(data.turns, data.playerIds)
         && data.started is timestamp
         && (data.finished == null || data.finished is timestamp)
         && validOptions(data.options)
@@ -149,6 +252,7 @@ service cloud.firestore {
     match /friendships/{friendshipId} {
       allow get, list: if member(resource.data);
       allow create: if validFriendship(request.resource.data)
+        && friendshipId == canonicalFriendshipId(request.resource.data.userIds[0], request.resource.data.userIds[1])
         && request.resource.data.status == 'pending'
         && request.resource.data.requester == request.auth.uid
         && member(request.resource.data);

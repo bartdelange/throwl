@@ -5,6 +5,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  setDoc,
   writeBatch,
 } from '@react-native-firebase/firestore';
 
@@ -126,5 +127,22 @@ describe('UserService (happy flows)', () => {
       { name: 'New Name' },
     );
     expect(batch.update).toHaveBeenCalledTimes(2);
+  });
+
+  it('creates friendships with canonical sorted participant IDs', async () => {
+    (getDoc as jest.Mock).mockResolvedValue({
+      data: () => ({ user: { id: 'alice' } }),
+    });
+
+    await UserService.addFriend('zoe', 'alice@example.test');
+
+    expect(setDoc).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'alice_zoe' }),
+      {
+        requester: 'zoe',
+        status: 'pending',
+        userIds: ['alice', 'zoe'],
+      },
+    );
   });
 });
