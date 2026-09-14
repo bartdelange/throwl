@@ -15,11 +15,12 @@ module.exports = function (api) {
     return {
       presets: [
         [
-          '@nx/react/babel',
+          '@babel/preset-react',
           {
             runtime: 'automatic',
           },
         ],
+        '@babel/preset-typescript',
       ],
       plugins,
     };

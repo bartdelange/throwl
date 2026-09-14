@@ -1,5 +1,6 @@
 const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 const { ResolverFactory, CachedInputFileSystem } = require('enhanced-resolve');
+const fs = require('node:fs');
 const path = require('node:path');
 const { loadConfig, createMatchPath } = require('tsconfig-paths');
 

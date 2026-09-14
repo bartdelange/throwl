@@ -4,7 +4,7 @@ const rootPreset = require('../../jest.preset');
 /// <reference types="node" />
 module.exports = {
   displayName: '@throwl/throwl',
-  preset: 'react-native',
+  preset: '@react-native/jest-preset',
   resolver: '@nx/jest/plugins/resolver',
   moduleFileExtensions: ['ts', 'js', 'html', 'tsx', 'jsx'],
   moduleNameMapper: rootPreset.moduleNameMapper,
@@ -20,7 +20,7 @@ module.exports = {
       },
     ],
     '^.+\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$': require.resolve(
-      'react-native/jest/assetFileTransformer.js',
+      '@react-native/jest-preset/jest/assetFileTransformer.js',
     ),
   },
   coverageDirectory: '../../coverage/apps/throwl',

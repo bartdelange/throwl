@@ -4,7 +4,7 @@
     <item name="android:navigationBarColor">#02314E</item>
   </style>
 
-  <style name="BootTheme" parent="Theme.BootSplash.TransparentStatus">
+  <style name="BootTheme" parent="Theme.BootSplash">
     <item name="android:navigationBarColor">#02314E</item>
     <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_dartboard_white_splash_sized</item>
     <item name="bootSplashBackground">@color/bootsplash_background</item>
