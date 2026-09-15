@@ -9,24 +9,7 @@ function getScopes(projectNames: string[]) {
     name.replace(/^@throwl\//, ''),
   );
 
-  const prefixCounts = projectScopes.reduce<Map<string, number>>(
-    (counts, scope) => {
-      const [prefix] = scope.split('-');
-
-      counts.set(prefix, (counts.get(prefix) ?? 0) + 1);
-
-      return counts;
-    },
-    new Map(),
-  );
-
-  const groupScopes = [...prefixCounts.entries()]
-    .filter(([, count]) => count > 1)
-    .map(([prefix]) => prefix);
-
-  return [
-    ...new Set([...defaultScopes, ...groupScopes, ...projectScopes]),
-  ].sort();
+  return [...new Set([...defaultScopes, ...projectScopes])].sort();
 }
 
 const config: UserConfig = {
