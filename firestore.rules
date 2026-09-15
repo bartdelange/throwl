@@ -136,59 +136,16 @@ service cloud.firestore {
             && mixedPlayersMatch(players, playerIds)));
     }
 
-    function validThrow(thrw) {
-      return thrw is map
-        && thrw.keys().hasOnly(['type', 'score', 'isValid'])
-        && thrw.type in ['single', 'double', 'triple', 'bull', 'out']
-        && thrw.score is int
-        && thrw.score >= 0
-        && thrw.score <= 60
-        && (!thrw.keys().hasAny(['isValid']) || thrw.isValid is bool);
-    }
-
-    function validThrows(throws) {
-      return throws is list
-        && throws.size() <= 3
-        && (throws.size() <= 0 || validThrow(throws[0]))
-        && (throws.size() <= 1 || validThrow(throws[1]))
-        && (throws.size() <= 2 || validThrow(throws[2]));
-    }
-
-    function validTurn(turn, players) {
-      return turn is map
-        && turn.keys().hasOnly(['userId', 'username', 'isValid', 'throws'])
-        && turn.userId is path
-        && players.hasAny([turn.userId])
-        && validThrows(turn.throws)
-        && (!turn.keys().hasAny(['username']) || validName(turn.username))
-        && (!turn.keys().hasAny(['isValid']) || turn.isValid is bool);
-    }
-
-    function validTurns(turns, players) {
-      // Historical games can contain many turns; constrain each newly supplied
-      // list to a practical maximum and validate the entries Firestore Rules can
-      // address without unbounded iteration.
-      return turns is list && turns.size() <= 500
-        && (turns.size() <= 0 || validTurn(turns[0], players))
-        && (turns.size() <= 1 || validTurn(turns[turns.size() - 1], players));
-    }
-
-    function validOptions(options) {
-      return options is map
-        && ((options.mode == 'x01'
-              && options.keys().hasOnly(['mode', 'startingScore'])
-              && options.startingScore is int
-              && options.startingScore >= 2
-              && options.startingScore <= 1001)
-            || (options.mode == 'doubles'
-              && options.keys().hasOnly(['mode', 'quickMatch', 'skipBull', 'endOnInvalid'])
-              && options.quickMatch is bool
-              && options.skipBull is bool
-              && options.endOnInvalid is bool));
+    function boundedTurns(turns) {
+      // Turn and throw semantics belong to the application parser. The bound is
+      // retained to prevent an authorized writer from growing an embedded
+      // history without limit.
+      return turns is list && turns.size() <= 500;
     }
 
     function validGame(data) {
       return data.keys().hasOnly(['owner', 'playerIds', 'players', 'turns', 'started', 'finished', 'options', 'startingScore'])
+        && data.keys().hasAll(['owner', 'playerIds', 'players', 'turns', 'started', 'finished', 'options'])
         && data.owner is string
         && data.playerIds is list
         && data.playerIds.hasAny([data.owner])
@@ -196,18 +153,15 @@ service cloud.firestore {
         && data.players.size() > 0
         && data.players.size() <= 16
         && playerIdsMatchPlayers(data.players, data.playerIds)
-        && validTurns(data.turns, data.players)
+        && boundedTurns(data.turns)
         && data.started is timestamp
-        && (data.finished == null || data.finished is timestamp)
-        && validOptions(data.options)
-        && ((!data.keys().hasAny(['startingScore']) && data.options.mode == 'doubles')
-          || (data.options.mode == 'x01' && data.startingScore == data.options.startingScore));
+        && (data.finished == null || data.finished is timestamp);
     }
 
     function validGameUpdate(data, previousData) {
       return data.keys().hasOnly(['owner', 'playerIds', 'players', 'turns', 'started', 'finished', 'options', 'startingScore'])
         && data.diff(previousData).affectedKeys().hasOnly(['turns', 'finished'])
-        && validTurns(data.turns, data.players)
+        && boundedTurns(data.turns)
         && (data.finished == null || data.finished is timestamp);
     }
 

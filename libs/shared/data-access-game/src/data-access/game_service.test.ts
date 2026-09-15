@@ -1,6 +1,12 @@
-import { addDoc, deleteDoc, updateDoc } from '@react-native-firebase/firestore';
+import {
+  addDoc,
+  deleteDoc,
+  getDocs,
+  updateDoc,
+} from '@react-native-firebase/firestore';
 
 import { FirebaseService } from '@throwl/shared-data-access-firebase';
+import { UserService } from '@throwl/shared-data-access-user';
 import { GameService } from './game_service';
 import {
   Game,
@@ -132,6 +138,65 @@ describe(GameService.name, () => {
     expect(patch.finished).toBeNull();
 
     expect(getByIdSpy).toHaveBeenCalledWith('g9');
+  });
+
+  it('isolates malformed remote games and sanitizes application-owned data', async () => {
+    jest.spyOn(UserService, 'getPublicById').mockImplementation(async (id) => {
+      if (id === 'missing') throw new Error('missing public profile');
+      return { type: 'user', id, email: '', name: 'Player' };
+    });
+
+    (getDocs as jest.Mock).mockResolvedValue({
+      docs: [
+        {
+          id: 'poisoned-player',
+          data: () => ({ players: [{ id: 'missing' }] }),
+        },
+        {
+          id: 'safe-game',
+          data: () => ({
+            players: [{ id: 'u1' }],
+            turns: [
+              null,
+              { userId: { id: 'u1' }, throws: 'not-an-array' },
+              {
+                userId: { id: 'u1' },
+                throws: [{ type: 'quadruple', score: 20 }],
+              },
+              {
+                userId: { id: 'u1' },
+                throws: [{ type: 'triple', score: 20, ignored: true }],
+                isValid: false,
+                ignored: true,
+              },
+            ],
+            options: { mode: 'x01', startingScore: Number.NaN },
+            startingScore: 301,
+            started: { toDate: () => new Date('2026-01-01T10:00:00Z') },
+            finished: {
+              toDate: () => {
+                throw new Error('invalid timestamp');
+              },
+            },
+          }),
+        },
+      ],
+    });
+
+    await expect(GameService.getOwnGames('u1')).resolves.toEqual([
+      expect.objectContaining({
+        id: 'safe-game',
+        finished: undefined,
+        options: { mode: 'x01', startingScore: 301 },
+        turns: [
+          {
+            userId: 'u1',
+            throws: [{ type: 'triple', score: 20 }],
+            isValid: false,
+          },
+        ],
+      }),
+    ]);
   });
 
   it('delete() removes a game document', async () => {

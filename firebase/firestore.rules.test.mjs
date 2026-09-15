@@ -1,6 +1,9 @@
 import { readFile } from 'node:fs/promises';
 import { after, before, beforeEach, describe, test } from 'node:test';
-import { deleteApp, initializeApp } from '../node_modules/@firebase/firestore/node_modules/@firebase/app/dist/esm/index.esm.js';
+import {
+  deleteApp,
+  initializeApp,
+} from '../node_modules/@firebase/firestore/node_modules/@firebase/app/dist/esm/index.esm.js';
 import {
   assertFails,
   assertSucceeds,
@@ -261,9 +264,7 @@ describe('authentication and users', () => {
     wrongTarget.update(doc(wrongTargetDb, 'users', 'alice'), {
       email: 'alice.new@example.test',
     });
-    wrongTarget.delete(
-      doc(wrongTargetDb, 'userLookups', 'alice@example.test'),
-    );
+    wrongTarget.delete(doc(wrongTargetDb, 'userLookups', 'alice@example.test'));
     wrongTarget.set(
       doc(wrongTargetDb, 'userLookups', 'alice.new@example.test'),
       { user: userRef(wrongTargetDb, 'bob') },
@@ -482,45 +483,42 @@ describe('games', () => {
     );
   });
 
-  test('game updates reject malformed mutable state and mixed attacks', async () => {
+  test('authorized members may persist application-defined turn data', async () => {
+    const db = auth('alice', 'alice@example.test');
+    const game = doc(db, 'games', 'alice-bob');
+    // Firestore deliberately does not duplicate the TypeScript Turn/Throw
+    // schema. The application parser sanitizes this untrusted runtime input.
+    await assertSucceeds(
+      updateDoc(game, {
+        turns: [
+          {
+            userId: userRef(db, 'alice'),
+            throws: [{ type: 'future-dart', score: 'application-defined' }],
+            unexpected: { nested: 'data' },
+          },
+          null,
+          { also: 'application-owned' },
+        ],
+      }),
+    );
+  });
+
+  test('game updates enforce authorization, write contract, and resource bounds', async () => {
     const db = auth('alice', 'alice@example.test');
     const game = doc(db, 'games', 'alice-bob');
     await assertFails(
       updateDoc(game, {
-        turns: [
-          {
-            userId: userRef(db, 'alice'),
-            throws: [{ type: 'triple', score: 61 }],
-          },
-        ],
+        turns: { not: 'a bounded history list' },
       }),
     );
     await assertFails(
       updateDoc(game, {
-        turns: [
-          {
-            userId: userRef(db, 'alice'),
-            throws: [{ type: 'quadruple', score: 20 }],
-          },
-        ],
+        turns: Array.from({ length: 501 }, () => null),
       }),
     );
     await assertFails(
       updateDoc(game, {
-        turns: [
-          {
-            userId: userRef(db, 'alice'),
-            throws: [{ type: 'single', score: 20, unexpected: true }],
-          },
-        ],
-      }),
-    );
-    await assertFails(
-      updateDoc(game, { turns: [validTurn(db, 'charlie')] }),
-    );
-    await assertFails(
-      updateDoc(game, {
-        turns: [validTurn(db)],
+        turns: [],
         owner: 'bob',
       }),
     );
@@ -535,9 +533,7 @@ describe('games', () => {
 
   test('unauthenticated clients cannot update games', async () => {
     const db = firestoreFor(env.unauthenticatedContext());
-    await assertFails(
-      updateDoc(doc(db, 'games', 'alice-bob'), { turns: [] }),
-    );
+    await assertFails(updateDoc(doc(db, 'games', 'alice-bob'), { turns: [] }));
   });
 
   test('maximum supported registered-player creation stays in budget', async () => {
@@ -599,13 +595,19 @@ describe('games', () => {
     );
   });
 
-  test('invalid options and unknown game fields are rejected on creation', async () => {
+  test('application-defined options are accepted but top-level fields remain constrained', async () => {
     const db = auth('alice', 'alice@example.test');
-    const invalidOptions = x01Game(db, 'alice', ['alice']);
-    invalidOptions.options = { mode: 'x01', startingScore: 1 };
-    invalidOptions.startingScore = 1;
-    await assertFails(
-      setDoc(doc(db, 'games', 'invalid-options'), invalidOptions),
+    const applicationDefinedOptions = x01Game(db, 'alice', ['alice']);
+    applicationDefinedOptions.options = {
+      mode: 'future-mode',
+      applicationOwned: true,
+    };
+    applicationDefinedOptions.startingScore = 'not-a-score';
+    await assertSucceeds(
+      setDoc(
+        doc(db, 'games', 'application-options'),
+        applicationDefinedOptions,
+      ),
     );
 
     const unknownField = x01Game(db, 'alice', ['alice']);
@@ -616,9 +618,10 @@ describe('games', () => {
   test('non-friend game membership grants no protected-data capability', async () => {
     const mallory = auth('charlie', 'charlie@example.test');
     const gameRef = doc(mallory, 'games', 'non-friend-game');
-    await assertSucceeds(
-      setDoc(gameRef, x01Game(mallory, 'charlie', ['charlie', 'alice'])),
-    );
+    const poisonedGame = x01Game(mallory, 'charlie', ['charlie', 'alice']);
+    poisonedGame.turns = [{ arbitrary: ['application', 'data'], throws: null }];
+    poisonedGame.options = null;
+    await assertSucceeds(setDoc(gameRef, poisonedGame));
 
     await assertFails(getDoc(doc(mallory, 'users', 'alice')));
     await assertFails(
@@ -631,10 +634,9 @@ describe('games', () => {
       getDoc(doc(mallory, 'friendships', friendshipId('alice', 'bob'))),
     );
     await assertFails(
-      updateDoc(
-        doc(mallory, 'friendships', friendshipId('alice', 'bob')),
-        { status: 'accepted' },
-      ),
+      updateDoc(doc(mallory, 'friendships', friendshipId('alice', 'bob')), {
+        status: 'accepted',
+      }),
     );
     await assertFails(getDocs(collection(mallory, 'userLookups')));
 
@@ -676,7 +678,7 @@ describe('games', () => {
     await assertFails(setDoc(doc(db, 'games', 'missing-owner'), missingOwner));
   });
 
-  test('malformed player references and boundary turns are rejected', async () => {
+  test('player references remain protected while turn schema stays application-owned', async () => {
     const db = auth('alice', 'alice@example.test');
     const malformedPlayer = x01Game(db, 'alice', ['alice']);
     malformedPlayer.players = [doc(db, 'publicProfiles', 'alice')];
@@ -688,7 +690,7 @@ describe('games', () => {
     malformedTurn.turns = [
       { userId: userRef(db, 'alice'), throws: [], unexpected: true },
     ];
-    await assertFails(
+    await assertSucceeds(
       setDoc(doc(db, 'games', 'malformed-turn'), malformedTurn),
     );
   });
@@ -707,9 +709,7 @@ describe('games', () => {
   test('former friends retain access to their immutable-membership game history', async () => {
     await env.withSecurityRulesDisabled(async (context) => {
       const db = firestoreFor(context);
-      await deleteDoc(
-        doc(db, 'friendships', friendshipId('alice', 'bob')),
-      );
+      await deleteDoc(doc(db, 'friendships', friendshipId('alice', 'bob')));
     });
     const db = auth('bob', 'bob@example.test');
     await assertSucceeds(getDoc(doc(db, 'games', 'alice-bob')));

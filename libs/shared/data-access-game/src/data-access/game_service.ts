@@ -18,6 +18,7 @@ import {
 } from '@react-native-firebase/firestore';
 
 import {
+  DartboardScoreType,
   DoublesOptions,
   Game,
   GameOptions,
@@ -48,10 +49,6 @@ type FirestoreGameWrite = {
   startingScore?: number;
 };
 
-type FirestoreTurnRead = Partial<Omit<Turn, 'userId'>> & {
-  userId?: DocumentReference | string;
-};
-
 type FirestoreGameRead = DocumentData & {
   players?: FirestorePlayerRef[];
   turns?: unknown;
@@ -61,12 +58,66 @@ type FirestoreGameRead = DocumentData & {
   startingScore?: number;
 };
 
-function isFirestoreTurnRead(value: unknown): value is FirestoreTurnRead {
+const scoreTypes = new Set<string>(Object.values(DartboardScoreType));
+
+function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
 function isTurnsArray(value: unknown): value is unknown[] {
   return Array.isArray(value);
+}
+
+function parseTurn(value: unknown, playerIds: Set<string>): Turn | undefined {
+  if (!isRecord(value) || !Array.isArray(value.throws)) return undefined;
+
+  const rawUserId = value.userId;
+  const userId =
+    typeof rawUserId === 'string'
+      ? rawUserId
+      : isRecord(rawUserId) && typeof rawUserId.id === 'string'
+        ? rawUserId.id
+        : undefined;
+  if (!userId || !playerIds.has(userId)) return undefined;
+
+  if (value.throws.length > 3) return undefined;
+  const throws: Turn['throws'] = [];
+  for (const thrw of value.throws) {
+    if (
+      !isRecord(thrw) ||
+      typeof thrw.type !== 'string' ||
+      !scoreTypes.has(thrw.type) ||
+      typeof thrw.score !== 'number' ||
+      !Number.isFinite(thrw.score) ||
+      (thrw.isValid !== undefined && typeof thrw.isValid !== 'boolean')
+    ) {
+      return undefined;
+    }
+    throws.push({
+      type: thrw.type as DartboardScoreType,
+      score: thrw.score,
+      ...(thrw.isValid === undefined ? {} : { isValid: thrw.isValid }),
+    });
+  }
+
+  return {
+    userId,
+    throws,
+    ...(typeof value.username === 'string' ? { username: value.username } : {}),
+    ...(typeof value.isValid === 'boolean' ? { isValid: value.isValid } : {}),
+  };
+}
+
+function parseTimestamp(value: unknown): Date | undefined {
+  if (!isRecord(value) || typeof value.toDate !== 'function') return undefined;
+  try {
+    const date = value.toDate();
+    return date instanceof Date && !Number.isNaN(date.getTime())
+      ? date
+      : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 function isX01Options(
@@ -118,10 +169,13 @@ export class GameService extends FirebaseService {
     }
 
     const data = await getDocs(q);
-    return Promise.all(
+    const parsed = await Promise.allSettled(
       data.docs.map((docSnap: QueryDocumentSnapshot) =>
         this.parseGame(docSnap.id, docSnap.data()),
       ),
+    );
+    return parsed.flatMap((result) =>
+      result.status === 'fulfilled' ? [result.value] : [],
     );
   }
 
@@ -281,9 +335,11 @@ export class GameService extends FirebaseService {
 
     if (isX01Options(rawOptions)) {
       const startingScore =
-        typeof rawOptions.startingScore === 'number'
+        typeof rawOptions.startingScore === 'number' &&
+        Number.isFinite(rawOptions.startingScore)
           ? rawOptions.startingScore
-          : typeof game.startingScore === 'number'
+          : typeof game.startingScore === 'number' &&
+              Number.isFinite(game.startingScore)
             ? (game.startingScore as number)
             : 501;
 
@@ -300,7 +356,8 @@ export class GameService extends FirebaseService {
     }
 
     const fallback =
-      typeof game.startingScore === 'number'
+      typeof game.startingScore === 'number' &&
+      Number.isFinite(game.startingScore)
         ? (game.startingScore as number)
         : 501;
 
@@ -335,23 +392,23 @@ export class GameService extends FirebaseService {
     });
 
     const rawTurns = isTurnsArray(game?.turns) ? game.turns : [];
+    const playerIds = new Set(
+      players.map((player) =>
+        player.type === 'user' ? player.id : player.name,
+      ),
+    );
+    const turns = rawTurns.flatMap((turn) => {
+      const parsed = parseTurn(turn, playerIds);
+      return parsed ? [parsed] : [];
+    });
 
-    const turns: Turn[] = rawTurns
-      .filter(isFirestoreTurnRead)
-      .map((t): Turn => {
-        const userId =
-          typeof t.userId === 'string' ? t.userId : (t.userId?.id ?? '');
-
-        return {
-          ...(t as Omit<Turn, 'userId'>),
-          userId,
-        };
-      });
+    const started = parseTimestamp(game?.started) ?? new Date();
+    const finished = parseTimestamp(game?.finished);
 
     return {
       id,
-      finished: game?.finished ? game.finished.toDate() : undefined,
-      started: game?.started ? game.started.toDate() : new Date(),
+      finished,
+      started,
       players,
       turns,
       options,
