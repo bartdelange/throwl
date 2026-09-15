@@ -107,6 +107,7 @@ xcuserdata/             # root-level fallback
 # Android / Gradle / IntelliJ
 # -----------------------------------------------------------------------------
 .gradle/
+**/.kotlin/
 local.properties
 *.iml
 *.hprof

@@ -96,10 +96,12 @@ export const PlayerSelectScreen = () => {
 
     return [
       { ...user, type: 'user', friends: undefined },
-      ...(user.friends || []).map<User>((friend: Friend) => ({
-        ...friend.user,
-        type: 'user',
-      })),
+      ...(user.friends || [])
+        .filter((friend) => friend.confirmed)
+        .map<User>((friend: Friend) => ({
+          ...friend.user,
+          type: 'user',
+        })),
       ...guestUsers.map<GuestUser>((guestUser) => ({
         type: 'guest_user',
         name: guestUser,

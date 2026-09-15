@@ -3,13 +3,16 @@ import {
   addDoc,
   deleteDoc,
   doc,
-  type FirebaseFirestoreTypes,
+  DocumentData,
+  DocumentReference,
   getDoc,
   getDocs,
   limit,
   orderBy,
   query,
+  QueryDocumentSnapshot,
   startAfter,
+  Timestamp,
   updateDoc,
   where,
 } from '@react-native-firebase/firestore';
@@ -27,10 +30,10 @@ import { UserService } from '@throwl/shared-data-access-user';
 import { FirebaseService } from '@throwl/shared-data-access-firebase';
 import { getAuth } from '@react-native-firebase/auth';
 
-type FirestorePlayerRef = string | FirebaseFirestoreTypes.DocumentReference;
+type FirestorePlayerRef = string | DocumentReference;
 
 type FirestoreTurnWrite = Omit<Turn, 'userId'> & {
-  userId: FirebaseFirestoreTypes.DocumentReference;
+  userId: DocumentReference;
 };
 
 type FirestoreGameWrite = {
@@ -46,14 +49,14 @@ type FirestoreGameWrite = {
 };
 
 type FirestoreTurnRead = Partial<Omit<Turn, 'userId'>> & {
-  userId?: FirebaseFirestoreTypes.DocumentReference | string;
+  userId?: DocumentReference | string;
 };
 
-type FirestoreGameRead = FirebaseFirestoreTypes.DocumentData & {
+type FirestoreGameRead = DocumentData & {
   players?: FirestorePlayerRef[];
   turns?: unknown;
-  started?: FirebaseFirestoreTypes.Timestamp;
-  finished?: FirebaseFirestoreTypes.Timestamp | null;
+  started?: Timestamp;
+  finished?: Timestamp | null;
   options?: unknown;
   startingScore?: number;
 };
@@ -116,7 +119,7 @@ export class GameService extends FirebaseService {
 
     const data = await getDocs(q);
     return Promise.all(
-      data.docs.map((docSnap: FirebaseFirestoreTypes.QueryDocumentSnapshot) =>
+      data.docs.map((docSnap: QueryDocumentSnapshot) =>
         this.parseGame(docSnap.id, docSnap.data()),
       ),
     );
@@ -175,9 +178,7 @@ export class GameService extends FirebaseService {
 
     await this.update({
       id: gameId,
-      players,
       turns,
-      options,
       finished: finished ? new Date() : undefined,
     });
 
@@ -243,41 +244,27 @@ export class GameService extends FirebaseService {
 
   public static async update({
     id,
-    players,
     turns,
-    options,
     finished,
   }: {
     id: string;
-    players: (User | GuestUser)[];
     turns: Turn[];
-    options: GameOptions;
     finished?: Date;
   }): Promise<Game> {
     const gamesCollection = this.getCollection('games');
     const usersCollection = this.getCollection('users');
 
+    const gameRef = doc(gamesCollection, id);
+
     const patch: Partial<FirestoreGameWrite> = {
-      players: players.map((u) => {
-        if (u.type === 'user') return doc(usersCollection, u.id);
-        return u.name;
-      }),
-      turns: turns.length
-        ? turns.map<FirestoreTurnWrite>((t) => ({
-            ...t,
-            userId: doc(usersCollection, t.userId),
-          }))
-        : [],
+      turns: turns.map<FirestoreTurnWrite>((t) => ({
+        ...t,
+        userId: doc(usersCollection, t.userId),
+      })),
       finished: finished ?? null,
-      options,
     };
 
-    // legacy mirror for x01
-    if (options.mode === 'x01') {
-      patch.startingScore = options.startingScore;
-    }
-
-    await updateDoc(doc(gamesCollection, id), patch);
+    await updateDoc(gameRef, patch);
     return await this.getById(id);
   }
 

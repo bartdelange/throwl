@@ -117,22 +117,10 @@ describe(GameService.name, () => {
       .spyOn(GameService, 'getById')
       .mockResolvedValue({ id: 'g9' } as unknown as Game);
 
-    const options: GameOptions = { mode: 'x01', startingScore: 301 };
-
     await expect(
       GameService.update({
         id: 'g9',
-        players: [
-          {
-            type: 'user',
-            id: 'u1',
-            email: 'a@b.com',
-            name: 'Bart',
-            friends: [],
-          },
-        ],
         turns: [],
-        options,
       }),
     ).resolves.toEqual({ id: 'g9' });
 
@@ -140,10 +128,8 @@ describe(GameService.name, () => {
     const [ref, patch] = (updateDoc as jest.Mock).mock.calls[0];
 
     expect(ref).toEqual({ __doc: true, col: gamesCol, id: 'g9' });
-    expect(patch.players).toEqual([{ __doc: true, col: usersCol, id: 'u1' }]);
     expect(patch.turns).toEqual([]);
-    expect(patch.options).toBe(options);
-    expect(patch.startingScore).toBe(301);
+    expect(patch.finished).toBeNull();
 
     expect(getByIdSpy).toHaveBeenCalledWith('g9');
   });
