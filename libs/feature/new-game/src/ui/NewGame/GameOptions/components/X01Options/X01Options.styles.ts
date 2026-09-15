@@ -14,8 +14,6 @@ export const useStyles = () => {
           fontSize: Math.max(width * 0.05, 24),
         },
         scoreInput: {
-          marginRight: -10,
-          marginLeft: -10,
           height: (Math.max(height * 0.06, 55) + 15) * 5,
         },
         scoreButton: {

@@ -7,15 +7,6 @@ export const useStyles = () => {
   return useMemo(
     () =>
       StyleSheet.create({
-        layout: {
-          flexDirection: 'column',
-          alignContent: 'center',
-          alignItems: 'center',
-        },
-        content: {
-          width: '80%',
-          flexShrink: 1,
-        },
         header: {
           flexDirection: 'row',
           alignItems: 'center',
@@ -23,7 +14,8 @@ export const useStyles = () => {
           paddingBottom: '10%',
         },
         playerList: {
-          maxHeight: '80%',
+          flex: 1,
+          minHeight: 0,
         },
         player: {
           paddingVertical: 5,
@@ -37,14 +29,6 @@ export const useStyles = () => {
             },
           }),
           fontSize: Math.max(Dimensions.get('window').width * 0.05, 24),
-        },
-        goButton: {
-          flex: 1,
-          justifyContent: 'space-evenly',
-          alignItems: 'center',
-          width: '80%',
-          minHeight: '20%',
-          paddingVertical: Dimensions.get('window').width < 500 ? 0 : '5%',
         },
         input: {
           marginVertical: '5%',

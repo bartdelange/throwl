@@ -1,12 +1,38 @@
-import { FC, RefObject } from 'react';
+import { FC, PropsWithChildren, RefObject } from 'react';
 import { Text } from 'react-native-paper';
-import { Col, Grid, Row } from 'react-native-easy-grid';
 import { useStyles } from './ScoreTable.styles';
 import { GuestUser, Turn, User } from '@throwl/shared-domain-models';
-import { FlatList, View } from 'react-native';
+import { FlatList, StyleSheet, View, ViewProps } from 'react-native';
 import { GameService } from '@throwl/shared-data-access-game';
 import { GameHelper } from '@throwl/shared-domain-game-rules';
 import { AppLogoArrowLight, SwipeActions } from '@throwl/shared-ui';
+
+const gridStyles = StyleSheet.create({
+  grid: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  column: {
+    flexDirection: 'column',
+  },
+});
+
+const Grid: FC<ViewProps> = ({ style, ...props }) => (
+  <View {...props} style={[gridStyles.grid, style]} />
+);
+
+const Row: FC<ViewProps> = ({ style, ...props }) => (
+  <View {...props} style={[gridStyles.row, style]} />
+);
+
+const Col: FC<PropsWithChildren<ViewProps & { size?: number }>> = ({
+  size = 1,
+  style,
+  ...props
+}) => <View {...props} style={[gridStyles.column, { flex: size }, style]} />;
 
 interface ScoreTableProps {
   scoreTableRef: RefObject<FlatList<User | GuestUser> | null>;

@@ -2,7 +2,12 @@ import { RouteProp, useNavigation } from '@react-navigation/core';
 import { useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useMemo, useState } from 'react';
-import { Dimensions, FlatList, TouchableOpacity, View } from 'react-native';
+import {
+  FlatList,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { Menu, Text } from 'react-native-paper';
 import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
 import { AppModal, LogoButton, FormInput, AppHeader } from '@throwl/shared-ui';
@@ -19,9 +24,10 @@ import { useAppTheme } from '@throwl/shared-theme';
 import { GameService } from '@throwl/shared-data-access-game';
 import { useStyles } from './PlayerSelect.styles';
 import { useNewGame } from '../../../feature/NewGameContext';
-import { FullScreenLayout } from '@throwl/shared-layouts';
+import { NewGameScreenLayout } from '../NewGameScreenLayout';
 
 export const PlayerSelectScreen = () => {
+  const { width } = useWindowDimensions();
   const navigator =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { state } = useNewGame();
@@ -114,9 +120,50 @@ export const PlayerSelectScreen = () => {
     return <View />;
   }
 
+  const startGameButton = (
+    <LogoButton
+      label="GO"
+      size={Math.max(50, width * 0.1)}
+      disabled={!selectedUsers.length}
+      onPress={() => {
+        navigator.setParams({ selectedUsers, guestUsers });
+        const mappedPlayers = [
+          ...(selectedUsers
+            .map<
+              Omit<User, 'friends'> | GuestUser | undefined
+            >((selectedUser) => players.find((p) => GameService.stubPlayer(p).id === selectedUser))
+            .filter(Boolean) as (Omit<User, 'friends'> | GuestUser)[]),
+        ];
+
+        switch (state.options?.mode) {
+          case 'x01':
+            navigator.push(NORMAL_GAME_SCREEN, {
+              players: mappedPlayers,
+              options: {
+                mode: 'x01',
+                startingScore: state.options.startingScore,
+              },
+            });
+            break;
+          case 'doubles':
+            navigator.push(DOUBLES_GAME_SCREEN, {
+              players: mappedPlayers,
+              options: {
+                mode: 'doubles',
+                endOnInvalid: state.options.endOnInvalid,
+                skipBull: state.options.skipBull,
+                quickMatch: state.options.quickMatch,
+              },
+            });
+            break;
+        }
+      }}
+    />
+  );
+
   return (
-    <FullScreenLayout size="fullscreen" style={styles.layout}>
-      <View style={styles.content}>
+    <>
+      <NewGameScreenLayout action={startGameButton} scrollable={false}>
         <AppHeader
           title="The Players"
           right={
@@ -128,7 +175,7 @@ export const PlayerSelectScreen = () => {
                   <MaterialDesignIcons
                     name="menu"
                     color="white"
-                    size={Math.max(50, Dimensions.get('window').width * 0.1)}
+                    size={Math.max(50, width * 0.1)}
                   />
                 </TouchableOpacity>
               }
@@ -196,47 +243,7 @@ export const PlayerSelectScreen = () => {
             }}
           />
         </View>
-      </View>
-      <View style={styles.goButton}>
-        <LogoButton
-          label="GO"
-          size={Math.max(50, Dimensions.get('window').width * 0.1)}
-          disabled={!selectedUsers.length}
-          onPress={() => {
-            navigator.setParams({ selectedUsers, guestUsers });
-            const mappedPlayers = [
-              ...(selectedUsers
-                .map<
-                  Omit<User, 'friends'> | GuestUser | undefined
-                >((selectedUser) => players.find((p) => GameService.stubPlayer(p).id === selectedUser))
-                .filter(Boolean) as (Omit<User, 'friends'> | GuestUser)[]),
-            ];
-
-            switch (state.options?.mode) {
-              case 'x01':
-                navigator.push(NORMAL_GAME_SCREEN, {
-                  players: mappedPlayers,
-                  options: {
-                    mode: 'x01',
-                    startingScore: state.options.startingScore,
-                  },
-                });
-                break;
-              case 'doubles':
-                navigator.push(DOUBLES_GAME_SCREEN, {
-                  players: mappedPlayers,
-                  options: {
-                    mode: 'doubles',
-                    endOnInvalid: state.options.endOnInvalid,
-                    skipBull: state.options.skipBull,
-                    quickMatch: state.options.quickMatch,
-                  },
-                });
-                break;
-            }
-          }}
-        />
-      </View>
+      </NewGameScreenLayout>
       <AppModal
         visible={addGuestOpen}
         titleIcon="account-edit"
@@ -259,6 +266,6 @@ export const PlayerSelectScreen = () => {
           </View>
         }
       />
-    </FullScreenLayout>
+    </>
   );
 };

@@ -1,6 +1,5 @@
-import { FC, useCallback } from 'react';
-import { View } from 'react-native';
-import { Col, Row } from 'react-native-easy-grid';
+import { FC, PropsWithChildren, useCallback } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { X01Options } from '@throwl/shared-domain-models';
 import { useStyles } from './X01Options.styles';
 import { Text, TouchableRipple } from 'react-native-paper';
@@ -10,6 +9,26 @@ interface X01OptionsProps {
   saveOptions: (options: X01Options) => void;
   options: X01Options;
 }
+
+const gridStyles = StyleSheet.create({
+  row: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  column: {
+    flex: 1,
+  },
+});
+
+const Row: FC<PropsWithChildren> = ({ children }) => (
+  <View style={gridStyles.row}>{children}</View>
+);
+
+const Col: FC<PropsWithChildren<{ size?: number }>> = ({
+  children,
+  size = 1,
+}) => <View style={[gridStyles.column, { flex: size }]}>{children}</View>;
+
 export const X01OptionsView: FC<X01OptionsProps> = ({
   saveOptions,
   options,

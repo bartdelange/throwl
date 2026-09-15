@@ -6,12 +6,46 @@ import {
   useContext,
   useState,
 } from 'react';
-import { GameMode, GameOptions } from '@throwl/shared-domain-models';
+import {
+  GameMode,
+  GameOptions,
+  X01Options,
+} from '@throwl/shared-domain-models';
 
 export type NewGameState = {
-  mode?: GameMode;
-  options?: GameOptions;
-  players?: string[];
+  mode: GameMode;
+  options: GameOptions;
+  players: string[];
+};
+
+const DEFAULT_X01_OPTIONS: X01Options = {
+  mode: 'x01',
+  startingScore: 501,
+};
+
+export const getDefaultOptions = (mode: GameMode): GameOptions =>
+  mode === 'doubles'
+    ? {
+        mode: 'doubles',
+        quickMatch: false,
+        endOnInvalid: false,
+        skipBull: false,
+      }
+    : DEFAULT_X01_OPTIONS;
+
+const getInitialState = (
+  initialState?: Partial<NewGameState>,
+): NewGameState => {
+  const mode = initialState?.mode ?? initialState?.options?.mode ?? 'x01';
+
+  return {
+    mode,
+    options:
+      initialState?.options?.mode === mode
+        ? initialState.options
+        : getDefaultOptions(mode),
+    players: initialState?.players ?? [],
+  };
 };
 
 type Ctx = {
@@ -32,14 +66,10 @@ export function NewGameProvider({
   initialState,
 }: {
   children: ReactNode;
-  initialState?: NewGameState;
+  initialState?: Partial<NewGameState>;
 }) {
-  const [state, setState] = useState<NewGameState>(
-    initialState ?? {
-      mode: 'x01',
-      options: { mode: 'x01', startingScore: 501 },
-      players: [],
-    },
+  const [state, setState] = useState<NewGameState>(() =>
+    getInitialState(initialState),
   );
   return (
     <NewGameContext.Provider value={{ state, setState }}>

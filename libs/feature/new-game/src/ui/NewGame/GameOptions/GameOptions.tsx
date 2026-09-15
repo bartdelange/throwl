@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo } from 'react';
+import { FC, useCallback } from 'react';
 import { useNavigation } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GameFlowStackNames, StepperParamList } from '../NewGame';
@@ -7,9 +7,7 @@ import { DoublesOptionsView } from './components/DoublesOptions/DoublesOptions';
 import { X01OptionsView } from './components/X01Options/X01Options';
 import { DoublesOptions, X01Options } from '@throwl/shared-domain-models';
 import { AppHeader, LogoButton } from '@throwl/shared-ui';
-import { FullScreenLayout } from '@throwl/shared-layouts';
-import { View } from 'react-native';
-import { useStyles } from './GameOptions.styles';
+import { NewGameScreenLayout } from '../NewGameScreenLayout';
 
 export const GameOptionsScreen: FC = () => {
   const navigation =
@@ -17,37 +15,8 @@ export const GameOptionsScreen: FC = () => {
       NativeStackNavigationProp<StepperParamList, GameFlowStackNames.GAME_MODE>
     >();
   const { state, setState } = useNewGame();
-  const styles = useStyles();
 
-  const gameMode = useMemo(() => state.mode, [state]);
-  const gameOptions = useMemo(() => state.options, [state]);
-
-  useEffect(() => {
-    if (gameOptions?.mode !== gameMode)
-      setState((s) => {
-        switch (gameMode) {
-          case 'doubles':
-            return {
-              ...s,
-              options: {
-                mode: 'doubles',
-                quickMatch: false,
-                endOnInvalid: false,
-                skipBull: false,
-              },
-            };
-          case 'x01':
-          default:
-            return {
-              ...s,
-              options: {
-                mode: 'x01',
-                startingScore: 501,
-              },
-            };
-        }
-      });
-  }, [gameOptions, gameMode, setState]);
+  const gameOptions = state.options;
 
   const saveDoublesOptions = useCallback(
     (opts: DoublesOptions) => {
@@ -76,25 +45,24 @@ export const GameOptionsScreen: FC = () => {
   );
 
   return (
-    <FullScreenLayout size="fullscreen" style={styles.layout}>
-      <View style={styles.content}>
-        <AppHeader title={`Game Options`} />
-        {gameOptions?.mode === 'doubles' && (
-          <DoublesOptionsView
-            saveOptions={saveDoublesOptions}
-            options={gameOptions}
-          />
-        )}
-        {gameOptions?.mode === 'x01' && (
-          <X01OptionsView saveOptions={saveX01Options} options={gameOptions} />
-        )}
-      </View>
-      <View style={styles.button}>
+    <NewGameScreenLayout
+      action={
         <LogoButton
-          label={`Next`}
+          label="Next"
           onPress={() => navigation.push(GameFlowStackNames.PLAYER_SELECT)}
         />
-      </View>
-    </FullScreenLayout>
+      }
+    >
+      <AppHeader title={`Game Options`} />
+      {gameOptions?.mode === 'doubles' && (
+        <DoublesOptionsView
+          saveOptions={saveDoublesOptions}
+          options={gameOptions}
+        />
+      )}
+      {gameOptions?.mode === 'x01' && (
+        <X01OptionsView saveOptions={saveX01Options} options={gameOptions} />
+      )}
+    </NewGameScreenLayout>
   );
 };

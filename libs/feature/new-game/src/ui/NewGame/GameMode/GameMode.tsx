@@ -2,13 +2,11 @@ import { FC, useCallback, useState } from 'react';
 import { useNavigation } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GameFlowStackNames, StepperParamList } from '../NewGame';
-import { useNewGame } from '../../../feature/NewGameContext';
+import { getDefaultOptions, useNewGame } from '../../../feature/NewGameContext';
 import { GameMode } from '@throwl/shared-domain-models';
 import { ModeAccordion } from './components/ModeAccordion';
 import { LogoButton, AppHeader } from '@throwl/shared-ui';
-import { View } from 'react-native';
-import { FullScreenLayout } from '@throwl/shared-layouts';
-import { useStyles } from './GameMode.styles';
+import { NewGameScreenLayout } from '../NewGameScreenLayout';
 
 export const GameModeScreen: FC = () => {
   const navigation =
@@ -19,7 +17,6 @@ export const GameModeScreen: FC = () => {
   const [openIndex, setOpenIndex] = useState(
     state.options?.mode === 'doubles' ? 1 : 0,
   );
-  const styles = useStyles();
 
   const onPickMode = useCallback(
     (mode: GameMode) => () => {
@@ -32,40 +29,40 @@ export const GameModeScreen: FC = () => {
       setState((s) => ({
         ...s,
         mode,
+        options: s.options.mode === mode ? s.options : getDefaultOptions(mode),
       }));
     },
     [setState],
   );
 
   return (
-    <FullScreenLayout size="fullscreen" style={styles.layout}>
-      <View style={styles.content}>
-        <AppHeader title="Game Mode" />
-        <ModeAccordion
-          title={'Normal'}
-          description={'Standard darts game.'}
-          descriptionSubtext={
-            'You start at 501 points going to 0 while ending with a double.'
-          }
-          open={openIndex === 0}
-          setOpen={onPickMode('x01')}
-        />
-        <ModeAccordion
-          title={'Doubles'}
-          description={'Doubles darts game.'}
-          descriptionSubtext={
-            'You throw consecutive doubles from highest (D20) to lowest (D1) ending on single Bull and Bull.'
-          }
-          open={openIndex === 1}
-          setOpen={onPickMode('doubles')}
-        />
-      </View>
-      <View style={styles.button}>
+    <NewGameScreenLayout
+      action={
         <LogoButton
-          label={`Next`}
+          label="Next"
           onPress={() => navigation.push(GameFlowStackNames.GAME_OPTIONS)}
         />
-      </View>
-    </FullScreenLayout>
+      }
+    >
+      <AppHeader title="Game Mode" />
+      <ModeAccordion
+        title={'Normal'}
+        description={'Standard darts game.'}
+        descriptionSubtext={
+          'You start at 501 points going to 0 while ending with a double.'
+        }
+        open={openIndex === 0}
+        setOpen={onPickMode('x01')}
+      />
+      <ModeAccordion
+        title={'Doubles'}
+        description={'Doubles darts game.'}
+        descriptionSubtext={
+          'You throw consecutive doubles from highest (D20) to lowest (D1) ending on single Bull and Bull.'
+        }
+        open={openIndex === 1}
+        setOpen={onPickMode('doubles')}
+      />
+    </NewGameScreenLayout>
   );
 };
