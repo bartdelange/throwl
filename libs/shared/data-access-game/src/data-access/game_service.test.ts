@@ -9,6 +9,7 @@ import { FirebaseService } from '@throwl/shared-data-access-firebase';
 import { UserService } from '@throwl/shared-data-access-user';
 import { GameService } from './game_service';
 import {
+  DartboardScoreType,
   Game,
   GameOptions,
   GuestUser,
@@ -62,6 +63,7 @@ describe(GameService.name, () => {
   );
 
   beforeEach(() => {
+    jest.restoreAllMocks();
     jest.clearAllMocks();
 
     // Make getCollection deterministic so our doc() mocks get a real "col".
@@ -170,6 +172,82 @@ describe(GameService.name, () => {
     expect(patch.finished).toBeNull();
 
     expect(getByIdSpy).toHaveBeenCalledWith('g9');
+  });
+
+  it('persists, parses, and repeatedly updates a Doubles game with a guest', async () => {
+    const stored = {
+      owner: 'u1',
+      playerIds: ['u1'],
+      players: [{ __doc: true, col: usersCol, id: 'u1' }, 'Guest 1'],
+      turns: [
+        {
+          userId: { __doc: true, col: usersCol, id: 'Guest 1' },
+          throws: [
+            { type: DartboardScoreType.Double, score: 16, isValid: true },
+          ],
+          isValid: true,
+        },
+      ],
+      started: { toDate: () => new Date('2026-01-01T10:00:00Z') },
+      finished: null,
+      options: {
+        mode: 'doubles',
+        quickMatch: false,
+        skipBull: false,
+        endOnInvalid: true,
+      },
+    };
+    (addDoc as jest.Mock).mockResolvedValue({ id: 'doubles-guests' });
+    mockFirestore.getDoc.mockImplementation(async () => ({
+      exists: () => true,
+      data: () => stored,
+    }));
+    (updateDoc as jest.Mock).mockImplementation(
+      async (_ref: unknown, patch: typeof stored) =>
+        Object.assign(stored, patch),
+    );
+    jest.spyOn(UserService, 'getPublicById').mockResolvedValue({
+      type: 'user',
+      id: 'u1',
+      email: '',
+      name: 'Player',
+    });
+
+    const created = await GameService.create({
+      players: [
+        { type: 'user', id: 'u1', email: '', name: 'Player', friends: [] },
+        { type: 'guest_user', name: 'Guest 1' },
+      ],
+      turns: [
+        {
+          userId: 'Guest 1',
+          throws: [
+            { type: DartboardScoreType.Double, score: 16, isValid: true },
+          ],
+          isValid: true,
+        },
+      ],
+      started: new Date('2026-01-01T10:00:00Z'),
+      options: stored.options as GameOptions,
+    });
+
+    expect(created.players).toEqual([
+      expect.objectContaining({ type: 'user', id: 'u1' }),
+      { type: 'guest_user', name: 'Guest 1' },
+    ]);
+    expect(created.turns[0].userId).toBe('Guest 1');
+
+    const firstUpdate = await GameService.update({
+      id: created.id,
+      turns: created.turns,
+    });
+    await GameService.update({ id: firstUpdate.id, turns: firstUpdate.turns });
+
+    expect(updateDoc).toHaveBeenCalledTimes(2);
+    for (const [, patch] of (updateDoc as jest.Mock).mock.calls) {
+      expect(Object.keys(patch).sort()).toEqual(['finished', 'turns']);
+      expect(patch.turns[0].userId.id).toBe('Guest 1');
+    }
   });
 
   it('isolates malformed remote games and sanitizes application-owned data', async () => {
