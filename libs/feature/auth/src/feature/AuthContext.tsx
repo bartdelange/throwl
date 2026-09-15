@@ -12,6 +12,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import { User } from '@throwl/shared-domain-models';
@@ -32,15 +33,26 @@ export const useAuthContext = () => useContext(AuthContext);
 export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
   const [user, setUser] = useState<User>();
   const [initializing, setInitializing] = useState(true);
+  const registrationInProgress = useRef(false);
 
   const _onAuthStateChanged = useCallback(
-    async <T extends { uid: string }>(user?: T | null) => {
-      if (user?.uid) {
-        setUser(await UserService.getById(user.uid));
+    async <T extends { uid: string }>(firebaseUser?: T | null) => {
+      try {
+        if (!firebaseUser?.uid) {
+          setUser(undefined);
+        } else if (!registrationInProgress.current) {
+          setUser(await UserService.getById(firebaseUser.uid));
+        }
+      } catch {
+        // Auth accounts without an application user document are not a valid
+        // signed-in application session. Keep listener failures contained;
+        // interactive login/registration calls surface their own errors.
+        setUser(undefined);
+      } finally {
+        setInitializing(false);
       }
-      if (initializing) setInitializing(false);
     },
-    [initializing],
+    [],
   );
 
   useEffect(() => {
@@ -65,15 +77,24 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
           await signInWithEmailAndPassword(getAuth(), email, password);
         },
         register: async (email: string, password: string, name: string) => {
-          const userCredential = await createUserWithEmailAndPassword(
-            getAuth(),
-            email,
-            password,
-          );
-          await signInWithEmailAndPassword(getAuth(), email, password);
-          setUser(
-            await UserService.create(userCredential.user.uid, email, name),
-          );
+          registrationInProgress.current = true;
+          try {
+            const userCredential = await createUserWithEmailAndPassword(
+              getAuth(),
+              email,
+              password,
+            );
+            setUser(
+              await UserService.create(userCredential.user.uid, email, name),
+            );
+          } catch (error) {
+            // Do not leave a partially provisioned Auth account active in the
+            // app when its Firestore registration batch failed.
+            await signOut(getAuth()).catch(() => undefined);
+            throw error;
+          } finally {
+            registrationInProgress.current = false;
+          }
         },
         logout: async () => {
           await signOut(getAuth());
