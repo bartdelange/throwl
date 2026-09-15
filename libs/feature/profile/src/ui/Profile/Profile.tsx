@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ScrollView, TextInput, View } from 'react-native';
+import { ScrollView, TextInputInstance, View } from 'react-native';
 import { useAuthContext } from '@throwl/feature-auth';
 import { FullScreenLayout } from '@throwl/shared-layouts';
 import { useStyles } from './styles';
@@ -14,7 +14,11 @@ import {
 import {
   EmailAuthProvider,
   getAuth,
+  reauthenticateWithCredential,
   signOut,
+  type User,
+  updateEmail,
+  updatePassword,
 } from '@react-native-firebase/auth';
 import isEmail from 'validator/es/lib/isEmail';
 import { useNavigation } from '@react-navigation/core';
@@ -37,9 +41,9 @@ export const ProfileScreen = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string>();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const passwordInputRef = useRef<TextInput>(null);
-  const confirmPasswordInputRef = useRef<TextInput>(null);
-  const emailInputRef = useRef<TextInput>(null);
+  const passwordInputRef = useRef<TextInputInstance>(null);
+  const confirmPasswordInputRef = useRef<TextInputInstance>(null);
+  const emailInputRef = useRef<TextInputInstance>(null);
   const styles = useStyles();
   const { colors } = useAppTheme();
 
@@ -57,7 +61,7 @@ export const ProfileScreen = () => {
   }
 
   const reauthenticate = async (currentPassword: string) => {
-    const firebaseUser = getAuth().currentUser;
+    const firebaseUser: User | null = getAuth().currentUser;
     if (!firebaseUser || !firebaseUser.email) {
       return false;
     }
@@ -67,7 +71,7 @@ export const ProfileScreen = () => {
       currentPassword,
     );
     try {
-      await firebaseUser.reauthenticateWithCredential(cred);
+      await reauthenticateWithCredential(firebaseUser, cred);
       return true;
     } catch {
       return false;
@@ -76,7 +80,7 @@ export const ProfileScreen = () => {
 
   const updateImportantUserData = async (): Promise<boolean> => {
     setWorking(true);
-    const firebaseUser = getAuth().currentUser;
+    const firebaseUser: User | null = getAuth().currentUser;
     if (!firebaseUser) return false;
     if (!(await reauthenticate(currentPassword))) {
       setError(
@@ -105,7 +109,7 @@ export const ProfileScreen = () => {
 
     if (password.length) {
       try {
-        await firebaseUser.updatePassword(password);
+        await updatePassword(firebaseUser, password);
       } catch {
         failedFields.push('password');
       }
@@ -114,7 +118,7 @@ export const ProfileScreen = () => {
     if (email?.length) {
       try {
         const oldEmail = firebaseUser.email ?? user.email;
-        await firebaseUser.updateEmail(email);
+        await updateEmail(firebaseUser, email);
         await firebaseUser.getIdToken(true);
         await UserService.updateEmail(firebaseUser.uid, oldEmail, email);
       } catch {

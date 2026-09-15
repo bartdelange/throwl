@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { render } from '@testing-library/react-native';
 
 jest.mock('@throwl/feature-auth', () => ({
@@ -29,11 +30,11 @@ jest.mock('@throwl/shared-data-access-user', () => ({
 }));
 
 jest.mock('@throwl/shared-layouts', () => ({
-  FullScreenLayout: (props) =>
+  FullScreenLayout: ({ children }: { children?: ReactNode }) =>
     require('react').createElement(
       require('react-native').View,
       null,
-      props.children,
+      children,
     ),
 }));
 
@@ -42,25 +43,17 @@ jest.mock('@throwl/shared-theme', () => ({
 }));
 
 jest.mock('@throwl/shared-ui', () => ({
-  AppHeader: (props) =>
-    require('react').createElement(
-      require('react-native').Text,
-      null,
-      props.title,
-    ),
+  AppHeader: ({ title }: { title?: string }) =>
+    require('react').createElement(require('react-native').Text, null, title),
   AppModal: () => null,
-  FormInput: (props) =>
+  FormInput: ({ label, value }: { label?: string; value?: string }) =>
     require('react').createElement(require('react-native').TextInput, {
-      accessibilityLabel: props.label,
-      value: props.value,
+      accessibilityLabel: label,
+      value,
     }),
   Loader: () => null,
-  LogoButton: (props) =>
-    require('react').createElement(
-      require('react-native').Text,
-      null,
-      props.label,
-    ),
+  LogoButton: ({ label }: { label?: string }) =>
+    require('react').createElement(require('react-native').Text, null, label),
 }));
 
 describe('ProfileScreen', () => {

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { TextInput, View } from 'react-native';
+import { TextInputInstance, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import isEmail from 'validator/es/lib/isEmail';
@@ -49,9 +49,9 @@ export const SignUpTab = () => {
   const { colors } = useAppTheme();
   const styles = useStyles();
 
-  const passwordInputRef = useRef<TextInput>(null);
-  const confirmPasswordInputRef = useRef<TextInput>(null);
-  const nameInputRef = useRef<TextInput>(null);
+  const passwordInputRef = useRef<TextInputInstance>(null);
+  const confirmPasswordInputRef = useRef<TextInputInstance>(null);
+  const nameInputRef = useRef<TextInputInstance>(null);
 
   const { register } = useAuthContext();
 

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { render } from '@testing-library/react-native';
 import { HomeScreen } from './Home';
 
@@ -10,23 +11,19 @@ jest.mock('@react-navigation/core', () => ({
 }));
 
 jest.mock('@throwl/shared-layouts', () => ({
-  FullScreenLayout: (props) =>
+  FullScreenLayout: ({ children }: { children?: ReactNode }) =>
     require('react').createElement(
       require('react-native').View,
       null,
-      props.children,
+      children,
     ),
 }));
 
 jest.mock('@throwl/shared-ui', () => ({
   AppLogoLight: () =>
     require('react').createElement(require('react-native').Text, null, 'Logo'),
-  LogoButton: (props) =>
-    require('react').createElement(
-      require('react-native').Text,
-      null,
-      props.label,
-    ),
+  LogoButton: ({ label }: { label?: string }) =>
+    require('react').createElement(require('react-native').Text, null, label),
 }));
 
 describe('HomeScreen', () => {

@@ -4,15 +4,5 @@
   "sourceRoot": "libs/shared/hooks/src",
   "projectType": "library",
   "tags": ["type:shared", "scope:hooks"],
-  "// targets": "to see all targets run: nx show project @throwl/shared-hooks --web",
-  "targets": {
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "outputs": [],
-      "options": {
-        "cwd": "{workspaceRoot}",
-        "command": "tsc -b ./libs/shared/hooks/tsconfig.lib.json --emitDeclarationOnly"
-      }
-    }
-  }
+  "// targets": "to see all targets run: nx show project @throwl/shared-hooks --web"
 }

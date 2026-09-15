@@ -1,6 +1,5 @@
-import { View } from 'react-native';
+import { View, type DimensionValue } from 'react-native';
 import Svg, { G, Path } from 'react-native-svg';
-import { DimensionValue } from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 
 const style = ({
   width,

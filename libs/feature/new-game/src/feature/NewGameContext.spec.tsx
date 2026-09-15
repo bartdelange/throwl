@@ -18,7 +18,12 @@ describe('NewGameProvider', () => {
       <NewGameProvider
         initialState={{
           mode: 'doubles',
-          options: { mode: 'doubles', quickMatch: false, skipBull: false },
+          options: {
+            mode: 'doubles',
+            quickMatch: false,
+            skipBull: false,
+            endOnInvalid: false,
+          },
           players: [],
         }}
       >

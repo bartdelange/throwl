@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { render, waitFor } from '@testing-library/react-native';
 import { GameService } from '@throwl/shared-data-access-game';
 
@@ -22,26 +23,22 @@ jest.mock('@throwl/shared-data-access-game', () => ({
 }));
 
 jest.mock('@throwl/shared-layouts', () => ({
-  FullScreenLayout: (props) =>
+  FullScreenLayout: ({ children }: { children?: ReactNode }) =>
     require('react').createElement(
       require('react-native').View,
       null,
-      props.children,
+      children,
     ),
 }));
 
 jest.mock('@throwl/shared-ui', () => ({
-  AppHeader: (props) =>
-    require('react').createElement(
-      require('react-native').Text,
-      null,
-      props.title,
-    ),
-  SwipeActions: (props) =>
+  AppHeader: ({ title }: { title?: string }) =>
+    require('react').createElement(require('react-native').Text, null, title),
+  SwipeActions: ({ children }: { children?: ReactNode }) =>
     require('react').createElement(
       require('react-native').View,
       null,
-      props.children,
+      children,
     ),
 }));
 

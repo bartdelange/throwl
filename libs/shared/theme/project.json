@@ -4,15 +4,5 @@
   "sourceRoot": "libs/shared/theme/src",
   "projectType": "library",
   "tags": ["type:shared", "scope:theme"],
-  "// targets": "to see all targets run: nx show project @throwl/shared-theme --web",
-  "targets": {
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "outputs": [],
-      "options": {
-        "cwd": "{workspaceRoot}",
-        "command": "tsc -b ./libs/shared/theme/tsconfig.lib.json --emitDeclarationOnly"
-      }
-    }
-  }
+  "// targets": "to see all targets run: nx show project @throwl/shared-theme --web"
 }

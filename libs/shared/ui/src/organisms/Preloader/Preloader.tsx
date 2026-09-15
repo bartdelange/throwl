@@ -45,13 +45,14 @@ export const Preloader: FC<PropsWithChildren<PreloaderProps>> = ({
     <FullScreenLayout style={styles.layout}>
       <View style={styles.progressScaler}>
         <View style={styles.progressWrapper}>
-          <ProgressCircle
-            style={styles.progressCircle}
-            size={500}
-            thickness={30}
-            progress={100}
-            color={'white'}
-          />
+          <View style={styles.progressCircle}>
+            <ProgressCircle
+              size={500}
+              thickness={30}
+              progress={100}
+              color={'white'}
+            />
+          </View>
           {logo ?? (
             <AppLogoLightLoader style={styles.progressLogo} width={450} />
           )}

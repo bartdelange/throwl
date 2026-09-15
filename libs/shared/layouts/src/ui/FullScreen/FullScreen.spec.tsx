@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { render } from '@testing-library/react-native';
 import { Text } from 'react-native';
 import { FullScreenLayout } from './FullScreen';
@@ -7,7 +8,7 @@ jest.mock('@throwl/shared-theme', () => ({
 }));
 
 jest.mock('react-native-safe-area-context', () => ({
-  SafeAreaView: (props) => props.children,
+  SafeAreaView: ({ children }: { children?: ReactNode }) => children,
   useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
 }));
 

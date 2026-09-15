@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useRef, useState } from 'react';
-import { TextInput, View } from 'react-native';
+import { TextInputInstance, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { AppModal, LogoButton, FormInput, Loader } from '@throwl/shared-ui';
 import { RootStackParamList } from '@throwl/shared-constants';
@@ -27,7 +27,7 @@ export const SignInTab = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string>();
   const [status, setStatus] = useState<string>();
-  const passwordInputRef = useRef<TextInput>(null);
+  const passwordInputRef = useRef<TextInputInstance>(null);
   const { login } = useAuthContext();
   const nav = useNavigation<StackNavigationProp<RootStackParamList>>();
   const { colors } = useAppTheme();

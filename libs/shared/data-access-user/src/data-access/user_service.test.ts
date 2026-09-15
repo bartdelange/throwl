@@ -12,26 +12,37 @@ import {
 import { FirebaseService } from '@throwl/shared-data-access-firebase';
 import { UserService } from './user_service';
 
-jest.mock('@react-native-firebase/firestore', () => ({
-  doc: jest.fn((col: unknown, id: string) => ({ __doc: true, col, id })),
-  getDoc: jest.fn(),
-  setDoc: jest.fn(),
-  updateDoc: jest.fn(),
-  deleteDoc: jest.fn(),
-  arrayUnion: jest.fn((...vals: unknown[]) => ({ __arrayUnion: vals })),
-  arrayRemove: jest.fn((...vals: unknown[]) => ({ __arrayRemove: vals })),
-  getFirestore: jest.fn(() => ({ __db: true })),
-  getDocs: jest.fn(),
-  query: jest.fn(),
-  where: jest.fn(),
-  limit: jest.fn(),
-  onSnapshot: jest.fn(),
-  runTransaction: jest.fn(),
-  writeBatch: jest.fn(),
-}));
+jest.mock('@react-native-firebase/firestore', () => {
+  const mockFirestore = {
+    collection: jest.fn((_db: unknown, name: string) => ({
+      __collection: { db: _db, name },
+    })),
+    doc: jest.fn((col: unknown, id: string) => ({ __doc: true, col, id })),
+    getDoc: jest.fn(),
+    setDoc: jest.fn(),
+    updateDoc: jest.fn(),
+    deleteDoc: jest.fn(),
+    arrayUnion: jest.fn((...vals: unknown[]) => ({ __arrayUnion: vals })),
+    arrayRemove: jest.fn((...vals: unknown[]) => ({ __arrayRemove: vals })),
+    getFirestore: jest.fn(() => ({ __db: true })),
+    getDocs: jest.fn(),
+    query: jest.fn(),
+    where: jest.fn(),
+    limit: jest.fn(),
+    onSnapshot: jest.fn(),
+    runTransaction: jest.fn(),
+    writeBatch: jest.fn(),
+  };
+  return mockFirestore;
+});
+
+const mockFirestore = jest.requireMock('@react-native-firebase/firestore');
 
 describe('UserService (happy flows)', () => {
-  const mockUsersCollection = { __collection: 'users' };
+  const mockUsersCollection = mockFirestore.collection(
+    mockFirestore.getFirestore(),
+    'users',
+  );
   const batch = {
     set: jest.fn(),
     update: jest.fn(),

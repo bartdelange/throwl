@@ -12,39 +12,54 @@ import {
   Game,
   GameOptions,
   GuestUser,
+  MAX_GAME_PLAYERS,
   Turn,
   User,
 } from '@throwl/shared-domain-models';
 
-jest.mock('@react-native-firebase/firestore', () => ({
-  // Firestore core (used by FirebaseService)
-  getFirestore: jest.fn(() => ({ __db: true })),
-  collection: jest.fn((_db: unknown, name: string) => ({ __col: true, name })),
+jest.mock('@react-native-firebase/firestore', () => {
+  const mockFirestore = {
+    // Firestore core (used by FirebaseService)
+    getFirestore: jest.fn(() => ({ __db: true })),
+    collection: jest.fn((_db: unknown, name: string) => ({
+      __collection: { db: _db, name },
+    })),
 
-  // ops
-  addDoc: jest.fn(),
-  updateDoc: jest.fn(),
-  deleteDoc: jest.fn(),
-  getDoc: jest.fn(),
-  getDocs: jest.fn(),
+    // ops
+    addDoc: jest.fn(),
+    updateDoc: jest.fn(),
+    deleteDoc: jest.fn(),
+    getDoc: jest.fn(),
+    getDocs: jest.fn(),
 
-  // query builders
-  query: jest.fn((...args: unknown[]) => ({ __query: args })),
-  where: jest.fn((...args: unknown[]) => ({ __where: args })),
-  orderBy: jest.fn((...args: unknown[]) => ({ __orderBy: args })),
-  limit: jest.fn((n: number) => ({ __limit: n })),
-  startAfter: jest.fn((snap: unknown) => ({ __startAfter: snap })),
+    // query builders
+    query: jest.fn((...args: unknown[]) => ({ __query: args })),
+    where: jest.fn((...args: unknown[]) => ({ __where: args })),
+    orderBy: jest.fn((...args: unknown[]) => ({ __orderBy: args })),
+    limit: jest.fn((n: number) => ({ __limit: n })),
+    startAfter: jest.fn((snap: unknown) => ({ __startAfter: snap })),
 
-  // refs
-  doc: jest.fn((col: unknown, id: string) => ({ __doc: true, col, id })),
-}));
+    // refs
+    doc: jest.fn((col: unknown, id: string) => ({ __doc: true, col, id })),
+  };
+
+  return mockFirestore;
+});
+
+const mockFirestore = jest.requireMock('@react-native-firebase/firestore');
 jest.mock('@react-native-firebase/auth', () => ({
   getAuth: jest.fn(() => ({ currentUser: { uid: 'u1' } })),
 }));
 
 describe(GameService.name, () => {
-  const usersCol = { __col: true, name: 'users' };
-  const gamesCol = { __col: true, name: 'games' };
+  const usersCol = mockFirestore.collection(
+    mockFirestore.getFirestore(),
+    'users',
+  );
+  const gamesCol = mockFirestore.collection(
+    mockFirestore.getFirestore(),
+    'games',
+  );
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -116,6 +131,23 @@ describe(GameService.name, () => {
     expect(payload.startingScore).toBe(501);
 
     expect(getByIdSpy).toHaveBeenCalledWith('g1');
+  });
+
+  it('create() rejects games above the shared player limit', async () => {
+    const players: GuestUser[] = Array.from(
+      { length: MAX_GAME_PLAYERS + 1 },
+      (_, index) => ({ type: 'guest_user', name: `Guest ${index}` }),
+    );
+
+    await expect(
+      GameService.create({
+        players,
+        turns: [],
+        started: new Date('2026-01-01T10:00:00Z'),
+        options: { mode: 'x01', startingScore: 501 },
+      }),
+    ).rejects.toThrow(`A game supports at most ${MAX_GAME_PLAYERS} players`);
+    expect(addDoc).not.toHaveBeenCalled();
   });
 
   it('update() patches a game and returns getById(id)', async () => {

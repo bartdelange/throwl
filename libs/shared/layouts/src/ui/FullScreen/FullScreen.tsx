@@ -31,9 +31,6 @@ export const FullScreenLayout: FC<PropsWithChildren<FullScreenLayoutProps>> = ({
         ]}
       >
         <StatusBar
-          backgroundColor={
-            mode === 'dark' ? colors.background : colors.secondary
-          }
           barStyle={mode === 'dark' ? 'light-content' : 'dark-content'}
         />
         {children}
@@ -52,9 +49,6 @@ export const FullScreenLayout: FC<PropsWithChildren<FullScreenLayoutProps>> = ({
         ]}
       >
         <StatusBar
-          backgroundColor={
-            mode === 'dark' ? colors.background : colors.secondary
-          }
           barStyle={mode === 'dark' ? 'light-content' : 'dark-content'}
         />
         {children}

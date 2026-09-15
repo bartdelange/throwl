@@ -3,15 +3,5 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/feature/profile/src",
   "projectType": "library",
-  "tags": ["type:feature", "scope:profile"],
-  "targets": {
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "outputs": [],
-      "options": {
-        "cwd": "{workspaceRoot}",
-        "command": "tsc -b ./libs/feature/profile/tsconfig.lib.json --emitDeclarationOnly"
-      }
-    }
-  }
+  "tags": ["type:feature", "scope:profile"]
 }
