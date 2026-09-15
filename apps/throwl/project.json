@@ -58,13 +58,6 @@
         "command": "react-native bundle --platform ios --dev false --entry-file src/main.tsx --bundle-output /tmp/throwl-main.jsbundle --assets-dest /tmp/throwl-bundle-assets"
       }
     },
-    "sync-deps": {
-      "executor": "nx:run-commands",
-      "options": {
-        "cwd": "{workspaceRoot}",
-        "command": "pnpm sync:libs"
-      }
-    },
     "writeXcodeEnv": {
       "executor": "nx:run-commands",
       "options": {

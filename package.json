@@ -18,9 +18,7 @@
     "test:migration": "node --test scripts/firestore-migration-operations.test.mjs",
     "migrate:firestore": "node scripts/migrate-firestore-schema.mjs",
     "test:affected": "nx affected --target=test --parallel --maxParallel=5",
-    "postinstall": "husky",
-    "sync": "pnpm sync:libs",
-    "sync:libs": "node scripts/sync-nx-packages.mjs"
+    "postinstall": "husky"
   },
   "packageManager": "pnpm@10.24.0",
   "devDependencies": {

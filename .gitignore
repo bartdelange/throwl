@@ -12,6 +12,7 @@
 **/out/
 **/out-tsc/
 **/test-output/
+*.tsbuildinfo
 firestore-debug.log
 firebase-debug.log
 ui-debug.log
