@@ -23,6 +23,7 @@ import {
   Game,
   GameOptions,
   GuestUser,
+  MAX_GAME_PLAYERS,
   Turn,
   User,
   X01Options,
@@ -253,6 +254,10 @@ export class GameService extends FirebaseService {
     options: GameOptions;
     finished?: Date;
   }): Promise<Game> {
+    if (players.length > MAX_GAME_PLAYERS) {
+      throw new Error(`A game supports at most ${MAX_GAME_PLAYERS} players`);
+    }
+
     const gamesCollection = this.getCollection('games');
     const usersCollection = this.getCollection('users');
     const ownerId = getAuth().currentUser?.uid;

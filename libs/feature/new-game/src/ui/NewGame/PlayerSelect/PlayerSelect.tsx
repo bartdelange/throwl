@@ -18,7 +18,12 @@ import {
   RootStackParamList,
 } from '@throwl/shared-constants';
 import { useAuthContext } from '@throwl/feature-auth';
-import { Friend, GuestUser, User } from '@throwl/shared-domain-models';
+import {
+  Friend,
+  GuestUser,
+  MAX_GAME_PLAYERS,
+  User,
+} from '@throwl/shared-domain-models';
 import { PlayerItem } from './components/PlayerItem/PlayerItem';
 import { useAppTheme } from '@throwl/shared-theme';
 import { GameService } from '@throwl/shared-data-access-game';
@@ -35,7 +40,7 @@ export const PlayerSelectScreen = () => {
   const route = useRoute<RouteProp<RootStackParamList, 'NEW_GAME'>>();
   const { user } = useAuthContext();
   const [selectedUsers, _setSelectedUsers] = useState<string[]>(
-    route.params?.selectedUsers || [],
+    (route.params?.selectedUsers || []).slice(0, MAX_GAME_PLAYERS),
   );
   const [guestUsers, setGuestUsers] = useState<string[]>(
     route.params?.guestUsers || [],
@@ -51,10 +56,10 @@ export const PlayerSelectScreen = () => {
   const setSelectedUsers = useCallback(
     (selectedUsers: string[] | ((current: string[]) => string[])) => {
       if (Array.isArray(selectedUsers)) {
-        _setSelectedUsers(selectedUsers);
+        _setSelectedUsers(selectedUsers.slice(0, MAX_GAME_PLAYERS));
       } else {
         _setSelectedUsers((current) => {
-          return selectedUsers(current);
+          return selectedUsers(current).slice(0, MAX_GAME_PLAYERS);
         });
       }
     },
@@ -232,9 +237,9 @@ export const PlayerSelectScreen = () => {
                           return current.filter(
                             (userId) => userId !== subbedPlayer.id,
                           );
-                        } else {
-                          return [...current, subbedPlayer.id];
                         }
+                        if (current.length >= MAX_GAME_PLAYERS) return current;
+                        return [...current, subbedPlayer.id];
                       })
                     }
                   />

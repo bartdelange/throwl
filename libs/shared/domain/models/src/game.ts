@@ -3,6 +3,8 @@ import { GuestUser, User } from './user';
 
 export type GameMode = 'x01' | 'doubles';
 
+export const MAX_GAME_PLAYERS = 8;
+
 export type X01Options = {
   mode: 'x01';
   startingScore: number;

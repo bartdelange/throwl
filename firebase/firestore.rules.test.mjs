@@ -536,10 +536,10 @@ describe('games', () => {
     await assertFails(updateDoc(doc(db, 'games', 'alice-bob'), { turns: [] }));
   });
 
-  test('maximum supported registered-player creation stays in budget', async () => {
+  test('eight registered players can create a game', async () => {
     const ids = [
       'alice',
-      ...Array.from({ length: 9 }, (_, i) => `participant${i}`),
+      ...Array.from({ length: 7 }, (_, i) => `participant${i}`),
     ];
     await env.withSecurityRulesDisabled(async (context) => {
       const db = firestoreFor(context);
@@ -556,32 +556,32 @@ describe('games', () => {
     await assertSucceeds(setDoc(doc(db, 'games', 'maximum-players'), game));
   });
 
-  test('registered players plus guests at the display limit stay in budget', async () => {
+  test('registered players and guests share the eight-player limit', async () => {
     const db = auth('alice', 'alice@example.test');
     const game = x01Game(db);
-    game.players.push(...Array.from({ length: 14 }, (_, i) => `Guest ${i}`));
+    game.players.push(...Array.from({ length: 6 }, (_, i) => `Guest ${i}`));
     await assertSucceeds(setDoc(doc(db, 'games', 'maximum-display'), game));
+
+    const tooManyPlayers = x01Game(db);
+    tooManyPlayers.players.push(
+      ...Array.from({ length: 7 }, (_, i) => `Guest ${i}`),
+    );
+    await assertFails(
+      setDoc(doc(db, 'games', 'mixed-above-maximum'), tooManyPlayers),
+    );
   });
 
-  test('game creation above either existing player bound is rejected', async () => {
+  test('nine registered players are rejected', async () => {
     const db = auth('alice', 'alice@example.test');
     const tooManyRegisteredIds = [
       'alice',
-      ...Array.from({ length: 10 }, (_, i) => `registered${i}`),
+      ...Array.from({ length: 8 }, (_, i) => `registered${i}`),
     ];
     await assertFails(
       setDoc(
         doc(db, 'games', 'too-many-registered'),
         x01Game(db, 'alice', tooManyRegisteredIds),
       ),
-    );
-
-    const tooManyDisplayed = x01Game(db, 'alice', ['alice']);
-    tooManyDisplayed.players.push(
-      ...Array.from({ length: 16 }, (_, i) => `Guest ${i}`),
-    );
-    await assertFails(
-      setDoc(doc(db, 'games', 'too-many-displayed'), tooManyDisplayed),
     );
   });
 
@@ -704,6 +704,28 @@ describe('games', () => {
       }),
     );
     await assertSucceeds(deleteDoc(doc(db, 'games', 'alice-bob')));
+  });
+
+  test('a Doubles game with a guest can be saved repeatedly', async () => {
+    const db = auth('alice', 'alice@example.test');
+    const game = doublesGame(db);
+    game.players.push('Guest 1');
+    game.turns = [validTurn(db, 'alice')];
+    await assertSucceeds(setDoc(doc(db, 'games', 'doubles-guest'), game));
+
+    const guestTurn = validTurn(db, 'Guest 1');
+    await assertSucceeds(
+      updateDoc(doc(db, 'games', 'doubles-guest'), {
+        turns: [...game.turns, guestTurn],
+        finished: null,
+      }),
+    );
+    await assertSucceeds(
+      updateDoc(doc(db, 'games', 'doubles-guest'), {
+        turns: [...game.turns, guestTurn, validTurn(db, 'alice')],
+        finished: null,
+      }),
+    );
   });
 
   test('former friends retain access to their immutable-membership game history', async () => {

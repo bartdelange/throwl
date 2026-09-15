@@ -78,9 +78,7 @@ service cloud.firestore {
         .union(playerIds.size() <= 4 ? [].toSet() : [userRef(playerIds[4])].toSet())
         .union(playerIds.size() <= 5 ? [].toSet() : [userRef(playerIds[5])].toSet())
         .union(playerIds.size() <= 6 ? [].toSet() : [userRef(playerIds[6])].toSet())
-        .union(playerIds.size() <= 7 ? [].toSet() : [userRef(playerIds[7])].toSet())
-        .union(playerIds.size() <= 8 ? [].toSet() : [userRef(playerIds[8])].toSet())
-        .union(playerIds.size() <= 9 ? [].toSet() : [userRef(playerIds[9])].toSet());
+        .union(playerIds.size() <= 7 ? [].toSet() : [userRef(playerIds[7])].toSet());
     }
 
     function validPlayerEntry(player, registeredPlayers) {
@@ -95,15 +93,7 @@ service cloud.firestore {
         && (players.size() <= 4 || validPlayerEntry(players[4], registeredPlayers))
         && (players.size() <= 5 || validPlayerEntry(players[5], registeredPlayers))
         && (players.size() <= 6 || validPlayerEntry(players[6], registeredPlayers))
-        && (players.size() <= 7 || validPlayerEntry(players[7], registeredPlayers))
-        && (players.size() <= 8 || validPlayerEntry(players[8], registeredPlayers))
-        && (players.size() <= 9 || validPlayerEntry(players[9], registeredPlayers))
-        && (players.size() <= 10 || validPlayerEntry(players[10], registeredPlayers))
-        && (players.size() <= 11 || validPlayerEntry(players[11], registeredPlayers))
-        && (players.size() <= 12 || validPlayerEntry(players[12], registeredPlayers))
-        && (players.size() <= 13 || validPlayerEntry(players[13], registeredPlayers))
-        && (players.size() <= 14 || validPlayerEntry(players[14], registeredPlayers))
-        && (players.size() <= 15 || validPlayerEntry(players[15], registeredPlayers));
+        && (players.size() <= 7 || validPlayerEntry(players[7], registeredPlayers));
     }
 
     function registeredPlayersInOrder(players, playerIds) {
@@ -114,9 +104,7 @@ service cloud.firestore {
         && (playerIds.size() <= 4 || players[4] == userRef(playerIds[4]))
         && (playerIds.size() <= 5 || players[5] == userRef(playerIds[5]))
         && (playerIds.size() <= 6 || players[6] == userRef(playerIds[6]))
-        && (playerIds.size() <= 7 || players[7] == userRef(playerIds[7]))
-        && (playerIds.size() <= 8 || players[8] == userRef(playerIds[8]))
-        && (playerIds.size() <= 9 || players[9] == userRef(playerIds[9]));
+        && (playerIds.size() <= 7 || players[7] == userRef(playerIds[7]));
     }
 
     function mixedPlayersMatch(players, playerIds) {
@@ -127,7 +115,7 @@ service cloud.firestore {
 
     function playerIdsMatchPlayers(players, playerIds) {
       return playerIds.size() > 0
-        && playerIds.size() <= 10
+        && playerIds.size() <= 8
         && playerIds.toSet().size() == playerIds.size()
         && players.toSet().size() == players.size()
         && ((players.size() == playerIds.size()
@@ -151,7 +139,7 @@ service cloud.firestore {
         && data.playerIds.hasAny([data.owner])
         && data.players is list
         && data.players.size() > 0
-        && data.players.size() <= 16
+        && data.players.size() <= 8
         && playerIdsMatchPlayers(data.players, data.playerIds)
         && boundedTurns(data.turns)
         && data.started is timestamp
