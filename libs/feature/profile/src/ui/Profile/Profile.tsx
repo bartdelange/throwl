@@ -17,8 +17,6 @@ import {
   reauthenticateWithCredential,
   signOut,
   type User,
-  updateEmail,
-  updatePassword,
 } from '@react-native-firebase/auth';
 import isEmail from 'validator/es/lib/isEmail';
 import { useNavigation } from '@react-navigation/core';
@@ -28,6 +26,7 @@ import {
   UNAUTHENTICATED_SCREEN,
 } from '@throwl/shared-constants';
 import { useAppTheme } from '@throwl/shared-theme';
+import { updateAccountCredentials } from '../../feature/updateAccountCredentials';
 
 export const ProfileScreen = () => {
   const navigator =
@@ -52,11 +51,17 @@ export const ProfileScreen = () => {
     setName(user?.name);
   }, [user]);
 
+  useEffect(() => {
+    if (user) return;
+    void signOut(getAuth())
+      .catch(() => undefined)
+      .then(() => {
+        navigator.popToTop();
+        navigator.replace(UNAUTHENTICATED_SCREEN);
+      });
+  }, [navigator, user]);
+
   if (!user) {
-    signOut(getAuth()).finally(() => {
-      navigator.popToTop();
-      navigator.replace(UNAUTHENTICATED_SCREEN);
-    });
     return <View />;
   }
 
@@ -81,59 +86,72 @@ export const ProfileScreen = () => {
   const updateImportantUserData = async (): Promise<boolean> => {
     setWorking(true);
     const firebaseUser: User | null = getAuth().currentUser;
-    if (!firebaseUser) return false;
-    if (!(await reauthenticate(currentPassword))) {
-      setError(
-        'Your entered current password does not match with the one in our system',
-      );
-      setModalOpen(true);
-      setWorking(false);
-      return false;
-    }
+    try {
+      if (!firebaseUser) return false;
 
-    if (email?.length && !isEmail(email)) {
-      setError('Please enter a valid email');
-      setModalOpen(true);
-      setWorking(false);
-      return false;
-    }
+      const requestedEmail = email?.trim() ?? '';
+      const emailChanged =
+        requestedEmail.toLowerCase() !== user.email.trim().toLowerCase();
+      const passwordChanged = password.length > 0;
 
-    if (password.length && confirmPassword !== password) {
-      setError('Please make sure the passwords match');
-      setModalOpen(true);
-      setWorking(false);
-      return false;
-    }
+      if (!emailChanged && !passwordChanged) return true;
 
-    const failedFields = [];
-
-    if (password.length) {
-      try {
-        await updatePassword(firebaseUser, password);
-      } catch {
-        failedFields.push('password');
+      if (emailChanged && (!requestedEmail || !isEmail(requestedEmail))) {
+        setError('Please enter a valid email');
+        setModalOpen(true);
+        return false;
       }
-    }
 
-    if (email?.length) {
-      try {
-        const oldEmail = firebaseUser.email ?? user.email;
-        await updateEmail(firebaseUser, email);
-        await firebaseUser.getIdToken(true);
-        await UserService.updateEmail(firebaseUser.uid, oldEmail, email);
-      } catch {
-        failedFields.push('email');
+      if (passwordChanged && confirmPassword !== password) {
+        setError('Please make sure the passwords match');
+        setModalOpen(true);
+        return false;
       }
-    }
 
-    if (failedFields.length > 0) {
-      setError(
-        `Could not update your ${failedFields.join(' and ')}, please try again`,
-      );
-      setModalOpen(true);
+      if (!(await reauthenticate(currentPassword))) {
+        setError(
+          'Your entered current password does not match with the one in our system',
+        );
+        setModalOpen(true);
+        return false;
+      }
+
+      const result = await updateAccountCredentials({
+        firebaseUser,
+        applicationEmail: user.email,
+        requestedEmail,
+        requestedPassword: password,
+      });
+
+      if (result.failedField === 'profile') {
+        setError(
+          'Your sign-in email changed, but Throwl could not finish updating your profile. Sign in again before retrying.',
+        );
+        setModalOpen(true);
+        return false;
+      }
+      if (result.failedField === 'password' && result.emailChanged) {
+        setError(
+          'Your email was updated, but your password could not be updated. Sign in with the new email before retrying.',
+        );
+        setModalOpen(true);
+        return false;
+      }
+      if (result.failedField) {
+        setError(
+          `Could not update your ${result.failedField}, please try again`,
+        );
+        setModalOpen(true);
+        return false;
+      }
+
+      setCurrentPassword('');
+      setPassword('');
+      setConfirmPassword('');
+      return true;
+    } finally {
+      setWorking(false);
     }
-    setWorking(false);
-    return true;
   };
 
   const updateTrivialUserData = async () => {
