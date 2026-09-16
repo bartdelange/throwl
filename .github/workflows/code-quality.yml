@@ -25,6 +25,9 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
+          cache-dependency-path: |
+            package.json
+            pnpm-lock.yaml
 
       - name: Use Java 21 for Firebase Emulator
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
@@ -36,12 +39,14 @@ jobs:
 
       - name: Derive SHAs for Nx affected
         uses: nrwl/nx-set-shas@826660b82addbef3abff5fa871492ebad618c9e1 # v4.3.3
+        with:
+          main-branch-name: master
 
-      - name: Lint + Typecheck (affected)
-        run: pnpm nx affected --target=lint,typecheck --parallel --maxParallel=5
+      - name: Validate affected projects
+        run: pnpm nx affected -t lint,typecheck,test --parallel --maxParallel=5
 
       - name: Prettier (affected)
         run: pnpm nx format:check --affected
 
-      - name: Firestore Security Rules
+      - name: Firestore Rules
         run: pnpm test:firestore-rules
