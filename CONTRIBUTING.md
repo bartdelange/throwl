@@ -99,7 +99,6 @@ pnpm test
 pnpm test:firestore-rules
 pnpm build
 pnpm format:check
-pnpm sync
 ```
 
 Android debug builds use debug signing and do not need `keystore.properties`.

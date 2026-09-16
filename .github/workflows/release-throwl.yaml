@@ -17,7 +17,7 @@ permissions:
   contents: read
 
 jobs:
-  install-and-test:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -26,15 +26,29 @@ jobs:
       - name: Setup directory and install required packages
         uses: ./.github/actions/reusable-setup/
         with:
-          os: ubuntu-latest
           bundle: false
 
-      - name: Run tests (Nx)
-        run: pnpm nx run-many --target=test --all --parallel --maxParallel=5
+      - name: Use Java 21 for Firebase Emulator
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+
+      - name: Lint
+        run: pnpm lint:check
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Firestore Security Rules
+        run: pnpm test:firestore-rules
 
   deploy_android:
     name: Continuous Deployment (Android)
-    needs: install-and-test
+    needs: validate
     uses: ./.github/workflows/reusable-deploy.yaml
     if: ${{ !github.event.repository.fork && (github.event_name != 'workflow_dispatch' || inputs.deploy == 'both' || inputs.deploy == 'android') }}
     permissions:
@@ -53,7 +67,7 @@ jobs:
 
   deploy_ios:
     name: Continuous Deployment (iOS)
-    needs: install-and-test
+    needs: validate
     uses: ./.github/workflows/reusable-deploy.yaml
     if: ${{ !github.event.repository.fork && (github.event_name != 'workflow_dispatch' || inputs.deploy == 'both' || inputs.deploy == 'ios') }}
     permissions:

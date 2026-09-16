@@ -26,6 +26,12 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
 
+      - name: Use Java 21 for Firebase Emulator
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+
       - run: pnpm install --frozen-lockfile
 
       - name: Derive SHAs for Nx affected
@@ -36,3 +42,6 @@ jobs:
 
       - name: Prettier (affected)
         run: pnpm nx format:check --affected
+
+      - name: Firestore Security Rules
+        run: pnpm test:firestore-rules

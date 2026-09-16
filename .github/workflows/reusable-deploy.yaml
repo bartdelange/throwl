@@ -59,7 +59,6 @@ jobs:
       - name: Setup directory and install required packages
         uses: ./.github/actions/reusable-setup/
         with:
-          os: ubuntu-latest
           bundle: true
 
       #region Android

@@ -31,8 +31,7 @@ pnpm build
 pnpm format:check
 ```
 
-Run `pnpm sync` after generating a React Native library. Inspect available Nx
-targets with `pnpm nx show project @throwl/throwl`.
+Inspect available Nx targets with `pnpm nx show project @throwl/throwl`.
 
 ## License and identity
 
