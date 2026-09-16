@@ -373,6 +373,11 @@ export class GameService extends FirebaseService {
     id: string,
     game: FirestoreGameRead,
   ): Promise<Game> {
+    const started = parseTimestamp(game?.started);
+    if (!started) {
+      throw new Error(`Game ${id} has an invalid started timestamp`);
+    }
+
     const players: (User | GuestUser)[] = [];
 
     for (const player of game?.players ?? []) {
@@ -413,7 +418,6 @@ export class GameService extends FirebaseService {
       return parsed ? [parsed] : [];
     });
 
-    const started = parseTimestamp(game?.started) ?? new Date();
     const finished = parseTimestamp(game?.finished);
 
     return {

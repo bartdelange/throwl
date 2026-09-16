@@ -177,6 +177,47 @@ describe(GameService.name, () => {
     expect(getByIdSpy).toHaveBeenCalledWith('g9');
   });
 
+  it('parses a valid persisted started timestamp into a Date', async () => {
+    jest.spyOn(UserService, 'getPublicById').mockResolvedValue({
+      type: 'user',
+      id: 'u1',
+      email: '',
+      name: 'Alice',
+    });
+    mockFirestore.getDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => ({
+        players: [{ id: 'u1' }],
+        turns: [],
+        started: { toDate: () => new Date('2025-02-03T12:00:00Z') },
+        finished: null,
+        options: { mode: 'x01', startingScore: 501 },
+      }),
+    });
+
+    const game = await GameService.getById('valid-started');
+
+    expect(game.started).toEqual(new Date('2025-02-03T12:00:00Z'));
+  });
+
+  it('surfaces an invalid persisted started timestamp from getById()', async () => {
+    mockFirestore.getDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => ({
+        players: [{ id: 'u1' }],
+        turns: [],
+        started: 'not-a-timestamp',
+        options: { mode: 'x01', startingScore: 501 },
+      }),
+    });
+    const profileLookup = jest.spyOn(UserService, 'getPublicById');
+
+    await expect(GameService.getById('invalid-started')).rejects.toThrow(
+      'Game invalid-started has an invalid started timestamp',
+    );
+    expect(profileLookup).not.toHaveBeenCalled();
+  });
+
   it('persists, parses, and repeatedly updates a Doubles game with a guest', async () => {
     const stored = {
       owner: 'u1',
@@ -341,7 +382,7 @@ describe(GameService.name, () => {
     expect(UserService.getPublicById).toHaveBeenCalledTimes(1);
   });
 
-  it('isolates malformed remote games and sanitizes application-owned data', async () => {
+  it('isolates a game with missing started while returning valid history', async () => {
     jest.spyOn(UserService, 'getPublicById').mockImplementation(async (id) => {
       if (id === 'missing') throw new Error('missing public profile');
       return { type: 'user', id, email: '', name: 'Player' };
@@ -350,8 +391,12 @@ describe(GameService.name, () => {
     (getDocs as jest.Mock).mockResolvedValue({
       docs: [
         {
-          id: 'poisoned-player',
-          data: () => ({ players: [{ id: 'missing' }] }),
+          id: 'missing-started',
+          data: () => ({
+            players: [{ id: 'u1' }],
+            turns: [],
+            options: { mode: 'x01', startingScore: 501 },
+          }),
         },
         {
           id: 'safe-game',
