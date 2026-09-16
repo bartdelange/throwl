@@ -2,7 +2,10 @@ import {
   addDoc,
   deleteDoc,
   getDocs,
+  orderBy,
+  query,
   updateDoc,
+  where,
 } from '@react-native-firebase/firestore';
 
 import { FirebaseService } from '@throwl/shared-data-access-firebase';
@@ -250,6 +253,94 @@ describe(GameService.name, () => {
     }
   });
 
+  it('loads historical registered players through public profiles without friendship data', async () => {
+    jest.spyOn(UserService, 'getPublicById').mockImplementation(async (id) => ({
+      type: 'user',
+      id,
+      email: '',
+      name: id === 'u1' ? 'Alice' : 'Bob',
+    }));
+    (getDocs as jest.Mock).mockResolvedValue({
+      docs: [
+        {
+          id: 'historical-game',
+          data: () => ({
+            owner: 'u1',
+            playerIds: ['u1', 'u2'],
+            players: [
+              { __doc: true, col: usersCol, id: 'u1' },
+              { __doc: true, col: usersCol, id: 'u2' },
+            ],
+            turns: [
+              {
+                userId: { __doc: true, col: usersCol, id: 'u2' },
+                username: 'Bob',
+                throws: [],
+              },
+            ],
+            started: { toDate: () => new Date('2025-01-01T10:00:00Z') },
+            finished: { toDate: () => new Date('2025-01-01T10:30:00Z') },
+            startingScore: 501,
+          }),
+        },
+      ],
+    });
+
+    await expect(GameService.getOwnGames('u1')).resolves.toEqual([
+      expect.objectContaining({
+        id: 'historical-game',
+        players: [
+          expect.objectContaining({ id: 'u1', name: 'Alice' }),
+          expect.objectContaining({ id: 'u2', name: 'Bob' }),
+        ],
+        turns: [expect.objectContaining({ userId: 'u2', username: 'Bob' })],
+        options: { mode: 'x01', startingScore: 501 },
+      }),
+    ]);
+    expect(UserService.getPublicById).toHaveBeenCalledTimes(2);
+    expect(query).toHaveBeenCalledWith(
+      gamesCol,
+      expect.objectContaining({
+        __where: ['playerIds', 'array-contains', 'u1'],
+      }),
+      expect.objectContaining({ __orderBy: ['started', 'desc'] }),
+    );
+    expect(where).toHaveBeenCalledWith('playerIds', 'array-contains', 'u1');
+    expect(orderBy).toHaveBeenCalledWith('started', 'desc');
+  });
+
+  it('loads registered and guest participants without resolving the guest', async () => {
+    jest.spyOn(UserService, 'getPublicById').mockResolvedValue({
+      type: 'user',
+      id: 'u1',
+      email: '',
+      name: 'Alice',
+    });
+    (getDocs as jest.Mock).mockResolvedValue({
+      docs: [
+        {
+          id: 'guest-history',
+          data: () => ({
+            playerIds: ['u1'],
+            players: [{ id: 'u1' }, 'Guest'],
+            turns: [{ userId: { id: 'Guest' }, throws: [] }],
+            started: { toDate: () => new Date('2025-01-01T10:00:00Z') },
+            finished: null,
+            options: { mode: 'doubles' },
+          }),
+        },
+      ],
+    });
+
+    const [game] = await GameService.getOwnGames('u1');
+    expect(game.players).toEqual([
+      expect.objectContaining({ id: 'u1', name: 'Alice' }),
+      { type: 'guest_user', name: 'Guest' },
+    ]);
+    expect(game.turns).toEqual([{ userId: 'Guest', throws: [] }]);
+    expect(UserService.getPublicById).toHaveBeenCalledTimes(1);
+  });
+
   it('isolates malformed remote games and sanitizes application-owned data', async () => {
     jest.spyOn(UserService, 'getPublicById').mockImplementation(async (id) => {
       if (id === 'missing') throw new Error('missing public profile');
@@ -306,6 +397,40 @@ describe(GameService.name, () => {
           },
         ],
       }),
+    ]);
+  });
+
+  it('isolates missing public identity and malformed player entries per game', async () => {
+    jest.spyOn(UserService, 'getPublicById').mockImplementation(async (id) => {
+      if (id === 'missing') throw new Error('missing public profile');
+      return { type: 'user', id, email: '', name: 'Alice' };
+    });
+    (getDocs as jest.Mock).mockResolvedValue({
+      docs: [
+        {
+          id: 'missing-profile',
+          data: () => ({ players: [{ id: 'missing' }] }),
+        },
+        {
+          id: 'malformed-player',
+          data: () => ({ players: [{ path: '/users/u2' }] }),
+        },
+        {
+          id: 'valid-history',
+          data: () => ({
+            playerIds: ['u1'],
+            players: [{ id: 'u1' }],
+            turns: [],
+            started: { toDate: () => new Date('2025-01-01T10:00:00Z') },
+            finished: null,
+            options: { mode: 'x01', startingScore: 301 },
+          }),
+        },
+      ],
+    });
+
+    await expect(GameService.getOwnGames('u1')).resolves.toEqual([
+      expect.objectContaining({ id: 'valid-history' }),
     ]);
   });
 

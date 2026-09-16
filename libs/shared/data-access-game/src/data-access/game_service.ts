@@ -388,7 +388,13 @@ export class GameService extends FirebaseService {
           type: 'guest_user',
           name: player,
         });
+      } else {
+        throw new Error(`Game ${id} contains an invalid player`);
       }
+    }
+
+    if (players.length === 0) {
+      throw new Error(`Game ${id} does not contain any players`);
     }
 
     const options = this.normalizeOptions({

@@ -30,6 +30,7 @@ const PlayedGamesScreen: FC = () => {
   const [fetchingMore, setFetchingMore] = useState<boolean>(false);
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadFailed, setLoadFailed] = useState<boolean>(false);
   const [games, setGames] = useState<Game[]>([]);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const { user } = useAuthContext();
@@ -38,15 +39,20 @@ const PlayedGamesScreen: FC = () => {
 
   const styles = useStyles();
 
-  const loadNewGames = useCallback(() => {
+  const loadNewGames = useCallback(async () => {
     if (loading || !user) return;
     setLoading(true);
-    GameService.getOwnGames(user.id, 15).then((games) => {
+    setLoadFailed(false);
+    try {
+      const games = await GameService.getOwnGames(user.id, 15);
       setGames(games);
-      setLoading(false);
       setHasMore(games.length === 15);
+    } catch {
+      setLoadFailed(true);
+    } finally {
+      setLoading(false);
       setInitialLoading(false);
-    });
+    }
   }, [loading, user]);
 
   useEffect(() => {
@@ -55,24 +61,31 @@ const PlayedGamesScreen: FC = () => {
     }
   }, [initialLoading, loadNewGames, user]);
 
-  const loadMoreGames = () => {
+  const loadMoreGames = async () => {
     if (!games.length) return;
     if (!user) return;
     if (loading) return;
     if (fetchingMore) return;
     setFetchingMore(true);
-    GameService.getOwnGames(user.id, 5, games[games.length - 1].id).then(
-      (games) => {
-        setGames((current) => [
-          ...current,
-          ...games.filter(
-            (game: Game) => !current.some((g) => game.id === g.id),
-          ),
-        ]);
-        setHasMore(games.length === 5);
-        setFetchingMore(false);
-      },
-    );
+    setLoadFailed(false);
+    try {
+      const nextGames = await GameService.getOwnGames(
+        user.id,
+        5,
+        games[games.length - 1].id,
+      );
+      setGames((current) => [
+        ...current,
+        ...nextGames.filter(
+          (game: Game) => !current.some((g) => game.id === g.id),
+        ),
+      ]);
+      setHasMore(nextGames.length === 5);
+    } catch {
+      setLoadFailed(true);
+    } finally {
+      setFetchingMore(false);
+    }
   };
 
   const goToGame = (game: Game) => () => {
@@ -189,6 +202,10 @@ const PlayedGamesScreen: FC = () => {
             >
               {initialLoading ? (
                 <ActivityIndicator size="large" color="white" />
+              ) : loadFailed ? (
+                <Text style={styles.heading}>
+                  Could not load played games. Pull to retry.
+                </Text>
               ) : (
                 <Text style={styles.heading}>No games found</Text>
               )}

@@ -43,6 +43,8 @@ jest.mock('@throwl/shared-ui', () => ({
 }));
 
 describe('PlayedGamesScreen', () => {
+  beforeEach(() => jest.clearAllMocks());
+
   it('loads played games for the signed-in user', async () => {
     jest.mocked(GameService.getOwnGames).mockResolvedValue([]);
     const { PlayedGamesScreen } = require('../../..');
@@ -52,6 +54,21 @@ describe('PlayedGamesScreen', () => {
     expect(getByText('PLAYED GAMES')).toBeTruthy();
     await waitFor(() =>
       expect(GameService.getOwnGames).toHaveBeenCalledWith('u1', 15),
+    );
+  });
+
+  it('contains history query failures and offers a retry state', async () => {
+    jest
+      .mocked(GameService.getOwnGames)
+      .mockRejectedValue(new Error('firestore index missing'));
+    const { PlayedGamesScreen } = require('../../..');
+
+    const { getByText } = render(<PlayedGamesScreen />);
+
+    await waitFor(() =>
+      expect(
+        getByText('Could not load played games. Pull to retry.'),
+      ).toBeTruthy(),
     );
   });
 });
