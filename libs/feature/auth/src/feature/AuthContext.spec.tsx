@@ -26,7 +26,7 @@ jest.mock('@react-native-firebase/auth', () => ({
 }));
 
 const Consumer = () => {
-  const { login, register } = useAuthContext();
+  const { login, register, user } = useAuthContext();
   return (
     <>
       <Text onPress={() => void login('bart@example.com', 'secret')}>
@@ -37,6 +37,7 @@ const Consumer = () => {
       >
         Register
       </Text>
+      <Text>{user?.name ?? 'No user'}</Text>
     </>
   );
 };
@@ -62,21 +63,23 @@ describe('AuthProvider', () => {
 
   it('does not read the user document while registration is provisioning it', async () => {
     let authListener: ((user: { uid: string }) => Promise<void>) | undefined;
+    let finishCreate: (
+      user: Awaited<ReturnType<typeof UserService.create>>,
+    ) => void = () => undefined;
     jest.mocked(onAuthStateChanged).mockImplementation((_auth, listener) => {
       authListener = listener as (user: { uid: string }) => Promise<void>;
       return jest.fn();
     });
     jest.mocked(createUserWithEmailAndPassword).mockImplementation(async () => {
-      await authListener?.({ uid: 'new-user' });
+      void authListener?.({ uid: 'new-user' });
       return { user: { uid: 'new-user' } } as never;
     });
-    jest.mocked(UserService.create).mockResolvedValue({
-      type: 'user',
-      id: 'new-user',
-      email: 'new@example.com',
-      name: 'New User',
-      friends: [],
-    });
+    jest.mocked(UserService.create).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          finishCreate = resolve;
+        }),
+    );
 
     const { getByText } = render(
       <AuthProvider>
@@ -86,11 +89,23 @@ describe('AuthProvider', () => {
     fireEvent.press(getByText('Register'));
 
     await waitFor(() => expect(UserService.create).toHaveBeenCalled());
+    expect(getByText('No user')).toBeTruthy();
     expect(UserService.getById).not.toHaveBeenCalled();
     expect(signInWithEmailAndPassword).not.toHaveBeenCalled();
+    await act(async () => {
+      finishCreate({
+        type: 'user',
+        id: 'new-user',
+        email: 'new@example.com',
+        name: 'New User',
+        friends: [],
+      });
+      await Promise.resolve();
+    });
+    await waitFor(() => expect(getByText('New User')).toBeTruthy());
   });
 
-  it('contains auth-listener lookup failures', async () => {
+  it('signs out an established account whose application user is missing', async () => {
     let authListener: ((user: { uid: string }) => Promise<void>) | undefined;
     jest.mocked(onAuthStateChanged).mockImplementation((_auth, listener) => {
       authListener = listener as (user: { uid: string }) => Promise<void>;
@@ -106,6 +121,7 @@ describe('AuthProvider', () => {
     await expect(
       act(() => authListener?.({ uid: 'orphan' })),
     ).resolves.toBeUndefined();
+    expect(signOut).toHaveBeenCalled();
   });
 
   it('signs out and rejects registration when provisioning fails', async () => {

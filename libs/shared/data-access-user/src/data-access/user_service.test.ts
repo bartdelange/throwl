@@ -61,7 +61,7 @@ describe('UserService (happy flows)', () => {
       .mockReturnValue(mockUsersCollection);
   });
 
-  it('create() writes a new user document and returns getById(uid)', async () => {
+  it('create() writes a new user document without racing a follow-up read', async () => {
     const getByIdSpy = jest.spyOn(UserService, 'getById').mockResolvedValue({
       type: 'user',
       id: 'u1',
@@ -81,7 +81,7 @@ describe('UserService (happy flows)', () => {
     );
     expect(batch.commit).toHaveBeenCalled();
 
-    expect(getByIdSpy).toHaveBeenCalledWith('u1');
+    expect(getByIdSpy).not.toHaveBeenCalled();
     expect(result).toEqual({
       type: 'user',
       id: 'u1',
@@ -112,6 +112,24 @@ describe('UserService (happy flows)', () => {
       name: 'X',
       friends: [],
     });
+  });
+
+  it('contains snapshot refresh failures and forwards them to onError', async () => {
+    const onError = jest.fn();
+    const unsubscribe = jest.fn();
+    jest
+      .mocked(mockFirestore.onSnapshot)
+      .mockImplementation((_reference: unknown, onNext: () => void) => {
+        onNext();
+        return unsubscribe;
+      });
+    jest.spyOn(UserService, 'getById').mockRejectedValue(new Error('missing'));
+
+    UserService.listenToUserChanges('u1', jest.fn(), onError);
+
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(onError).toHaveBeenCalledWith(new Error('missing'));
   });
 
   it('updateEmail() patches only the email field', async () => {

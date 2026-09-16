@@ -35,7 +35,11 @@ export class UserService extends FirebaseService {
     onCompletion?: () => void,
   ) {
     const usersCollection = this.getCollection('users');
-    const refresh = async () => onNext(await this.getById(uid));
+    const refresh = () => {
+      void this.getById(uid)
+        .then(onNext)
+        .catch(onError ?? (() => undefined));
+    };
     const unsubscribeUser = onSnapshot(
       doc(usersCollection, uid),
       refresh,
@@ -70,7 +74,7 @@ export class UserService extends FirebaseService {
       user: doc(usersCollection, uid),
     });
     await batch.commit();
-    return await this.getById(uid);
+    return { type: 'user', id: uid, email, name, friends: [] };
   }
 
   public static async getById(uid: string): Promise<User> {

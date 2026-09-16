@@ -18,6 +18,11 @@ import {
 import { User } from '@throwl/shared-domain-models';
 import { UserService } from '@throwl/shared-data-access-user';
 
+type RegistrationProvisioning = {
+  result: Promise<User | undefined>;
+  finish: (user: User | undefined) => void;
+};
+
 interface AuthContextProps {
   user?: User;
   initializing: boolean;
@@ -33,36 +38,49 @@ export const useAuthContext = () => useContext(AuthContext);
 export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
   const [user, setUser] = useState<User>();
   const [initializing, setInitializing] = useState(true);
-  const registrationInProgress = useRef(false);
+  const registrationProvisioning = useRef<RegistrationProvisioning | undefined>(
+    undefined,
+  );
+
+  const invalidateSession = useCallback(async () => {
+    setUser(undefined);
+    await signOut(getAuth()).catch(() => undefined);
+  }, []);
 
   const _onAuthStateChanged = useCallback(
     async <T extends { uid: string }>(firebaseUser?: T | null) => {
       try {
         if (!firebaseUser?.uid) {
           setUser(undefined);
-        } else if (!registrationInProgress.current) {
+        } else if (registrationProvisioning.current) {
+          const provisionedUser = await registrationProvisioning.current.result;
+          if (provisionedUser?.id === firebaseUser.uid) {
+            setUser(provisionedUser);
+          }
+        } else {
           setUser(await UserService.getById(firebaseUser.uid));
         }
       } catch {
-        // Auth accounts without an application user document are not a valid
-        // signed-in application session. Keep listener failures contained;
-        // interactive login/registration calls surface their own errors.
-        setUser(undefined);
+        await invalidateSession();
       } finally {
         setInitializing(false);
       }
     },
-    [],
+    [invalidateSession],
   );
 
   useEffect(() => {
     if (user) {
-      return UserService.listenToUserChanges(user.id, (data) => {
-        if (JSON.stringify(user) !== JSON.stringify(data)) setUser(data);
-      });
+      return UserService.listenToUserChanges(
+        user.id,
+        (data) => {
+          if (JSON.stringify(user) !== JSON.stringify(data)) setUser(data);
+        },
+        () => void invalidateSession(),
+      );
     }
     return;
-  }, [user]);
+  }, [invalidateSession, user]);
 
   useEffect(() => {
     return onAuthStateChanged(getAuth(), _onAuthStateChanged); // unsubscribe on unmount
@@ -77,23 +95,39 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
           await signInWithEmailAndPassword(getAuth(), email, password);
         },
         register: async (email: string, password: string, name: string) => {
-          registrationInProgress.current = true;
+          let finishProvisioning: (user: User | undefined) => void = () =>
+            undefined;
+          const result = new Promise<User | undefined>((resolve) => {
+            finishProvisioning = resolve;
+          });
+          const provisioning = {
+            result,
+            finish: finishProvisioning,
+          };
+          registrationProvisioning.current = provisioning;
           try {
             const userCredential = await createUserWithEmailAndPassword(
               getAuth(),
               email,
               password,
             );
-            setUser(
-              await UserService.create(userCredential.user.uid, email, name),
+            const applicationUser = await UserService.create(
+              userCredential.user.uid,
+              email,
+              name,
             );
+            setUser(applicationUser);
+            provisioning.finish(applicationUser);
           } catch (error) {
             // Do not leave a partially provisioned Auth account active in the
             // app when its Firestore registration batch failed.
-            await signOut(getAuth()).catch(() => undefined);
+            provisioning.finish(undefined);
+            await invalidateSession();
             throw error;
           } finally {
-            registrationInProgress.current = false;
+            if (registrationProvisioning.current === provisioning) {
+              registrationProvisioning.current = undefined;
+            }
           }
         },
         logout: async () => {

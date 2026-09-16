@@ -29,6 +29,10 @@ const SIGN_UP_MESSAGES: Record<string, SignUpErrorMsg> = {
     subError:
       "Strong passwords help secure your account. It's recommended to make it at least 8 characters and enter a mix of lower and uppercase characters in combination with special characters",
   },
+  'auth/email-already-in-use': {
+    error: 'An account already exists for this email address',
+    subError: 'Sign in instead, or use a different email address',
+  },
 };
 
 const DEFAULT_SIGNUP_ERROR: SignUpErrorMsg = {
@@ -82,9 +86,8 @@ export const SignUpTab = () => {
     } catch (e: unknown) {
       const code = getAuthErrorCode(e);
 
-      const msg: SignUpErrorMsg = code
-        ? SIGN_UP_MESSAGES[code]
-        : DEFAULT_SIGNUP_ERROR;
+      const msg: SignUpErrorMsg =
+        (code && SIGN_UP_MESSAGES[code]) || DEFAULT_SIGNUP_ERROR;
 
       setError(msg.error);
       setSubError(msg.subError);
