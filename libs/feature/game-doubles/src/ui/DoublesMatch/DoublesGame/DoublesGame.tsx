@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
@@ -7,6 +7,8 @@ import {
   HOME_SCREEN,
   PLAYED_GAMES_SCREEN,
   RootStackParamList,
+  deserializeGameParam,
+  serializeGameParam,
 } from '@throwl/shared-constants';
 import { RouteProp } from '@react-navigation/native';
 import { Dimensions, FlatList, Pressable, View } from 'react-native';
@@ -45,7 +47,13 @@ export const DoublesGameScreen: FC = () => {
   const speak = useSpeak({ language: 'en-US', rate: 0.45 });
 
   const gameOptions = route.params.options;
-  const activeGame = route.params.activeGame;
+  const activeGame = useMemo(
+    () =>
+      route.params.activeGame
+        ? deserializeGameParam(route.params.activeGame)
+        : undefined,
+    [route.params.activeGame],
+  );
 
   const [players, setPlayers] = useState(() =>
     route.params.players.map(GameService.stubPlayer),
@@ -156,7 +164,9 @@ export const DoublesGameScreen: FC = () => {
               { name: PLAYED_GAMES_SCREEN },
               {
                 name: DOUBLES_GAME_DETAIL_SCREEN,
-                params: { game: await GameService.getById(gameId) },
+                params: {
+                  game: serializeGameParam(await GameService.getById(gameId)),
+                },
               },
             ],
           });

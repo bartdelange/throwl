@@ -66,8 +66,12 @@ export const NewGameScreen: FC = () => {
           name={GameFlowStackNames.PLAYER_SELECT}
           component={PlayerSelectScreen}
           initialParams={{
-            selectedUsers: route.params?.selectedUsers,
-            guestUsers: route.params?.guestUsers,
+            ...(route.params?.selectedUsers
+              ? { selectedUsers: route.params.selectedUsers }
+              : {}),
+            ...(route.params?.guestUsers
+              ? { guestUsers: route.params.guestUsers }
+              : {}),
           }}
         />
       </StepStack.Navigator>

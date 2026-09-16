@@ -5,11 +5,13 @@ import {
   NORMAL_GAME_SCREEN,
   PLAYED_GAMES_SCREEN,
   RootStackParamList,
+  deserializeGameParam,
+  serializeGameParam,
 } from '@throwl/shared-constants';
 import { useNavigation, useRoute } from '@react-navigation/core';
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, FlatList, Pressable, View } from 'react-native';
 import Confetti from 'react-native-confetti';
 import { Appbar, Text } from 'react-native-paper';
@@ -45,7 +47,13 @@ export const NormalGameScreen: FC = () => {
     useRoute<RouteProp<RootStackParamList, typeof NORMAL_GAME_SCREEN>>();
   const speak = useSpeak({ language: 'en-US', rate: 0.45 });
 
-  const activeGame = route.params.activeGame;
+  const activeGame = useMemo(
+    () =>
+      route.params.activeGame
+        ? deserializeGameParam(route.params.activeGame)
+        : undefined,
+    [route.params.activeGame],
+  );
   const gameOptions = route.params.options;
 
   // Players must be “id resolved” here (so controller has stable ids)
@@ -156,7 +164,9 @@ export const NormalGameScreen: FC = () => {
               { name: PLAYED_GAMES_SCREEN },
               {
                 name: NORMAL_GAME_DETAIL_SCREEN,
-                params: { game: await GameService.getById(gameId) },
+                params: {
+                  game: serializeGameParam(await GameService.getById(gameId)),
+                },
               },
             ],
           });

@@ -1,12 +1,13 @@
 import {
+  DOUBLES_GAME_DETAIL_SCREEN,
   NEW_GAME_SCREEN,
-  NORMAL_GAME_DETAIL_SCREEN,
   RootStackParamList,
+  deserializeGameParam,
 } from '@throwl/shared-constants';
 import { useNavigation, useRoute } from '@react-navigation/core';
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { FC, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 import { Dimensions, FlatList, Pressable, View } from 'react-native';
 import { Appbar, Text } from 'react-native-paper';
 import {
@@ -32,8 +33,13 @@ export const DoublesGameDetailScreen: FC = () => {
   const navigator =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route =
-    useRoute<RouteProp<RootStackParamList, typeof NORMAL_GAME_DETAIL_SCREEN>>();
-  const game = route.params.game;
+    useRoute<
+      RouteProp<RootStackParamList, typeof DOUBLES_GAME_DETAIL_SCREEN>
+    >();
+  const game = useMemo(
+    () => deserializeGameParam(route.params.game),
+    [route.params.game],
+  );
   const gameOptions = game.options as DoublesOptions;
 
   const { colors } = useAppTheme();

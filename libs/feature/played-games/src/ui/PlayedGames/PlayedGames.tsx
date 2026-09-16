@@ -4,6 +4,8 @@ import {
   NORMAL_GAME_DETAIL_SCREEN,
   NORMAL_GAME_SCREEN,
   RootStackParamList,
+  serializeGameParam,
+  serializePlayerParam,
 } from '@throwl/shared-constants';
 import { useNavigation } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -93,24 +95,24 @@ const PlayedGamesScreen: FC = () => {
       if (game.options.mode === 'doubles') {
         navigator.push(DOUBLES_GAME_SCREEN, {
           options: game.options,
-          players: game.players,
-          activeGame: game,
+          players: game.players.map(serializePlayerParam),
+          activeGame: serializeGameParam(game),
         });
       } else {
         navigator.push(NORMAL_GAME_SCREEN, {
           options: game.options,
-          players: game.players,
-          activeGame: game,
+          players: game.players.map(serializePlayerParam),
+          activeGame: serializeGameParam(game),
         });
       }
     } else {
       if (game.options.mode === 'doubles') {
         navigator.push(DOUBLES_GAME_DETAIL_SCREEN, {
-          game,
+          game: serializeGameParam(game),
         });
       } else {
         navigator.push(NORMAL_GAME_DETAIL_SCREEN, {
-          game,
+          game: serializeGameParam(game),
         });
       }
     }

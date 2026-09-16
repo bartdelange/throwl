@@ -16,6 +16,7 @@ import {
   HOME_SCREEN,
   NORMAL_GAME_SCREEN,
   RootStackParamList,
+  serializePlayerParam,
 } from '@throwl/shared-constants';
 import { useAuthContext } from '@throwl/feature-auth';
 import {
@@ -143,7 +144,7 @@ export const PlayerSelectScreen = () => {
         switch (state.options?.mode) {
           case 'x01':
             navigator.push(NORMAL_GAME_SCREEN, {
-              players: mappedPlayers,
+              players: mappedPlayers.map(serializePlayerParam),
               options: {
                 mode: 'x01',
                 startingScore: state.options.startingScore,
@@ -152,7 +153,7 @@ export const PlayerSelectScreen = () => {
             break;
           case 'doubles':
             navigator.push(DOUBLES_GAME_SCREEN, {
-              players: mappedPlayers,
+              players: mappedPlayers.map(serializePlayerParam),
               options: {
                 mode: 'doubles',
                 endOnInvalid: state.options.endOnInvalid,

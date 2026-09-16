@@ -1,11 +1,10 @@
 import {
-  DoublesOptions,
-  Game,
-  GameOptions,
-  GuestUser,
-  User,
-  X01Options,
-} from '@throwl/shared-domain-models';
+  SerializableDoublesOptions,
+  SerializableGame,
+  SerializableGameOptions,
+  SerializablePlayer,
+  SerializableX01Options,
+} from './navigation-params';
 
 export const SPLASH_SCREEN = 'SPLASH';
 export const HOME_SCREEN = 'HOME';
@@ -27,23 +26,23 @@ export type RootStackParamList = {
   [NEW_GAME_SCREEN]: {
     selectedUsers?: string[];
     guestUsers?: string[];
-    gameOptions?: GameOptions;
+    gameOptions?: SerializableGameOptions;
   };
   [NORMAL_GAME_SCREEN]: {
-    players: (Omit<User, 'friends'> | GuestUser)[];
-    options: X01Options;
-    activeGame?: Game;
+    players: SerializablePlayer[];
+    options: SerializableX01Options;
+    activeGame?: SerializableGame;
   };
   [NORMAL_GAME_DETAIL_SCREEN]: {
-    game: Game;
+    game: SerializableGame;
   };
   [DOUBLES_GAME_SCREEN]: {
-    players: (Omit<User, 'friends'> | GuestUser)[];
-    options: DoublesOptions;
-    activeGame?: Game;
+    players: SerializablePlayer[];
+    options: SerializableDoublesOptions;
+    activeGame?: SerializableGame;
   };
   [DOUBLES_GAME_DETAIL_SCREEN]: {
-    game: Game;
+    game: SerializableGame;
   };
   [PLAYED_GAMES_SCREEN]: undefined;
   [UNAUTHENTICATED_SCREEN]: undefined;
