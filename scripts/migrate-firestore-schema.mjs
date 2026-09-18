@@ -1,6 +1,11 @@
 import { applicationDefault, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { commitMigrationPlans } from './firestore-migration-operations.mjs';
+import {
+  hasValidPendingRequester,
+  legacyRequesterId,
+  mergeLegacyFriendship,
+} from './firestore-migration-friendships.mjs';
 
 const args = new Map();
 for (let index = 2; index < process.argv.length; index += 1) {
@@ -71,7 +76,7 @@ for (const userSnapshot of usersSnapshot.docs) {
 
   for (const friend of Array.isArray(user.friends) ? user.friends : []) {
     const friendId = referenceId(friend.user);
-    const requester = referenceId(friend.requester);
+    const requester = legacyRequesterId(friend.requester, referenceId);
     if (!friendId || friendId === uid || !userIds.has(friendId)) {
       errors.push(`users/${uid} contains an invalid legacy friend reference`);
       continue;
@@ -85,26 +90,12 @@ for (const userSnapshot of usersSnapshot.docs) {
       status: friend.confirmed ? 'accepted' : 'pending',
       userIds: pair,
     };
-    const prior = friendships.get(id);
-    if (
-      prior &&
-      (prior.status !== candidate.status ||
-        prior.requester !== candidate.requester)
-    ) {
-      errors.push(
-        `legacy friendship ${id} is inconsistent between user documents`,
-      );
-    } else {
-      friendships.set(id, candidate);
-    }
+    mergeLegacyFriendship(friendships, id, candidate, errors);
   }
 }
 
 for (const [id, friendship] of friendships) {
-  if (
-    friendship.status === 'pending' &&
-    !friendship.userIds.includes(friendship.requester)
-  ) {
+  if (!hasValidPendingRequester(friendship)) {
     errors.push(`legacy friendship ${id} has an invalid requester`);
     continue;
   }
