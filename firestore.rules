@@ -58,12 +58,36 @@ service cloud.firestore {
         && data.userIds.hasAny([data.requester]);
     }
 
-    function ownsGame(data) {
-      return signedIn() && data.owner == request.auth.uid;
+    function createdGame(data) {
+      return signedIn()
+        && data.keys().hasAny(['createdBy'])
+        && data.createdBy == request.auth.uid;
     }
 
     function gameMember(data) {
       return signedIn() && data.playerIds.hasAny([request.auth.uid]);
+    }
+
+    function historyMember(data) {
+      return signedIn()
+        && data.keys().hasAny(['historyUserIds'])
+        && data.historyUserIds.hasAny([request.auth.uid]);
+    }
+
+    function validHistoryUserIds(data) {
+      return data.historyUserIds is list
+        && data.historyUserIds.toSet().size() == data.historyUserIds.size()
+        && data.playerIds.toSet().hasAll(data.historyUserIds.toSet());
+    }
+
+    function ownHistoryMembershipOnlyChanged(data, previousData) {
+      let oldHistory = previousData.historyUserIds.toSet();
+      let newHistory = data.historyUserIds.toSet();
+      return gameMember(previousData)
+        && data.diff(previousData).affectedKeys().hasOnly(['historyUserIds'])
+        && oldHistory.difference(newHistory)
+          .union(newHistory.difference(oldHistory))
+          .hasOnly([request.auth.uid]);
     }
 
     function canonicalFriendshipId(left, right) {
@@ -132,11 +156,11 @@ service cloud.firestore {
     }
 
     function validGame(data) {
-      return data.keys().hasOnly(['owner', 'playerIds', 'players', 'turns', 'started', 'finished', 'options', 'startingScore'])
-        && data.keys().hasAll(['owner', 'playerIds', 'players', 'turns', 'started', 'finished', 'options'])
-        && data.owner is string
+      return data.keys().hasOnly(['createdBy', 'playerIds', 'historyUserIds', 'players', 'turns', 'started', 'finished', 'options', 'startingScore'])
+        && data.keys().hasAll(['playerIds', 'historyUserIds', 'players', 'turns', 'started', 'finished', 'options'])
+        && (!data.keys().hasAny(['createdBy']) || data.createdBy is string)
         && data.playerIds is list
-        && data.playerIds.hasAny([data.owner])
+        && validHistoryUserIds(data)
         && data.players is list
         && data.players.size() > 0
         && data.players.size() <= 8
@@ -146,11 +170,17 @@ service cloud.firestore {
         && (data.finished == null || data.finished is timestamp);
     }
 
-    function validGameUpdate(data, previousData) {
-      return data.keys().hasOnly(['owner', 'playerIds', 'players', 'turns', 'started', 'finished', 'options', 'startingScore'])
+    function validGameplayUpdate(data, previousData) {
+      return data.keys().hasOnly(['createdBy', 'playerIds', 'historyUserIds', 'players', 'turns', 'started', 'finished', 'options', 'startingScore'])
         && data.diff(previousData).affectedKeys().hasOnly(['turns', 'finished'])
         && boundedTurns(data.turns)
         && (data.finished == null || data.finished is timestamp);
+    }
+
+    function validHistoryUpdate(data, previousData) {
+      return ownHistoryMembershipOnlyChanged(data, previousData)
+        && data.keys().hasOnly(['createdBy', 'playerIds', 'historyUserIds', 'players', 'turns', 'started', 'finished', 'options', 'startingScore'])
+        && validHistoryUserIds(data);
     }
 
     match /users/{uid} {
@@ -205,11 +235,21 @@ service cloud.firestore {
     match /games/{gameId} {
       // Friend selection is product policy, not a data-access capability:
       // membership in one game grants no access to a player's private records.
-      allow create: if ownsGame(request.resource.data)
-        && validGame(request.resource.data);
-      allow read, delete: if gameMember(resource.data);
-      allow update: if gameMember(resource.data)
-        && validGameUpdate(request.resource.data, resource.data);
+      allow create: if createdGame(request.resource.data)
+        && validGame(request.resource.data)
+        && request.resource.data.historyUserIds == request.resource.data.playerIds;
+      // historyMember lets the rules engine prove the Played Games query. It
+      // is constrained to playerIds by every valid write; gameMember preserves
+      // direct access after a participant removes this history preference.
+      allow read: if gameMember(resource.data)
+        || createdGame(resource.data)
+        || historyMember(resource.data);
+      allow update: if validHistoryUpdate(request.resource.data, resource.data)
+        || ((createdGame(resource.data)
+            || (!resource.data.keys().hasAny(['createdBy'])
+              && gameMember(resource.data)))
+          && validGameplayUpdate(request.resource.data, resource.data));
+      allow delete: if createdGame(resource.data);
     }
   }
 }

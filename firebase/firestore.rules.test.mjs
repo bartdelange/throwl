@@ -51,9 +51,10 @@ const auth = (uid, email) =>
 
 const userRef = (db, uid) => doc(db, 'users', uid);
 const friendshipId = (left, right) => [left, right].sort().join('_');
-const x01Game = (db, owner = 'alice', players = ['alice', 'bob']) => ({
-  owner,
+const x01Game = (db, createdBy = 'alice', players = ['alice', 'bob']) => ({
+  createdBy,
   playerIds: players,
+  historyUserIds: players,
   players: players.map((uid) => userRef(db, uid)),
   turns: [],
   started: new Date('2026-01-01T00:00:00Z'),
@@ -61,8 +62,8 @@ const x01Game = (db, owner = 'alice', players = ['alice', 'bob']) => ({
   options: { mode: 'x01', startingScore: 501 },
   startingScore: 501,
 });
-const doublesGame = (db, owner = 'alice', players = ['alice']) => {
-  const game = x01Game(db, owner, players);
+const doublesGame = (db, createdBy = 'alice', players = ['alice']) => {
+  const game = x01Game(db, createdBy, players);
   game.options = {
     mode: 'doubles',
     quickMatch: false,
@@ -108,6 +109,9 @@ beforeEach(async () => {
       userIds: ['alice', 'bob'],
     });
     await setDoc(doc(db, 'games', 'alice-bob'), x01Game(db));
+    const legacyGame = x01Game(db);
+    delete legacyGame.createdBy;
+    await setDoc(doc(db, 'games', 'legacy-alice-bob'), legacyGame);
     await setDoc(
       doc(db, 'games', 'charlie-only'),
       x01Game(db, 'charlie', ['charlie']),
@@ -435,7 +439,7 @@ describe('games', () => {
     );
   });
 
-  test('members can update realistic mutable game state', async () => {
+  test('creator can update realistic mutable game state but another participant cannot', async () => {
     const alice = auth('alice', 'alice@example.test');
     await assertSucceeds(
       updateDoc(doc(alice, 'games', 'alice-bob'), {
@@ -445,7 +449,7 @@ describe('games', () => {
     );
 
     const bob = auth('bob', 'bob@example.test');
-    await assertSucceeds(
+    await assertFails(
       updateDoc(doc(bob, 'games', 'alice-bob'), {
         turns: [validTurn(bob, 'bob', false)],
       }),
@@ -519,7 +523,7 @@ describe('games', () => {
     await assertFails(
       updateDoc(game, {
         turns: [],
-        owner: 'bob',
+        createdBy: 'bob',
       }),
     );
     await assertFails(
@@ -533,7 +537,11 @@ describe('games', () => {
 
   test('unauthenticated clients cannot update games', async () => {
     const db = firestoreFor(env.unauthenticatedContext());
-    await assertFails(updateDoc(doc(db, 'games', 'alice-bob'), { turns: [] }));
+    await assertFails(
+      updateDoc(doc(db, 'games', 'alice-bob'), {
+        turns: [validTurn(db, 'bob')],
+      }),
+    );
   });
 
   test('eight registered players can create a game', async () => {
@@ -674,8 +682,13 @@ describe('games', () => {
       setDoc(doc(db, 'games', 'guest-membership'), guestMembership),
     );
 
-    const missingOwner = x01Game(db, 'alice', ['bob']);
-    await assertFails(setDoc(doc(db, 'games', 'missing-owner'), missingOwner));
+    const creatorNotParticipating = x01Game(db, 'alice', ['bob']);
+    await assertSucceeds(
+      setDoc(
+        doc(db, 'games', 'creator-not-participating'),
+        creatorNotParticipating,
+      ),
+    );
   });
 
   test('player references remain protected while turn schema stays application-owned', async () => {
@@ -695,15 +708,15 @@ describe('games', () => {
     );
   });
 
-  test('listed players can read, update game state, and delete', async () => {
+  test('listed players can read but cannot update or physically delete a new game', async () => {
     const db = auth('bob', 'bob@example.test');
     await assertSucceeds(getDoc(doc(db, 'games', 'alice-bob')));
-    await assertSucceeds(
+    await assertFails(
       updateDoc(doc(db, 'games', 'alice-bob'), {
         turns: [{ userId: userRef(db, 'bob'), throws: [] }],
       }),
     );
-    await assertSucceeds(deleteDoc(doc(db, 'games', 'alice-bob')));
+    await assertFails(deleteDoc(doc(db, 'games', 'alice-bob')));
   });
 
   test('a Doubles game with a guest can be saved repeatedly', async () => {
@@ -728,15 +741,17 @@ describe('games', () => {
     );
   });
 
-  test('former friends retain access to their immutable-membership game history', async () => {
+  test('former friends retain read access through immutable participation', async () => {
     await env.withSecurityRulesDisabled(async (context) => {
       const db = firestoreFor(context);
       await deleteDoc(doc(db, 'friendships', friendshipId('alice', 'bob')));
     });
     const db = auth('bob', 'bob@example.test');
     await assertSucceeds(getDoc(doc(db, 'games', 'alice-bob')));
-    await assertSucceeds(
-      updateDoc(doc(db, 'games', 'alice-bob'), { turns: [] }),
+    await assertFails(
+      updateDoc(doc(db, 'games', 'alice-bob'), {
+        turns: [validTurn(db, 'bob')],
+      }),
     );
   });
 
@@ -747,7 +762,7 @@ describe('games', () => {
     await assertFails(deleteDoc(doc(db, 'games', 'alice-bob')));
   });
 
-  test('players, owner, and start time are immutable after creation', async () => {
+  test('players, creator, and start time are immutable after creation', async () => {
     const db = auth('alice', 'alice@example.test');
     await assertFails(
       updateDoc(doc(db, 'games', 'alice-bob'), {
@@ -755,7 +770,7 @@ describe('games', () => {
       }),
     );
     await assertFails(
-      updateDoc(doc(db, 'games', 'alice-bob'), { owner: 'bob' }),
+      updateDoc(doc(db, 'games', 'alice-bob'), { createdBy: 'bob' }),
     );
     await assertFails(
       updateDoc(doc(db, 'games', 'alice-bob'), { started: new Date() }),
@@ -768,7 +783,7 @@ describe('games', () => {
       getDocs(
         query(
           collection(db, 'games'),
-          where('playerIds', 'array-contains', 'alice'),
+          where('historyUserIds', 'array-contains', 'alice'),
           orderBy('started', 'desc'),
           limit(10),
         ),
@@ -779,7 +794,7 @@ describe('games', () => {
       getDocs(
         query(
           collection(db, 'games'),
-          where('playerIds', 'array-contains', 'alice'),
+          where('historyUserIds', 'array-contains', 'alice'),
           orderBy('started', 'desc'),
           startAfter(cursor),
           limit(10),
@@ -787,5 +802,105 @@ describe('games', () => {
       ),
     );
     await assertFails(getDocs(collection(db, 'games')));
+  });
+
+  test('creator need not participate and can read, update, and physically delete', async () => {
+    const alice = auth('alice', 'alice@example.test');
+    await assertSucceeds(
+      setDoc(
+        doc(alice, 'games', 'operated-by-alice'),
+        x01Game(alice, 'alice', ['bob']),
+      ),
+    );
+    await assertSucceeds(getDoc(doc(alice, 'games', 'operated-by-alice')));
+    await assertSucceeds(
+      updateDoc(doc(alice, 'games', 'operated-by-alice'), { turns: [] }),
+    );
+    const aliceHistory = await getDocs(
+      query(
+        collection(alice, 'games'),
+        where('historyUserIds', 'array-contains', 'alice'),
+      ),
+    );
+    if (
+      aliceHistory.docs.some((snapshot) => snapshot.id === 'operated-by-alice')
+    ) {
+      throw new Error('creator-only game unexpectedly appeared in history');
+    }
+
+    const bob = auth('bob', 'bob@example.test');
+    await assertSucceeds(getDoc(doc(bob, 'games', 'operated-by-alice')));
+    await assertFails(
+      updateDoc(doc(bob, 'games', 'operated-by-alice'), {
+        turns: [validTurn(bob, 'bob')],
+      }),
+    );
+    await assertFails(deleteDoc(doc(bob, 'games', 'operated-by-alice')));
+    await assertSucceeds(deleteDoc(doc(alice, 'games', 'operated-by-alice')));
+  });
+
+  test('new games initialize history exactly from registered participants', async () => {
+    const db = auth('alice', 'alice@example.test');
+    const missing = x01Game(db);
+    missing.historyUserIds = ['alice'];
+    await assertFails(setDoc(doc(db, 'games', 'missing-history'), missing));
+
+    const unrelated = x01Game(db);
+    unrelated.historyUserIds = ['alice', 'bob', 'charlie'];
+    await assertFails(setDoc(doc(db, 'games', 'unrelated-history'), unrelated));
+
+    const duplicate = x01Game(db);
+    duplicate.historyUserIds = ['alice', 'bob', 'bob'];
+    await assertFails(setDoc(doc(db, 'games', 'duplicate-history'), duplicate));
+  });
+
+  test('participants can remove and restore only their own history membership', async () => {
+    const alice = auth('alice', 'alice@example.test');
+    const game = doc(alice, 'games', 'alice-bob');
+    await assertSucceeds(updateDoc(game, { historyUserIds: ['bob'] }));
+    let snapshot = await getDoc(game);
+    if (
+      !snapshot.exists() ||
+      snapshot.data().historyUserIds.join(',') !== 'bob'
+    ) {
+      throw new Error(
+        'history update unexpectedly deleted or changed the game',
+      );
+    }
+    await assertSucceeds(updateDoc(game, { historyUserIds: ['alice', 'bob'] }));
+    await assertFails(updateDoc(game, { historyUserIds: ['alice'] }));
+    await assertFails(
+      updateDoc(game, { historyUserIds: ['alice', 'bob', 'charlie'] }),
+    );
+  });
+
+  test('creator-only status cannot manipulate participant history', async () => {
+    const alice = auth('alice', 'alice@example.test');
+    await assertSucceeds(
+      setDoc(
+        doc(alice, 'games', 'creator-history'),
+        x01Game(alice, 'alice', ['bob']),
+      ),
+    );
+    await assertFails(
+      updateDoc(doc(alice, 'games', 'creator-history'), { historyUserIds: [] }),
+    );
+
+    const charlie = auth('charlie', 'charlie@example.test');
+    await assertFails(
+      updateDoc(doc(charlie, 'games', 'alice-bob'), {
+        historyUserIds: ['alice'],
+      }),
+    );
+  });
+
+  test('legacy participants can read, resume, hide, and restore without a creator', async () => {
+    const bob = auth('bob', 'bob@example.test');
+    const game = doc(bob, 'games', 'legacy-alice-bob');
+    await assertSucceeds(getDoc(game));
+    await assertSucceeds(updateDoc(game, { turns: [validTurn(bob, 'bob')] }));
+    await assertSucceeds(updateDoc(game, { historyUserIds: ['alice'] }));
+    await assertSucceeds(updateDoc(game, { historyUserIds: ['alice', 'bob'] }));
+    await assertFails(deleteDoc(game));
   });
 });
