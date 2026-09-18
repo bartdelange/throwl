@@ -15,8 +15,9 @@
     "build": "nx run-many --target=build --all --parallel --maxParallel=3",
     "test": "nx run-many --target=test --all --parallel --maxParallel=5",
     "test:firestore-rules": "firebase emulators:exec --project demo-throwl-rules --only firestore \"node --test firebase/firestore.rules.test.mjs\"",
-    "test:migration": "node --test scripts/firestore-migration-operations.test.mjs",
+    "test:migration": "node --test scripts/firestore-migration-operations.test.mjs scripts/clone-firestore-data.test.mjs",
     "migrate:firestore": "node scripts/migrate-firestore-schema.mjs",
+    "migrate:clone-firestore": "node scripts/clone-firestore-data.mjs",
     "test:affected": "nx affected --target=test --parallel --maxParallel=5",
     "postinstall": "husky"
   },
