@@ -3,6 +3,7 @@ import { FC, useMemo, useState } from 'react';
 import { Appbar, Menu } from 'react-native-paper';
 import { UNAUTHENTICATED_SCREEN } from '@throwl/shared-constants';
 import { useAppTheme } from '@throwl/shared-theme';
+import { AppbarBackAction } from '../../atoms/AppbarBackAction/AppbarBackAction';
 import { useStyles } from './AppBar.styles';
 
 interface AppBarProps extends NativeStackHeaderProps {
@@ -32,7 +33,7 @@ export const AppBar: FC<AppBarProps> = ({
   return (
     <Appbar.Header style={styles.header}>
       {back ? (
-        <Appbar.BackAction color="white" onPress={navigation.goBack} />
+        <AppbarBackAction color="white" onPress={navigation.goBack} />
       ) : null}
       <Appbar.Content title="" />
       {!back ? (

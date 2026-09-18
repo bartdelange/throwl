@@ -14,7 +14,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, FlatList, Pressable, View } from 'react-native';
 import Confetti from 'react-native-confetti';
-import { Appbar, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -27,6 +27,7 @@ import {
 import { useAppTheme } from '@throwl/shared-theme';
 import {
   ClickableDartboard,
+  AppbarBackAction,
   TurnIndicatorBar,
   WinnerModal,
 } from '@throwl/shared-ui';
@@ -197,7 +198,7 @@ export const NormalGameScreen: FC = () => {
       />
 
       <View style={[styles.backButton, { top: insets.top }]}>
-        <Appbar.BackAction color={colors.primary} onPress={navigation.goBack} />
+        <AppbarBackAction color={colors.primary} onPress={navigation.goBack} />
       </View>
     </FullScreenLayout>
   );

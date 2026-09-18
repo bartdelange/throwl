@@ -9,13 +9,17 @@ import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FC, useMemo, useState } from 'react';
 import { Dimensions, FlatList, Pressable, View } from 'react-native';
-import { Appbar, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 
-import { Accordion, ClickableDartboard } from '@throwl/shared-ui';
+import {
+  Accordion,
+  AppbarBackAction,
+  ClickableDartboard,
+} from '@throwl/shared-ui';
 import { useAppTheme } from '@throwl/shared-theme';
 import { FullScreenLayout } from '@throwl/shared-layouts';
 import { GameHelper } from '@throwl/shared-domain-game-rules';
@@ -140,7 +144,7 @@ export const DoublesGameDetailScreen: FC = () => {
         </SafeAreaView>
       </View>
       <View style={[styles.backButton, { top: insets.top }]}>
-        <Appbar.BackAction color={colors.primary} onPress={navigator.goBack} />
+        <AppbarBackAction color={colors.primary} onPress={navigator.goBack} />
       </View>
     </FullScreenLayout>
   );

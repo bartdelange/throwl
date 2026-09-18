@@ -13,9 +13,10 @@ import {
 import { RouteProp } from '@react-navigation/native';
 import { Dimensions, FlatList, Pressable, View } from 'react-native';
 import { DartboardScoreType, Turn } from '@throwl/shared-domain-models';
-import { Appbar, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import {
   ClickableDartboard,
+  AppbarBackAction,
   TurnIndicatorBar,
   WinnerModal,
 } from '@throwl/shared-ui';
@@ -197,7 +198,7 @@ export const DoublesGameScreen: FC = () => {
       />
 
       <View style={[styles.backButton, { top: insets.top }]}>
-        <Appbar.BackAction color={colors.primary} onPress={navigation.goBack} />
+        <AppbarBackAction color={colors.primary} onPress={navigation.goBack} />
       </View>
     </FullScreenLayout>
   );

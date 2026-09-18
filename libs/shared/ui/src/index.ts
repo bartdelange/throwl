@@ -2,6 +2,7 @@ export * from './molecules/Accordion';
 export * from './molecules/AppBar/AppBar';
 export * from './molecules/AppHeader/AppHeader';
 export * from './atoms/AppLogo';
+export * from './atoms/AppbarBackAction/AppbarBackAction';
 export * from './molecules/AppModal/AppModal';
 export * from './atoms/FormInput/FormInput';
 export * from './atoms/Loader/Loader';
