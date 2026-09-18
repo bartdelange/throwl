@@ -18,7 +18,7 @@ dangerous legacy writes rather than silently accepting drift.
 | Game-history query on `players`         | Query cannot prove `playerIds` membership and is denied                           | History does not load                                            | D     |
 | Open a single-player game               | Game read and own profile read allowed                                            | Opens                                                            | A     |
 | Open a registered multiplayer game      | Game read allowed, other user's private profile read denied                       | Detail/game parsing rejects                                      | D     |
-| Create game                             | Missing `owner` and `playerIds`; denied                                           | Save fails                                                       | D     |
+| Create game                             | Missing `createdBy`, `playerIds`, and `historyUserIds`; denied                    | Save fails                                                       | D     |
 | Update an already migrated game         | Preserves immutable fields and is allowed for a member when payload remains valid | Turns may continue to save                                       | A     |
 | Delete an already migrated game         | Allowed for a recorded member                                                     | Deletes                                                          | A     |
 | Change name                             | Own canonical user update allowed                                                 | Works                                                            | A     |
@@ -48,7 +48,6 @@ use resumes.
   must update at the announced maintenance time.
 - The owner has a Firestore export and the exact rules/index files that were
   deployed before maintenance.
-- `owner-map.json` covers every game whose owner is not already unambiguous.
 - Application Default Credentials belong to the intended production project;
   no downloaded service-account key is used.
 
@@ -59,7 +58,7 @@ use resumes.
 2. Confirm the final app is still downloadable in both stores. Do not continue
    while either platform is awaiting review or phased availability.
 3. Export/backup Firestore and record the currently deployed rules and indexes.
-4. Run the backfill dry-run. Resolve every reported owner, invalid reference,
+4. Run the backfill dry-run. Resolve every reported invalid reference,
    normalized-email collision, or malformed user; a non-zero exit blocks work.
 5. Apply backfill, rerun its dry-run, and inspect counts plus representative
    profiles, lookups, friendships, and games.
@@ -70,7 +69,7 @@ use resumes.
    shapes while preserving complete game domain documents.
 8. Immediately deploy `firestore.rules`. Do not reopen writes between steps 7
    and 8.
-9. Smoke-test with non-owner production accounts: sign-in, name change, exact
+9. Smoke-test with creator and participant production accounts: sign-in, name change, exact
    friend lookup, request/accept/remove, game create/update/history/delete, and
    denial of unrelated access.
 10. End the maintenance window. 4.0.2 and older are unsupported and must update.
@@ -78,10 +77,10 @@ use resumes.
 Commands are dry-run unless `--apply` is supplied:
 
 ```sh
-pnpm migrate:firestore -- --project PROJECT_ID --phase backfill --owner-map ./owner-map.json
-pnpm migrate:firestore -- --project PROJECT_ID --phase backfill --owner-map ./owner-map.json --apply
-pnpm migrate:firestore -- --project PROJECT_ID --phase finalize --owner-map ./owner-map.json
-pnpm migrate:firestore -- --project PROJECT_ID --phase finalize --owner-map ./owner-map.json --apply
+pnpm migrate:firestore -- --project PROJECT_ID --phase backfill
+pnpm migrate:firestore -- --project PROJECT_ID --phase backfill --apply
+pnpm migrate:firestore -- --project PROJECT_ID --phase finalize
+pnpm migrate:firestore -- --project PROJECT_ID --phase finalize --apply
 pnpm firebase deploy --project PROJECT_ID --only firestore:indexes
 pnpm firebase deploy --project PROJECT_ID --only firestore:rules
 ```

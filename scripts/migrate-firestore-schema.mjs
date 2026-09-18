@@ -1,4 +1,3 @@
-import { readFile } from 'node:fs/promises';
 import { applicationDefault, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { commitMigrationPlans } from './firestore-migration-operations.mjs';
@@ -17,14 +16,11 @@ const phase = args.get('phase') ?? 'backfill';
 const apply = args.get('apply') === true;
 if (!projectId || !['backfill', 'finalize'].includes(phase)) {
   console.error(
-    'Usage: pnpm migrate:firestore -- --project <id> [--phase backfill|finalize] [--owner-map <json>] [--apply]',
+    'Usage: pnpm migrate:firestore -- --project <id> [--phase backfill|finalize] [--apply]',
   );
   process.exit(2);
 }
 
-const ownerMap = args.get('owner-map')
-  ? JSON.parse(await readFile(args.get('owner-map'), 'utf8'))
-  : {};
 initializeApp({ credential: applicationDefault(), projectId });
 const db = getFirestore();
 const [usersSnapshot, gamesSnapshot] = await Promise.all([
@@ -124,7 +120,7 @@ for (const gameSnapshot of gamesSnapshot.docs) {
       : `ref:${player?.path ?? ''}`,
   );
   const playerIds = [...new Set(players.map(referenceId).filter(Boolean))];
-  const owner = game.owner ?? ownerMap[gameSnapshot.id];
+  const existingHistoryUserIds = game.historyUserIds;
   const malformedPlayer = players.some(
     (player) =>
       !referenceId(player) &&
@@ -140,13 +136,25 @@ for (const gameSnapshot of gamesSnapshot.docs) {
     errors.push(`games/${gameSnapshot.id} has invalid or duplicate players`);
     continue;
   }
-  if (!owner || !playerIds.includes(owner)) {
-    errors.push(
-      `games/${gameSnapshot.id} needs an owner-map entry naming a registered player`,
-    );
+  if (
+    existingHistoryUserIds !== undefined &&
+    (!Array.isArray(existingHistoryUserIds) ||
+      existingHistoryUserIds.some(
+        (uid) => typeof uid !== 'string' || !playerIds.includes(uid),
+      ) ||
+      new Set(existingHistoryUserIds).size !== existingHistoryUserIds.length)
+  ) {
+    errors.push(`games/${gameSnapshot.id} has invalid historyUserIds`);
     continue;
   }
-  plans.push(['merge', gameSnapshot.ref, { owner, playerIds }]);
+  plans.push([
+    'merge',
+    gameSnapshot.ref,
+    {
+      playerIds,
+      historyUserIds: existingHistoryUserIds ?? playerIds,
+    },
+  ]);
 }
 
 if (phase === 'finalize') {

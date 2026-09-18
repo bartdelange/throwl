@@ -17,7 +17,7 @@ describe('Firestore migration writes', () => {
       ['replace', 'profile', { name: 'Alice' }],
       ['replace', 'lookup', { user: 'users/alice' }],
       ['replace', 'friendship', { userIds: ['alice', 'bob'] }],
-      ['merge', 'game', { owner: 'alice', playerIds: ['alice'] }],
+      ['merge', 'game', { playerIds: ['alice'], historyUserIds: ['alice'] }],
     ]);
 
     assert.deepEqual(calls, [
@@ -27,7 +27,7 @@ describe('Firestore migration writes', () => {
       [
         'set',
         'game',
-        { owner: 'alice', playerIds: ['alice'] },
+        { playerIds: ['alice'], historyUserIds: ['alice'] },
         { merge: true },
       ],
       ['commit'],

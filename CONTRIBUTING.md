@@ -51,8 +51,9 @@ approved and downloadable in both stores before the maintenance window starts;
 do not improvise a rules-first rollout.
 
 The hardened rules introduce `publicProfiles`, exact-key `userLookups`, and
-single-document `friendships`, and add immutable `owner` and `playerIds` fields
-to games. Existing production data must be migrated before the owner deploys
+single-document `friendships`, immutable `playerIds`, and mutable
+`historyUserIds` fields to games. New games also record immutable `createdBy`;
+legacy games deliberately do not. Existing production data must be migrated before the operator deploys
 the rules:
 
 - for every `users/{uid}`, retain only `email` and `name`, create
@@ -61,22 +62,20 @@ the rules:
 - convert each reciprocal legacy `friends` pair into one
   `friendships/{sortedUid_sortedUid}` document with `userIds`,
   `requester`, and `status` (`pending` or `accepted`);
-- for each game, set `owner` to the account that owns the record and set
-  `playerIds` to the UIDs represented by registered-user references in
-  `players` (guest strings are excluded).
+- for each game, set `playerIds` and `historyUserIds` to the UIDs represented by
+  registered-user references in `players` (guest strings are excluded); do not
+  infer or backfill `createdBy`.
 
-Back up and validate production data first. Prepare a JSON object mapping every
-legacy game document ID to the UID of its owning registered player, for example
-`{"game-id": "owner-uid"}`. The migration refuses ambiguous owners and duplicate
-normalized email addresses. It uses Application Default Credentials, is a dry
+Back up and validate production data first. The migration refuses duplicate
+normalized email addresses and malformed game participants. It uses Application Default Credentials, is a dry
 run unless `--apply` is present, and is idempotent:
 
 ```sh
 gcloud auth application-default login
-pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase backfill --owner-map ./owner-map.json
-pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase backfill --owner-map ./owner-map.json --apply
-pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase finalize --owner-map ./owner-map.json
-pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase finalize --owner-map ./owner-map.json --apply
+pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase backfill
+pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase backfill --apply
+pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase finalize
+pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase finalize --apply
 ```
 
 `backfill` preserves the legacy `users.friends` arrays while creating exact new
