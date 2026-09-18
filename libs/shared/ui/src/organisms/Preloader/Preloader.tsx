@@ -3,7 +3,6 @@ import { View } from 'react-native';
 import { CircleSnail as ProgressCircle } from 'react-native-progress';
 import { useSharedValue } from 'react-native-reanimated';
 import { AppLogoLightLoader } from '../../atoms/AppLogo';
-import { FullScreenLayout } from '@throwl/shared-layouts';
 import { useStyles } from './styles';
 
 interface PreloaderProps {
@@ -42,7 +41,7 @@ export const Preloader: FC<PropsWithChildren<PreloaderProps>> = ({
   // TODO: Animate between the loading screen and content screen
 
   return loading ? (
-    <FullScreenLayout style={styles.layout}>
+    <View style={styles.layout}>
       <View style={styles.progressScaler}>
         <View style={styles.progressWrapper}>
           <View style={styles.progressCircle}>
@@ -58,7 +57,7 @@ export const Preloader: FC<PropsWithChildren<PreloaderProps>> = ({
           )}
         </View>
       </View>
-    </FullScreenLayout>
+    </View>
   ) : (
     <View style={styles.loadedWrapper}>{children}</View>
   );

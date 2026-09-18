@@ -1,10 +1,14 @@
 import { Dimensions, StyleSheet } from 'react-native';
+import { useAppTheme } from '@throwl/shared-theme';
 
-export const useStyles = () =>
-  StyleSheet.create({
+export const useStyles = () => {
+  const { colors } = useAppTheme();
+
+  return StyleSheet.create({
     layout: {
-      alignContent: 'center',
+      flex: 1,
       alignItems: 'center',
+      backgroundColor: colors.background,
       justifyContent: 'center',
     },
     progressScaler: {
@@ -23,3 +27,4 @@ export const useStyles = () =>
     progressLogo: { position: 'absolute', top: 25, left: 25 },
     loadedWrapper: { width: '100%', height: '100%' },
   });
+};
