@@ -1,6 +1,8 @@
 // eslint-disable-file max-lines
 import {
   addDoc,
+  arrayRemove,
+  arrayUnion,
   deleteDoc,
   doc,
   DocumentData,
@@ -39,8 +41,9 @@ type FirestoreTurnWrite = Omit<Turn, 'userId'> & {
 };
 
 type FirestoreGameWrite = {
-  owner: string;
+  createdBy: string;
   playerIds: string[];
+  historyUserIds: string[];
   players: FirestorePlayerRef[];
   turns: FirestoreTurnWrite[];
   started: Date;
@@ -145,7 +148,7 @@ function isDoublesOptions(value: unknown): value is {
 }
 
 export class GameService extends FirebaseService {
-  public static async getOwnGames(
+  public static async getPlayedGames(
     userId: string,
     take?: number,
     afterDocumentId?: string,
@@ -154,7 +157,7 @@ export class GameService extends FirebaseService {
 
     let q = query(
       gamesCollection,
-      where('playerIds', 'array-contains', userId),
+      where('historyUserIds', 'array-contains', userId),
       orderBy('started', 'desc'),
     );
 
@@ -260,15 +263,18 @@ export class GameService extends FirebaseService {
 
     const gamesCollection = this.getCollection('games');
     const usersCollection = this.getCollection('users');
-    const ownerId = getAuth().currentUser?.uid;
-    if (!ownerId)
+    const creatorId = getAuth().currentUser?.uid;
+    if (!creatorId)
       throw new Error('A signed-in user is required to create a game');
 
+    const playerIds = players
+      .filter((u): u is User => u.type === 'user')
+      .map((u) => u.id);
+
     const docData: FirestoreGameWrite = {
-      owner: ownerId,
-      playerIds: players
-        .filter((u): u is User => u.type === 'user')
-        .map((u) => u.id),
+      createdBy: creatorId,
+      playerIds,
+      historyUserIds: playerIds,
       players: players.map((u) => {
         if (u.type === 'user') return doc(usersCollection, u.id);
         return u.name;
@@ -327,7 +333,25 @@ export class GameService extends FirebaseService {
     return await this.getById(id);
   }
 
-  public static async delete(uid: string): Promise<boolean> {
+  public static async removeFromHistory(
+    gameId: string,
+    userId: string,
+  ): Promise<void> {
+    await updateDoc(doc(this.getCollection('games'), gameId), {
+      historyUserIds: arrayRemove(userId),
+    });
+  }
+
+  public static async restoreToHistory(
+    gameId: string,
+    userId: string,
+  ): Promise<void> {
+    await updateDoc(doc(this.getCollection('games'), gameId), {
+      historyUserIds: arrayUnion(userId),
+    });
+  }
+
+  public static async physicallyDeleteGame(uid: string): Promise<boolean> {
     await deleteDoc(doc(this.getCollection('games'), uid));
     return true;
   }

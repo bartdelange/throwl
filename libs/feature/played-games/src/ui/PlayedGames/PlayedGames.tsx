@@ -46,7 +46,7 @@ const PlayedGamesScreen: FC = () => {
     setLoading(true);
     setLoadFailed(false);
     try {
-      const games = await GameService.getOwnGames(user.id, 15);
+      const games = await GameService.getPlayedGames(user.id, 15);
       setGames(games);
       setHasMore(games.length === 15);
     } catch {
@@ -71,7 +71,7 @@ const PlayedGamesScreen: FC = () => {
     setFetchingMore(true);
     setLoadFailed(false);
     try {
-      const nextGames = await GameService.getOwnGames(
+      const nextGames = await GameService.getPlayedGames(
         user.id,
         5,
         games[games.length - 1].id,
@@ -160,7 +160,8 @@ const PlayedGamesScreen: FC = () => {
                   {
                     icon: 'delete',
                     onPress: async () => {
-                      await GameService.delete(game.id);
+                      if (!user) return;
+                      await GameService.removeFromHistory(game.id, user.id);
                       setGames((prev) => prev.filter((g) => g.id !== game.id));
                       LayoutAnimation.configureNext(layoutAnimConfig);
                     },

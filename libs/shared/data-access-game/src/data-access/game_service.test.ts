@@ -1,9 +1,13 @@
 import {
   addDoc,
+  arrayRemove,
+  arrayUnion,
   deleteDoc,
   getDocs,
+  limit,
   orderBy,
   query,
+  startAfter,
   updateDoc,
   where,
 } from '@react-native-firebase/firestore';
@@ -31,6 +35,8 @@ jest.mock('@react-native-firebase/firestore', () => {
 
     // ops
     addDoc: jest.fn(),
+    arrayRemove: jest.fn((value: unknown) => ({ __arrayRemove: value })),
+    arrayUnion: jest.fn((value: unknown) => ({ __arrayUnion: value })),
     updateDoc: jest.fn(),
     deleteDoc: jest.fn(),
     getDoc: jest.fn(),
@@ -116,8 +122,9 @@ describe(GameService.name, () => {
     const [colRef, payload] = (addDoc as jest.Mock).mock.calls[0];
 
     expect(colRef).toBe(gamesCol);
-    expect(payload.owner).toBe('u1');
+    expect(payload.createdBy).toBe('u1');
     expect(payload.playerIds).toEqual(['u1']);
+    expect(payload.historyUserIds).toEqual(['u1']);
 
     // players mapping: user -> doc(users, id), guest -> name
     expect(payload.players).toEqual([
@@ -153,6 +160,28 @@ describe(GameService.name, () => {
       }),
     ).rejects.toThrow(`A game supports at most ${MAX_GAME_PLAYERS} players`);
     expect(addDoc).not.toHaveBeenCalled();
+  });
+
+  it('does not inject a non-participating creator or guests into participant IDs', async () => {
+    jest
+      .spyOn(GameService, 'getById')
+      .mockResolvedValue({ id: 'g2' } as unknown as Game);
+    (addDoc as jest.Mock).mockResolvedValue({ id: 'g2' });
+
+    await GameService.create({
+      players: [
+        { type: 'user', id: 'u2', email: '', name: 'Alice', friends: [] },
+        { type: 'guest_user', name: 'Guest' },
+      ],
+      turns: [],
+      started: new Date('2026-01-01T10:00:00Z'),
+      options: { mode: 'x01', startingScore: 501 },
+    });
+
+    const payload = (addDoc as jest.Mock).mock.calls[0][1];
+    expect(payload.createdBy).toBe('u1');
+    expect(payload.playerIds).toEqual(['u2']);
+    expect(payload.historyUserIds).toEqual(['u2']);
   });
 
   it('update() patches a game and returns getById(id)', async () => {
@@ -220,8 +249,9 @@ describe(GameService.name, () => {
 
   it('persists, parses, and repeatedly updates a Doubles game with a guest', async () => {
     const stored = {
-      owner: 'u1',
+      createdBy: 'u1',
       playerIds: ['u1'],
+      historyUserIds: ['u1'],
       players: [{ __doc: true, col: usersCol, id: 'u1' }, 'Guest 1'],
       turns: [
         {
@@ -306,8 +336,8 @@ describe(GameService.name, () => {
         {
           id: 'historical-game',
           data: () => ({
-            owner: 'u1',
             playerIds: ['u1', 'u2'],
+            historyUserIds: ['u1', 'u2'],
             players: [
               { __doc: true, col: usersCol, id: 'u1' },
               { __doc: true, col: usersCol, id: 'u2' },
@@ -327,7 +357,7 @@ describe(GameService.name, () => {
       ],
     });
 
-    await expect(GameService.getOwnGames('u1')).resolves.toEqual([
+    await expect(GameService.getPlayedGames('u1')).resolves.toEqual([
       expect.objectContaining({
         id: 'historical-game',
         players: [
@@ -342,11 +372,15 @@ describe(GameService.name, () => {
     expect(query).toHaveBeenCalledWith(
       gamesCol,
       expect.objectContaining({
-        __where: ['playerIds', 'array-contains', 'u1'],
+        __where: ['historyUserIds', 'array-contains', 'u1'],
       }),
       expect.objectContaining({ __orderBy: ['started', 'desc'] }),
     );
-    expect(where).toHaveBeenCalledWith('playerIds', 'array-contains', 'u1');
+    expect(where).toHaveBeenCalledWith(
+      'historyUserIds',
+      'array-contains',
+      'u1',
+    );
     expect(orderBy).toHaveBeenCalledWith('started', 'desc');
   });
 
@@ -373,13 +407,28 @@ describe(GameService.name, () => {
       ],
     });
 
-    const [game] = await GameService.getOwnGames('u1');
+    const [game] = await GameService.getPlayedGames('u1');
     expect(game.players).toEqual([
       expect.objectContaining({ id: 'u1', name: 'Alice' }),
       { type: 'guest_user', name: 'Guest' },
     ]);
     expect(game.turns).toEqual([{ userId: 'Guest', throws: [] }]);
     expect(UserService.getPublicById).toHaveBeenCalledTimes(1);
+  });
+
+  it('preserves the history pagination cursor and limit', async () => {
+    const cursor = { exists: () => true, id: 'cursor' };
+    mockFirestore.getDoc.mockResolvedValue(cursor);
+    (getDocs as jest.Mock).mockResolvedValue({ docs: [] });
+
+    await GameService.getPlayedGames('u1', 5, 'cursor');
+
+    expect(startAfter).toHaveBeenCalledWith(cursor);
+    expect(limit).toHaveBeenCalledWith(5);
+    expect(query).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ __startAfter: cursor }),
+    );
   });
 
   it('isolates a game with missing started while returning valid history', async () => {
@@ -429,7 +478,7 @@ describe(GameService.name, () => {
       ],
     });
 
-    await expect(GameService.getOwnGames('u1')).resolves.toEqual([
+    await expect(GameService.getPlayedGames('u1')).resolves.toEqual([
       expect.objectContaining({
         id: 'safe-game',
         finished: undefined,
@@ -474,13 +523,32 @@ describe(GameService.name, () => {
       ],
     });
 
-    await expect(GameService.getOwnGames('u1')).resolves.toEqual([
+    await expect(GameService.getPlayedGames('u1')).resolves.toEqual([
       expect.objectContaining({ id: 'valid-history' }),
     ]);
   });
 
-  it('delete() removes a game document', async () => {
-    await GameService.delete('g2');
+  it('removeFromHistory() atomically removes only the requested user', async () => {
+    await GameService.removeFromHistory('g2', 'u1');
+    expect(arrayRemove).toHaveBeenCalledWith('u1');
+    expect(updateDoc).toHaveBeenCalledWith(
+      { __doc: true, col: gamesCol, id: 'g2' },
+      { historyUserIds: { __arrayRemove: 'u1' } },
+    );
+    expect(deleteDoc).not.toHaveBeenCalled();
+  });
+
+  it('restoreToHistory() atomically restores only the requested user', async () => {
+    await GameService.restoreToHistory('g2', 'u1');
+    expect(arrayUnion).toHaveBeenCalledWith('u1');
+    expect(updateDoc).toHaveBeenCalledWith(
+      { __doc: true, col: gamesCol, id: 'g2' },
+      { historyUserIds: { __arrayUnion: 'u1' } },
+    );
+  });
+
+  it('physicallyDeleteGame() removes a game document', async () => {
+    await GameService.physicallyDeleteGame('g2');
     expect(deleteDoc).toHaveBeenCalledTimes(1);
     expect(deleteDoc).toHaveBeenCalledWith({
       __doc: true,
