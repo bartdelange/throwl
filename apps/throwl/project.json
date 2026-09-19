@@ -68,15 +68,15 @@
     "setAndroidVersion": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "{projectRoot}",
-        "command": "cd android && bundle exec fastlane update_version version={args.version}"
+        "cwd": "{projectRoot}/android",
+        "command": "bundle exec fastlane android bump_version version={args.version}"
       }
     },
     "setIosVersion": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "{projectRoot}",
-        "command": "cd ios && bundle exec fastlane update_version version={args.version}"
+        "cwd": "{projectRoot}/ios",
+        "command": "bundle exec fastlane ios bump_version version={args.version}"
       }
     },
     "syncNativeVersions": {
@@ -101,15 +101,15 @@
     "deploy:android": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "apps/throwl/android",
-        "command": "bundle exec fastlane deploy"
+        "cwd": "{projectRoot}/android",
+        "command": "bundle exec fastlane android beta"
       }
     },
     "deploy:ios": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "apps/throwl/ios",
-        "command": "bundle exec fastlane deploy"
+        "cwd": "{projectRoot}/ios",
+        "command": "bundle exec fastlane ios beta"
       }
     },
     "typecheck": {
