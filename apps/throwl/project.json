@@ -68,14 +68,14 @@
     "setAndroidVersion": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "{projectRoot}/android",
+        "cwd": "{projectRoot}",
         "command": "bundle exec fastlane android bump_version version={args.version}"
       }
     },
     "setIosVersion": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "{projectRoot}/ios",
+        "cwd": "{projectRoot}",
         "command": "bundle exec fastlane ios bump_version version={args.version}"
       }
     },
@@ -101,14 +101,14 @@
     "deploy:android": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "{projectRoot}/android",
+        "cwd": "{projectRoot}",
         "command": "bundle exec fastlane android beta"
       }
     },
     "deploy:ios": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "{projectRoot}/ios",
+        "cwd": "{projectRoot}",
         "command": "bundle exec fastlane ios beta"
       }
     },
