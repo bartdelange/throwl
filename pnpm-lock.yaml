@@ -241,6 +241,9 @@ importers:
       '@react-native-async-storage/async-storage':
         specifier: ^3.1.1
         version: 3.1.1(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)
+      '@react-native-firebase/analytics':
+        specifier: ^26.4.0
+        version: 26.4.0(@react-native-firebase/app@26.4.0(@react-native-async-storage/async-storage@3.1.1(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3))(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3))
       '@react-native-firebase/app':
         specifier: ^26.4.0
         version: 26.4.0(@react-native-async-storage/async-storage@3.1.1(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3))(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)
@@ -250,6 +253,9 @@ importers:
       '@react-native-firebase/firestore':
         specifier: ^26.4.0
         version: 26.4.0(@react-native-firebase/app@26.4.0(@react-native-async-storage/async-storage@3.1.1(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3))(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3))(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))
+      '@react-native-firebase/remote-config':
+        specifier: ^26.4.0
+        version: 26.4.0(de58c7d7a86100b0e3daa283662c4889)
       '@react-native-masked-view/masked-view':
         specifier: ^0.3.2
         version: 0.3.2(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)
@@ -3195,6 +3201,15 @@ packages:
     engines: {node: '>=20.19.4'}
     hasBin: true
 
+  '@react-native-firebase/analytics@26.4.0':
+    resolution: {integrity: sha512-moClYdlCnHTlgJzsK3VJENzhIga6vubK/SqE5NgzlCsjTC60Cs2jcm3phuZXgRL+LggMzz7lu+WirFNpQLk4Hg==}
+    peerDependencies:
+      '@react-native-firebase/app': 26.4.0
+      expo: '>=47.0.0'
+    peerDependenciesMeta:
+      expo:
+        optional: true
+
   '@react-native-firebase/app@26.4.0':
     resolution: {integrity: sha512-lqs9vgPcniEw5a+NPRjGNXCQKwuGdVJoSB0iW0HvExR7aGEON/VZYOtSfElBCj3zTwQSiN732zREmqmKrW7Ixw==}
     peerDependencies:
@@ -3217,6 +3232,12 @@ packages:
   '@react-native-firebase/firestore@26.4.0':
     resolution: {integrity: sha512-OdHSSk1iH/HcWPAr/THunf4FvQqiN9uVh4cyY2KJSYrPXKFT20Ia9Ls92wo/NXY3K5R45p4K3TGjfFiwZGDSRQ==}
     peerDependencies:
+      '@react-native-firebase/app': 26.4.0
+
+  '@react-native-firebase/remote-config@26.4.0':
+    resolution: {integrity: sha512-nKQ00zYVA/50BULJqNy3XKEOmNeWl26ho3XVb5in0HdJ/nwMzhAMy0ujMeLCpZRn8F31DGEe8ptJPa1nwcfG7w==}
+    peerDependencies:
+      '@react-native-firebase/analytics': 26.4.0
       '@react-native-firebase/app': 26.4.0
 
   '@react-native-masked-view/masked-view@0.3.2':
@@ -8929,6 +8950,9 @@ packages:
   react-native-easy-grid@0.2.2:
     resolution: {integrity: sha512-MlYrNIldnEMKn6TVatQN1P64GoVlwGIuz+8ncdfJ0Wq/xtzUkQwlil8Uksyp7MhKfENE09MQnGNcba6Mx3oSAA==}
 
+  react-native-fetch-api@3.0.0:
+    resolution: {integrity: sha512-g2rtqPjdroaboDKTsJCTlcmtw54E25OjyaunUP0anOZn4Fuo2IKs8BVfe02zVggA/UysbmfSnRJIqtNkAgggNA==}
+
   react-native-gesture-handler@3.3.0:
     resolution: {integrity: sha512-ZCTlJ09nE3GPbm7J74lvwpxmx1TQ/7MDlHZNLARVYTN82k21mJUJ7BmI9eWjEi8eevHiAudI5O1Cpnt0rJfoJA==}
     peerDependencies:
@@ -9874,6 +9898,10 @@ packages:
     engines: {node: 20 || 22 || 24}
     hasBin: true
 
+  superstruct@2.0.2:
+    resolution: {integrity: sha512-uV+TFRZdXsqXTL2pRvujROjdZQ4RAlBUS5BTh9IGm+jTqQntYThciG/qu57Gs69yjnVUSqdxF9YLmSnpupBW9A==}
+    engines: {node: '>=14.0.0'}
+
   supports-color@5.5.0:
     resolution: {integrity: sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==}
     engines: {node: '>=4'}
@@ -9978,6 +10006,10 @@ packages:
 
   text-decoder@1.2.7:
     resolution: {integrity: sha512-vlLytXkeP4xvEq2otHeJfSQIRyWxo/oZGEbXrtEEF9Hnmrdly59sUbzZ/QgyWuLYHctCHxFF4tRQZNQ9k60ExQ==}
+
+  text-encoding@0.7.0:
+    resolution: {integrity: sha512-oJQ3f1hrOnbRLOcwKz0Liq2IcrvDeZRHXhd9RgLrsT+DjWY/nty1Hi7v3dtkaEYbPYe0mUoOfzRrMwfXXwgPUA==}
+    deprecated: no longer maintained
 
   text-hex@1.0.0:
     resolution: {integrity: sha512-uuVGNWzgJ4yhRaNSiubPY7OjISw4sw4E5Uv0wbjp+OzcbmVU/rsT8ujgcXJhn9ypzsgr5vlzpPqP+MBBKcGvbg==}
@@ -10429,6 +10461,10 @@ packages:
 
   web-streams-polyfill@3.3.3:
     resolution: {integrity: sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==}
+    engines: {node: '>= 8'}
+
+  web-streams-polyfill@4.3.0:
+    resolution: {integrity: sha512-/Gnggvj9oSrEvJbDyyPtAnxBt5fGQM2iWOKQNu7ie1OxDgK40iZpyV3TKaRiEzVj1oA1UxKnEy9XPXh6PW3eVw==}
     engines: {node: '>= 8'}
 
   web-vitals@4.2.4:
@@ -14273,6 +14309,11 @@ snapshots:
       - typescript
       - utf-8-validate
 
+  '@react-native-firebase/analytics@26.4.0(@react-native-firebase/app@26.4.0(@react-native-async-storage/async-storage@3.1.1(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3))(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3))':
+    dependencies:
+      '@react-native-firebase/app': 26.4.0(@react-native-async-storage/async-storage@3.1.1(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3))(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)
+      superstruct: 2.0.2
+
   '@react-native-firebase/app@26.4.0(@react-native-async-storage/async-storage@3.1.1(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3))(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)':
     dependencies:
       firebase: 12.17.1(@react-native-async-storage/async-storage@3.1.1(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3))
@@ -14292,6 +14333,14 @@ snapshots:
       react-native-url-polyfill: 4.0.0(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))
     transitivePeerDependencies:
       - react-native
+
+  '@react-native-firebase/remote-config@26.4.0(de58c7d7a86100b0e3daa283662c4889)':
+    dependencies:
+      '@react-native-firebase/analytics': 26.4.0(@react-native-firebase/app@26.4.0(@react-native-async-storage/async-storage@3.1.1(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3))(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3))
+      '@react-native-firebase/app': 26.4.0(@react-native-async-storage/async-storage@3.1.1(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3))(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)
+      react-native-fetch-api: 3.0.0
+      text-encoding: 0.7.0
+      web-streams-polyfill: 4.3.0
 
   '@react-native-masked-view/masked-view@0.3.2(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)':
     dependencies:
@@ -21262,6 +21311,10 @@ snapshots:
     dependencies:
       lodash: 4.17.21
 
+  react-native-fetch-api@3.0.0:
+    dependencies:
+      p-defer: 3.0.0
+
   react-native-gesture-handler@3.3.0(react-native@0.87.1(@babel/core@7.28.6)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.28.6))(@types/react@19.2.8)(react@19.2.3))(react@19.2.3):
     dependencies:
       '@types/react-test-renderer': 19.1.0
@@ -22398,6 +22451,8 @@ snapshots:
       - encoding
       - supports-color
 
+  superstruct@2.0.2: {}
+
   supports-color@5.5.0:
     dependencies:
       has-flag: 3.0.0
@@ -22544,6 +22599,8 @@ snapshots:
       b4a: 1.8.1
     transitivePeerDependencies:
       - react-native-b4a
+
+  text-encoding@0.7.0: {}
 
   text-hex@1.0.0: {}
 
@@ -22988,6 +23045,8 @@ snapshots:
       defaults: 1.0.4
 
   web-streams-polyfill@3.3.3: {}
+
+  web-streams-polyfill@4.3.0: {}
 
   web-vitals@4.2.4: {}
 
