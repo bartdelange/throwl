@@ -13,6 +13,7 @@ import { format } from 'date-fns';
 import { FC, useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Dimensions,
   FlatList,
   LayoutAnimation,
@@ -90,19 +91,33 @@ const PlayedGamesScreen: FC = () => {
     }
   };
 
-  const goToGame = (game: Game) => () => {
+  const goToGame = (game: Game) => async () => {
     if (!game.finished) {
-      if (game.options.mode === 'doubles') {
+      // The history screen can remain mounted while a resumed game is updated.
+      // Resolve the game again at the resume boundary instead of treating the
+      // list item's snapshot as the current game state.
+      let activeGame: Game;
+      try {
+        activeGame = await GameService.getById(game.id);
+      } catch {
+        Alert.alert(
+          'Could not resume game',
+          'Please check your connection and try again.',
+        );
+        return;
+      }
+
+      if (activeGame.options.mode === 'doubles') {
         navigator.push(DOUBLES_GAME_SCREEN, {
-          options: game.options,
-          players: game.players.map(serializePlayerParam),
-          activeGame: serializeGameParam(game),
+          options: activeGame.options,
+          players: activeGame.players.map(serializePlayerParam),
+          activeGame: serializeGameParam(activeGame),
         });
       } else {
         navigator.push(NORMAL_GAME_SCREEN, {
-          options: game.options,
-          players: game.players.map(serializePlayerParam),
-          activeGame: serializeGameParam(game),
+          options: activeGame.options,
+          players: activeGame.players.map(serializePlayerParam),
+          activeGame: serializeGameParam(activeGame),
         });
       }
     } else {

@@ -1,13 +1,17 @@
 import type { ReactNode } from 'react';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
+import { Alert } from 'react-native';
 import { GameService } from '@throwl/shared-data-access-game';
+import { DartboardScoreType, Game } from '@throwl/shared-domain-models';
+
+const mockPush = jest.fn();
 
 jest.mock('@throwl/feature-auth', () => ({
   useAuthContext: () => ({ user: { id: 'u1', name: 'Bart' } }),
 }));
 
 jest.mock('@react-navigation/core', () => ({
-  useNavigation: () => ({ push: jest.fn() }),
+  useNavigation: () => ({ push: mockPush }),
 }));
 
 jest.mock('@react-native-vector-icons/material-design-icons', () => ({
@@ -19,7 +23,11 @@ jest.mock('@throwl/shared-theme', () => ({
 }));
 
 jest.mock('@throwl/shared-data-access-game', () => ({
-  GameService: { getPlayedGames: jest.fn(), removeFromHistory: jest.fn() },
+  GameService: {
+    getById: jest.fn(),
+    getPlayedGames: jest.fn(),
+    removeFromHistory: jest.fn(),
+  },
 }));
 
 jest.mock('@throwl/shared-layouts', () => ({
@@ -109,5 +117,81 @@ describe('PlayedGamesScreen', () => {
 
     await act(async () => resolveRemoval?.());
     await waitFor(() => expect(queryByText('Unfinished game')).toBeNull());
+  });
+
+  it('resumes the latest persisted state when the history item is stale', async () => {
+    const staleGame: Game = {
+      id: 'g1',
+      players: [
+        {
+          type: 'user' as const,
+          id: 'u1',
+          email: 'bart@example.com',
+          name: 'Bart',
+        },
+      ],
+      turns: [],
+      started: new Date('2026-01-01T10:00:00Z'),
+      options: { mode: 'x01' as const, startingScore: 501 },
+    };
+    const playedTurn = {
+      userId: 'u1',
+      throws: [{ type: DartboardScoreType.Single, score: 20 }],
+    };
+    let persistedGame: Game = staleGame;
+
+    jest.mocked(GameService.getPlayedGames).mockResolvedValue([staleGame]);
+    jest
+      .mocked(GameService.getById)
+      .mockImplementation(async () => persistedGame);
+
+    const { PlayedGamesScreen } = require('../../..');
+    const { getByText } = render(<PlayedGamesScreen />);
+
+    await waitFor(() => expect(getByText('Unfinished game')).toBeTruthy());
+
+    // First resume uses the initially persisted state.
+    fireEvent.press(getByText('Unfinished game'));
+    await waitFor(() => expect(mockPush).toHaveBeenCalledTimes(1));
+
+    // A turn is persisted while this still-mounted history screen retains its
+    // original list item, then the player leaves and resumes the same game.
+    persistedGame = { ...staleGame, turns: [playedTurn] };
+    fireEvent.press(getByText('Unfinished game'));
+
+    await waitFor(() => expect(mockPush).toHaveBeenCalledTimes(2));
+    expect(GameService.getPlayedGames).toHaveBeenCalledTimes(1);
+    expect(GameService.getById).toHaveBeenCalledTimes(2);
+    expect(mockPush.mock.calls[1][1].activeGame.turns).toEqual([playedTurn]);
+  });
+
+  it('stays on played games when the authoritative resume lookup fails', async () => {
+    jest.mocked(GameService.getPlayedGames).mockResolvedValue([
+      {
+        id: 'g1',
+        players: [],
+        turns: [],
+        started: new Date('2026-01-01T10:00:00Z'),
+        options: { mode: 'x01', startingScore: 501 },
+      },
+    ]);
+    jest
+      .mocked(GameService.getById)
+      .mockRejectedValue(new Error('network unavailable'));
+    const alert = jest.spyOn(Alert, 'alert').mockImplementation();
+
+    const { PlayedGamesScreen } = require('../../..');
+    const { getByText } = render(<PlayedGamesScreen />);
+
+    await waitFor(() => expect(getByText('Unfinished game')).toBeTruthy());
+    fireEvent.press(getByText('Unfinished game'));
+
+    await waitFor(() =>
+      expect(alert).toHaveBeenCalledWith(
+        'Could not resume game',
+        'Please check your connection and try again.',
+      ),
+    );
+    expect(mockPush).not.toHaveBeenCalled();
   });
 });
