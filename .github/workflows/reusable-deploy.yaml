@@ -54,7 +54,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup directory and install required packages
         uses: ./.github/actions/reusable-setup/
@@ -64,7 +64,7 @@ jobs:
       #region Android
       - name: Use JAVA 22
         if: ${{ endsWith(inputs.working_directory, '/android') }}
-        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: 'zulu'
           java-version: '22.0.2'
@@ -150,7 +150,7 @@ jobs:
 
       - name: Use latest xcode
         if: ${{ endsWith(inputs.working_directory, '/ios') }}
-        uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0
+        uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
         with:
           xcode-version: latest-stable
       #endregion
