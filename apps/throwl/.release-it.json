@@ -11,6 +11,6 @@
     "release": true
   },
   "hooks": {
-    "after:bump": "nx run throwl:syncNativeVersions --version=${version}"
+    "after:bump": "nx run throwl:syncNativeVersions --args=\"--version=${version}\""
   }
 }

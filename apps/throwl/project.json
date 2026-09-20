@@ -84,8 +84,8 @@
       "options": {
         "cwd": "{projectRoot}",
         "commands": [
-          "nx run throwl:setAndroidVersion --args=\"--version={args.version}\"",
-          "nx run throwl:setIosVersion --args=\"--version={args.version}\"",
+          "bundle exec fastlane android bump_version version:{args.version}",
+          "bundle exec fastlane ios bump_version version:{args.version}",
           {
             "command": "git add -A",
             "forwardAllArgs": false
