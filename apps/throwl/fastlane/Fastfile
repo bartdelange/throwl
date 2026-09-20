@@ -60,8 +60,11 @@ end
 platform :android do
   desc "Bump versionName and versionCode"
   lane :bump_version do |options|
-    android_set_version_name(version_name: options.fetch(:version))
-    android_set_version_code
+    android_set_version_name(
+      version_name: options.fetch(:version),
+      gradle_file: "android/app/build.gradle"
+    )
+    android_set_version_code(gradle_file: "android/app/build.gradle")
   end
 
   desc "Build (and optionally upload) a Beta/Release bundle"

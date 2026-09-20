@@ -69,14 +69,14 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "{projectRoot}",
-        "command": "bundle exec fastlane android bump_version version={args.version}"
+        "command": "bundle exec fastlane android bump_version version:{args.version}"
       }
     },
     "setIosVersion": {
       "executor": "nx:run-commands",
       "options": {
         "cwd": "{projectRoot}",
-        "command": "bundle exec fastlane ios bump_version version={args.version}"
+        "command": "bundle exec fastlane ios bump_version version:{args.version}"
       }
     },
     "syncNativeVersions": {
@@ -84,9 +84,12 @@
       "options": {
         "cwd": "{projectRoot}",
         "commands": [
-          "nx run throwl:setAndroidVersion --version={args.version}",
-          "nx run throwl:setIosVersion --version={args.version}",
-          "git add -A"
+          "nx run throwl:setAndroidVersion --args=\"--version={args.version}\"",
+          "nx run throwl:setIosVersion --args=\"--version={args.version}\"",
+          {
+            "command": "git add -A",
+            "forwardAllArgs": false
+          }
         ],
         "parallel": false
       }
