@@ -22,7 +22,6 @@ export const referenceId = (value) =>
     : undefined;
 
 const same = (left, right) => JSON.stringify(left) === JSON.stringify(right);
-const unique = (values) => [...new Set(values)];
 const validName = (value) =>
   typeof value === 'string' && value.length > 0 && value.length <= 80;
 const validEmail = (value) =>
@@ -173,31 +172,22 @@ function createExpectedState(
 }
 
 function canonicalGameFields(id, game, knownUserIds, errors) {
-  if (!Array.isArray(game.players) || game.players.length === 0) {
-    errors.push(`games/${id} does not contain players`);
+  if (!Array.isArray(game.players)) {
+    errors.push(`games/${id} has invalid players`);
     return undefined;
   }
-  if (game.players.length > 8) {
-    errors.push(`games/${id} has too many players`);
-    return undefined;
-  }
-  const playerKeys = game.players.map((player) =>
-    typeof player === 'string'
-      ? `guest:${player}`
-      : `ref:${player?.path ?? ''}`,
-  );
-  const malformedPlayer = game.players.some((player) => {
+  const playerIds = [];
+  for (const player of game.players) {
+    if (typeof player === 'string') continue;
     const uid = referenceId(player);
-    if (uid) return !knownUserIds.has(uid);
-    return !validName(player);
-  });
-  if (malformedPlayer || new Set(playerKeys).size !== playerKeys.length) {
-    errors.push(`games/${id} has invalid or duplicate players`);
-    return undefined;
+    if (!uid || !knownUserIds.has(uid)) {
+      errors.push(`games/${id} has an invalid registered player reference`);
+      return undefined;
+    }
+    playerIds.push(uid);
   }
-  const playerIds = unique(game.players.map(referenceId).filter(Boolean));
-  if (playerIds.length > 8) {
-    errors.push(`games/${id} has too many registered players`);
+  if (new Set(playerIds).size !== playerIds.length) {
+    errors.push(`games/${id} has a duplicate registered player reference`);
     return undefined;
   }
 
@@ -217,23 +207,6 @@ function canonicalGameFields(id, game, knownUserIds, errors) {
   }
 
   return { playerIds, historyUserIds };
-}
-
-function validateGameDomain(id, game, errors) {
-  if (!Array.isArray(game.turns)) errors.push(`games/${id} has invalid turns`);
-  if (!game.started || typeof game.started.toDate !== 'function') {
-    errors.push(`games/${id} has an invalid started timestamp`);
-  }
-  if (
-    game.finished !== null &&
-    game.finished !== undefined &&
-    typeof game.finished.toDate !== 'function'
-  ) {
-    errors.push(`games/${id} has an invalid finished timestamp`);
-  }
-  if (!game.options || typeof game.options !== 'object') {
-    errors.push(`games/${id} has invalid options`);
-  }
 }
 
 export function planPrepare(state, options = {}) {
@@ -669,7 +642,6 @@ export function verifyMigrationState(state, options = {}) {
     ) {
       errors.push(`games/${id} has an invalid createdBy`);
     }
-    validateGameDomain(id, game, errors);
     const fields = canonicalGameFields(id, game, knownUserIds, errors);
     if (!fields) continue;
     if (!same(game.playerIds, fields.playerIds)) {

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
+import { Timestamp } from 'firebase-admin/firestore';
 import {
   createEmptyMigrationState,
   planFinalize,
@@ -97,13 +98,7 @@ describe('prepare', () => {
   test('is idempotent and does not remove legacy fields or infer createdBy', () => {
     const state = baseState();
     const originalGame = state.games.get('legacy').data;
-    const originalDomain = {
-      turns: originalGame.turns,
-      started: originalGame.started,
-      finished: originalGame.finished,
-      options: originalGame.options,
-      startingScore: originalGame.startingScore,
-    };
+    const originalDomain = { ...originalGame };
     prepare(state);
     const once = state.games.get('legacy').data;
     prepare(state);
@@ -113,16 +108,11 @@ describe('prepare', () => {
       state.games.get('legacy').data.players,
       originalGame.players,
     );
-    assert.deepEqual(
-      {
-        turns: state.games.get('legacy').data.turns,
-        started: state.games.get('legacy').data.started,
-        finished: state.games.get('legacy').data.finished,
-        options: state.games.get('legacy').data.options,
-        startingScore: state.games.get('legacy').data.startingScore,
-      },
-      originalDomain,
-    );
+    assert.deepEqual(state.games.get('legacy').data, {
+      ...originalDomain,
+      playerIds: ['alice', 'bob'],
+      historyUserIds: ['alice', 'bob'],
+    });
     assert.equal(state.games.get('legacy').data.createdBy, undefined);
   });
 
@@ -196,6 +186,135 @@ describe('prepare', () => {
     applyPlans(state, reduction.plans);
     assert.deepEqual(state.games.get('legacy').data.historyUserIds, []);
     assert.deepEqual(state.games.get('legacy').data.playerIds, ['bob']);
+  });
+
+  test('accepts and preserves legitimate historical domain shapes', () => {
+    const fixtures = [
+      {
+        id: 'earliest',
+        data: {
+          players: [userRef('alice')],
+          turns: 'opaque historical turns',
+          started: Timestamp.fromDate(new Date('2021-11-23T12:00:00Z')),
+          finished: { unexpected: 'but untouched' },
+        },
+      },
+      {
+        id: 'legacy-x01',
+        data: {
+          players: [userRef('alice')],
+          turns: [],
+          started: Timestamp.fromDate(new Date('2021-12-02T12:00:00Z')),
+          finished: null,
+          startingScore: 301,
+        },
+      },
+      {
+        id: 'newer-legacy',
+        data: game([userRef('alice')], {
+          started: Timestamp.fromDate(new Date('2026-01-06T12:00:00Z')),
+          options: { mode: 'x01', startingScore: 501 },
+        }),
+      },
+      {
+        id: 'opaque-guests',
+        data: game([
+          userRef('alice'),
+          '',
+          'x'.repeat(500),
+          'Duplicate guest',
+          'Duplicate guest',
+        ]),
+      },
+    ];
+    const state = baseState();
+    state.games.clear();
+    for (const fixture of fixtures) {
+      put(state, 'games', fixture.id, fixture.data);
+    }
+    const originals = new Map(fixtures.map(({ id, data }) => [id, data]));
+
+    const result = planPrepare(state);
+    assert.deepEqual(result.errors, []);
+    const gamePlans = result.plans.filter(
+      ([operation, ref]) =>
+        operation === 'merge' && ref.path.startsWith('games/'),
+    );
+    assert.equal(gamePlans.length, fixtures.length);
+    for (const [, , fields] of gamePlans) {
+      assert.deepEqual(Object.keys(fields).sort(), [
+        'historyUserIds',
+        'playerIds',
+      ]);
+    }
+    applyPlans(state, result.plans);
+    assert.deepEqual(verifyMigrationState(state).errors, []);
+    for (const { id } of fixtures) {
+      assert.deepEqual(state.games.get(id).data, {
+        ...originals.get(id),
+        playerIds: ['alice'],
+        historyUserIds: ['alice'],
+      });
+    }
+  });
+
+  test('preserves registered-player order in historical games above eight players', () => {
+    const state = createEmptyMigrationState(documentRef);
+    const userIds = Array.from({ length: 10 }, (_, index) => `user-${index}`);
+    for (const uid of userIds) {
+      put(state, 'users', uid, legacyUser(`${uid}@example.test`, uid));
+    }
+    put(state, 'games', 'large-history', {
+      players: userIds.map(userRef),
+      turns: [],
+      started: Timestamp.now(),
+      finished: null,
+      startingScore: 501,
+    });
+
+    prepare(state);
+    assert.deepEqual(state.games.get('large-history').data.playerIds, userIds);
+    assert.deepEqual(
+      state.games.get('large-history').data.historyUserIds,
+      userIds,
+    );
+    assert.deepEqual(verifyMigrationState(state).errors, []);
+  });
+
+  test('rejects duplicate registered-user references', () => {
+    const state = baseState();
+    state.games.get('legacy').data.players = [
+      userRef('alice'),
+      'Duplicate guest',
+      'Duplicate guest',
+      userRef('alice'),
+    ];
+    const result = planPrepare(state);
+    assert.ok(
+      result.errors.includes(
+        'games/legacy has a duplicate registered player reference',
+      ),
+    );
+  });
+
+  test('rejects malformed and unknown registered-user references', () => {
+    const malformed = baseState();
+    malformed.games.get('legacy').data.players = [
+      documentRef('publicProfiles', 'alice'),
+    ];
+    assert.ok(
+      planPrepare(malformed).errors.includes(
+        'games/legacy has an invalid registered player reference',
+      ),
+    );
+
+    const unknown = baseState();
+    unknown.games.get('legacy').data.players = [userRef('missing')];
+    assert.ok(
+      planPrepare(unknown).errors.includes(
+        'games/legacy has an invalid registered player reference',
+      ),
+    );
   });
 });
 
