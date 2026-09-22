@@ -79,6 +79,8 @@ pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase verify --disposable-
 `prepare` is safely rerunnable and preserves v4-required fields. `reconcile`
 and `finalize` must run only during the verified all-client write freeze. Follow
 the complete staged procedure in [the Firestore cutover runbook](docs/FIRESTORE_CUTOVER.md).
+`--disposable-users` is optional and is only for canonical-only accounts created
+by v5 during review; ordinary legacy test accounts remain authoritative v4 data.
 Do not use a downloaded service account key. The production owner must perform
 this migration and rule deployment; these commands are never part of CI or the
 local test suite.

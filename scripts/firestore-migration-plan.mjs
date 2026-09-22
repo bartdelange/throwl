@@ -326,12 +326,6 @@ export function planReconcile(state, options) {
   );
   const disposableUserIds = new Set(disposableUsers.map(({ uid }) => uid));
   const deleteGameIds = new Set(options.deleteGameIds ?? []);
-  if (disposableUserIds.size === 0) {
-    return {
-      errors: ['reconcile requires at least one explicit disposable user UID'],
-      plans: [],
-    };
-  }
 
   const expected = createExpectedState(state, disposableUserIds);
   const errors = [...expected.errors];

@@ -15,9 +15,11 @@ Config, or an app release.
   remove `games.players`.
 - `reconcile` is destructive and may only run after an all-client Firestore
   write freeze has been deployed and verified with both v4 and v5.
-- `reconcile` requires explicit comma-separated `UID=expected-email` identity
-  confirmations. An existing listed user must match both values and must have
-  the canonical-only review/test account shape before any deletion is planned.
+- `--disposable-users` is optional. When canonical-only review/test accounts
+  exist, reconciliation requires explicit comma-separated `UID=expected-email`
+  identity confirmations. An existing listed user must match both values and
+  must have the canonical-only review/test account shape before any deletion is
+  planned. An omitted list means there are zero disposable accounts.
 - Mixed real/disposable games abort unless each reviewed game ID is explicitly
   passed with `--delete-games`.
 - Canonical-only users not named as disposable abort reconciliation.
@@ -32,7 +34,9 @@ Config, or an app release.
 ## Commands
 
 Set `PROJECT_ID` and keep the reviewed disposable UID list identical through
-reconcile, verification, and finalize.
+reconcile, verification, and finalize. Omit `--disposable-users` from all
+commands when no canonical-only review/test accounts exist; legacy v4 accounts
+must not be listed merely because they are test or personal accounts.
 
 ```sh
 # Phase 1: dry-run, apply, verify

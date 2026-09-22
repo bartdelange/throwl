@@ -66,11 +66,6 @@ if (apply && phase === 'verify') {
   console.error('verify is read-only and does not accept --apply');
   process.exit(2);
 }
-if (['reconcile', 'finalize'].includes(phase) && disposableUsers.length === 0) {
-  console.error(`${phase} requires --disposable-users with explicit UIDs`);
-  process.exit(2);
-}
-
 initializeApp({ credential: applicationDefault(), projectId });
 const db = getFirestore();
 const collectionNames = [

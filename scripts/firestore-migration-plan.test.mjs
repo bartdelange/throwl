@@ -319,6 +319,55 @@ describe('prepare', () => {
 });
 
 describe('reconcile', () => {
+  test('supports reconciliation with zero disposable users without deleting users or games', () => {
+    const state = baseState();
+    prepare(state);
+    const usersBefore = new Map(state.users);
+    const gamesBefore = new Map(state.games);
+
+    const result = planReconcile(state, {});
+    assert.deepEqual(result.errors, []);
+    assert.ok(
+      !result.plans.some(
+        ([operation, ref]) =>
+          operation === 'delete' &&
+          (ref.path.startsWith('users/') || ref.path.startsWith('games/')),
+      ),
+    );
+    assert.deepEqual(result.plans.at(-1)[2], {
+      phase: 'reconciled',
+      disposableUsers: [],
+    });
+
+    applyPlans(state, result.plans);
+    assert.deepEqual(state.users, usersBefore);
+    assert.deepEqual(state.games, gamesBefore);
+    assert.deepEqual(verifyMigrationState(state).errors, []);
+  });
+
+  test('finalizes and verifies a zero-disposable reconciliation', () => {
+    const state = baseState();
+    prepare(state);
+    const reconciliation = planReconcile(state, {});
+    assert.deepEqual(reconciliation.errors, []);
+    applyPlans(state, reconciliation.plans);
+    const gamesBefore = new Map(state.games);
+
+    const finalization = planFinalize(state, {});
+    assert.deepEqual(finalization.errors, []);
+    applyPlans(state, finalization.plans);
+
+    assert.deepEqual(state.games, gamesBefore);
+    assert.deepEqual(
+      verifyMigrationState(state, { finalized: true }).errors,
+      [],
+    );
+    assert.deepEqual(state.migrationState.get('throwl-v5').data, {
+      phase: 'finalized',
+      disposableUsers: [],
+    });
+  });
+
   test('backfills a new v4 user and game created after prepare', () => {
     const state = baseState();
     prepare(state);
