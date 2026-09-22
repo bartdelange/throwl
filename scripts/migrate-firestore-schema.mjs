@@ -1,168 +1,146 @@
 import { applicationDefault, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
-import { commitMigrationPlans } from './firestore-migration-operations.mjs';
 import {
-  hasValidPendingRequester,
-  legacyRequesterId,
-  mergeLegacyFriendship,
-} from './firestore-migration-friendships.mjs';
+  commitMigrationPlans,
+  summarizeMigrationPlans,
+} from './firestore-migration-operations.mjs';
+import {
+  planFinalize,
+  planPrepare,
+  planReconcile,
+  verifyMigrationState,
+} from './firestore-migration-plan.mjs';
 
 const args = new Map();
 for (let index = 2; index < process.argv.length; index += 1) {
   const argument = process.argv[index];
   if (argument === '--') continue;
-  if (argument === '--apply') args.set('apply', true);
-  else if (argument.startsWith('--'))
+  if (argument === '--apply' || argument === '--finalized') {
+    args.set(argument.slice(2), true);
+  } else if (argument.startsWith('--')) {
     args.set(argument.slice(2), process.argv[++index]);
+  }
 }
 
+const splitList = (value) =>
+  typeof value === 'string'
+    ? value
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean)
+    : [];
+
+const parseDisposableUsers = (value) =>
+  splitList(value).map((identity) => {
+    const separator = identity.indexOf('=');
+    if (separator <= 0 || separator === identity.length - 1) {
+      throw new Error(
+        `Invalid disposable identity "${identity}"; expected UID=email`,
+      );
+    }
+    return {
+      uid: identity.slice(0, separator),
+      email: identity.slice(separator + 1),
+    };
+  });
+
 const projectId = args.get('project');
-const phase = args.get('phase') ?? 'backfill';
+const phase = args.get('phase');
 const apply = args.get('apply') === true;
-if (!projectId || !['backfill', 'finalize'].includes(phase)) {
+let disposableUsers;
+try {
+  disposableUsers = parseDisposableUsers(args.get('disposable-users'));
+} catch (error) {
+  console.error(error.message);
+  process.exit(2);
+}
+const deleteGameIds = splitList(args.get('delete-games'));
+const phases = ['prepare', 'reconcile', 'finalize', 'verify'];
+if (!projectId || !phases.includes(phase)) {
   console.error(
-    'Usage: pnpm migrate:firestore -- --project <id> [--phase backfill|finalize] [--apply]',
+    'Usage: pnpm migrate:firestore -- --project <id> --phase prepare|reconcile|finalize|verify [--disposable-users UID=email,UID=email] [--delete-games id,id] [--finalized] [--apply]',
   );
+  process.exit(2);
+}
+if (apply && phase === 'verify') {
+  console.error('verify is read-only and does not accept --apply');
+  process.exit(2);
+}
+if (['reconcile', 'finalize'].includes(phase) && disposableUsers.length === 0) {
+  console.error(`${phase} requires --disposable-users with explicit UIDs`);
   process.exit(2);
 }
 
 initializeApp({ credential: applicationDefault(), projectId });
 const db = getFirestore();
-const [usersSnapshot, gamesSnapshot] = await Promise.all([
-  db.collection('users').get(),
-  db.collection('games').get(),
-]);
+const collectionNames = [
+  'users',
+  'publicProfiles',
+  'userLookups',
+  'friendships',
+  'games',
+  'migrationState',
+];
+const snapshots = await Promise.all(
+  collectionNames.map((name) => db.collection(name).get()),
+);
+const state = Object.fromEntries(
+  snapshots.map((snapshot, index) => [
+    collectionNames[index],
+    new Map(
+      snapshot.docs.map((item) => [
+        item.id,
+        { ref: item.ref, data: item.data() },
+      ]),
+    ),
+  ]),
+);
+state.referenceFor = (collection, id) => db.doc(`${collection}/${id}`);
+const options = {
+  disposableUsers,
+  deleteGameIds,
+  finalized: args.get('finalized') === true,
+};
 
-const plans = [];
-const errors = [];
-const lookupOwners = new Map();
-const friendships = new Map();
-const canonicalUsers = new Map();
-const userIds = new Set(usersSnapshot.docs.map((item) => item.id));
-const referenceId = (value) =>
-  value && typeof value.path === 'string' && /^users\/[^/]+$/.test(value.path)
-    ? value.id
-    : undefined;
+let result;
+if (phase === 'prepare') result = planPrepare(state, options);
+else if (phase === 'reconcile') result = planReconcile(state, options);
+else if (phase === 'finalize') result = planFinalize(state, options);
+else result = verifyMigrationState(state, options);
 
-for (const userSnapshot of usersSnapshot.docs) {
-  const uid = userSnapshot.id;
-  const user = userSnapshot.data();
-  const email =
-    typeof user.email === 'string' ? user.email.trim().toLowerCase() : '';
-  if (
-    !email ||
-    email.length > 254 ||
-    typeof user.name !== 'string' ||
-    user.name.length === 0 ||
-    user.name.length > 80
-  ) {
-    errors.push(`users/${uid} is missing a valid email or name`);
-    continue;
-  }
-  const duplicate = lookupOwners.get(email);
-  if (duplicate && duplicate !== uid) {
-    errors.push(
-      `users/${uid} has the same normalized email as users/${duplicate}`,
+if (result.errors.length) {
+  for (const error of result.errors) console.error(`ERROR: ${error}`);
+  console.error(
+    `${phase.toUpperCase()} FAILED: ${result.errors.length} error(s)`,
+  );
+  process.exit(1);
+}
+
+if (phase === 'verify') {
+  console.log(
+    `VERIFY OK (${options.finalized ? 'finalized' : 'legacy-authoritative'} state)`,
+  );
+  process.exit(0);
+}
+
+const summary = summarizeMigrationPlans(result.plans);
+console.log(
+  `${apply ? 'APPLY' : 'DRY RUN'} ${phase}: ${JSON.stringify(summary)}`,
+);
+for (const [operation, reference, , details] of result.plans) {
+  console.log(`${operation.toUpperCase()} ${reference.path}`);
+  if (details?.removedHistoryUserIds?.length) {
+    console.log(
+      `  REMOVE historyUserIds: ${details.removedHistoryUserIds.join(', ')}`,
     );
   }
-  lookupOwners.set(email, uid);
-  canonicalUsers.set(uid, { email: user.email, name: user.name });
-  plans.push(['replace', db.doc(`publicProfiles/${uid}`), { name: user.name }]);
-  plans.push([
-    'replace',
-    db.doc(`userLookups/${email}`),
-    { user: userSnapshot.ref },
-  ]);
-
-  for (const friend of Array.isArray(user.friends) ? user.friends : []) {
-    const friendId = referenceId(friend.user);
-    const requester = legacyRequesterId(friend.requester, referenceId);
-    if (!friendId || friendId === uid || !userIds.has(friendId)) {
-      errors.push(`users/${uid} contains an invalid legacy friend reference`);
-      continue;
-    }
-    const pair = [uid, friendId].sort();
-    const id = pair.join('_');
-    const candidate = {
-      // Accepted legacy entries no longer retain their requester. The field is
-      // authorization-irrelevant after acceptance, so use a stable member.
-      requester: friend.confirmed ? pair[0] : requester,
-      status: friend.confirmed ? 'accepted' : 'pending',
-      userIds: pair,
-    };
-    mergeLegacyFriendship(friendships, id, candidate, errors);
-  }
-}
-
-for (const [id, friendship] of friendships) {
-  if (!hasValidPendingRequester(friendship)) {
-    errors.push(`legacy friendship ${id} has an invalid requester`);
-    continue;
-  }
-  plans.push(['replace', db.doc(`friendships/${id}`), friendship]);
-}
-
-for (const gameSnapshot of gamesSnapshot.docs) {
-  const game = gameSnapshot.data();
-  const players = Array.isArray(game.players) ? game.players : [];
-  const playerKeys = players.map((player) =>
-    typeof player === 'string'
-      ? `guest:${player}`
-      : `ref:${player?.path ?? ''}`,
-  );
-  const playerIds = [...new Set(players.map(referenceId).filter(Boolean))];
-  const existingHistoryUserIds = game.historyUserIds;
-  const malformedPlayer = players.some(
-    (player) =>
-      !referenceId(player) &&
-      (typeof player !== 'string' || player.length === 0 || player.length > 80),
-  );
-  if (
-    players.length === 0 ||
-    players.length > 16 ||
-    playerIds.length > 10 ||
-    new Set(playerKeys).size !== playerKeys.length ||
-    malformedPlayer
-  ) {
-    errors.push(`games/${gameSnapshot.id} has invalid or duplicate players`);
-    continue;
-  }
-  if (
-    existingHistoryUserIds !== undefined &&
-    (!Array.isArray(existingHistoryUserIds) ||
-      existingHistoryUserIds.some(
-        (uid) => typeof uid !== 'string' || !playerIds.includes(uid),
-      ) ||
-      new Set(existingHistoryUserIds).size !== existingHistoryUserIds.length)
-  ) {
-    errors.push(`games/${gameSnapshot.id} has invalid historyUserIds`);
-    continue;
-  }
-  plans.push([
-    'merge',
-    gameSnapshot.ref,
-    {
-      playerIds,
-      historyUserIds: existingHistoryUserIds ?? playerIds,
-    },
-  ]);
-}
-
-if (phase === 'finalize') {
-  for (const userSnapshot of usersSnapshot.docs) {
-    const canonicalUser = canonicalUsers.get(userSnapshot.id);
-    if (canonicalUser) plans.push(['replace', userSnapshot.ref, canonicalUser]);
-  }
-}
-
-console.log(
-  `${apply ? 'APPLY' : 'DRY RUN'} ${phase}: ${usersSnapshot.size} users, ${gamesSnapshot.size} games, ${friendships.size} friendships, ${plans.length} writes`,
-);
-if (errors.length) {
-  for (const error of errors) console.error(`ERROR: ${error}`);
-  process.exit(1);
 }
 if (!apply) process.exit(0);
 
-await commitMigrationPlans(db, plans);
-console.log('Migration phase completed. Re-running the same command is safe.');
+await commitMigrationPlans(db, result.plans);
+console.log(`${phase} writes completed. Run verify before continuing.`);
+if (phase === 'reconcile' && disposableUsers.length) {
+  console.warn(
+    `MANUAL AUTH CLEANUP REQUIRED for disposable UIDs: ${disposableUsers.map(({ uid }) => uid).join(', ')}`,
+  );
+}

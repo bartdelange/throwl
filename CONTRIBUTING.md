@@ -53,37 +53,35 @@ do not improvise a rules-first rollout.
 The hardened rules introduce `publicProfiles`, exact-key `userLookups`, and
 single-document `friendships`, immutable `playerIds`, and mutable
 `historyUserIds` fields to games. New games also record immutable `createdBy`;
-legacy games deliberately do not. Existing production data must be migrated before the operator deploys
-the rules:
+legacy games deliberately do not. Existing production data must be migrated
+before the operator deploys the rules:
 
-- for every `users/{uid}`, retain only `email` and `name`, create
-  `publicProfiles/{uid}` with `name`, and create a lowercase-email
-  `userLookups/{email}` containing `user: /users/{uid}`;
+- prepare `publicProfiles`, normalized-email `userLookups`, canonical
+  friendships, and additive game authorization fields while retaining the v4
+  schema;
 - convert each reciprocal legacy `friends` pair into one
   `friendships/{sortedUid_sortedUid}` document with `userIds`,
   `requester`, and `status` (`pending` or `accepted`);
-- for each game, set `playerIds` and `historyUserIds` to the UIDs represented by
-  registered-user references in `players` (guest strings are excluded); do not
-  infer or backfill `createdBy`.
+- reconcile canonical state from frozen authoritative v4 data and then remove
+  legacy `users.friends`; do not remove `games.players` or infer `createdBy`.
 
 Back up and validate production data first. The migration refuses duplicate
-normalized email addresses and malformed game participants. It uses Application Default Credentials, is a dry
-run unless `--apply` is present, and is idempotent:
+normalized email addresses and malformed game participants. It uses Application
+Default Credentials and is a dry run unless `--apply` is present:
 
 ```sh
 gcloud auth application-default login
-pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase backfill
-pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase backfill --apply
-pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase finalize
-pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase finalize --apply
+pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase prepare --disposable-users UID1=review1@example.test,UID2=review2@example.test
+pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase prepare --disposable-users UID1=review1@example.test,UID2=review2@example.test --apply
+pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase verify --disposable-users UID1=review1@example.test,UID2=review2@example.test
 ```
 
-`backfill` preserves the legacy `users.friends` arrays while creating exact new
-documents and game authorization fields. `finalize` replaces constrained user,
-profile, lookup, and friendship documents with canonical shapes and must only
-run during the write-frozen hardened-rules cutover. Do not use a downloaded
-service account key. The production owner must perform this migration and rule
-deploy; these commands are never part of CI or the local test suite.
+`prepare` is safely rerunnable and preserves v4-required fields. `reconcile`
+and `finalize` must run only during the verified all-client write freeze. Follow
+the complete staged procedure in [the Firestore cutover runbook](docs/FIRESTORE_CUTOVER.md).
+Do not use a downloaded service account key. The production owner must perform
+this migration and rule deployment; these commands are never part of CI or the
+local test suite.
 
 ## Development and validation
 

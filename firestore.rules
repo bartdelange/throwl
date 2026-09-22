@@ -149,9 +149,6 @@ service cloud.firestore {
     }
 
     function boundedTurns(turns) {
-      // Turn and throw semantics belong to the application parser. The bound is
-      // retained to prevent an authorized writer from growing an embedded
-      // history without limit.
       return turns is list && turns.size() <= 500;
     }
 
@@ -233,14 +230,9 @@ service cloud.firestore {
     }
 
     match /games/{gameId} {
-      // Friend selection is product policy, not a data-access capability:
-      // membership in one game grants no access to a player's private records.
       allow create: if createdGame(request.resource.data)
         && validGame(request.resource.data)
         && request.resource.data.historyUserIds == request.resource.data.playerIds;
-      // historyMember lets the rules engine prove the Played Games query. It
-      // is constrained to playerIds by every valid write; gameMember preserves
-      // direct access after a participant removes this history preference.
       allow read: if gameMember(resource.data)
         || createdGame(resource.data)
         || historyMember(resource.data);
