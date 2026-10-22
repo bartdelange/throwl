@@ -397,7 +397,7 @@ if (
   import.meta.url === pathToFileURL(process.argv[1]).href
 ) {
   main().catch((error) => {
-    console.error(`Migration failed: ${error.message}`);
+    console.error(`Copy failed: ${error.message}`);
     process.exitCode = 1;
   });
 }

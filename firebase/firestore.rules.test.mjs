@@ -249,7 +249,7 @@ describe('authentication and users', () => {
     await assertFails(forged.commit());
   });
 
-  test('the real three-write email migration batch is constrained', async () => {
+  test('the real three-write email change batch is constrained', async () => {
     const db = auth('alice', 'alice.new@example.test');
     const batch = writeBatch(db);
     batch.update(doc(db, 'users', 'alice'), {
@@ -262,7 +262,7 @@ describe('authentication and users', () => {
     await assertSucceeds(batch.commit());
   });
 
-  test('forged email migrations fail', async () => {
+  test('forged email changes fail', async () => {
     const wrongTargetDb = auth('alice', 'alice.new@example.test');
     const wrongTarget = writeBatch(wrongTargetDb);
     wrongTarget.update(doc(wrongTargetDb, 'users', 'alice'), {

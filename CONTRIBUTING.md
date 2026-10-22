@@ -43,48 +43,6 @@ it cannot contact a production Firebase project:
 pnpm test:firestore-rules
 ```
 
-### Schema migration before deploying these rules
-
-Production uses the direct-cutover procedure in
-[`docs/FIRESTORE_CUTOVER.md`](docs/FIRESTORE_CUTOVER.md). The final app must be
-approved and downloadable in both stores before the maintenance window starts;
-do not improvise a rules-first rollout.
-
-The hardened rules introduce `publicProfiles`, exact-key `userLookups`, and
-single-document `friendships`, immutable `playerIds`, and mutable
-`historyUserIds` fields to games. New games also record immutable `createdBy`;
-legacy games deliberately do not. Existing production data must be migrated
-before the operator deploys the rules:
-
-- prepare `publicProfiles`, normalized-email `userLookups`, canonical
-  friendships, and additive game authorization fields while retaining the v4
-  schema;
-- convert each reciprocal legacy `friends` pair into one
-  `friendships/{sortedUid_sortedUid}` document with `userIds`,
-  `requester`, and `status` (`pending` or `accepted`);
-- reconcile canonical state from frozen authoritative v4 data and then remove
-  legacy `users.friends`; do not remove `games.players` or infer `createdBy`.
-
-Back up and validate production data first. The migration refuses duplicate
-normalized email addresses and malformed game participants. It uses Application
-Default Credentials and is a dry run unless `--apply` is present:
-
-```sh
-gcloud auth application-default login
-pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase prepare --disposable-users UID1=review1@example.test,UID2=review2@example.test
-pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase prepare --disposable-users UID1=review1@example.test,UID2=review2@example.test --apply
-pnpm migrate:firestore -- --project YOUR_PROJECT_ID --phase verify --disposable-users UID1=review1@example.test,UID2=review2@example.test
-```
-
-`prepare` is safely rerunnable and preserves v4-required fields. `reconcile`
-and `finalize` must run only during the verified all-client write freeze. Follow
-the complete staged procedure in [the Firestore cutover runbook](docs/FIRESTORE_CUTOVER.md).
-`--disposable-users` is optional and is only for canonical-only accounts created
-by v5 during review; ordinary legacy test accounts remain authoritative v4 data.
-Do not use a downloaded service account key. The production owner must perform
-this migration and rule deployment; these commands are never part of CI or the
-local test suite.
-
 ## Development and validation
 
 ```sh
