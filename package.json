@@ -85,7 +85,7 @@
     "jsdom": "~22.1.0",
     "metro-config": "~0.87.0",
     "metro-resolver": "~0.87.0",
-    "nx": "22.3.3",
+    "nx": "22.7.10",
     "pod-install": "^1.0.9",
     "prettier": "~3.6.2",
     "react": "19.2.3",
