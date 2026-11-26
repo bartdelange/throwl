@@ -92,44 +92,59 @@ const PlayedGamesScreen: FC = () => {
   };
 
   const goToGame = (game: Game) => async () => {
-    if (!game.finished) {
-      // The history screen can remain mounted while a resumed game is updated.
-      // Resolve the game again at the resume boundary instead of treating the
-      // list item's snapshot as the current game state.
-      let activeGame: Game;
-      try {
-        activeGame = await GameService.getById(game.id);
-      } catch {
-        Alert.alert(
-          'Could not resume game',
-          'Please check your connection and try again.',
-        );
-        return;
-      }
+    let activeGame: Game;
+    try {
+      activeGame = await GameService.getById(game.id);
+    } catch (error) {
+      const code =
+        error instanceof Error && 'code' in error ? error.code : undefined;
+      const unavailable =
+        code === 'firestore/permission-denied' ||
+        code === 'permission-denied' ||
+        code === 'firestore/not-found' ||
+        code === 'not-found';
+      if (unavailable)
+        setGames((current) => current.filter(({ id }) => id !== game.id));
+      Alert.alert(
+        unavailable ? 'Game unavailable' : 'Could not open game',
+        unavailable
+          ? 'This game was deleted or you no longer have access.'
+          : 'Please check your connection and try again.',
+      );
+      return;
+    }
 
-      if (activeGame.options.mode === 'doubles') {
-        navigator.push(DOUBLES_GAME_SCREEN, {
-          options: activeGame.options,
-          players: activeGame.players.map(serializePlayerParam),
-          activeGame: serializeGameParam(activeGame),
-        });
-      } else {
-        navigator.push(NORMAL_GAME_SCREEN, {
-          options: activeGame.options,
-          players: activeGame.players.map(serializePlayerParam),
-          activeGame: serializeGameParam(activeGame),
-        });
-      }
+    setGames((current) =>
+      current.map((item) => (item.id === activeGame.id ? activeGame : item)),
+    );
+    const canScore = Boolean(
+      user &&
+        (activeGame.createdBy === user.id ||
+          activeGame.playerIds?.includes(user.id)),
+    );
+    if (activeGame.finished || !canScore) {
+      navigator.push(
+        activeGame.options.mode === 'doubles'
+          ? DOUBLES_GAME_DETAIL_SCREEN
+          : NORMAL_GAME_DETAIL_SCREEN,
+        { game: serializeGameParam(activeGame) },
+      );
+      return;
+    }
+
+    const players = activeGame.players.map(serializePlayerParam);
+    if (activeGame.options.mode === 'doubles') {
+      navigator.push(DOUBLES_GAME_SCREEN, {
+        options: activeGame.options,
+        players,
+        activeGame: serializeGameParam(activeGame),
+      });
     } else {
-      if (game.options.mode === 'doubles') {
-        navigator.push(DOUBLES_GAME_DETAIL_SCREEN, {
-          game: serializeGameParam(game),
-        });
-      } else {
-        navigator.push(NORMAL_GAME_DETAIL_SCREEN, {
-          game: serializeGameParam(game),
-        });
-      }
+      navigator.push(NORMAL_GAME_SCREEN, {
+        options: activeGame.options,
+        players,
+        activeGame: serializeGameParam(activeGame),
+      });
     }
   };
 

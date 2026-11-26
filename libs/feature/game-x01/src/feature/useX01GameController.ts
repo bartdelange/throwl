@@ -9,8 +9,14 @@ import {
   useState,
 } from 'react';
 import { FlatList } from 'react-native';
-import { GuestUser, Throw, Turn, User } from '@throwl/shared-domain-models';
-import { GameHelper, TurnNeeded } from '@throwl/shared-domain-game-rules';
+import { Throw, Turn, TeamRoster } from '@throwl/shared-domain-models';
+import {
+  GameHelper,
+  TurnNeeded,
+  ScoringParticipant,
+  resolveParticipants,
+  participantVisits,
+} from '@throwl/shared-domain-game-rules';
 import { X01GameHelper } from '@throwl/shared-domain-game-rules';
 import { IDartFinishers } from '@throwl/shared-constants';
 
@@ -18,13 +24,14 @@ type PlayerBase = { id: string; name: string };
 
 export function useX01GameController<TPlayer extends PlayerBase>(args: {
   players: TPlayer[];
+  teams?: TeamRoster;
   setPlayers: Dispatch<SetStateAction<TPlayer[]>>;
 
   startingScore: number;
   finishers: IDartFinishers;
   activeGame?: { id: string; turns: Turn[] } | undefined;
 
-  scoreTableRef: RefObject<FlatList<User | GuestUser> | null>;
+  scoreTableRef: RefObject<FlatList<ScoringParticipant> | null>;
 
   speak?: (text: string) => Promise<void> | void;
   persistGame: (turns: Turn[], finished: boolean) => Promise<void> | void;
@@ -51,6 +58,7 @@ export function useX01GameController<TPlayer extends PlayerBase>(args: {
 } {
   const {
     players,
+    teams,
     setPlayers,
     startingScore,
     finishers,
@@ -60,11 +68,20 @@ export function useX01GameController<TPlayer extends PlayerBase>(args: {
     persistGame,
   } = args;
 
+  const lineup = useMemo(
+    () => resolveParticipants(players, teams),
+    [players, teams],
+  );
+  const indexFor = useCallback(
+    (id: string) => players.findIndex((player) => player.id === id),
+    [players],
+  );
+  const initialIndex = Math.max(0, indexFor(lineup.order[0]));
   const [turns, setTurns] = useState<Turn[]>([]);
-  const [activePlayerIndex, setActivePlayerIndex] = useState(0);
+  const [activePlayerIndex, setActivePlayerIndex] = useState(initialIndex);
 
   const [currentTurn, setCurrentTurn] = useState<Turn>(() => ({
-    userId: players[0]?.id ?? '',
+    userId: lineup.order[0] ?? '',
     throws: [],
   }));
 
@@ -74,38 +91,32 @@ export function useX01GameController<TPlayer extends PlayerBase>(args: {
 
   const [dropoutPlayerIndex, setDropoutPlayerIndex] = useState<number>();
 
-  // Keep a ref for latest players length to avoid accidental stale closures in scroll logic
-  const playersLengthRef = useRef(players.length);
-  useEffect(() => {
-    playersLengthRef.current = players.length;
-  }, [players.length]);
-
   const scrollToPlayer = useCallback(
     (index: number) => {
+      const player = players[index];
+      const row = teams
+        ? lineup.participants.findIndex(({ members }) =>
+            members.includes(player?.id),
+          )
+        : index;
+      if (row < 0) return;
       scoreTableRef.current?.scrollToIndex({
         animated: true,
         viewPosition: 0.5,
-        index,
+        index: row,
       });
     },
-    [scoreTableRef],
+    [scoreTableRef, players, teams, lineup],
   );
 
-  const rotatePlayers = useCallback(
-    (reverse = false, customIndex?: number) => {
-      const nextIndex = GameHelper.getNextUserIndex({
-        activeUserIndex: activePlayerIndex,
-        playersLength: playersLengthRef.current,
-        reverse,
-        customIndex,
-      });
-
-      scrollToPlayer(nextIndex);
-      setActivePlayerIndex(nextIndex);
-      return nextIndex;
-    },
-    [activePlayerIndex, scrollToPlayer],
-  );
+  const rotatePlayers = useCallback(() => {
+    const nextIndex = indexFor(
+      lineup.nextThrower(players[activePlayerIndex]?.id),
+    );
+    scrollToPlayer(nextIndex);
+    setActivePlayerIndex(nextIndex);
+    return nextIndex;
+  }, [activePlayerIndex, indexFor, lineup, players, scrollToPlayer]);
 
   const turnNeeded = useMemo<TurnNeeded>(() => {
     return X01GameHelper.calculateTurnNeeded({
@@ -113,32 +124,26 @@ export function useX01GameController<TPlayer extends PlayerBase>(args: {
       currentTurn,
       startingScore,
       finishers,
+      scoringMembers: lineup.participantFor(currentTurn.userId)?.members,
     });
-  }, [turns, currentTurn, startingScore, finishers]);
+  }, [turns, currentTurn, startingScore, finishers, lineup]);
+
+  const resumedGameId = useRef<string | undefined>(undefined);
 
   // Resume existing game
   useEffect(() => {
-    if (!activeGame) return;
+    if (!activeGame || resumedGameId.current === activeGame.id) return;
+    resumedGameId.current = activeGame.id;
 
     setTurns(activeGame.turns);
 
     const lastTurn = activeGame.turns[activeGame.turns.length - 1];
-    let nextIndex = 0;
+    const nextId = lineup.nextThrower(lastTurn?.userId);
+    setActivePlayerIndex(indexFor(nextId));
+    scrollToPlayer(indexFor(nextId));
 
-    if (lastTurn) {
-      const lastIndex = players.findIndex((p) => p.id === lastTurn.userId);
-      nextIndex = GameHelper.getNextUserIndex({
-        activeUserIndex: lastIndex,
-        playersLength: players.length,
-      });
-    }
-
-    setActivePlayerIndex(nextIndex);
-    scrollToPlayer(nextIndex);
-
-    setCurrentTurn({ userId: players[nextIndex]?.id ?? '', throws: [] });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeGame?.id]); // intentionally keyed by game identity
+    setCurrentTurn({ userId: nextId ?? '', throws: [] });
+  }, [activeGame, indexFor, lineup, scrollToPlayer]);
 
   const finishTurn = useCallback(
     async (turn: Turn, nextTurns: Turn[]) => {
@@ -150,14 +155,20 @@ export function useX01GameController<TPlayer extends PlayerBase>(args: {
 
       const remaining =
         startingScore -
-        GameHelper.calculateUserValidScore(nextTurns, nextPlayer.id);
+        GameHelper.calculateScore(
+          participantVisits(
+            nextTurns,
+            lineup.participantFor(nextPlayer.id)?.members ?? [nextPlayer.id],
+          ),
+          true,
+        );
       if (remaining <= 170 && speak) {
-        await speak(`${nextPlayer.name.split(' ')[0]} you need ${remaining}`);
+        void speak(`${nextPlayer.name.split(' ')[0]} you need ${remaining}`);
       }
 
       await persistGame(nextTurns, false);
     },
-    [players, rotatePlayers, startingScore, speak, persistGame],
+    [players, rotatePlayers, startingScore, speak, persistGame, lineup],
   );
 
   const finishGame = useCallback(
@@ -166,18 +177,20 @@ export function useX01GameController<TPlayer extends PlayerBase>(args: {
       setIsGameFinished(true);
       setIsWinnerModalVisible(true);
 
-      const winner = players[activePlayerIndex];
+      const winner = lineup.participantFor(turn.userId);
       if (winner && speak) {
-        void speak(`${winner.name.split(' ')[0]} has won!`);
+        void speak(
+          `${teams ? winner.name : winner.name.split(' ')[0]} has won!`,
+        );
       }
 
       await persistGame(nextTurns, true);
     },
-    [players, activePlayerIndex, speak, persistGame],
+    [lineup, teams, speak, persistGame],
   );
 
   const onThrow = useCallback(
-    (thrw: Throw, _pos?: { x: number; y: number }) => {
+    (thrw: Throw) => {
       if (isGameFinished) return;
 
       const evalResult = X01GameHelper.evaluateThrow({
@@ -185,6 +198,7 @@ export function useX01GameController<TPlayer extends PlayerBase>(args: {
         currentTurn,
         throw: thrw,
         startingScore,
+        scoringMembers: lineup.participantFor(currentTurn.userId)?.members,
       });
 
       setCurrentTurn(evalResult.nextTurn);
@@ -214,6 +228,7 @@ export function useX01GameController<TPlayer extends PlayerBase>(args: {
       speak,
       finishTurn,
       finishGame,
+      lineup,
     ],
   );
 
@@ -229,22 +244,50 @@ export function useX01GameController<TPlayer extends PlayerBase>(args: {
       currentTurn,
     });
 
-    if (didPopTurn) rotatePlayers(true);
+    if (didPopTurn) {
+      const index = indexFor(nextTurn.userId);
+      setActivePlayerIndex(index);
+      scrollToPlayer(index);
+    }
 
     setTurns(nextTurns);
-    setCurrentTurn(nextTurn);
+    const score =
+      GameHelper.calculateScore(
+        participantVisits(
+          nextTurns,
+          lineup.participantFor(nextTurn.userId)?.members ?? [nextTurn.userId],
+        ),
+        true,
+      ) + GameHelper.calculateTurnScore(nextTurn);
+    setCurrentTurn({
+      ...nextTurn,
+      isValid: X01GameHelper.checkThrowValidity(nextTurn, score, startingScore),
+    });
     setIsWinnerModalVisible(false);
     setIsGameFinished(false);
 
-    void persistGame(nextTurns, false);
-  }, [turns, currentTurn, rotatePlayers, persistGame]);
+    if (didPopTurn || isGameFinished) void persistGame(nextTurns, false);
+  }, [
+    turns,
+    currentTurn,
+    indexFor,
+    scrollToPlayer,
+    persistGame,
+    isGameFinished,
+    lineup,
+    startingScore,
+  ]);
 
   const dropOutUser = useCallback(
     (userId: string) => {
-      if (players.length <= 1) return;
+      if (teams || players.length <= 1) return;
 
       const leavingIndex = players.findIndex((p) => p.id === userId);
-      const nextIndex = leavingIndex === players.length - 1 ? 0 : leavingIndex;
+      if (leavingIndex < 0) return;
+      const nextIndex =
+        leavingIndex === activePlayerIndex
+          ? leavingIndex % (players.length - 1)
+          : activePlayerIndex - Number(leavingIndex < activePlayerIndex);
 
       const nextTurns = turns.filter((t) => t.userId !== userId);
       const nextPlayers = players.filter((p) => p.id !== userId);
@@ -271,6 +314,7 @@ export function useX01GameController<TPlayer extends PlayerBase>(args: {
     },
     [
       players,
+      teams,
       turns,
       setPlayers,
       activePlayerIndex,

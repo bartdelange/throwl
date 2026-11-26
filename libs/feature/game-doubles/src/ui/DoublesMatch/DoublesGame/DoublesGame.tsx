@@ -19,12 +19,17 @@ import {
   AppbarBackAction,
   TurnIndicatorBar,
   WinnerModal,
+  useGameSaveRecovery,
 } from '@throwl/shared-ui';
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
-import { GameHelper } from '@throwl/shared-domain-game-rules';
+import {
+  GameHelper,
+  resolveParticipants,
+  ScoringParticipant,
+} from '@throwl/shared-domain-game-rules';
 import Confetti from 'react-native-confetti';
 import { FullScreenLayout } from '@throwl/shared-layouts';
 import {
@@ -37,7 +42,7 @@ import { DropOutModel } from '@throwl/shared-ui';
 import { useSpeak } from '@throwl/shared-hooks';
 import { useAppTheme } from '@throwl/shared-theme';
 import { ScoreTable } from './ScoreTable/ScoreTable';
-import { GameService } from '@throwl/shared-data-access-game';
+import { GameService, useTeamGameSave } from '@throwl/shared-data-access-game';
 import { useDoublesGameController } from '../../../feature/useDoublesGameController';
 
 export const DoublesGameScreen: FC = () => {
@@ -56,6 +61,7 @@ export const DoublesGameScreen: FC = () => {
     [route.params.activeGame],
   );
 
+  const teams = activeGame?.teams ?? route.params.teams;
   const [players, setPlayers] = useState(() =>
     route.params.players.map(GameService.stubPlayer),
   );
@@ -67,10 +73,20 @@ export const DoublesGameScreen: FC = () => {
   const styles = useStyles();
   const iconSize = Math.max(width * 0.04, 24);
 
-  const scoreTableRef = useRef<FlatList>(null);
+  const scoreTableRef = useRef<FlatList<ScoringParticipant>>(null);
   const confettiRef = useRef<Confetti>(null);
 
+  const teamSave = useTeamGameSave(
+    activeGame,
+    teams,
+    route.params.players,
+    gameOptions,
+  );
   const persistGame = async (turnsToPersist: Turn[], finished: boolean) => {
+    if (teams) {
+      await teamSave.save(turnsToPersist, finished);
+      return;
+    }
     await GameService.persistGame({
       gameId,
       setGameId,
@@ -88,6 +104,7 @@ export const DoublesGameScreen: FC = () => {
 
   const controller = useDoublesGameController({
     players,
+    teams,
     setPlayers,
     options: gameOptions,
     activeGame,
@@ -112,10 +129,24 @@ export const DoublesGameScreen: FC = () => {
     else confettiRef.current?.stopConfetti();
   }, [controller.isConfettiing]);
 
+  const lineup = useMemo(
+    () => resolveParticipants(players, teams),
+    [players, teams],
+  );
+  const activeTeam = lineup.participantFor(controller.currentTurn.userId);
+  const resultGameId = teams ? teamSave.id : gameId;
+
+  const { saveFeedback, gameplayBlocked } = useGameSaveRecovery(
+    teamSave.status,
+    teamSave.retry,
+  );
+  const undoThrow = gameplayBlocked ? undefined : controller.undoThrow;
+
   return (
     <FullScreenLayout style={styles.layout} mode="light" size="fullscreen">
       <View style={styles.content}>
         <Pressable
+          disabled={gameplayBlocked}
           onPress={() =>
             controller.onThrow({
               type: DartboardScoreType.Out,
@@ -125,7 +156,9 @@ export const DoublesGameScreen: FC = () => {
         >
           <View style={styles.dartboardWrapper}>
             <Text style={styles.missText}>MISS</Text>
-            <ClickableDartboard onClick={controller.onThrow} />
+            <ClickableDartboard
+              onClick={gameplayBlocked ? undefined : controller.onThrow}
+            />
           </View>
         </Pressable>
 
@@ -134,16 +167,19 @@ export const DoublesGameScreen: FC = () => {
             currentTurn={controller.currentTurn}
             turnNeeded={controller.turnNeeded}
             iconSize={iconSize}
-            undoThrow={controller.undoThrow}
+            undoThrow={undoThrow}
             createScoreString={GameHelper.createScoreString}
           />
 
+          {!controller.isWinnerModalVisible && saveFeedback}
           <ScoreTable
             scoreTableRef={scoreTableRef}
             players={players}
+            teams={teams}
+            activeUserIndex={controller.activePlayerIndex}
+            finished={controller.isGameFinished}
             gameOptions={gameOptions}
             turns={controller.turns}
-            activeUserIndex={controller.activePlayerIndex}
             currentTurn={controller.currentTurn}
             width={width}
             setDroppingOutUserIndex={controller.setDropoutPlayerIndex}
@@ -154,9 +190,18 @@ export const DoublesGameScreen: FC = () => {
       <Confetti timeout={5} size={2} ref={confettiRef} untilStopped />
 
       <WinnerModal
-        winnerName={players[controller.activePlayerIndex]?.name ?? ''}
+        saveFeedback={saveFeedback}
+        statsDisabled={Boolean(teams && teamSave.status !== 'idle')}
+        winnerName={
+          teams && activeTeam
+            ? `${activeTeam.name}: ${players
+                .filter(({ id }) => activeTeam.members.includes(id))
+                .map(({ name }) => name)
+                .join(', ')}`
+            : (players[controller.activePlayerIndex]?.name ?? '')
+        }
         onStatsPress={async () => {
-          if (!gameId) return;
+          if (!resultGameId || (teams && teamSave.status !== 'idle')) return;
           controller.setIsWinnerModalVisible(false);
           navigation.reset({
             index: 0,
@@ -166,17 +211,16 @@ export const DoublesGameScreen: FC = () => {
               {
                 name: DOUBLES_GAME_DETAIL_SCREEN,
                 params: {
-                  game: serializeGameParam(await GameService.getById(gameId)),
+                  game: serializeGameParam(
+                    await GameService.getById(resultGameId),
+                  ),
                 },
               },
             ],
           });
         }}
-        onUndoPress={controller.undoThrow}
-        onExitPress={() => {
-          controller.setIsWinnerModalVisible(false);
-          navigation.popToTop();
-        }}
+        onUndoPress={undoThrow}
+        onExitPress={() => navigation.popToTop()}
         visible={controller.isWinnerModalVisible}
       />
 

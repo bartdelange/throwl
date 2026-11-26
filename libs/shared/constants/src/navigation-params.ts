@@ -1,6 +1,7 @@
 import {
   DartboardScoreType,
   Game,
+  TeamRoster,
   GuestUser,
   User,
 } from '@throwl/shared-domain-models';
@@ -52,6 +53,9 @@ export type SerializableGame = {
   finished?: string;
   options: SerializableGameOptions;
   startingScore?: number;
+  teams?: TeamRoster;
+  teamGameplayRevision?: number;
+  createdBy?: string;
 };
 
 export function serializePlayerParam(
@@ -84,6 +88,10 @@ export function serializeGameParam(game: Game): SerializableGame {
     started: game.started.toISOString(),
     ...(game.finished ? { finished: game.finished.toISOString() } : {}),
     options: game.options,
+    ...(game.teams
+      ? { teams: game.teams, teamGameplayRevision: game.teamGameplayRevision }
+      : {}),
+    ...(game.createdBy ? { createdBy: game.createdBy } : {}),
     ...(game.startingScore === undefined
       ? {}
       : { startingScore: game.startingScore }),

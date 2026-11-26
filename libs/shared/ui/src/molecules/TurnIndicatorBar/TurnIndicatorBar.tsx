@@ -9,7 +9,7 @@ interface TurnIndicatorBarProps {
   currentTurn: Turn;
   turnNeeded: [Throw | undefined, Throw | undefined, Throw | undefined];
   iconSize: number;
-  undoThrow: () => void;
+  undoThrow?: () => void;
   createScoreString: (value: Throw) => string;
 }
 export const TurnIndicatorBar: FC<TurnIndicatorBarProps> = ({
@@ -43,6 +43,7 @@ export const TurnIndicatorBar: FC<TurnIndicatorBarProps> = ({
         icon="restore"
         size={iconSize}
         iconColor={colors.primary}
+        disabled={!undoThrow}
         onPress={undoThrow}
         rippleColor="rgba(255, 255, 255, .95)"
         style={[

@@ -23,6 +23,9 @@ export const GraphContainer: FC<ScoreContainerProps> = ({
 }) => {
   const { colors } = useAppTheme();
   const styles = useStyles();
+  const [containerWidth, setContainerWidth] = useState(0);
+  const yAxisLabelWidth = 35;
+  const plotWidth = Math.max(0, containerWidth - yAxisLabelWidth - 8);
   const [maxYValue, setMaxYValue] = useState<number>(0);
   const [scoreValues, setScoreValues] = useState<barDataItem[]>([]);
   const targetsInGame = useMemo(
@@ -49,36 +52,31 @@ export const GraphContainer: FC<ScoreContainerProps> = ({
       labelTextStyle: styles.labelText,
     }));
 
-    let currentNeededIndex = 0;
     let onTargetCounter = 0;
 
-    const allThrows = turns.flatMap((t) => t.throws ?? []);
+    const { darts, nextIndex: completedCount } = DoublesGameHelper.replay(
+      turns,
+      gameOptions,
+    );
 
     let streak = 0;
     let bestStreakLen = 0;
     let bestStreakEndIndex = -1;
 
-    for (const thrw of allThrows) {
-      const expected = targetsInGame[currentNeededIndex];
-      if (!expected) break;
-
-      const isValid = thrw?.isValid !== false;
-      const isHit = isValid && DoublesGameHelper.sameTarget(thrw, expected);
-
-      if (isHit) {
+    for (const { targetIndex, hit } of darts) {
+      if (hit) {
         const dartsUsed = onTargetCounter + 1;
-        data[currentNeededIndex] = {
-          ...data[currentNeededIndex],
+        data[targetIndex] = {
+          ...data[targetIndex],
           value: dartsUsed,
         };
 
         streak += 1;
         if (streak >= bestStreakLen) {
           bestStreakLen = streak;
-          bestStreakEndIndex = currentNeededIndex;
+          bestStreakEndIndex = targetIndex;
         }
 
-        currentNeededIndex++;
         onTargetCounter = 0;
       } else {
         onTargetCounter++;
@@ -86,15 +84,13 @@ export const GraphContainer: FC<ScoreContainerProps> = ({
       }
     }
 
-    if (currentNeededIndex < data.length && onTargetCounter > 0) {
-      data[currentNeededIndex] = {
-        ...data[currentNeededIndex],
+    if (completedCount < data.length && onTargetCounter > 0) {
+      data[completedCount] = {
+        ...data[completedCount],
         value: onTargetCounter,
         frontColor: colors.error,
       };
     }
-
-    const completedCount = currentNeededIndex;
 
     let crownIndex = -1;
     if (completedCount >= 3) {
@@ -145,6 +141,7 @@ export const GraphContainer: FC<ScoreContainerProps> = ({
   }, [
     colors.error,
     colors.primary,
+    gameOptions,
     makeIconLabel,
     styles.labelText,
     targetsInGame,
@@ -152,29 +149,38 @@ export const GraphContainer: FC<ScoreContainerProps> = ({
   ]);
 
   return (
-    <View style={styles.graph}>
-      <BarChart
-        maxValue={maxYValue + maxYValue / 3}
-        data={scoreValues}
-        barWidth={16}
-        barBorderTopLeftRadius={4}
-        barBorderTopRightRadius={4}
-        frontColor="#03a9f4"
-        noOfSections={4}
-        initialSpacing={30}
-        xAxisColor={colors.primary}
-        color={colors.primary}
-        hideRules
-        isAnimated
-        renderTooltip={(item: barDataItem) => {
-          return (
-            <View style={styles.tooltip}>
-              <Text style={styles.tooltipTextHeader}>{item.label}</Text>
-              <Text style={styles.tooltipText}>{item.value} Dart(s)</Text>
-            </View>
-          );
-        }}
-      />
+    <View
+      style={styles.graph}
+      onLayout={({ nativeEvent }) =>
+        setContainerWidth(nativeEvent.layout.width)
+      }
+    >
+      {plotWidth > 0 && (
+        <BarChart
+          width={plotWidth}
+          yAxisLabelWidth={yAxisLabelWidth}
+          maxValue={maxYValue + maxYValue / 3}
+          data={scoreValues}
+          barWidth={16}
+          barBorderTopLeftRadius={4}
+          barBorderTopRightRadius={4}
+          frontColor="#03a9f4"
+          noOfSections={4}
+          initialSpacing={30}
+          xAxisColor={colors.primary}
+          color={colors.primary}
+          hideRules
+          isAnimated
+          renderTooltip={(item: barDataItem) => {
+            return (
+              <View style={styles.tooltip}>
+                <Text style={styles.tooltipTextHeader}>{item.label}</Text>
+                <Text style={styles.tooltipText}>{item.value} Dart(s)</Text>
+              </View>
+            );
+          }}
+        />
+      )}
       <View style={styles.legend}>
         <View style={styles.legendEntry}>
           <MaterialDesignIcons

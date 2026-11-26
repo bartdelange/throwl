@@ -10,12 +10,16 @@ import {
   GameMode,
   GameOptions,
   X01Options,
+  TeamRoster,
 } from '@throwl/shared-domain-models';
 
 export type NewGameState = {
   mode: GameMode;
   options: GameOptions;
+  format: 'individual' | 'teams';
   players: string[];
+  guests: string[];
+  teams?: TeamRoster;
 };
 
 const DEFAULT_X01_OPTIONS: X01Options = {
@@ -44,7 +48,10 @@ const getInitialState = (
       initialState?.options?.mode === mode
         ? initialState.options
         : getDefaultOptions(mode),
+    format: initialState?.format ?? 'individual',
     players: initialState?.players ?? [],
+    guests: initialState?.guests ?? [],
+    teams: initialState?.teams,
   };
 };
 

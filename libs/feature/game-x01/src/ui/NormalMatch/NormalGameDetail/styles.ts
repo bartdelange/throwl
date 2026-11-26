@@ -65,6 +65,7 @@ export const useStyles = (textSize: number) => {
     accordion: {
       marginVertical: height * 0.0125,
     },
+    sectionHeading: { marginTop: 16 },
     playerName: {
       paddingTop: 1,
       fontSize: textSize,
@@ -97,6 +98,13 @@ export const useStyles = (textSize: number) => {
       paddingLeft: height * 0.025,
       fontSize: textSize,
     },
+    members: {
+      width: '100%',
+      paddingHorizontal: height * 0.0125,
+      paddingTop: height * 0.0125,
+      color: colors.primary,
+      fontSize: textSize * 0.75,
+    },
     accordionContent: {
       margin: height * 0.0125,
       flexDirection: 'row',
@@ -111,8 +119,7 @@ export const useStyles = (textSize: number) => {
       flex: 1,
       paddingTop: 0,
       padding: height * 0.0125,
-      aspectRatio: 1,
-      minWidth: width < 500 ? width - height * 0.075 : 0, // width - all the margin/padding applied above
+      flexBasis: width < 500 ? '100%' : 0,
     },
     graph: {
       backgroundColor: colors.background,

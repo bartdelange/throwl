@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GameModeScreen } from './GameMode/GameMode';
 import { GameOptionsScreen } from './GameOptions/GameOptions';
+import { TeamArrangementScreen } from './TeamArrangement/TeamArrangement';
 import { PlayerSelectScreen } from './PlayerSelect/PlayerSelect';
 import { NewGameProvider } from '../../feature/NewGameContext';
 import { AppBar } from '@throwl/shared-ui';
@@ -9,6 +10,7 @@ import { useRoute } from '@react-navigation/native';
 import { RouteProp } from '@react-navigation/core';
 import {
   RootStackParamList,
+  SerializablePlayer,
   FRIENDS_SCREEN,
   PROFILE_SCREEN,
 } from '@throwl/shared-constants';
@@ -18,16 +20,13 @@ export enum GameFlowStackNames {
   GAME_MODE = 'GameMode',
   GAME_OPTIONS = 'GameOptions',
   PLAYER_SELECT = 'PlayerSelect',
+  TEAM_ARRANGEMENT = 'TeamArrangement',
 }
 export type StepperParamList = {
   [GameFlowStackNames.GAME_MODE]: undefined;
   [GameFlowStackNames.GAME_OPTIONS]: undefined;
-  [GameFlowStackNames.PLAYER_SELECT]:
-    | {
-        selectedUsers?: string[];
-        guestUsers?: string[];
-      }
-    | undefined;
+  [GameFlowStackNames.PLAYER_SELECT]: undefined;
+  [GameFlowStackNames.TEAM_ARRANGEMENT]: { players: SerializablePlayer[] };
 };
 const StepStack = createNativeStackNavigator<StepperParamList>();
 
@@ -38,7 +37,14 @@ export const NewGameScreen: FC = () => {
 
   return (
     <NewGameProvider
-      initialState={{ options: gameOptions, mode: gameOptions?.mode }}
+      initialState={{
+        options: gameOptions,
+        mode: gameOptions?.mode,
+        format: route.params?.teams ? 'teams' : 'individual',
+        teams: route.params?.teams,
+        players: route.params?.selectedUsers,
+        guests: route.params?.guestUsers,
+      }}
     >
       <StepStack.Navigator
         screenOptions={{
@@ -65,14 +71,10 @@ export const NewGameScreen: FC = () => {
         <StepStack.Screen
           name={GameFlowStackNames.PLAYER_SELECT}
           component={PlayerSelectScreen}
-          initialParams={{
-            ...(route.params?.selectedUsers
-              ? { selectedUsers: route.params.selectedUsers }
-              : {}),
-            ...(route.params?.guestUsers
-              ? { guestUsers: route.params.guestUsers }
-              : {}),
-          }}
+        />
+        <StepStack.Screen
+          name={GameFlowStackNames.TEAM_ARRANGEMENT}
+          component={TeamArrangementScreen}
         />
       </StepStack.Navigator>
     </NewGameProvider>

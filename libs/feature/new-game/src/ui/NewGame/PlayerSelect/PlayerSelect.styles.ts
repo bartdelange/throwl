@@ -13,6 +13,13 @@ export const useStyles = () => {
           justifyContent: 'center',
           paddingBottom: '10%',
         },
+        actions: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          marginBottom: 8,
+        },
+        validation: { color: colors.secondary, marginBottom: 12 },
         playerList: {
           flex: 1,
           minHeight: 0,
@@ -32,7 +39,7 @@ export const useStyles = () => {
         },
         input: {
           marginVertical: '5%',
-          width: '75%',
+          width: '100%',
           alignSelf: 'center',
         },
         button: {
@@ -40,6 +47,6 @@ export const useStyles = () => {
           alignSelf: 'center',
         },
       }),
-    [colors.onBackground],
+    [colors.onBackground, colors.secondary],
   );
 };

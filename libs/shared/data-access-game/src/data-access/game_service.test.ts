@@ -145,6 +145,39 @@ describe(GameService.name, () => {
     expect(getByIdSpy).toHaveBeenCalledWith('g1');
   });
 
+  it.each<GameOptions>([
+    { mode: 'x01', startingScore: 301 },
+    { mode: 'doubles', quickMatch: true, skipBull: false, endOnInvalid: true },
+  ])(
+    'writes the exact legacy-compatible individual document for $mode',
+    async (options) => {
+      jest
+        .spyOn(GameService, 'getById')
+        .mockResolvedValue({ id: 'g1' } as Game);
+      (addDoc as jest.Mock).mockResolvedValue({ id: 'g1' });
+      const started = new Date('2026-01-01T00:00:00Z');
+      const players: (User | GuestUser)[] = [
+        { type: 'user', id: 'u1', name: 'Jan', email: 'jan@example.test' },
+        { type: 'guest_user', name: 'Piet' },
+      ];
+      const turns: Turn[] = [{ userId: 'Piet', throws: [] }];
+      await GameService.create({ players, turns, options, started });
+      expect(addDoc).toHaveBeenCalledWith(gamesCol, {
+        createdBy: 'u1',
+        playerIds: ['u1'],
+        historyUserIds: ['u1'],
+        players: [{ __doc: true, col: usersCol, id: 'u1' }, 'Piet'],
+        turns: [
+          { userId: { __doc: true, col: usersCol, id: 'Piet' }, throws: [] },
+        ],
+        started,
+        finished: null,
+        options,
+        ...(options.mode === 'x01' ? { startingScore: 301 } : {}),
+      });
+    },
+  );
+
   it('create() rejects games above the shared player limit', async () => {
     const players: GuestUser[] = Array.from(
       { length: MAX_GAME_PLAYERS + 1 },
@@ -323,6 +356,86 @@ describe(GameService.name, () => {
       expect(patch.turns[0].userId.id).toBe('Guest 1');
     }
   });
+
+  it.each<GameOptions>([
+    { mode: 'x01', startingScore: 501 },
+    { mode: 'doubles', quickMatch: true, skipBull: true, endOnInvalid: false },
+  ])(
+    'round-trips ordered mixed team rosters and revisions for $mode',
+    async (options) => {
+      const registered: User = {
+        type: 'user',
+        id: 'u1',
+        email: '',
+        name: 'Jan',
+      };
+      const players: (User | GuestUser)[] = [
+        registered,
+        ...['Klaas', 'Piet / Guest', 'Bart'].map(
+          (name): GuestUser => ({ type: 'guest_user', name }),
+        ),
+      ];
+      const teams = [
+        { members: ['Piet / Guest', 'u1'] },
+        { members: ['Bart', 'Klaas'] },
+      ];
+      const turns: Turn[] = [
+        {
+          userId: 'Piet / Guest',
+          throws: [{ type: DartboardScoreType.Double, score: 20 }],
+          isValid: true,
+        },
+      ];
+      const started = new Date('2026-01-01T10:00:00Z');
+      let stored: Record<string, unknown> = {};
+      (addDoc as jest.Mock).mockImplementation(async (_collection, data) => {
+        stored = { ...data, started: { toDate: () => started } };
+        return { id: 'team-game' };
+      });
+      mockFirestore.getDoc.mockImplementation(async () => ({
+        exists: () => true,
+        data: () => stored,
+      }));
+      (updateDoc as jest.Mock).mockImplementation(async (_reference, patch) => {
+        stored = { ...stored, ...patch };
+      });
+      jest.spyOn(UserService, 'getPublicById').mockResolvedValue(registered);
+
+      const created = await GameService.create({
+        players,
+        teams,
+        turns,
+        options,
+        started,
+      });
+      expect(created).toMatchObject({
+        id: 'team-game',
+        options,
+        teams,
+        turns,
+        teamGameplayRevision: 0,
+      });
+      expect(stored.teams).toEqual([
+        { members: ['Piet / Guest', { __doc: true, col: usersCol, id: 'u1' }] },
+        { members: ['Bart', 'Klaas'] },
+      ]);
+      const next = [...turns, { ...turns[0], userId: 'Bart' }];
+      await GameService.writeGameUpdate({
+        id: created.id,
+        turns: next,
+        teamGameplayRevision: 0,
+      });
+      await expect(GameService.getById(created.id)).resolves.toMatchObject({
+        teams,
+        turns: next,
+        teamGameplayRevision: 1,
+      });
+      stored.turns = [...next].reverse();
+      await expect(GameService.getById(created.id)).rejects.toThrow(
+        'invalid throwing order',
+      );
+    },
+  );
 
   it('loads historical registered players through public profiles without friendship data', async () => {
     jest.spyOn(UserService, 'getPublicById').mockImplementation(async (id) => ({

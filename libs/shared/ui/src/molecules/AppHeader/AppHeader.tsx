@@ -12,9 +12,7 @@ export const AppHeader: FC<{ title: string; right?: JSX.Element }> = ({
     <>
       <View style={styles.header}>
         <Text style={styles.heading}>{title}</Text>
-        <View style={styles.right}>
-          <View style={styles.rightInner}>{right}</View>
-        </View>
+        <View style={styles.right}>{right}</View>
       </View>
       <Divider style={styles.divider} />
     </>

@@ -122,6 +122,7 @@ describe('PlayedGamesScreen', () => {
   it('resumes the latest persisted state when the history item is stale', async () => {
     const staleGame: Game = {
       id: 'g1',
+      playerIds: ['u1'],
       players: [
         {
           type: 'user' as const,
@@ -165,6 +166,91 @@ describe('PlayedGamesScreen', () => {
     expect(mockPush.mock.calls[1][1].activeGame.turns).toEqual([playedTurn]);
   });
 
+  it('lets a participant resume a game created by a non-player', async () => {
+    const game: Game = {
+      id: 'g1',
+      createdBy: 'someone-else',
+      playerIds: ['u1'],
+      players: [],
+      turns: [],
+      started: new Date('2026-01-01T10:00:00Z'),
+      options: { mode: 'x01', startingScore: 501 },
+    };
+    jest.mocked(GameService.getPlayedGames).mockResolvedValue([game]);
+    jest.mocked(GameService.getById).mockResolvedValue(game);
+    const { PlayedGamesScreen } = require('../../..');
+    const { getByText } = render(<PlayedGamesScreen />);
+    await waitFor(() => expect(getByText('Unfinished game')).toBeTruthy());
+    fireEvent.press(getByText('Unfinished game'));
+    await waitFor(() =>
+      expect(mockPush).toHaveBeenCalledWith(
+        'NORMAL_GAME',
+        expect.objectContaining({
+          activeGame: expect.objectContaining({ id: 'g1' }),
+        }),
+      ),
+    );
+  });
+
+  it.each([undefined, new Date('2026-01-01T10:05:00Z')])(
+    'routes a previously finished row according to its current finish state (%s)',
+    async (finished) => {
+      const listed: Game = {
+        id: 'g1',
+        createdBy: 'piet',
+        playerIds: ['u1'],
+        players: [],
+        turns: [],
+        started: new Date('2026-01-01T10:00:00Z'),
+        finished: new Date('2026-01-01T10:04:00Z'),
+        options: { mode: 'x01', startingScore: 501 },
+      };
+      jest.mocked(GameService.getPlayedGames).mockResolvedValue([listed]);
+      jest
+        .mocked(GameService.getById)
+        .mockResolvedValue({ ...listed, finished });
+      const { PlayedGamesScreen } = require('../../..');
+      const { findByText } = render(<PlayedGamesScreen />);
+      fireEvent.press(await findByText('Finished game'));
+      await waitFor(() =>
+        expect(mockPush).toHaveBeenCalledWith(
+          finished ? 'NORMAL_GAME_DETAIL' : 'NORMAL_GAME',
+          expect.any(Object),
+        ),
+      );
+    },
+  );
+
+  it.each(['not-found', 'firestore/permission-denied'])(
+    'removes an unavailable game (%s) from the list',
+    async (code) => {
+      const game: Game = {
+        id: 'g1',
+        players: [],
+        turns: [],
+        started: new Date(),
+        options: { mode: 'x01', startingScore: 501 },
+      };
+      jest.mocked(GameService.getPlayedGames).mockResolvedValue([game]);
+      jest
+        .mocked(GameService.getById)
+        .mockRejectedValue(Object.assign(new Error('Unavailable'), { code }));
+      const alert = jest.spyOn(Alert, 'alert').mockImplementation();
+      const { PlayedGamesScreen } = require('../../..');
+      const { findByText, queryByText } = render(<PlayedGamesScreen />);
+      const row = await findByText('Unfinished game');
+      await act(async () => {
+        fireEvent.press(row);
+      });
+      expect(queryByText('Unfinished game')).toBeNull();
+      expect(alert).toHaveBeenCalledWith(
+        'Game unavailable',
+        expect.any(String),
+      );
+      expect(mockPush).not.toHaveBeenCalled();
+    },
+  );
+
   it('stays on played games when the authoritative resume lookup fails', async () => {
     jest.mocked(GameService.getPlayedGames).mockResolvedValue([
       {
@@ -188,7 +274,7 @@ describe('PlayedGamesScreen', () => {
 
     await waitFor(() =>
       expect(alert).toHaveBeenCalledWith(
-        'Could not resume game',
+        'Could not open game',
         'Please check your connection and try again.',
       ),
     );

@@ -30,6 +30,7 @@ import {
   AppbarBackAction,
   TurnIndicatorBar,
   WinnerModal,
+  useGameSaveRecovery,
 } from '@throwl/shared-ui';
 import { FullScreenLayout } from '@throwl/shared-layouts';
 import { DartboardScoreType, Turn } from '@throwl/shared-domain-models';
@@ -37,9 +38,13 @@ import { ScoreTable } from './components/ScoreTable/ScoreTable';
 import { DropOutModel } from '@throwl/shared-ui';
 import { useSpeak } from '@throwl/shared-hooks';
 import { useStyles } from './styles';
-import { GameService } from '@throwl/shared-data-access-game';
+import { GameService, useTeamGameSave } from '@throwl/shared-data-access-game';
 import { useX01GameController } from '../../../feature/useX01GameController';
-import { GameHelper } from '@throwl/shared-domain-game-rules';
+import {
+  GameHelper,
+  resolveParticipants,
+  ScoringParticipant,
+} from '@throwl/shared-domain-game-rules';
 
 export const NormalGameScreen: FC = () => {
   const navigation =
@@ -56,6 +61,7 @@ export const NormalGameScreen: FC = () => {
     [route.params.activeGame],
   );
   const gameOptions = route.params.options;
+  const teams = activeGame?.teams ?? route.params.teams;
 
   // Players must be “id resolved” here (so controller has stable ids)
   const [players, setPlayers] = useState(() =>
@@ -68,12 +74,22 @@ export const NormalGameScreen: FC = () => {
   const styles = useStyles();
   const iconSize = Math.max(width * 0.04, 24);
 
-  const scoreTableRef = useRef<FlatList>(null);
+  const scoreTableRef = useRef<FlatList<ScoringParticipant>>(null);
   const confettiRef = useRef<Confetti>(null);
 
   const [gameId, setGameId] = useState<string | undefined>(activeGame?.id);
 
+  const teamSave = useTeamGameSave(
+    activeGame,
+    teams,
+    route.params.players,
+    gameOptions,
+  );
   const persistGame = async (turnsToPersist: Turn[], finished: boolean) => {
+    if (teams) {
+      await teamSave.save(turnsToPersist, finished);
+      return;
+    }
     await GameService.persistGame({
       gameId,
       setGameId,
@@ -86,6 +102,7 @@ export const NormalGameScreen: FC = () => {
 
   const controller = useX01GameController({
     players,
+    teams,
     setPlayers,
     startingScore: gameOptions.startingScore,
     finishers: DartFinishers,
@@ -112,10 +129,24 @@ export const NormalGameScreen: FC = () => {
     else confettiRef.current?.stopConfetti();
   }, [controller.isConfettiing]);
 
+  const lineup = useMemo(
+    () => resolveParticipants(players, teams),
+    [players, teams],
+  );
+  const activeTeam = lineup.participantFor(controller.currentTurn.userId);
+  const resultGameId = teams ? teamSave.id : gameId;
+
+  const { saveFeedback, gameplayBlocked } = useGameSaveRecovery(
+    teamSave.status,
+    teamSave.retry,
+  );
+  const undoThrow = gameplayBlocked ? undefined : controller.undoThrow;
+
   return (
     <FullScreenLayout style={styles.layout} mode="light" size="fullscreen">
       <View style={styles.content}>
         <Pressable
+          disabled={gameplayBlocked}
           onPress={(evt) =>
             controller.onThrow(
               { type: DartboardScoreType.Out, score: 0 },
@@ -125,7 +156,9 @@ export const NormalGameScreen: FC = () => {
         >
           <View style={styles.dartboardWrapper}>
             <Text style={styles.missText}>MISS</Text>
-            <ClickableDartboard onClick={controller.onThrow} />
+            <ClickableDartboard
+              onClick={gameplayBlocked ? undefined : controller.onThrow}
+            />
           </View>
         </Pressable>
 
@@ -134,15 +167,18 @@ export const NormalGameScreen: FC = () => {
             currentTurn={controller.currentTurn}
             turnNeeded={controller.turnNeeded}
             iconSize={iconSize}
-            undoThrow={controller.undoThrow}
+            undoThrow={undoThrow}
             createScoreString={GameHelper.createScoreString}
           />
 
+          {!controller.isWinnerModalVisible && saveFeedback}
           <ScoreTable
             turns={controller.turns}
-            activeUserIndex={controller.activePlayerIndex}
             scoreTableRef={scoreTableRef}
             players={players}
+            teams={teams}
+            activeUserIndex={controller.activePlayerIndex}
+            finished={controller.isGameFinished}
             startingScore={gameOptions.startingScore}
             currentTurn={controller.currentTurn}
             width={width}
@@ -154,9 +190,18 @@ export const NormalGameScreen: FC = () => {
       <Confetti timeout={5} size={2} ref={confettiRef} untilStopped />
 
       <WinnerModal
-        winnerName={players[controller.activePlayerIndex]?.name ?? ''}
+        saveFeedback={saveFeedback}
+        statsDisabled={Boolean(teams && teamSave.status !== 'idle')}
+        winnerName={
+          teams && activeTeam
+            ? `${activeTeam.name}: ${players
+                .filter(({ id }) => activeTeam.members.includes(id))
+                .map(({ name }) => name)
+                .join(', ')}`
+            : (players[controller.activePlayerIndex]?.name ?? '')
+        }
         onStatsPress={async () => {
-          if (!gameId) return;
+          if (!resultGameId || (teams && teamSave.status !== 'idle')) return;
           controller.setIsWinnerModalVisible(false);
           navigation.reset({
             index: 0,
@@ -166,17 +211,16 @@ export const NormalGameScreen: FC = () => {
               {
                 name: NORMAL_GAME_DETAIL_SCREEN,
                 params: {
-                  game: serializeGameParam(await GameService.getById(gameId)),
+                  game: serializeGameParam(
+                    await GameService.getById(resultGameId),
+                  ),
                 },
               },
             ],
           });
         }}
-        onUndoPress={controller.undoThrow}
-        onExitPress={() => {
-          controller.setIsWinnerModalVisible(false);
-          navigation.popToTop();
-        }}
+        onUndoPress={undoThrow}
+        onExitPress={() => navigation.popToTop()}
         visible={controller.isWinnerModalVisible}
       />
 

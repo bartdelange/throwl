@@ -27,6 +27,11 @@ import {
   GuestUser,
   MAX_GAME_PLAYERS,
   Turn,
+  TeamRoster,
+  gamePlayerId,
+  validRoster,
+  validGuestName,
+  teamThrowingOrder,
   User,
   X01Options,
 } from '@throwl/shared-domain-models';
@@ -34,24 +39,14 @@ import { UserService } from '@throwl/shared-data-access-user';
 import { FirebaseService } from '@throwl/shared-data-access-firebase';
 import { getAuth } from '@react-native-firebase/auth';
 
+import {
+  encodeGameCreate,
+  encodeGameUpdate,
+  GameCreate,
+  GameUpdate,
+} from './game-write';
+
 type FirestorePlayerRef = string | DocumentReference;
-
-type FirestoreTurnWrite = Omit<Turn, 'userId'> & {
-  userId: DocumentReference;
-};
-
-type FirestoreGameWrite = {
-  createdBy: string;
-  playerIds: string[];
-  historyUserIds: string[];
-  players: FirestorePlayerRef[];
-  turns: FirestoreTurnWrite[];
-  started: Date;
-  finished: Date | null;
-  options: GameOptions;
-  // legacy mirror for x01
-  startingScore?: number;
-};
 
 type FirestoreGameRead = DocumentData & {
   players?: FirestorePlayerRef[];
@@ -212,6 +207,8 @@ export class GameService extends FirebaseService {
     started,
     finished,
     setGameId,
+    teams,
+    teamGameplayRevision,
   }: {
     gameId?: string;
     players: (User | GuestUser)[];
@@ -219,11 +216,14 @@ export class GameService extends FirebaseService {
     options: GameOptions;
     started?: Date;
     finished?: boolean;
+    teams?: TeamRoster;
+    teamGameplayRevision?: number;
     setGameId?: (id: string) => void;
   }): Promise<string> {
     if (!gameId) {
       const created = await this.create({
         players,
+        teams,
         turns,
         started: started ?? new Date(),
         options,
@@ -236,6 +236,7 @@ export class GameService extends FirebaseService {
 
     await this.update({
       id: gameId,
+      teamGameplayRevision,
       turns,
       finished: finished ? new Date() : undefined,
     });
@@ -244,93 +245,56 @@ export class GameService extends FirebaseService {
     return gameId;
   }
 
-  public static async create({
-    players,
-    turns,
-    started,
-    options,
-    finished,
-  }: {
-    players: (User | GuestUser)[];
-    turns: Turn[];
-    started: Date;
-    options: GameOptions;
-    finished?: Date;
-  }): Promise<Game> {
+  public static async create(game: GameCreate): Promise<Game> {
+    return this.getById(await this.writeNewGame(game));
+  }
+
+  public static async writeNewGame(game: GameCreate): Promise<string> {
+    const { players, teams } = game;
     if (players.length > MAX_GAME_PLAYERS) {
       throw new Error(`A game supports at most ${MAX_GAME_PLAYERS} players`);
     }
-
-    const gamesCollection = this.getCollection('games');
-    const usersCollection = this.getCollection('users');
+    if (teams && !validRoster(players.map(gamePlayerId), teams)) {
+      throw new Error('Invalid team roster');
+    }
+    if (
+      players.some(
+        (player) => player.type !== 'user' && !validGuestName(player.name),
+      )
+    ) {
+      throw new Error('Guest names must be between 1 and 80 characters');
+    }
     const creatorId = getAuth().currentUser?.uid;
     if (!creatorId)
       throw new Error('A signed-in user is required to create a game');
 
-    const playerIds = players
-      .filter((u): u is User => u.type === 'user')
-      .map((u) => u.id);
-
-    const docData: FirestoreGameWrite = {
-      createdBy: creatorId,
-      playerIds,
-      historyUserIds: playerIds,
-      players: players.map((u) => {
-        if (u.type === 'user') return doc(usersCollection, u.id);
-        return u.name;
-      }),
-      turns: turns.length
-        ? turns.map<FirestoreTurnWrite>((t) => ({
-            ...t,
-            userId: doc(usersCollection, t.userId),
-          }))
-        : [],
-      started,
-      finished: finished ?? null,
-      options,
-    };
-
-    // legacy mirror for x01
-    if (options.mode === 'x01') {
-      docData.startingScore = options.startingScore;
-    }
-
-    const newGame = await addDoc(gamesCollection, docData);
-    return await this.getById(newGame.id);
+    const users = this.getCollection('users');
+    const data = encodeGameCreate(game, creatorId, (id) => doc(users, id));
+    const result = await addDoc(this.getCollection('games'), data);
+    return result.id;
   }
 
   public static async getById(uid: string): Promise<Game> {
     const snap = await getDoc(doc(this.getCollection('games'), uid));
     if (!snap.exists()) {
-      throw new Error(`Game not found: ${uid}`);
+      throw Object.assign(new Error(`Game not found: ${uid}`), {
+        code: 'not-found',
+      });
     }
     return this.parseGame(uid, snap.data() as FirestoreGameRead);
   }
 
-  public static async update({
-    id,
-    turns,
-    finished,
-  }: {
-    id: string;
-    turns: Turn[];
-    finished?: Date;
-  }): Promise<Game> {
-    const gamesCollection = this.getCollection('games');
-    const usersCollection = this.getCollection('users');
+  public static async update(game: GameUpdate): Promise<Game> {
+    await this.writeGameUpdate(game);
+    return this.getById(game.id);
+  }
 
-    const gameRef = doc(gamesCollection, id);
-
-    const patch: Partial<FirestoreGameWrite> = {
-      turns: turns.map<FirestoreTurnWrite>((t) => ({
-        ...t,
-        userId: doc(usersCollection, t.userId),
-      })),
-      finished: finished ?? null,
-    };
-
-    await updateDoc(gameRef, patch);
-    return await this.getById(id);
+  public static async writeGameUpdate(game: GameUpdate): Promise<void> {
+    const users = this.getCollection('users');
+    await updateDoc(
+      doc(this.getCollection('games'), game.id),
+      encodeGameUpdate(game, (id) => doc(users, id)),
+    );
   }
 
   public static async removeFromHistory(
@@ -443,11 +407,64 @@ export class GameService extends FirebaseService {
     });
 
     const finished = parseTimestamp(game?.finished);
+    let teams: TeamRoster | undefined;
+    const teamGameplayRevision: unknown = game.teamGameplayRevision;
+    if (game.teams !== undefined) {
+      if (
+        !Array.isArray(game.teams) ||
+        typeof teamGameplayRevision !== 'number' ||
+        !Number.isSafeInteger(teamGameplayRevision) ||
+        teamGameplayRevision < 0
+      ) {
+        throw new Error(`Game ${id} has invalid team data`);
+      }
+      teams = game.teams.map((team: unknown) => {
+        if (!isRecord(team) || !Array.isArray(team.members))
+          throw new Error('Invalid team members');
+        return {
+          members: team.members.map((member: unknown) => {
+            if (typeof member === 'string') return member;
+            if (isRecord(member) && typeof member.id === 'string')
+              return member.id;
+            throw new Error('Invalid team member');
+          }),
+        };
+      });
+      if (
+        !validRoster(players.map(gamePlayerId), teams) ||
+        turns.length !== rawTurns.length
+      ) {
+        throw new Error(`Game ${id} has invalid team roster or visits`);
+      }
+      const order = teamThrowingOrder(teams);
+      if (
+        turns.some(
+          (turn, index) =>
+            turn.userId !== order[index % order.length] ||
+            turn.throws.length === 0,
+        )
+      ) {
+        throw new Error(`Game ${id} has invalid throwing order`);
+      }
+    }
 
     return {
       id,
       finished,
       started,
+      ...(teams && typeof teamGameplayRevision === 'number'
+        ? { teams, teamGameplayRevision }
+        : {}),
+      ...(typeof game.createdBy === 'string'
+        ? { createdBy: game.createdBy }
+        : {}),
+      ...(Array.isArray(game.playerIds)
+        ? {
+            playerIds: game.playerIds.filter(
+              (uid: unknown): uid is string => typeof uid === 'string',
+            ),
+          }
+        : {}),
       players,
       turns,
       options,

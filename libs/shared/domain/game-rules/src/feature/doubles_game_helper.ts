@@ -4,6 +4,7 @@ import {
   Throw,
   Turn,
 } from '@throwl/shared-domain-models';
+import { participantVisits } from './scoring-participants';
 import { GameHelper, TurnNeeded } from './game_helper';
 
 export class DoublesGameHelper {
@@ -27,43 +28,34 @@ export class DoublesGameHelper {
     return a.type === b.type && a.score === b.score;
   }
 
-  static getValidProgressThrows(allTurns: Turn[], userId: string): Throw[] {
-    return (allTurns ?? [])
-      .filter((t) => t.userId === userId)
-      .flatMap((t) => t.throws ?? [])
-      .filter(
-        (t): t is Throw =>
-          !!t &&
-          t.isValid !== false &&
-          (t.type === DartboardScoreType.Double ||
-            t.type === DartboardScoreType.Bull),
-      );
+  static replay(turns: Turn[], options: DoublesOptions) {
+    const targets = this.buildTargets(options);
+    let nextIndex = 0;
+    const darts = turns.flatMap(({ userId, throws }) =>
+      throws.flatMap((dart) => {
+        const target = targets[nextIndex];
+        if (!target) return [];
+        const hit = dart.isValid !== false && this.sameTarget(dart, target);
+        const event = { userId, dart, target, targetIndex: nextIndex, hit };
+        if (hit) nextIndex++;
+        return [event];
+      }),
+    );
+    return { targets, nextIndex, darts };
   }
 
   static getNextDoubleNeeded(
     allTurns: Turn[],
-    userId: string,
+    members: string | readonly string[],
     opts: DoublesOptions,
-  ): {
-    next: Throw | undefined;
-    nextIndex: number;
-    targets: Throw[];
-    isComplete: boolean;
-  } {
-    const targets = this.buildTargets(opts);
-    const validProgress = this.getValidProgressThrows(allTurns, userId);
-
-    let nextIndex = 0;
-
-    for (const thrw of validProgress) {
-      if (nextIndex >= targets.length) break;
-
-      const needed = targets[nextIndex];
-      if (this.sameTarget(thrw, needed)) {
-        nextIndex++;
-      }
-    }
-
+  ) {
+    const { targets, nextIndex } = this.replay(
+      participantVisits(
+        allTurns,
+        typeof members === 'string' ? [members] : members,
+      ),
+      opts,
+    );
     return {
       next: targets[nextIndex],
       nextIndex,
@@ -95,6 +87,7 @@ export class DoublesGameHelper {
     turns: Turn[],
     currentTurn: Turn,
     opts: DoublesOptions,
+    members: readonly string[] = [currentTurn.userId],
   ): TurnNeeded {
     const allTurns = [...turns, currentTurn];
 
@@ -107,7 +100,7 @@ export class DoublesGameHelper {
 
     const { targets, nextIndex } = this.getNextDoubleNeeded(
       allTurns,
-      currentTurn.userId,
+      members,
       opts,
     );
 

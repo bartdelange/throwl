@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { UserService } from '@throwl/shared-data-access-user';
 
 const mockUpdateAccountCredentials = jest.fn();
 const mockReauthenticateWithCredential = jest.fn(() => Promise.resolve());
@@ -115,6 +116,18 @@ describe('ProfileScreen', () => {
 
     expect(getByText('Your profile')).toBeTruthy();
     expect(getByDisplayValue('Bart')).toBeTruthy();
+  });
+
+  it('reports a display name save failure', async () => {
+    jest
+      .mocked(UserService.updateName)
+      .mockRejectedValueOnce(new Error('write failed'));
+    const { getAllByText, findByText } = renderProfile();
+    fireEvent.press(getAllByText('UPDATE')[0]);
+
+    expect(
+      await findByText('Could not update your name. Please try again.'),
+    ).toBeTruthy();
   });
 
   it('submits a password-only update without requesting an email change', async () => {

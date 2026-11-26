@@ -12,7 +12,10 @@ import { NewGameScreenLayout } from '../NewGameScreenLayout';
 export const GameOptionsScreen: FC = () => {
   const navigation =
     useNavigation<
-      NativeStackNavigationProp<StepperParamList, GameFlowStackNames.GAME_MODE>
+      NativeStackNavigationProp<
+        StepperParamList,
+        GameFlowStackNames.GAME_OPTIONS
+      >
     >();
   const { state, setState } = useNewGame();
 

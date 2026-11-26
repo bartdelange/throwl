@@ -1,4 +1,5 @@
 import { DartboardScoreType, Throw, Turn } from '@throwl/shared-domain-models';
+import { participantVisits } from './scoring-participants';
 import { GameHelper, TurnNeeded } from './game_helper';
 
 export class X01GameHelper {
@@ -26,6 +27,7 @@ export class X01GameHelper {
     currentTurn: Turn;
     throw: Throw;
     startingScore: number;
+    scoringMembers?: readonly string[];
   }): {
     nextTurn: Turn;
     turnScore: number;
@@ -42,7 +44,10 @@ export class X01GameHelper {
       throws: [...(currentTurn.throws ?? []), thrw],
     };
 
-    const previous = GameHelper.calculateUserValidScore(turns, nextTurn.userId);
+    const previous = GameHelper.calculateScore(
+      participantVisits(turns, args.scoringMembers ?? [nextTurn.userId]),
+      true,
+    );
     const turnScore = GameHelper.calculateTurnScore(nextTurn);
     const totalScore = previous + turnScore;
 
@@ -74,6 +79,7 @@ export class X01GameHelper {
     turns: Turn[];
     currentTurn: Turn;
     startingScore: number;
+    scoringMembers?: readonly string[];
     finishers: Record<number, Throw[] | undefined>;
   }): TurnNeeded {
     const { turns, currentTurn, startingScore, finishers } = args;
@@ -83,9 +89,9 @@ export class X01GameHelper {
     // Should be done by extending finishers table and by checking if there is overlap what the user already thrown
     // Needed vars would be scoreStartOfTurn, scoreInTurn, userThrows
 
-    const previous = GameHelper.calculateUserValidScore(
-      turns,
-      currentTurn.userId,
+    const previous = GameHelper.calculateScore(
+      participantVisits(turns, args.scoringMembers ?? [currentTurn.userId]),
+      true,
     );
     const inTurn = GameHelper.calculateTurnScore(currentTurn);
     const total = previous + inTurn;

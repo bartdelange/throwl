@@ -14,9 +14,9 @@ interface ScoreContainerProps {
   textSize: number;
   turnStats: NormalGameTurnStats;
   throwStats: ThrowStats;
-  mostThrown: ThrowCount;
-  lastThrown: Throw;
-  userScore: number;
+  mostThrown?: ThrowCount;
+  winningThrow?: Throw;
+  averages?: { avg: number; validAvg: number };
 }
 
 export const StatsContainer: FC<ScoreContainerProps> = ({
@@ -24,8 +24,8 @@ export const StatsContainer: FC<ScoreContainerProps> = ({
   turnStats,
   throwStats,
   mostThrown,
-  lastThrown,
-  userScore,
+  winningThrow,
+  averages,
 }) => {
   const styles = useStyles(textSize);
   const { colors } = useAppTheme();
@@ -106,6 +106,18 @@ export const StatsContainer: FC<ScoreContainerProps> = ({
             {turnStats.amount180}
           </Text>
         </View>
+        {averages && (
+          <>
+            <View style={styles.scoreItem}>
+              <Text style={styles.scoreItemText}>Average per turn</Text>
+              <Text style={styles.scoreItemText}>{averages.avg}</Text>
+            </View>
+            <View style={styles.scoreItem}>
+              <Text style={styles.scoreItemText}>Valid average per turn</Text>
+              <Text style={styles.scoreItemText}>{averages.validAvg}</Text>
+            </View>
+          </>
+        )}
         <Text style={styles.scoreStatHeader}>Throw stats</Text>
         <View style={styles.scoreItem}>
           <Text style={styles.scoreItemText} numberOfLines={1}>
@@ -144,18 +156,19 @@ export const StatsContainer: FC<ScoreContainerProps> = ({
             Most thrown
           </Text>
           <Text style={styles.scoreItemText} numberOfLines={1}>
-            {mostThrown.throw.type[0].toUpperCase()}
-            {mostThrown.throw.score} ({mostThrown.count}x)
+            {mostThrown
+              ? `${mostThrown.throw.type[0].toUpperCase()}${mostThrown.throw.score} (${mostThrown.count}x)`
+              : '—'}
           </Text>
         </View>
-        {userScore === 0 && (
+        {winningThrow && (
           <View style={styles.scoreItem}>
             <Text style={styles.scoreItemText} numberOfLines={1}>
               Winning throw
             </Text>
             <Text style={styles.scoreItemText} numberOfLines={1}>
-              {lastThrown.type[0].toUpperCase()}
-              {lastThrown.score}
+              {winningThrow.type[0].toUpperCase()}
+              {winningThrow.score}
             </Text>
           </View>
         )}

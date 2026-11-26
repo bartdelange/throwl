@@ -127,6 +127,8 @@ export class GameStatsHelper {
   static getPostNormalGameTurnStats(
     userTurns: Turn[],
     startingScore: number,
+    playerId?: string,
+    useValidProgress = playerId !== undefined,
   ): NormalGameTurnStats {
     let score = startingScore;
 
@@ -144,7 +146,8 @@ export class GameStatsHelper {
 
     for (const turn of userTurns ?? []) {
       const turnScore = GameHelper.calculateTurnScore(turn);
-      score -= turnScore;
+      if (!useValidProgress || turn.isValid !== false) score -= turnScore;
+      if (playerId !== undefined && turn.userId !== playerId) continue;
 
       totalTurns++;
       totalDarts += turn.throws?.length ?? 0;
@@ -179,56 +182,30 @@ export class GameStatsHelper {
   static getPostDoublesGameTurnStats(
     turns: Turn[],
     options: DoublesOptions,
+    teamTurns?: Turn[],
+    playerId?: string,
   ): DoublesGameTurnStats {
-    const targets = DoublesGameHelper.buildTargets(options);
-
     const totalTurns = turns.length;
-    const totalDarts = turns.reduce(
-      (acc, t) => acc + (t.throws?.length ?? 0),
-      0,
-    );
-
-    let invalidTrows = 0;
-    let notOnTarget = 0;
-    let successfulTargetsHit = 0;
+    const totalDarts = turns.reduce((sum, turn) => sum + turn.throws.length, 0);
+    const events = DoublesGameHelper.replay(teamTurns ?? turns, options).darts;
+    const individual =
+      playerId === undefined
+        ? events
+        : events.filter((event) => event.userId === playerId);
+    const invalidTrows = individual.filter(
+      ({ dart }) => dart.isValid === false,
+    ).length;
+    const successfulTargetsHit = individual.filter(({ hit }) => hit).length;
+    const notOnTarget = individual.length - successfulTargetsHit;
 
     let streak = 0;
     let consecutiveDoublesAmount = 0;
     let consecutiveDoublesStreak = 0;
-
-    let nextIndex = 0;
-
-    const isThrowValid = (th: Throw) => th?.isValid !== false;
-
-    for (const turn of turns) {
-      // If you want streaks to never span turns, reset here (optional).
-      // streak = 0;
-
-      for (const thrw of turn.throws ?? []) {
-        if (!isThrowValid(thrw)) invalidTrows++;
-
-        const expected = targets[nextIndex];
-        if (!expected) break; // game finished; there shouldn't be more throws in a finished game
-
-        const success =
-          isThrowValid(thrw) && DoublesGameHelper.sameTarget(thrw, expected);
-
-        if (success) {
-          successfulTargetsHit++;
-          nextIndex++;
-
-          streak++;
-          if (streak > consecutiveDoublesStreak)
-            consecutiveDoublesStreak = streak;
-          if (streak === 2) consecutiveDoublesAmount += 1;
-        } else {
-          notOnTarget++;
-          streak = 0;
-        }
-      }
-
-      // If you DO want invalid turns to break streaks regardless of what happened inside:
-      // if (turn.isValid === false) streak = 0;
+    for (const { userId, hit } of events) {
+      streak =
+        hit && (playerId === undefined || playerId === userId) ? streak + 1 : 0;
+      consecutiveDoublesStreak = Math.max(consecutiveDoublesStreak, streak);
+      if (streak === 2) consecutiveDoublesAmount++;
     }
 
     const avgDartsPerDouble =
@@ -276,41 +253,18 @@ export class GameStatsHelper {
     options: DoublesOptions,
     currentTurn?: Turn,
   ): DoublesGameUserScoreStats {
-    const targets = DoublesGameHelper.buildTargets(options);
-
-    // Flatten all throws in order
-    const ordered: Throw[] = [];
-    for (const turn of userTurns ?? []) {
-      for (const thr of turn.throws ?? []) ordered.push(thr);
-    }
-    if (currentTurn) {
-      for (const thr of currentTurn.throws ?? []) ordered.push(thr);
-    }
-
-    const totalDartsThrown = ordered.length;
-
-    const isThrowValid = (th: Throw) => th?.isValid !== false;
-
-    let nextIndex = 0;
-    let successfulTargetsHit = 0;
-    let onCurrentDouble = 0;
-
-    for (const thr of ordered) {
-      const expected = targets[nextIndex];
-      if (!expected) break; // completed all targets
-
-      const success =
-        isThrowValid(thr) && DoublesGameHelper.sameTarget(thr, expected);
-
-      if (success) {
-        successfulTargetsHit++;
-        nextIndex++;
-        onCurrentDouble = 0; // reset for next target
-      } else {
-        // invalid or miss both count as an attempt on the current target
-        onCurrentDouble++;
-      }
-    }
+    const allTurns = currentTurn ? [...userTurns, currentTurn] : userTurns;
+    const totalDartsThrown = allTurns.reduce(
+      (count, turn) => count + turn.throws.length,
+      0,
+    );
+    const { darts, nextIndex: successfulTargetsHit } = DoublesGameHelper.replay(
+      allTurns,
+      options,
+    );
+    const onCurrentDouble = darts.filter(
+      ({ targetIndex }) => targetIndex === successfulTargetsHit,
+    ).length;
 
     // successfulTargetsHit + 1 because the totalDartsThrown also includes the
     const avgDartsPerDouble =

@@ -8,6 +8,10 @@ jest.mock('@react-navigation/core', () => ({
   useNavigation: () => ({ push: jest.fn() }),
 }));
 
+jest.mock('@throwl/shared-theme', () => ({
+  useAppTheme: () => ({ colors: {} }),
+}));
+
 jest.mock('../NewGame', () => ({
   GameFlowStackNames: {
     GAME_MODE: 'GameMode',
@@ -31,24 +35,6 @@ jest.mock('../NewGameScreenLayout', () => {
   return {
     NewGameScreenLayout: ({ children }: { children: ReactNode }) => (
       <View>{children}</View>
-    ),
-  };
-});
-
-jest.mock('../GameMode/components/ModeAccordion', () => {
-  const { Pressable, Text } =
-    jest.requireActual<typeof import('react-native')>('react-native');
-  return {
-    ModeAccordion: ({
-      title,
-      setOpen,
-    }: {
-      title: string;
-      setOpen: () => void;
-    }) => (
-      <Pressable onPress={setOpen}>
-        <Text>{title}</Text>
-      </Pressable>
     ),
   };
 });
