@@ -117,6 +117,18 @@ export function TeamSetup({
             >
               Shuffle teams
             </Button>
+            <Button
+              onPress={() => {
+                onChange(
+                  shuffled(teams).map(({ members }) => ({
+                    members: shuffled(members),
+                  })),
+                );
+                setSwapPlayer(undefined);
+              }}
+            >
+              Shuffle throwing order
+            </Button>
             <Text>Tap two players to swap their positions.</Text>
             {teams.map(({ members }, teamIndex) => (
               <View key={teamIndex}>

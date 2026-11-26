@@ -26,6 +26,7 @@ import {
   User,
   TeamRoster,
   validRoster,
+  validGuestName,
   gamePlayerId,
 } from '@throwl/shared-domain-models';
 import { PlayerItem } from './components/PlayerItem/PlayerItem';
@@ -84,7 +85,7 @@ export const PlayerSelectScreen = () => {
   };
 
   const addGuest = useCallback(() => {
-    if (guestName) {
+    if (validGuestName(guestName)) {
       setGuestUsers((current) => {
         return [...current, guestName];
       });
@@ -131,17 +132,18 @@ export const PlayerSelectScreen = () => {
       (id) =>
         players.filter((player) => gamePlayerId(player) === id).length === 1,
     );
-  const hasRegisteredPlayer = selectedPlayers.some(
-    ({ type }) => type === 'user',
+  const invalidGuest = selectedPlayers.find(
+    (player) => player.type === 'guest_user' && !validGuestName(player.name),
   );
-  const teamCanStart = rosterIsValid && hasRegisteredPlayer;
+  const canStart =
+    selectedPlayers.length > 0 && !invalidGuest && (!teams || rosterIsValid);
   const startGameButton = (
     <LogoButton
       label="GO"
       size={Math.max(50, width * 0.1)}
-      disabled={!selectedUsers.length || Boolean(teams && !teamCanStart)}
+      disabled={!canStart}
       onPress={() => {
-        if (teams && !teamCanStart) return;
+        if (!canStart) return;
         navigator.setParams({ selectedUsers, guestUsers });
         const mappedPlayers = selectedPlayers;
         switch (state.options?.mode) {
@@ -191,12 +193,14 @@ export const PlayerSelectScreen = () => {
                 </TouchableOpacity>
               }
             >
-              <Menu.Item
-                leadingIcon="dice-multiple"
-                onPress={randomizeSelected}
-                title="RANDOMIZE PLAYERS"
-                theme={menuItemTheme}
-              />
+              {!teams && (
+                <Menu.Item
+                  leadingIcon="dice-multiple"
+                  onPress={randomizeSelected}
+                  title="RANDOMIZE PLAYERS"
+                  theme={menuItemTheme}
+                />
+              )}
               <Menu.Item
                 leadingIcon="account-multiple"
                 onPress={() => {
@@ -219,8 +223,8 @@ export const PlayerSelectScreen = () => {
             </Menu>
           }
         />
-        {teams && !hasRegisteredPlayer && (
-          <Text>Include a registered player to save a team game.</Text>
+        {invalidGuest && (
+          <Text>Guest names must be between 1 and 80 characters.</Text>
         )}
         <TeamSetup
           teams={teams}
@@ -271,6 +275,7 @@ export const PlayerSelectScreen = () => {
         visible={addGuestOpen}
         titleIcon="account-edit"
         title="ADD A GUEST"
+        subTitle="Guest names must be between 1 and 80 characters."
         onDismiss={() => setAddGuestOpen(false)}
         actions={
           <View>

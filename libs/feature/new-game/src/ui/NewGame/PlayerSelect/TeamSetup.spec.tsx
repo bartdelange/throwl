@@ -56,3 +56,29 @@ it('previews swaps and ordering and preserves a full lineup when shuffled', () =
   rerender(<Setup names={names.slice(0, 3)} />);
   expect(get(/Select a team format/)).toBeTruthy();
 });
+
+it('shuffles the complete lineup into different balanced teams', () => {
+  const random = jest.spyOn(Math, 'random').mockReturnValue(0);
+  try {
+    const { getByText } = render(<Setup names={['A', 'B', 'C', 'D']} />);
+    fireEvent.press(getByText('2v2'));
+    fireEvent.press(getByText('Shuffle teams'));
+    // The shuffled roster is [B,C] and [D,A], interleaved at the oche.
+    expect(getByText('Throwing order: B → D → C → A')).toBeTruthy();
+  } finally {
+    random.mockRestore();
+  }
+});
+
+it('shuffles throwing order while keeping every teammate together', () => {
+  const random = jest.spyOn(Math, 'random').mockReturnValue(0);
+  try {
+    const { getByText } = render(<Setup names={['A', 'B', 'C', 'D']} />);
+    fireEvent.press(getByText('2v2'));
+    fireEvent.press(getByText('Shuffle throwing order'));
+    // The respective pairs are [D,C] and [B,A].
+    expect(getByText('Throwing order: D → B → C → A')).toBeTruthy();
+  } finally {
+    random.mockRestore();
+  }
+});
