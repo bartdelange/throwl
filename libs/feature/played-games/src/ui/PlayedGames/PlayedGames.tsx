@@ -25,7 +25,6 @@ import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-
 import { SwipeActions, AppHeader } from '@throwl/shared-ui';
 import { useAuthContext } from '@throwl/feature-auth';
 import { FullScreenLayout } from '@throwl/shared-layouts';
-import { getGameWinner } from '@throwl/shared-domain-game-rules';
 import { Game } from '@throwl/shared-domain-models';
 import { GameService } from '@throwl/shared-data-access-game';
 import { useStyles } from './styles';
@@ -183,9 +182,6 @@ const PlayedGamesScreen: FC = () => {
             />
           }
           renderItem={({ item: game, index }) => {
-            const winner = game.teams
-              ? getGameWinner(game)?.participant.name
-              : undefined;
             return (
               <SwipeActions
                 key={game.id}
@@ -220,14 +216,7 @@ const PlayedGamesScreen: FC = () => {
                     <View>
                       <Text style={styles.listItemGameState}>
                         {game.finished ? 'Finished game' : 'Unfinished game'}
-                        {game.teams &&
-                          ` · ${game.options.mode === 'x01' ? 'x01' : 'Doubles'} ${game.teams.map(({ members }) => members.length).join('v')}`}
                       </Text>
-                      {winner && (
-                        <Text
-                          style={styles.listItemGameState}
-                        >{`${winner} won`}</Text>
-                      )}
                       <Text style={styles.listItemGameTimes}>
                         Started at{' '}
                         {format(game.started, 'LLL dd, yyyy - HH:mm')}
