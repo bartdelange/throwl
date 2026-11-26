@@ -165,6 +165,31 @@ describe('PlayedGamesScreen', () => {
     expect(mockPush.mock.calls[1][1].activeGame.turns).toEqual([playedTurn]);
   });
 
+  it('opens an unfinished game read-only for a participant who did not create it', async () => {
+    const game: Game = {
+      id: 'g1',
+      createdBy: 'someone-else',
+      players: [],
+      turns: [],
+      started: new Date('2026-01-01T10:00:00Z'),
+      options: { mode: 'x01', startingScore: 501 },
+    };
+    jest.mocked(GameService.getPlayedGames).mockResolvedValue([game]);
+    jest.mocked(GameService.getById).mockResolvedValue(game);
+    const { PlayedGamesScreen } = require('../../..');
+    const { getByText } = render(<PlayedGamesScreen />);
+    await waitFor(() => expect(getByText('Unfinished game')).toBeTruthy());
+    fireEvent.press(getByText('Unfinished game'));
+    await waitFor(() =>
+      expect(mockPush).toHaveBeenCalledWith(
+        'NORMAL_GAME_DETAIL',
+        expect.objectContaining({
+          game: expect.objectContaining({ id: 'g1' }),
+        }),
+      ),
+    );
+  });
+
   it('stays on played games when the authoritative resume lookup fails', async () => {
     jest.mocked(GameService.getPlayedGames).mockResolvedValue([
       {

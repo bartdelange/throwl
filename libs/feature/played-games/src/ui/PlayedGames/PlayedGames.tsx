@@ -107,6 +107,19 @@ const PlayedGamesScreen: FC = () => {
         return;
       }
 
+      if (
+        activeGame.finished ||
+        (activeGame.createdBy && activeGame.createdBy !== user?.id)
+      ) {
+        navigator.push(
+          activeGame.options.mode === 'doubles'
+            ? DOUBLES_GAME_DETAIL_SCREEN
+            : NORMAL_GAME_DETAIL_SCREEN,
+          { game: serializeGameParam(activeGame) },
+        );
+        return;
+      }
+
       if (activeGame.options.mode === 'doubles') {
         navigator.push(DOUBLES_GAME_SCREEN, {
           options: activeGame.options,
@@ -167,6 +180,12 @@ const PlayedGamesScreen: FC = () => {
             />
           }
           renderItem={({ item: game, index }) => {
+            const finisher = game.finished && game.turns.at(-1)?.userId;
+            const winner =
+              finisher &&
+              game.teams?.findIndex(({ members }) =>
+                members.includes(finisher),
+              );
             return (
               <SwipeActions
                 key={game.id}
@@ -201,7 +220,14 @@ const PlayedGamesScreen: FC = () => {
                     <View>
                       <Text style={styles.listItemGameState}>
                         {game.finished ? 'Finished game' : 'Unfinished game'}
+                        {game.teams &&
+                          ` · ${game.options.mode === 'x01' ? 'x01' : 'Doubles'} ${game.teams.map(({ members }) => members.length).join('v')}`}
                       </Text>
+                      {typeof winner === 'number' && winner >= 0 && (
+                        <Text
+                          style={styles.listItemGameState}
+                        >{`Team ${winner + 1} won`}</Text>
+                      )}
                       <Text style={styles.listItemGameTimes}>
                         Started at{' '}
                         {format(game.started, 'LLL dd, yyyy - HH:mm')}
