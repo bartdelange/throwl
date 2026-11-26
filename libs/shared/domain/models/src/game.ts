@@ -28,6 +28,7 @@ export interface Game {
   teams?: TeamRoster;
   teamGameplayRevision?: number;
   createdBy?: string;
+  playerIds?: string[];
   started: Date;
   finished?: Date;
   options: GameOptions;
@@ -66,4 +67,8 @@ export function teamThrowingOrder(teams: TeamRoster): string[] {
   return teams[0].members.flatMap((_, index) =>
     teams.map(({ members }) => members[index]),
   );
+}
+
+export function validGuestName(name: string): boolean {
+  return name.length > 0 && name.length <= 80;
 }

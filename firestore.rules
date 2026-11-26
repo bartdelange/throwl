@@ -138,8 +138,7 @@ service cloud.firestore {
     }
 
     function playerIdsMatchPlayers(players, playerIds) {
-      return playerIds.size() > 0
-        && playerIds.size() <= 8
+      return playerIds.size() <= 8
         && playerIds.toSet().size() == playerIds.size()
         && players.toSet().size() == players.size()
         && ((players.size() == playerIds.size()
@@ -277,9 +276,7 @@ service cloud.firestore {
         || createdGame(resource.data)
         || historyMember(resource.data);
       allow update: if validHistoryUpdate(request.resource.data, resource.data)
-        || ((createdGame(resource.data)
-            || (!resource.data.keys().hasAny(['createdBy'])
-              && gameMember(resource.data)))
+        || ((createdGame(resource.data) || gameMember(resource.data))
           && validGameplayUpdate(request.resource.data, resource.data));
       allow delete: if createdGame(resource.data);
     }

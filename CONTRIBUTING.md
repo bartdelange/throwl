@@ -43,6 +43,25 @@ it cannot contact a production Firebase project:
 pnpm test:firestore-rules
 ```
 
+## Scoring handoffs and compatible releases
+
+The signed-in creator and registered participants can score. A creator outside
+the lineup has no Played Games entry. Authenticated creators can also score
+guest-only games, which have no history entries and cannot be reopened from
+Played Games.
+
+Use one active scorekeeper per game. Wait for the completed visit to save before
+handing off. Team revisions reject stale writes and let a participant reopen the
+saved game. Individual games retain their existing offline writes and document
+format. Their writes are last-write-wins, including writes from older clients,
+so concurrent scoring can overwrite another scorer’s changes.
+
+Deploy the Firestore rules to staging before testing updated clients. Verify
+handoff, guest-only saves and older-client behaviour on both platforms. For an
+approved production release, deploy the compatible rules before distributing
+the updated app. Keep those rules in place if the client is rolled back after
+team documents have been created.
+
 ## Development and validation
 
 ```sh

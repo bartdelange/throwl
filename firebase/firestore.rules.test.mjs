@@ -435,7 +435,7 @@ describe('games', () => {
     test(`the game service payload saves and protects ${count} teams of ${total / count}`, async () => {
       const db = auth('alice', 'alice@example.test');
       const bob = auth('bob', 'bob@example.test');
-      const registered = ['alice', 'bob'].map((id) => ({
+      const registered = ['bob', 'charlie'].map((id) => ({
         type: 'user',
         id,
         name: id,
@@ -475,7 +475,7 @@ describe('games', () => {
 
       const turns = [
         {
-          userId: 'alice',
+          userId: 'bob',
           throws: [{ type: 'double', score: 20 }],
           isValid: true,
         },
@@ -492,8 +492,9 @@ describe('games', () => {
       await assertFails(
         updateDoc(ref, { ...patch, teams: [...payload.teams].reverse() }),
       );
-      await assertFails(updateDoc(doc(bob, 'games', ref.id), patch));
-      await assertSucceeds(updateDoc(ref, patch));
+      const unrelated = auth('unrelated', 'unrelated@example.test');
+      await assertFails(updateDoc(doc(unrelated, 'games', ref.id), patch));
+      await assertSucceeds(updateDoc(doc(bob, 'games', ref.id), patch));
       await assertFails(updateDoc(ref, patch));
       await assertSucceeds(
         updateDoc(
@@ -509,10 +510,77 @@ describe('games', () => {
         ),
       );
       await assertSucceeds(
-        updateDoc(doc(bob, 'games', ref.id), { historyUserIds: ['alice'] }),
+        updateDoc(doc(bob, 'games', ref.id), { historyUserIds: ['charlie'] }),
       );
     });
   }
+
+  for (const mode of ['x01', 'doubles']) {
+    for (const team of [false, true]) {
+      test(`authenticated scorer can finish a guest-only ${mode} game (teams: ${team})`, async () => {
+        const db = auth('alice', 'alice@example.test');
+        const other = auth('bob', 'bob@example.test');
+        const ref = doc(db, 'games', 'all-guests');
+        const names = ['Jan', 'Klaas', 'Piet', 'Bart'];
+        const options =
+          mode === 'x01'
+            ? { mode, startingScore: 101 }
+            : {
+                mode,
+                quickMatch: true,
+                skipBull: true,
+                endOnInvalid: true,
+              };
+        const turns = [validTurn(db, names[0])];
+        const payload = encodeGameCreate(
+          {
+            players: names.map((name) => ({ type: 'guest_user', name })),
+            teams: team
+              ? [{ members: names.slice(0, 2) }, { members: names.slice(2) }]
+              : undefined,
+            started: new Date(),
+            options,
+            turns: [],
+          },
+          'alice',
+          (id) => userRef(db, id),
+        );
+        await assertSucceeds(setDoc(ref, payload));
+        const patch = encodeGameUpdate(
+          {
+            id: ref.id,
+            turns: turns.map((turn) => ({ ...turn, userId: names[0] })),
+            finished: new Date(),
+            teamGameplayRevision: team ? 0 : undefined,
+          },
+          (id) => userRef(db, id),
+        );
+        await assertFails(updateDoc(doc(other, 'games', ref.id), patch));
+        await assertSucceeds(updateDoc(ref, patch));
+        const data = (await assertSucceeds(getDoc(ref))).data();
+        if (
+          data.playerIds.length ||
+          data.historyUserIds.length ||
+          !data.finished
+        ) {
+          throw new Error(
+            'Guest-only game must finish without registered membership',
+          );
+        }
+        await assertFails(getDoc(doc(other, 'games', ref.id)));
+        await assertSucceeds(deleteDoc(ref));
+      });
+    }
+  }
+
+  test('guest name length matches the rules boundary for surrogate pairs', async () => {
+    const db = auth('alice', 'alice@example.test');
+    const guestOnly = x01Game(db, 'alice', []);
+    guestOnly.players = ['🎯'.repeat(40)];
+    await assertSucceeds(setDoc(doc(db, 'games', 'guest-limit'), guestOnly));
+    guestOnly.players = ['🎯'.repeat(41)];
+    await assertFails(setDoc(doc(db, 'games', 'guest-over-limit'), guestOnly));
+  });
 
   test('a player can create a game with registered players and a guest', async () => {
     const db = auth('alice', 'alice@example.test');
@@ -541,7 +609,7 @@ describe('games', () => {
     );
   });
 
-  test('creator can update realistic mutable game state but another participant cannot', async () => {
+  test('creator and registered participant can update gameplay', async () => {
     const alice = auth('alice', 'alice@example.test');
     await assertSucceeds(
       updateDoc(doc(alice, 'games', 'alice-bob'), {
@@ -551,7 +619,7 @@ describe('games', () => {
     );
 
     const bob = auth('bob', 'bob@example.test');
-    await assertFails(
+    await assertSucceeds(
       updateDoc(doc(bob, 'games', 'alice-bob'), {
         turns: [validTurn(bob, 'bob', false)],
       }),
@@ -810,10 +878,10 @@ describe('games', () => {
     );
   });
 
-  test('listed players can read but cannot update or physically delete a new game', async () => {
+  test('listed players can score but cannot physically delete a new game', async () => {
     const db = auth('bob', 'bob@example.test');
     await assertSucceeds(getDoc(doc(db, 'games', 'alice-bob')));
-    await assertFails(
+    await assertSucceeds(
       updateDoc(doc(db, 'games', 'alice-bob'), {
         turns: [{ userId: userRef(db, 'bob'), throws: [] }],
       }),
@@ -843,14 +911,14 @@ describe('games', () => {
     );
   });
 
-  test('former friends retain read access through immutable participation', async () => {
+  test('former friends retain scoring access through immutable participation', async () => {
     await env.withSecurityRulesDisabled(async (context) => {
       const db = firestoreFor(context);
       await deleteDoc(doc(db, 'friendships', friendshipId('alice', 'bob')));
     });
     const db = auth('bob', 'bob@example.test');
     await assertSucceeds(getDoc(doc(db, 'games', 'alice-bob')));
-    await assertFails(
+    await assertSucceeds(
       updateDoc(doc(db, 'games', 'alice-bob'), {
         turns: [validTurn(db, 'bob')],
       }),
@@ -932,7 +1000,7 @@ describe('games', () => {
 
     const bob = auth('bob', 'bob@example.test');
     await assertSucceeds(getDoc(doc(bob, 'games', 'operated-by-alice')));
-    await assertFails(
+    await assertSucceeds(
       updateDoc(doc(bob, 'games', 'operated-by-alice'), {
         turns: [validTurn(bob, 'bob')],
       }),

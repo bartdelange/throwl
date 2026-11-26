@@ -44,6 +44,10 @@ export type GameUpdate = {
   finished?: Date;
 };
 
+function canUseDocumentId(id: string): boolean {
+  return id !== '.' && id !== '..' && !id.includes('/') && !/^__.*__$/.test(id);
+}
+
 export function encodeGameCreate<Ref>(
   { players, teams, turns, started, options, finished }: GameCreate,
   creatorId: string,
@@ -64,7 +68,8 @@ export function encodeGameCreate<Ref>(
     turns: turns.length
       ? turns.map<FirestoreTurnWrite<Ref>>((t) => ({
           ...t,
-          userId: teams ? t.userId : userRef(t.userId),
+          userId:
+            teams || !canUseDocumentId(t.userId) ? t.userId : userRef(t.userId),
         }))
       : [],
     started,
@@ -100,7 +105,10 @@ export function encodeGameUpdate<Ref>(
   const patch: Partial<FirestoreGameWrite<Ref>> = {
     turns: turns.map<FirestoreTurnWrite<Ref>>((t) => ({
       ...t,
-      userId: teamGameplayRevision === undefined ? userRef(t.userId) : t.userId,
+      userId:
+        teamGameplayRevision === undefined && canUseDocumentId(t.userId)
+          ? userRef(t.userId)
+          : t.userId,
     })),
     finished: finished ?? null,
   };

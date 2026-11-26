@@ -30,6 +30,7 @@ import {
   TeamRoster,
   gamePlayerId,
   validRoster,
+  validGuestName,
   teamThrowingOrder,
   User,
   X01Options,
@@ -256,8 +257,12 @@ export class GameService extends FirebaseService {
     if (teams && !validRoster(players.map(gamePlayerId), teams)) {
       throw new Error('Invalid team roster');
     }
-    if (teams && !players.some(({ type }) => type === 'user')) {
-      throw new Error('A team game requires a registered player');
+    if (
+      players.some(
+        (player) => player.type !== 'user' && !validGuestName(player.name),
+      )
+    ) {
+      throw new Error('Guest names must be between 1 and 80 characters');
     }
     const creatorId = getAuth().currentUser?.uid;
     if (!creatorId)
@@ -272,7 +277,9 @@ export class GameService extends FirebaseService {
   public static async getById(uid: string): Promise<Game> {
     const snap = await getDoc(doc(this.getCollection('games'), uid));
     if (!snap.exists()) {
-      throw new Error(`Game not found: ${uid}`);
+      throw Object.assign(new Error(`Game not found: ${uid}`), {
+        code: 'not-found',
+      });
     }
     return this.parseGame(uid, snap.data() as FirestoreGameRead);
   }
@@ -450,6 +457,13 @@ export class GameService extends FirebaseService {
         : {}),
       ...(typeof game.createdBy === 'string'
         ? { createdBy: game.createdBy }
+        : {}),
+      ...(Array.isArray(game.playerIds)
+        ? {
+            playerIds: game.playerIds.filter(
+              (uid: unknown): uid is string => typeof uid === 'string',
+            ),
+          }
         : {}),
       players,
       turns,
