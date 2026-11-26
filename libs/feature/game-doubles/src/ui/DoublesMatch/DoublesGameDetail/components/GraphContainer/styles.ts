@@ -9,10 +9,7 @@ export const useStyles = () => {
     () =>
       StyleSheet.create({
         graph: {
-          aspectRatio: 1,
-          overflow: 'hidden',
-          // marginTop: 32,
-          marginLeft: -8,
+          width: '100%',
           padding: 0,
         },
         legend: {

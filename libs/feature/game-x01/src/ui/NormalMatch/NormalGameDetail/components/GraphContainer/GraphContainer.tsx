@@ -14,6 +14,9 @@ interface ScoreContainerProps {
 export const GraphContainer: FC<ScoreContainerProps> = ({ turns }) => {
   const { colors } = useAppTheme();
   const styles = useStyles();
+  const [containerWidth, setContainerWidth] = useState(0);
+  const yAxisLabelWidth = 35;
+  const plotWidth = Math.max(0, containerWidth - yAxisLabelWidth - 8);
   const [maxYValue, setMaxYValue] = useState(0);
   const [averageValues, setAverageValues] = useState<lineDataItem[]>([]);
   const [scoreValues, setScoreValues] = useState<lineDataItem[]>([]);
@@ -47,47 +50,61 @@ export const GraphContainer: FC<ScoreContainerProps> = ({ turns }) => {
   }, [turns]);
 
   return (
-    <View style={styles.graph}>
-      <LineChart
-        maxValue={maxYValue + 20}
-        data={scoreValues}
-        data2={averageValues}
-        color1="#03a9f4"
-        color2="#8bc34a"
-        curved
-        dataPointsColor1="#03a9f4"
-        dataPointsColor2="#8bc34a"
-        hideDataPoints
-        spacing={68}
-        initialSpacing={0}
-        noOfSections={4}
-        yAxisColor={colors.primary}
-        yAxisThickness={1}
-        hideRules
-        yAxisTextStyle={{ color: colors.primary }}
-        xAxisColor={colors.primary}
-        disableScroll={false}
-        pointerConfig={{
-          pointerStripColor: colors.primary,
-          pointerColor: colors.primary,
-          radius: 6,
-          pointerLabelWidth: 160,
-          pointerLabelHeight: 90,
-          autoAdjustPointerLabelPosition: true,
-          pointerLabelComponent: (items: [lineDataItem, lineDataItem]) => {
-            return (
-              <View style={styles.tooltip}>
-                <Text style={styles.tooltipTextHeader}>
-                  Turn {items[0].label}
-                </Text>
-                <Text style={styles.tooltipText}>
-                  S{items[0].value?.toFixed(2)} - A{items[1].value?.toFixed(2)}
-                </Text>
-              </View>
-            );
-          },
-        }}
-      />
+    <View
+      style={styles.graph}
+      onLayout={({ nativeEvent }) =>
+        setContainerWidth(nativeEvent.layout.width)
+      }
+    >
+      {plotWidth > 0 && (
+        <LineChart
+          width={plotWidth}
+          yAxisLabelWidth={yAxisLabelWidth}
+          maxValue={maxYValue + 20}
+          data={scoreValues}
+          data2={averageValues}
+          color1="#03a9f4"
+          color2="#8bc34a"
+          curved
+          dataPointsColor1="#03a9f4"
+          dataPointsColor2="#8bc34a"
+          hideDataPoints={scoreValues.length > 1}
+          spacing={Math.max(
+            68,
+            (plotWidth - 24) / Math.max(1, scoreValues.length - 1),
+          )}
+          endSpacing={24}
+          initialSpacing={0}
+          noOfSections={4}
+          yAxisColor={colors.primary}
+          yAxisThickness={1}
+          hideRules
+          yAxisTextStyle={{ color: colors.primary }}
+          xAxisColor={colors.primary}
+          disableScroll={false}
+          pointerConfig={{
+            pointerStripColor: colors.primary,
+            pointerColor: colors.primary,
+            radius: 6,
+            pointerLabelWidth: 160,
+            pointerLabelHeight: 90,
+            autoAdjustPointerLabelPosition: true,
+            pointerLabelComponent: (items: [lineDataItem, lineDataItem]) => {
+              return (
+                <View style={styles.tooltip}>
+                  <Text style={styles.tooltipTextHeader}>
+                    Turn {items[0].label}
+                  </Text>
+                  <Text style={styles.tooltipText}>
+                    S{items[0].value?.toFixed(2)} - A
+                    {items[1].value?.toFixed(2)}
+                  </Text>
+                </View>
+              );
+            },
+          }}
+        />
+      )}
       <View style={styles.legend}>
         <View style={styles.legendEntry}>
           <Text style={styles.legendText}>Points thrown per turn</Text>

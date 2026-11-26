@@ -3,16 +3,24 @@ import { View } from 'react-native';
 import { Text, ThemeProvider } from 'react-native-paper';
 import { paperTheme, useAppTheme } from '@throwl/shared-theme';
 import { useStyles } from './styles';
-import { DoublesGameTurnStats } from '@throwl/shared-domain-game-rules';
+import { Throw } from '@throwl/shared-domain-models';
+import {
+  DoublesGameTurnStats,
+  GameHelper,
+} from '@throwl/shared-domain-game-rules';
 
 interface ScoreContainerProps {
   textSize: number;
   turnStats: DoublesGameTurnStats;
+  winningThrow?: Throw;
+  teamGame?: boolean;
 }
 
 export const StatsContainer: FC<ScoreContainerProps> = ({
   textSize,
   turnStats,
+  winningThrow,
+  teamGame,
 }) => {
   const styles = useStyles(textSize);
   const { colors } = useAppTheme();
@@ -58,12 +66,14 @@ export const StatsContainer: FC<ScoreContainerProps> = ({
             Average darts per double thrown
           </Text>
           <Text style={styles.scoreItemText} numberOfLines={1}>
-            {turnStats.avgDartsPerDouble}
+            {teamGame && turnStats.totalDarts === turnStats.notOnTarget
+              ? '—'
+              : turnStats.avgDartsPerDouble}
           </Text>
         </View>
         <View style={styles.scoreItem}>
           <Text style={styles.scoreItemText} numberOfLines={1}>
-            Invalid turns thrown
+            Invalid darts thrown
           </Text>
           <Text style={styles.scoreItemText} numberOfLines={1}>
             {turnStats.invalidTrows}
@@ -85,6 +95,14 @@ export const StatsContainer: FC<ScoreContainerProps> = ({
             {turnStats.consecutiveDoublesStreak}
           </Text>
         </View>
+        {winningThrow && (
+          <View style={styles.scoreItem}>
+            <Text style={styles.scoreItemText}>Winning throw</Text>
+            <Text style={styles.scoreItemText}>
+              {GameHelper.createScoreString(winningThrow)}
+            </Text>
+          </View>
+        )}
       </View>
     </ThemeProvider>
   );

@@ -23,6 +23,9 @@ export const GraphContainer: FC<ScoreContainerProps> = ({
 }) => {
   const { colors } = useAppTheme();
   const styles = useStyles();
+  const [containerWidth, setContainerWidth] = useState(0);
+  const yAxisLabelWidth = 35;
+  const plotWidth = Math.max(0, containerWidth - yAxisLabelWidth - 8);
   const [maxYValue, setMaxYValue] = useState<number>(0);
   const [scoreValues, setScoreValues] = useState<barDataItem[]>([]);
   const targetsInGame = useMemo(
@@ -146,29 +149,38 @@ export const GraphContainer: FC<ScoreContainerProps> = ({
   ]);
 
   return (
-    <View style={styles.graph}>
-      <BarChart
-        maxValue={maxYValue + maxYValue / 3}
-        data={scoreValues}
-        barWidth={16}
-        barBorderTopLeftRadius={4}
-        barBorderTopRightRadius={4}
-        frontColor="#03a9f4"
-        noOfSections={4}
-        initialSpacing={30}
-        xAxisColor={colors.primary}
-        color={colors.primary}
-        hideRules
-        isAnimated
-        renderTooltip={(item: barDataItem) => {
-          return (
-            <View style={styles.tooltip}>
-              <Text style={styles.tooltipTextHeader}>{item.label}</Text>
-              <Text style={styles.tooltipText}>{item.value} Dart(s)</Text>
-            </View>
-          );
-        }}
-      />
+    <View
+      style={styles.graph}
+      onLayout={({ nativeEvent }) =>
+        setContainerWidth(nativeEvent.layout.width)
+      }
+    >
+      {plotWidth > 0 && (
+        <BarChart
+          width={plotWidth}
+          yAxisLabelWidth={yAxisLabelWidth}
+          maxValue={maxYValue + maxYValue / 3}
+          data={scoreValues}
+          barWidth={16}
+          barBorderTopLeftRadius={4}
+          barBorderTopRightRadius={4}
+          frontColor="#03a9f4"
+          noOfSections={4}
+          initialSpacing={30}
+          xAxisColor={colors.primary}
+          color={colors.primary}
+          hideRules
+          isAnimated
+          renderTooltip={(item: barDataItem) => {
+            return (
+              <View style={styles.tooltip}>
+                <Text style={styles.tooltipTextHeader}>{item.label}</Text>
+                <Text style={styles.tooltipText}>{item.value} Dart(s)</Text>
+              </View>
+            );
+          }}
+        />
+      )}
       <View style={styles.legend}>
         <View style={styles.legendEntry}>
           <MaterialDesignIcons

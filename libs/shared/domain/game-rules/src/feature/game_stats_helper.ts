@@ -128,6 +128,7 @@ export class GameStatsHelper {
     userTurns: Turn[],
     startingScore: number,
     playerId?: string,
+    useValidProgress = playerId !== undefined,
   ): NormalGameTurnStats {
     let score = startingScore;
 
@@ -145,7 +146,7 @@ export class GameStatsHelper {
 
     for (const turn of userTurns ?? []) {
       const turnScore = GameHelper.calculateTurnScore(turn);
-      if (playerId === undefined || turn.isValid !== false) score -= turnScore;
+      if (!useValidProgress || turn.isValid !== false) score -= turnScore;
       if (playerId !== undefined && turn.userId !== playerId) continue;
 
       totalTurns++;

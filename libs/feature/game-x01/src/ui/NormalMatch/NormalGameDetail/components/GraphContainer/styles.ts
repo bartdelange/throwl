@@ -6,10 +6,8 @@ export const useStyles = () => {
 
   return StyleSheet.create({
     graph: {
-      aspectRatio: 1,
-      overflow: 'hidden',
+      width: '100%',
       marginTop: 32,
-      marginLeft: -8,
       padding: 0,
     },
     legend: {
