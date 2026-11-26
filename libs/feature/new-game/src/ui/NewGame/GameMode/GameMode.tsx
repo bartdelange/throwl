@@ -4,7 +4,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GameFlowStackNames, StepperParamList } from '../NewGame';
 import { getDefaultOptions, useNewGame } from '../../../feature/NewGameContext';
 import { LogoButton, AppHeader } from '@throwl/shared-ui';
-import { SegmentedButtons, Text, Divider } from 'react-native-paper';
+import { SegmentedButtons, Text } from 'react-native-paper';
 import { StyleSheet, View } from 'react-native';
 import { useAppTheme } from '@throwl/shared-theme';
 import { NewGameScreenLayout } from '../NewGameScreenLayout';
@@ -52,9 +52,7 @@ export const GameModeScreen: FC = () => {
             : 'You throw consecutive doubles from highest (D20) to lowest (D1) ending on single Bull and Bull.'}
         </Text>
       </View>
-      <Divider style={{ backgroundColor: colors.outline }} />
       <View style={styles.format}>
-        <Text variant="titleMedium">Game Format</Text>
         <SegmentedButtons
           value={state.format}
           onValueChange={(format) => {
@@ -91,5 +89,5 @@ export const GameModeScreen: FC = () => {
 
 const styles = StyleSheet.create({
   mode: { gap: 12, marginVertical: 16 },
-  format: { gap: 12, marginTop: 16 },
+  format: { gap: 12 },
 });
