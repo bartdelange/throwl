@@ -14,3 +14,4 @@ export * from './molecules/TurnIndicatorBar/TurnIndicatorBar';
 export * from './organisms/WinnerModal/WinnerModal';
 export * from './molecules/DropOutModel/DropOutModel';
 export * from './organisms/GameSaveRecovery/useGameSaveRecovery';
+export * from './organisms/TeamScoreboard/TeamScoreboard';

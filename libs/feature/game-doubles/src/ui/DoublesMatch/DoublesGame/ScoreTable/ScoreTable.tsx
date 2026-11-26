@@ -17,7 +17,11 @@ import {
   participantVisits,
   DoublesGameHelper,
 } from '@throwl/shared-domain-game-rules';
-import { AppLogoArrowLight, SwipeActions } from '@throwl/shared-ui';
+import {
+  AppLogoArrowLight,
+  SwipeActions,
+  TeamScoreboard,
+} from '@throwl/shared-ui';
 
 const gridStyles = StyleSheet.create({
   grid: {
@@ -53,6 +57,7 @@ interface ScoreTableProps {
   turns: Turn[];
   teams?: TeamRoster;
   activeUserIndex: number;
+  finished?: boolean;
   currentTurn: Turn;
   width: number;
   setDroppingOutUserIndex: (index: number) => void;
@@ -65,15 +70,53 @@ export const ScoreTable: FC<ScoreTableProps> = ({
   turns,
   teams,
   activeUserIndex,
+  finished,
   currentTurn,
   width,
   setDroppingOutUserIndex,
 }) => {
   const styles = useStyles();
-  const { participants } = resolveParticipants(
-    players.map(GameService.stubPlayer),
-    teams,
-  );
+  const lineup = players.map(GameService.stubPlayer);
+  const { participants, nextThrower } = resolveParticipants(lineup, teams);
+
+  if (teams) {
+    return (
+      <TeamScoreboard
+        columns={[{ label: 'Darts' }, { label: 'Avg. per D.' }]}
+        progressLabel="Target"
+        activeId={finished ? undefined : currentTurn.userId}
+        nextId={finished ? undefined : nextThrower(currentTurn.userId)}
+        groups={participants.map((team) => {
+          const visits = participantVisits(turns, team.members);
+          if (!finished && team.members.includes(currentTurn.userId))
+            visits.push(currentTurn);
+          const { next } = DoublesGameHelper.getNextDoubleNeeded(
+            visits,
+            team.members,
+            gameOptions,
+          );
+          return {
+            ...team,
+            progress: next ? GameHelper.createScoreString(next) : '—',
+            players: team.members.map((id) => {
+              const { totalDarts, avgDartsPerDouble } =
+                GameHelper.getPostDoublesGameTurnStats(
+                  participantVisits(visits, [id]),
+                  gameOptions,
+                  visits,
+                  id,
+                );
+              return {
+                id,
+                name: lineup.find((player) => player.id === id)?.name ?? id,
+                stats: [totalDarts, avgDartsPerDouble],
+              };
+            }),
+          };
+        })}
+      />
+    );
+  }
 
   return (
     <Grid style={styles.scoreTable}>
@@ -95,7 +138,7 @@ export const ScoreTable: FC<ScoreTableProps> = ({
         </Col>
         <Col style={styles.scoreTableCol} size={1}>
           <Text style={[styles.scoreTableCell, styles.scoreTableCenterCell]}>
-            {teams ? 'Target' : 'On curr. D.'}
+            On curr. D.
           </Text>
         </Col>
       </Row>
@@ -108,22 +151,13 @@ export const ScoreTable: FC<ScoreTableProps> = ({
         style={styles.scoreTabelPlayerList}
         keyExtractor={({ id }) => id}
         renderItem={({ item: participant, index }) => {
-          const active = teams
-            ? participant.members.includes(currentTurn.userId)
-            : activeUserIndex === index;
+          const active = activeUserIndex === index;
           const visits = participantVisits(turns, participant.members);
           const userScore = GameHelper.calculateInDoublesGameScoreStatsForUser(
             visits,
             gameOptions,
             active ? currentTurn : undefined,
           );
-          const target = teams
-            ? DoublesGameHelper.getNextDoubleNeeded(
-                active ? [...visits, currentTurn] : visits,
-                participant.members,
-                gameOptions,
-              ).next
-            : undefined;
           const row = (
             <Row style={styles.scoreTableRow}>
               {active && (
@@ -157,18 +191,12 @@ export const ScoreTable: FC<ScoreTableProps> = ({
                 <Text
                   style={[styles.scoreTableCell, styles.scoreTableCenterCell]}
                 >
-                  {teams
-                    ? target
-                      ? GameHelper.createScoreString(target)
-                      : '—'
-                    : userScore.onCurrentDouble}
+                  {userScore.onCurrentDouble}
                 </Text>
               </Col>
             </Row>
           );
-          return teams ? (
-            row
-          ) : (
+          return (
             <SwipeActions
               bounce={index === 0}
               rightActions={[

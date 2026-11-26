@@ -15,7 +15,11 @@ import {
   resolveParticipants,
   participantVisits,
 } from '@throwl/shared-domain-game-rules';
-import { AppLogoArrowLight, SwipeActions } from '@throwl/shared-ui';
+import {
+  AppLogoArrowLight,
+  SwipeActions,
+  TeamScoreboard,
+} from '@throwl/shared-ui';
 
 const gridStyles = StyleSheet.create({
   grid: {
@@ -51,6 +55,7 @@ interface ScoreTableProps {
   startingScore: number;
   teams?: TeamRoster;
   activeUserIndex: number;
+  finished?: boolean;
   currentTurn: Turn;
   width: number;
   setDroppingOutUserIndex: (index: number) => void;
@@ -63,15 +68,59 @@ export const ScoreTable: FC<ScoreTableProps> = ({
   startingScore,
   teams,
   activeUserIndex,
+  finished,
   currentTurn,
   width,
   setDroppingOutUserIndex,
 }) => {
   const styles = useStyles();
-  const { participants } = resolveParticipants(
-    players.map(GameService.stubPlayer),
-    teams,
-  );
+  const lineup = players.map(GameService.stubPlayer);
+  const { participants, nextThrower } = resolveParticipants(lineup, teams);
+
+  if (teams) {
+    return (
+      <TeamScoreboard
+        columns={[
+          { label: 'Darts' },
+          { label: 'Last' },
+          { label: 'Avg' },
+          { label: 'Valid Avg', size: 1.5 },
+        ]}
+        progressLabel="Score"
+        activeId={finished ? undefined : currentTurn.userId}
+        nextId={finished ? undefined : nextThrower(currentTurn.userId)}
+        groups={participants.map((team) => {
+          const visits = participantVisits(turns, team.members);
+          const pending =
+            !finished && team.members.includes(currentTurn.userId)
+              ? currentTurn
+              : undefined;
+          const { score } = GameHelper.calculateInNormalGameScoreStatsForUser(
+            visits,
+            startingScore,
+            pending,
+          );
+          return {
+            ...team,
+            progress: score,
+            players: team.members.map((id) => {
+              const { throws, last, avg, validAvg } =
+                GameHelper.calculateInNormalGameScoreStatsForUser(
+                  participantVisits(visits, [id]),
+                  startingScore,
+                  pending?.userId === id ? pending : undefined,
+                );
+              return {
+                id,
+                name: lineup.find((player) => player.id === id)?.name ?? id,
+                stats: [throws, last, avg, validAvg],
+              };
+            }),
+          };
+        })}
+      />
+    );
+  }
 
   return (
     <Grid style={styles.scoreTable}>
@@ -122,9 +171,7 @@ export const ScoreTable: FC<ScoreTableProps> = ({
         style={styles.scoreTablePlayerList}
         keyExtractor={({ id }) => id}
         renderItem={({ item: participant, index }) => {
-          const active = teams
-            ? participant.members.includes(currentTurn.userId)
-            : activeUserIndex === index;
+          const active = activeUserIndex === index;
           const visits = participantVisits(turns, participant.members);
           const userScore = GameHelper.calculateInNormalGameScoreStatsForUser(
             visits,
@@ -187,9 +234,7 @@ export const ScoreTable: FC<ScoreTableProps> = ({
               </Col>
             </Row>
           );
-          return teams ? (
-            row
-          ) : (
+          return (
             <SwipeActions
               bounce={index === 0}
               rightActions={[

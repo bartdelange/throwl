@@ -134,11 +134,6 @@ export const NormalGameScreen: FC = () => {
     [players, teams],
   );
   const activeTeam = lineup.participantFor(controller.currentTurn.userId);
-  const activeThrower = players.find(
-    ({ id }) => id === controller.currentTurn.userId,
-  );
-  const nextId = lineup.nextThrower(controller.currentTurn.userId);
-  const nextThrower = players.find(({ id }) => id === nextId);
   const resultGameId = teams ? teamSave.id : gameId;
 
   const { saveFeedback, gameplayBlocked } = useGameSaveRecovery(
@@ -176,9 +171,6 @@ export const NormalGameScreen: FC = () => {
             createScoreString={GameHelper.createScoreString}
           />
 
-          {teams && !controller.isGameFinished && (
-            <Text>{`${activeTeam?.name ?? ''} · Throwing: ${activeThrower?.name ?? ''} · Next: ${nextThrower?.name ?? ''}`}</Text>
-          )}
           {!controller.isWinnerModalVisible && saveFeedback}
           <ScoreTable
             turns={controller.turns}
@@ -186,6 +178,7 @@ export const NormalGameScreen: FC = () => {
             players={players}
             teams={teams}
             activeUserIndex={controller.activePlayerIndex}
+            finished={controller.isGameFinished}
             startingScore={gameOptions.startingScore}
             currentTurn={controller.currentTurn}
             width={width}
