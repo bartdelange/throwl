@@ -54,7 +54,7 @@ jobs:
     permissions:
       contents: read
     with:
-      # Ruby 3.3.6 is unavailable on the Ubuntu 26.04 runner.
+      # Pin the runner image for reproducible Android release builds.
       os: ubuntu-24.04
       working_directory: apps/throwl/android
       store: Google Play Store

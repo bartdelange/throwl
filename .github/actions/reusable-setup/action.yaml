@@ -35,16 +35,9 @@ runs:
       if: steps.node_modules-cache.outputs.cache-hit != 'true'
       run: pnpm install --frozen-lockfile
 
-    - name: Use Ruby v3.3.6
+    - name: Set up Ruby
       if: ${{ inputs.bundle == 'true' }}
-      uses: ruby/setup-ruby@a0102e0972be65f351c307e2d64b9314a57c8073 # v1.324.0
+      uses: ruby/setup-ruby@145243922b4465b78e04dd66294782c7de45901f # v1.345.0
       with:
-        ruby-version: '3.3.6'
+        working-directory: apps/throwl
         bundler-cache: true
-
-    # IMPORTANT: Gemfile moved to apps/throwl, so bundle install must run there
-    - name: Install bundle
-      shell: bash
-      if: ${{ inputs.bundle == 'true' }}
-      working-directory: apps/throwl
-      run: bundle install --jobs 4 --retry 3
