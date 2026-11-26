@@ -22,7 +22,11 @@ import {
 } from '@throwl/shared-ui';
 import { useAppTheme } from '@throwl/shared-theme';
 import { FullScreenLayout } from '@throwl/shared-layouts';
-import { GameHelper } from '@throwl/shared-domain-game-rules';
+import {
+  GameHelper,
+  resolveParticipants,
+  participantVisits,
+} from '@throwl/shared-domain-game-rules';
 import { DoublesOptions, GuestUser, User } from '@throwl/shared-domain-models';
 import { GraphContainer } from './components/GraphContainer/GraphContainer';
 import { StatsContainer } from './components/StatsContainer/StatsContainer';
@@ -49,6 +53,15 @@ export const DoublesGameDetailScreen: FC = () => {
   const { colors } = useAppTheme();
   const insets = useSafeAreaInsets();
 
+  const lineup = resolveParticipants(
+    game.players.map(GameService.stubPlayer),
+    game.teams,
+  );
+  const finishingVisit = game.finished ? game.turns.at(-1) : undefined;
+  const winningTeam = finishingVisit
+    ? lineup.participantFor(finishingVisit.userId)
+    : undefined;
+
   const textSize = Math.max(Dimensions.get('window').width * 0.04, 20);
   const styles = useStyles(textSize);
 
@@ -66,6 +79,7 @@ export const DoublesGameDetailScreen: FC = () => {
                   .filter((u) => u.type === 'guest_user')
                   .map((u) => u.name),
                 gameOptions: game.options,
+                ...(game.teams ? { teams: game.teams } : {}),
               })
             }
           >
@@ -79,12 +93,71 @@ export const DoublesGameDetailScreen: FC = () => {
           <FlatList<User | GuestUser>
             alwaysBounceVertical={false}
             data={game.players}
+            ListHeaderComponent={
+              game.teams ? (
+                <View>
+                  {!game.finished && <Text>Saved game · In progress</Text>}
+                  {lineup.participants.map((side) => {
+                    const visits = participantVisits(game.turns, side.members);
+                    const count = visits.reduce(
+                      (sum, visit) => sum + visit.throws.length,
+                      0,
+                    );
+                    const names = side.members
+                      .map(
+                        (id) =>
+                          game.players
+                            .map(GameService.stubPlayer)
+                            .find((player) => player.id === id)?.name,
+                      )
+                      .join(', ');
+                    const progress = DoublesGameHelper.getNextDoubleNeeded(
+                      visits,
+                      side.members,
+                      gameOptions,
+                    );
+                    const stats = GameHelper.getPostDoublesGameTurnStats(
+                      visits,
+                      gameOptions,
+                    );
+                    const summary = `${progress.next ? GameHelper.createScoreString(progress.next) + ' next' : 'Ladder complete'} · ${stats.avgDartsPerDouble} darts per target`;
+                    return (
+                      <Accordion
+                        key={side.id}
+                        title={side.name}
+                        subtitle={side === winningTeam ? 'Winner' : summary}
+                        open={selectedUserId === `team:${side.id}`}
+                        onChange={() =>
+                          setSelectedUserId(
+                            selectedUserId === `team:${side.id}`
+                              ? undefined
+                              : `team:${side.id}`,
+                          )
+                        }
+                      >
+                        <Text>{names}</Text>
+                        <Text>{`${summary} · ${visits.length} visits · ${count} darts`}</Text>
+                        <GraphContainer
+                          turns={visits}
+                          gameOptions={gameOptions}
+                        />
+                      </Accordion>
+                    );
+                  })}
+                </View>
+              ) : undefined
+            }
             style={styles.playerList}
             renderItem={({ item }) => {
               const parsedPlayer = GameService.stubPlayer(item);
               const userTurns = game.turns.filter(
                 (t) => t.userId === parsedPlayer.id,
               );
+              const side = lineup.participantFor(parsedPlayer.id);
+              const teamVisits =
+                game.teams && side
+                  ? participantVisits(game.turns, side.members)
+                  : undefined;
               const userThrows = userTurns
                 .flatMap((turn) => turn.throws)
                 .filter((thrw) => thrw.score !== 0);
@@ -92,6 +165,8 @@ export const DoublesGameDetailScreen: FC = () => {
               const turnStats = GameHelper.getPostDoublesGameTurnStats(
                 userTurns,
                 gameOptions,
+                teamVisits,
+                teamVisits ? parsedPlayer.id : undefined,
               );
               const neededDouble = DoublesGameHelper.getNextDoubleNeeded(
                 userTurns,
@@ -104,9 +179,13 @@ export const DoublesGameDetailScreen: FC = () => {
                   title={parsedPlayer.name}
                   titleStyle={styles.playerName}
                   subtitle={
-                    neededDouble.isComplete
-                      ? 'Winner'
-                      : `Still needed: ${neededDouble.next && GameHelper.createScoreString(neededDouble.next)}`
+                    game.teams
+                      ? finishingVisit?.userId === parsedPlayer.id
+                        ? 'Hit the final target'
+                        : side?.name
+                      : neededDouble.isComplete
+                        ? 'Winner'
+                        : `Still needed: ${neededDouble.next && GameHelper.createScoreString(neededDouble.next)}`
                   }
                   subtitleStyle={styles.scoreText}
                   open={selectedUserId === parsedPlayer.id}
@@ -130,12 +209,14 @@ export const DoublesGameDetailScreen: FC = () => {
                         turnStats={turnStats}
                       />
                     </View>
-                    <View style={styles.graphContainer}>
-                      <GraphContainer
-                        turns={userTurns}
-                        gameOptions={game.options as DoublesOptions}
-                      />
-                    </View>
+                    {!game.teams && (
+                      <View style={styles.graphContainer}>
+                        <GraphContainer
+                          turns={userTurns}
+                          gameOptions={game.options as DoublesOptions}
+                        />
+                      </View>
+                    )}
                   </View>
                 </Accordion>
               );

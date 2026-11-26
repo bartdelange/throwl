@@ -22,7 +22,11 @@ import {
 } from '@throwl/shared-ui';
 import { useAppTheme } from '@throwl/shared-theme';
 import { FullScreenLayout } from '@throwl/shared-layouts';
-import { GameHelper } from '@throwl/shared-domain-game-rules';
+import {
+  GameHelper,
+  resolveParticipants,
+  participantVisits,
+} from '@throwl/shared-domain-game-rules';
 import { GuestUser, User, X01Options } from '@throwl/shared-domain-models';
 import { GraphContainer } from './components/GraphContainer/GraphContainer';
 import { StatsContainer } from './components/StatsContainer/StatsContainer';
@@ -46,6 +50,15 @@ export const NormalGameDetailScreen: FC = () => {
   const { colors } = useAppTheme();
   const insets = useSafeAreaInsets();
 
+  const lineup = resolveParticipants(
+    game.players.map(GameService.stubPlayer),
+    game.teams,
+  );
+  const finishingVisit = game.finished ? game.turns.at(-1) : undefined;
+  const winningTeam = finishingVisit
+    ? lineup.participantFor(finishingVisit.userId)
+    : undefined;
+
   const textSize = Math.max(Dimensions.get('window').width * 0.04, 20);
   const styles = useStyles(textSize);
 
@@ -63,6 +76,7 @@ export const NormalGameDetailScreen: FC = () => {
                   .filter((u) => u.type === 'guest_user')
                   .map((u) => u.name),
                 gameOptions: game.options,
+                ...(game.teams ? { teams: game.teams } : {}),
               })
             }
           >
@@ -76,12 +90,66 @@ export const NormalGameDetailScreen: FC = () => {
           <FlatList<User | GuestUser>
             alwaysBounceVertical={false}
             data={game.players}
+            ListHeaderComponent={
+              game.teams ? (
+                <View>
+                  {!game.finished && <Text>Saved game · In progress</Text>}
+                  {lineup.participants.map((side) => {
+                    const visits = participantVisits(game.turns, side.members);
+                    const count = visits.reduce(
+                      (sum, visit) => sum + visit.throws.length,
+                      0,
+                    );
+                    const names = side.members
+                      .map(
+                        (id) =>
+                          game.players
+                            .map(GameService.stubPlayer)
+                            .find((player) => player.id === id)?.name,
+                      )
+                      .join(', ');
+                    const progress =
+                      gameOptions.startingScore -
+                      GameHelper.calculateScore(visits, true);
+                    const stats = GameHelper.getPostNormalGameTurnStats(
+                      visits,
+                      gameOptions.startingScore,
+                    );
+                    const summary = `${progress} remaining · ${stats.amount180} × 180`;
+                    return (
+                      <Accordion
+                        key={side.id}
+                        title={side.name}
+                        subtitle={side === winningTeam ? 'Winner' : summary}
+                        open={selectedUserId === `team:${side.id}`}
+                        onChange={() =>
+                          setSelectedUserId(
+                            selectedUserId === `team:${side.id}`
+                              ? undefined
+                              : `team:${side.id}`,
+                          )
+                        }
+                      >
+                        <Text>{names}</Text>
+                        <Text>{`${summary} · ${visits.length} visits · ${count} darts`}</Text>
+                        <GraphContainer turns={visits} />
+                      </Accordion>
+                    );
+                  })}
+                </View>
+              ) : undefined
+            }
             style={styles.playerList}
             renderItem={({ item }) => {
               const parsedPlayer = GameService.stubPlayer(item);
               const userTurns = game.turns.filter(
                 (t) => t.userId === parsedPlayer.id,
               );
+              const side = lineup.participantFor(parsedPlayer.id);
+              const teamVisits =
+                game.teams && side
+                  ? participantVisits(game.turns, side.members)
+                  : undefined;
               const userThrows = userTurns
                 .filter((turn) => turn.isValid)
                 .flatMap((turn) => turn.throws)
@@ -93,24 +161,31 @@ export const NormalGameDetailScreen: FC = () => {
                   gameOptions.startingScore,
                 );
               const turnStats = GameHelper.getPostNormalGameTurnStats(
-                userTurns,
+                teamVisits ?? userTurns,
                 gameOptions.startingScore,
+                teamVisits ? parsedPlayer.id : undefined,
               );
               const throwStats =
                 GameHelper.getPostNormalGameThrowStats(userTurns);
-              const lastThrown =
-                userTurns[userTurns.length - 1].throws[
-                  userTurns[userTurns.length - 1].throws.length - 1
-                ];
+              const lastThrown = userTurns.at(-1)?.throws.at(-1);
+              const finishedForTeam =
+                game.teams && finishingVisit?.userId === parsedPlayer.id;
+              const checkout = finishedForTeam
+                ? GameHelper.calculateTurnScore(finishingVisit)
+                : undefined;
 
               return (
                 <Accordion
                   title={parsedPlayer.name}
                   titleStyle={styles.playerName}
                   subtitle={
-                    userScore.score === 0
-                      ? 'Winner'
-                      : `Remaining score: ${userScore.score}`
+                    game.teams
+                      ? checkout !== undefined
+                        ? `Checkout: ${checkout}`
+                        : side?.name
+                      : userScore.score === 0
+                        ? 'Winner'
+                        : `Remaining score: ${userScore.score}`
                   }
                   subtitleStyle={styles.scoreText}
                   open={selectedUserId === parsedPlayer.id}
@@ -134,8 +209,14 @@ export const NormalGameDetailScreen: FC = () => {
                         turnStats={turnStats}
                         throwStats={throwStats}
                         lastThrown={lastThrown}
-                        mostThrown={throwCount[0][1]}
-                        userScore={userScore.score}
+                        mostThrown={throwCount[0]?.[1]}
+                        userScore={
+                          game.teams
+                            ? finishedForTeam
+                              ? 0
+                              : -1
+                            : userScore.score
+                        }
                       />
                     </View>
                     <View style={styles.graphContainer}>

@@ -14,8 +14,8 @@ interface ScoreContainerProps {
   textSize: number;
   turnStats: NormalGameTurnStats;
   throwStats: ThrowStats;
-  mostThrown: ThrowCount;
-  lastThrown: Throw;
+  mostThrown?: ThrowCount;
+  lastThrown?: Throw;
   userScore: number;
 }
 
@@ -144,11 +144,12 @@ export const StatsContainer: FC<ScoreContainerProps> = ({
             Most thrown
           </Text>
           <Text style={styles.scoreItemText} numberOfLines={1}>
-            {mostThrown.throw.type[0].toUpperCase()}
-            {mostThrown.throw.score} ({mostThrown.count}x)
+            {mostThrown
+              ? `${mostThrown.throw.type[0].toUpperCase()}${mostThrown.throw.score} (${mostThrown.count}x)`
+              : '—'}
           </Text>
         </View>
-        {userScore === 0 && (
+        {userScore === 0 && lastThrown && (
           <View style={styles.scoreItem}>
             <Text style={styles.scoreItemText} numberOfLines={1}>
               Winning throw
