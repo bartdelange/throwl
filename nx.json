@@ -27,7 +27,7 @@
   },
   "targetDefaults": {
     "typecheck": {
-      "dependsOn": []
+      "dependsOn": ["^typecheck"]
     }
   },
   "plugins": [
