@@ -100,8 +100,8 @@ android {
         applicationId "com.throwl"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 43
-        versionName "5.0.3"
+        versionCode 44
+        versionName "5.1.1"
     }
     signingConfigs {
         debug {
