@@ -145,6 +145,39 @@ describe(GameService.name, () => {
     expect(getByIdSpy).toHaveBeenCalledWith('g1');
   });
 
+  it.each<GameOptions>([
+    { mode: 'x01', startingScore: 301 },
+    { mode: 'doubles', quickMatch: true, skipBull: false, endOnInvalid: true },
+  ])(
+    'writes the exact legacy-compatible individual document for $mode',
+    async (options) => {
+      jest
+        .spyOn(GameService, 'getById')
+        .mockResolvedValue({ id: 'g1' } as Game);
+      (addDoc as jest.Mock).mockResolvedValue({ id: 'g1' });
+      const started = new Date('2026-01-01T00:00:00Z');
+      const players: (User | GuestUser)[] = [
+        { type: 'user', id: 'u1', name: 'Jan', email: 'jan@example.test' },
+        { type: 'guest_user', name: 'Piet' },
+      ];
+      const turns: Turn[] = [{ userId: 'Piet', throws: [] }];
+      await GameService.create({ players, turns, options, started });
+      expect(addDoc).toHaveBeenCalledWith(gamesCol, {
+        createdBy: 'u1',
+        playerIds: ['u1'],
+        historyUserIds: ['u1'],
+        players: [{ __doc: true, col: usersCol, id: 'u1' }, 'Piet'],
+        turns: [
+          { userId: { __doc: true, col: usersCol, id: 'Piet' }, throws: [] },
+        ],
+        started,
+        finished: null,
+        options,
+        ...(options.mode === 'x01' ? { startingScore: 301 } : {}),
+      });
+    },
+  );
+
   it('create() rejects games above the shared player limit', async () => {
     const players: GuestUser[] = Array.from(
       { length: MAX_GAME_PLAYERS + 1 },

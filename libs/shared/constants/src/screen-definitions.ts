@@ -1,3 +1,4 @@
+import { TeamRoster } from '@throwl/shared-domain-models';
 import {
   SerializableDoublesOptions,
   SerializableGame,
@@ -27,11 +28,13 @@ export type RootStackParamList = {
     selectedUsers?: string[];
     guestUsers?: string[];
     gameOptions?: SerializableGameOptions;
+    teams?: TeamRoster;
   };
   [NORMAL_GAME_SCREEN]: {
     players: SerializablePlayer[];
     options: SerializableX01Options;
     activeGame?: SerializableGame;
+    teams?: TeamRoster;
   };
   [NORMAL_GAME_DETAIL_SCREEN]: {
     game: SerializableGame;
@@ -40,6 +43,7 @@ export type RootStackParamList = {
     players: SerializablePlayer[];
     options: SerializableDoublesOptions;
     activeGame?: SerializableGame;
+    teams?: TeamRoster;
   };
   [DOUBLES_GAME_DETAIL_SCREEN]: {
     game: SerializableGame;

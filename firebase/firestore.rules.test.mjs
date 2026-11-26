@@ -1,3 +1,5 @@
+import { createJiti } from 'jiti';
+import { fileURLToPath } from 'node:url';
 import { readFile } from 'node:fs/promises';
 import { after, before, beforeEach, describe, test } from 'node:test';
 import {
@@ -27,6 +29,17 @@ import {
   where,
   writeBatch,
 } from 'firebase/firestore';
+
+const jiti = createJiti(import.meta.url, {
+  alias: {
+    '@throwl/shared-domain-models': fileURLToPath(
+      new URL('../libs/shared/domain/models/src/index.ts', import.meta.url),
+    ),
+  },
+});
+const { encodeGameCreate, encodeGameUpdate } = await jiti.import(
+  '../libs/shared/data-access-game/src/data-access/game-write.ts',
+);
 
 const projectId = 'demo-throwl-rules';
 let env;
@@ -412,6 +425,95 @@ describe('exact lookup and friendships', () => {
 });
 
 describe('games', () => {
+  for (const [total, count] of [
+    [4, 2],
+    [6, 2],
+    [6, 3],
+    [8, 2],
+    [8, 4],
+  ]) {
+    test(`the game service payload saves and protects ${count} teams of ${total / count}`, async () => {
+      const db = auth('alice', 'alice@example.test');
+      const bob = auth('bob', 'bob@example.test');
+      const registered = ['alice', 'bob'].map((id) => ({
+        type: 'user',
+        id,
+        name: id,
+        email: `${id}@example.test`,
+      }));
+      const guests = Array.from({ length: total - 2 }, (_, i) => ({
+        type: 'guest_user',
+        name: `Guest ${i + 1}`,
+      }));
+      const playerKeys = [
+        ...registered.map(({ id }) => id),
+        ...guests.map(({ name }) => name),
+      ];
+      const size = total / count;
+      const teams = Array.from({ length: count }, (_, i) => ({
+        members: playerKeys.slice(i * size, (i + 1) * size),
+      }));
+      const ref = doc(db, 'games', 'team-game');
+      const payload = encodeGameCreate(
+        {
+          players: [...registered, ...guests],
+          teams,
+          turns: [],
+          started: new Date('2026-01-01T00:00:00Z'),
+          options: { mode: 'x01', startingScore: 501 },
+        },
+        'alice',
+        (id) => userRef(db, id),
+      );
+      await assertSucceeds(setDoc(ref, payload));
+      await assertFails(
+        setDoc(doc(db, 'games', 'bad-team'), {
+          ...payload,
+          teams: [payload.teams[0], ...payload.teams.slice(0, -1)],
+        }),
+      );
+
+      const turns = [
+        {
+          userId: 'alice',
+          throws: [{ type: 'double', score: 20 }],
+          isValid: true,
+        },
+      ];
+      const patch = encodeGameUpdate(
+        {
+          id: ref.id,
+          turns,
+          teamGameplayRevision: 0,
+        },
+        (id) => userRef(db, id),
+      );
+      await assertFails(updateDoc(ref, { turns, finished: null }));
+      await assertFails(
+        updateDoc(ref, { ...patch, teams: [...payload.teams].reverse() }),
+      );
+      await assertFails(updateDoc(doc(bob, 'games', ref.id), patch));
+      await assertSucceeds(updateDoc(ref, patch));
+      await assertFails(updateDoc(ref, patch));
+      await assertSucceeds(
+        updateDoc(
+          ref,
+          encodeGameUpdate(
+            {
+              id: ref.id,
+              turns: [],
+              teamGameplayRevision: 1,
+            },
+            (id) => userRef(db, id),
+          ),
+        ),
+      );
+      await assertSucceeds(
+        updateDoc(doc(bob, 'games', ref.id), { historyUserIds: ['alice'] }),
+      );
+    });
+  }
+
   test('a player can create a game with registered players and a guest', async () => {
     const db = auth('alice', 'alice@example.test');
     const game = x01Game(db);

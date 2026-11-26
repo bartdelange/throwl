@@ -152,8 +152,45 @@ service cloud.firestore {
       return turns is list && turns.size() <= 500;
     }
 
+    function validTeam(team, size) {
+      return team is map && team.keys().hasOnly(['members'])
+        && team.members is list && team.members.size() == size
+        && team.members.toSet().size() == size;
+    }
+
+    function validTeams(data) {
+      let teams = data.teams;
+      let count = teams.size();
+      let size = teams[0].members.size();
+      return teams is list && count >= 2 && count <= 4
+        && size >= 2 && count * size == data.players.size()
+        && validTeam(teams[0], size) && validTeam(teams[1], size)
+        && (count < 3 || validTeam(teams[2], size))
+        && (count < 4 || validTeam(teams[3], size))
+        && teams[0].members.toSet().union(teams[1].members.toSet())
+          .union(count < 3 ? [].toSet() : teams[2].members.toSet())
+          .union(count < 4 ? [].toSet() : teams[3].members.toSet())
+          == data.players.toSet();
+    }
+
+    function validTeamCreate(data) {
+      return !data.keys().hasAny(['teams', 'teamGameplayRevision'])
+        || (data.keys().hasAll(['teams', 'teamGameplayRevision'])
+          && data.teamGameplayRevision is int && data.teamGameplayRevision == 0
+          && validTeams(data));
+    }
+
+    function validGameplayFields(data, previousData) {
+      let changes = data.diff(previousData).affectedKeys();
+      return previousData.keys().hasAny(['teams'])
+        ? changes.hasOnly(['turns', 'finished', 'teamGameplayRevision'])
+          && data.teamGameplayRevision is int
+          && data.teamGameplayRevision == previousData.teamGameplayRevision + 1
+        : changes.hasOnly(['turns', 'finished']);
+    }
+
     function validGame(data) {
-      return data.keys().hasOnly(['createdBy', 'playerIds', 'historyUserIds', 'players', 'turns', 'started', 'finished', 'options', 'startingScore'])
+      return data.keys().hasOnly(['createdBy', 'playerIds', 'historyUserIds', 'players', 'turns', 'started', 'finished', 'options', 'startingScore', 'teams', 'teamGameplayRevision'])
         && data.keys().hasAll(['playerIds', 'historyUserIds', 'players', 'turns', 'started', 'finished', 'options'])
         && (!data.keys().hasAny(['createdBy']) || data.createdBy is string)
         && data.playerIds is list
@@ -162,21 +199,24 @@ service cloud.firestore {
         && data.players.size() > 0
         && data.players.size() <= 8
         && playerIdsMatchPlayers(data.players, data.playerIds)
+        && validTeamCreate(data)
         && boundedTurns(data.turns)
         && data.started is timestamp
         && (data.finished == null || data.finished is timestamp);
     }
 
     function validGameplayUpdate(data, previousData) {
-      return data.keys().hasOnly(['createdBy', 'playerIds', 'historyUserIds', 'players', 'turns', 'started', 'finished', 'options', 'startingScore'])
-        && data.diff(previousData).affectedKeys().hasOnly(['turns', 'finished'])
+      return data.keys().hasOnly(['createdBy', 'playerIds', 'historyUserIds', 'players', 'turns', 'started', 'finished', 'options', 'startingScore', 'teams', 'teamGameplayRevision'])
+        && validGameplayFields(data, previousData)
         && boundedTurns(data.turns)
         && (data.finished == null || data.finished is timestamp);
     }
 
     function validHistoryUpdate(data, previousData) {
       return ownHistoryMembershipOnlyChanged(data, previousData)
-        && data.keys().hasOnly(['createdBy', 'playerIds', 'historyUserIds', 'players', 'turns', 'started', 'finished', 'options', 'startingScore'])
+        && (!previousData.keys().hasAny(['teams'])
+          || data.diff(previousData).affectedKeys().hasAny(['historyUserIds']))
+        && data.keys().hasOnly(['createdBy', 'playerIds', 'historyUserIds', 'players', 'turns', 'started', 'finished', 'options', 'startingScore', 'teams', 'teamGameplayRevision'])
         && validHistoryUserIds(data);
     }
 
