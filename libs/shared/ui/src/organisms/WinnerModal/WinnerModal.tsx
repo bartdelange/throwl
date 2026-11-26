@@ -3,11 +3,13 @@ import { Dimensions, View } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { useStyles } from './WinnerModal.styles';
 import { AppModal } from '../../molecules/AppModal/AppModal';
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
 interface WinnerModalProps {
   winnerName: string;
   visible: boolean;
+  saveFeedback?: ReactNode;
+  statsDisabled?: boolean;
   onUndoPress: () => void;
   onExitPress: () => void;
   onStatsPress: () => void;
@@ -15,6 +17,8 @@ interface WinnerModalProps {
 export const WinnerModal: FC<WinnerModalProps> = ({
   winnerName,
   visible,
+  saveFeedback,
+  statsDisabled,
   onUndoPress,
   onExitPress,
   onStatsPress,
@@ -30,6 +34,7 @@ export const WinnerModal: FC<WinnerModalProps> = ({
       titleIcon="crown"
       subTitle={winnerName}
       visible={visible}
+      customContent={saveFeedback}
       actions={
         <View style={styles.buttonContainer}>
           <IconButton
@@ -42,6 +47,7 @@ export const WinnerModal: FC<WinnerModalProps> = ({
             icon="chart-line"
             size={iconSize * 1.5}
             iconColor={colors.success}
+            disabled={statsDisabled}
             onPress={onStatsPress}
           />
           <IconButton

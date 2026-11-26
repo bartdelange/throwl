@@ -11,24 +11,29 @@ import {
 import { FlatList } from 'react-native';
 import {
   DoublesOptions,
-  GuestUser,
   Throw,
   Turn,
-  User,
+  TeamRoster,
 } from '@throwl/shared-domain-models';
-import { GameHelper, TurnNeeded } from '@throwl/shared-domain-game-rules';
+import {
+  GameHelper,
+  TurnNeeded,
+  ScoringParticipant,
+  resolveParticipants,
+} from '@throwl/shared-domain-game-rules';
 import { DoublesGameHelper } from '@throwl/shared-domain-game-rules';
 
 type PlayerBase = { id: string; name: string };
 
 export function useDoublesGameController<TPlayer extends PlayerBase>(args: {
   players: TPlayer[];
+  teams?: TeamRoster;
   setPlayers: Dispatch<SetStateAction<TPlayer[]>>;
 
   options: DoublesOptions;
   activeGame?: { id: string; turns: Turn[] } | undefined;
 
-  scoreTableRef: RefObject<FlatList<User | GuestUser> | null>;
+  scoreTableRef: RefObject<FlatList<ScoringParticipant> | null>;
 
   speak?: (text: string) => Promise<void> | void;
   persistGame: (turns: Turn[], finished: boolean) => Promise<void> | void;
@@ -55,6 +60,7 @@ export function useDoublesGameController<TPlayer extends PlayerBase>(args: {
 } {
   const {
     players,
+    teams,
     setPlayers,
     options,
     activeGame,
@@ -63,11 +69,20 @@ export function useDoublesGameController<TPlayer extends PlayerBase>(args: {
     persistGame,
   } = args;
 
+  const lineup = useMemo(
+    () => resolveParticipants(players, teams),
+    [players, teams],
+  );
+  const indexFor = useCallback(
+    (id: string) => players.findIndex((player) => player.id === id),
+    [players],
+  );
+  const initialIndex = Math.max(0, indexFor(lineup.order[0]));
   const [turns, setTurns] = useState<Turn[]>([]);
-  const [activePlayerIndex, setActivePlayerIndex] = useState(0);
+  const [activePlayerIndex, setActivePlayerIndex] = useState(initialIndex);
 
   const [currentTurn, setCurrentTurn] = useState<Turn>(() => ({
-    userId: players[0]?.id ?? '',
+    userId: lineup.order[0] ?? '',
     throws: [],
   }));
 
@@ -77,64 +92,57 @@ export function useDoublesGameController<TPlayer extends PlayerBase>(args: {
 
   const [dropoutPlayerIndex, setDropoutPlayerIndex] = useState<number>();
 
-  const playersLengthRef = useRef(players.length);
-  useEffect(() => {
-    playersLengthRef.current = players.length;
-  }, [players.length]);
-
   const scrollToPlayer = useCallback(
     (index: number) => {
+      const player = players[index];
+      const row = teams
+        ? lineup.participants.findIndex(({ members }) =>
+            members.includes(player?.id),
+          )
+        : index;
+      if (row < 0) return;
       scoreTableRef.current?.scrollToIndex({
         animated: true,
         viewPosition: 0.5,
-        index,
+        index: row,
       });
     },
-    [scoreTableRef],
+    [scoreTableRef, players, teams, lineup],
   );
 
-  const rotatePlayers = useCallback(
-    (reverse = false, customIndex?: number) => {
-      const nextIndex = GameHelper.getNextUserIndex({
-        activeUserIndex: activePlayerIndex,
-        playersLength: playersLengthRef.current,
-        reverse,
-        customIndex,
-      });
-
-      scrollToPlayer(nextIndex);
-      setActivePlayerIndex(nextIndex);
-      return nextIndex;
-    },
-    [activePlayerIndex, scrollToPlayer],
-  );
+  const rotatePlayers = useCallback(() => {
+    const nextIndex = indexFor(
+      lineup.nextThrower(players[activePlayerIndex]?.id),
+    );
+    scrollToPlayer(nextIndex);
+    setActivePlayerIndex(nextIndex);
+    return nextIndex;
+  }, [activePlayerIndex, indexFor, lineup, players, scrollToPlayer]);
 
   const turnNeeded = useMemo<TurnNeeded>(() => {
-    return DoublesGameHelper.calculateTurnNeeded(turns, currentTurn, options);
-  }, [turns, currentTurn, options]);
+    return DoublesGameHelper.calculateTurnNeeded(
+      turns,
+      currentTurn,
+      options,
+      lineup.participantFor(currentTurn.userId)?.members,
+    );
+  }, [turns, currentTurn, options, lineup]);
+
+  const resumedGameId = useRef<string | undefined>(undefined);
 
   // Resume existing game
   useEffect(() => {
-    if (!activeGame) return;
+    if (!activeGame || resumedGameId.current === activeGame.id) return;
+    resumedGameId.current = activeGame.id;
 
     setTurns(activeGame.turns);
 
     const lastTurn = activeGame.turns[activeGame.turns.length - 1];
-    let nextIndex = 0;
-
-    if (lastTurn) {
-      const lastIndex = players.findIndex((p) => p.id === lastTurn.userId);
-      nextIndex = GameHelper.getNextUserIndex({
-        activeUserIndex: lastIndex,
-        playersLength: players.length,
-      });
-    }
-
-    setActivePlayerIndex(nextIndex);
-    scrollToPlayer(nextIndex);
-    setCurrentTurn({ userId: players[nextIndex]?.id ?? '', throws: [] });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeGame?.id]);
+    const nextId = lineup.nextThrower(lastTurn?.userId);
+    setActivePlayerIndex(indexFor(nextId));
+    scrollToPlayer(indexFor(nextId));
+    setCurrentTurn({ userId: nextId ?? '', throws: [] });
+  }, [activeGame, indexFor, lineup, scrollToPlayer]);
 
   const finishTurn = useCallback(
     async (turn: Turn) => {
@@ -158,12 +166,15 @@ export function useDoublesGameController<TPlayer extends PlayerBase>(args: {
       setIsGameFinished(true);
       setIsWinnerModalVisible(true);
 
-      const winner = players[activePlayerIndex];
-      if (winner && speak) void speak(`${winner.name.split(' ')[0]} has won!`);
+      const winner = lineup.participantFor(turn.userId);
+      if (winner && speak)
+        void speak(
+          `${teams ? winner.name : winner.name.split(' ')[0]} has won!`,
+        );
 
       await persistGame(nextTurns, true);
     },
-    [turns, players, activePlayerIndex, speak, persistGame],
+    [turns, lineup, teams, speak, persistGame],
   );
 
   const onThrow = useCallback(
@@ -172,7 +183,9 @@ export function useDoublesGameController<TPlayer extends PlayerBase>(args: {
 
       const before = DoublesGameHelper.getNextDoubleNeeded(
         [...turns, currentTurn],
-        currentTurn.userId,
+        lineup.participantFor(currentTurn.userId)?.members ?? [
+          currentTurn.userId,
+        ],
         options,
       );
       const expectedNext = before.next;
@@ -202,7 +215,7 @@ export function useDoublesGameController<TPlayer extends PlayerBase>(args: {
 
       const after = DoublesGameHelper.getNextDoubleNeeded(
         [...turns, nextTurn],
-        nextTurn.userId,
+        lineup.participantFor(nextTurn.userId)?.members ?? [nextTurn.userId],
         options,
       );
       if (after.isComplete) {
@@ -214,7 +227,15 @@ export function useDoublesGameController<TPlayer extends PlayerBase>(args: {
         void finishTurn(nextTurn);
       }
     },
-    [isGameFinished, turns, currentTurn, options, finishTurn, finishGame],
+    [
+      isGameFinished,
+      turns,
+      currentTurn,
+      options,
+      finishTurn,
+      finishGame,
+      lineup,
+    ],
   );
 
   const undoThrow = useCallback(() => {
@@ -229,19 +250,26 @@ export function useDoublesGameController<TPlayer extends PlayerBase>(args: {
       currentTurn,
     });
 
-    if (didPopTurn) rotatePlayers(true);
+    if (didPopTurn) {
+      const index = indexFor(nextTurn.userId);
+      setActivePlayerIndex(index);
+      scrollToPlayer(index);
+    }
 
     setTurns(nextTurns);
-    setCurrentTurn(nextTurn);
+    setCurrentTurn({
+      ...nextTurn,
+      isValid: nextTurn.throws.every((dart) => dart.isValid !== false),
+    });
     setIsWinnerModalVisible(false);
     setIsGameFinished(false);
 
     void persistGame(nextTurns, false);
-  }, [turns, currentTurn, rotatePlayers, persistGame]);
+  }, [turns, currentTurn, indexFor, scrollToPlayer, persistGame]);
 
   const dropOutUser = useCallback(
     (userId: string) => {
-      if (players.length <= 1) return;
+      if (teams || players.length <= 1) return;
 
       const leavingIndex = players.findIndex((p) => p.id === userId);
       const nextIndex = leavingIndex === players.length - 1 ? 0 : leavingIndex;
@@ -262,7 +290,7 @@ export function useDoublesGameController<TPlayer extends PlayerBase>(args: {
       setDropoutPlayerIndex(undefined);
       void persistGame(nextTurns, false);
     },
-    [players, turns, setPlayers, activePlayerIndex, persistGame],
+    [players, teams, turns, setPlayers, activePlayerIndex, persistGame],
   );
 
   return {

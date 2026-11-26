@@ -8,11 +8,15 @@ import {
   deserializeGameParam,
   serializeGameParam,
 } from '@throwl/shared-constants';
-import { useNavigation, useRoute } from '@react-navigation/core';
+import {
+  useNavigation,
+  usePreventRemove,
+  useRoute,
+} from '@react-navigation/core';
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, FlatList, Pressable, View } from 'react-native';
+import { Alert, Dimensions, FlatList, Pressable, View } from 'react-native';
 import Confetti from 'react-native-confetti';
 import { Text } from 'react-native-paper';
 import {
@@ -37,9 +41,13 @@ import { ScoreTable } from './components/ScoreTable/ScoreTable';
 import { DropOutModel } from '@throwl/shared-ui';
 import { useSpeak } from '@throwl/shared-hooks';
 import { useStyles } from './styles';
-import { GameService } from '@throwl/shared-data-access-game';
+import { GameService, useTeamGameSave } from '@throwl/shared-data-access-game';
 import { useX01GameController } from '../../../feature/useX01GameController';
-import { GameHelper } from '@throwl/shared-domain-game-rules';
+import {
+  GameHelper,
+  resolveParticipants,
+  ScoringParticipant,
+} from '@throwl/shared-domain-game-rules';
 
 export const NormalGameScreen: FC = () => {
   const navigation =
@@ -56,6 +64,7 @@ export const NormalGameScreen: FC = () => {
     [route.params.activeGame],
   );
   const gameOptions = route.params.options;
+  const teams = activeGame?.teams ?? route.params.teams;
 
   // Players must be “id resolved” here (so controller has stable ids)
   const [players, setPlayers] = useState(() =>
@@ -68,12 +77,22 @@ export const NormalGameScreen: FC = () => {
   const styles = useStyles();
   const iconSize = Math.max(width * 0.04, 24);
 
-  const scoreTableRef = useRef<FlatList>(null);
+  const scoreTableRef = useRef<FlatList<ScoringParticipant>>(null);
   const confettiRef = useRef<Confetti>(null);
 
   const [gameId, setGameId] = useState<string | undefined>(activeGame?.id);
 
+  const teamSave = useTeamGameSave(
+    activeGame,
+    teams,
+    route.params.players,
+    gameOptions,
+  );
   const persistGame = async (turnsToPersist: Turn[], finished: boolean) => {
+    if (teams) {
+      await teamSave.save(turnsToPersist, finished);
+      return;
+    }
     await GameService.persistGame({
       gameId,
       setGameId,
@@ -86,6 +105,7 @@ export const NormalGameScreen: FC = () => {
 
   const controller = useX01GameController({
     players,
+    teams,
     setPlayers,
     startingScore: gameOptions.startingScore,
     finishers: DartFinishers,
@@ -111,6 +131,59 @@ export const NormalGameScreen: FC = () => {
     if (controller.isConfettiing) confettiRef.current?.startConfetti();
     else confettiRef.current?.stopConfetti();
   }, [controller.isConfettiing]);
+
+  const lineup = useMemo(
+    () => resolveParticipants(players, teams),
+    [players, teams],
+  );
+  const activeTeam = lineup.participantFor(controller.currentTurn.userId);
+  const activeThrower = players.find(
+    ({ id }) => id === controller.currentTurn.userId,
+  );
+  const nextId = lineup.nextThrower(controller.currentTurn.userId);
+  const nextThrower = players.find(({ id }) => id === nextId);
+  const resultGameId = teams ? teamSave.id : gameId;
+
+  usePreventRemove(Boolean(teams && teamSave.status !== 'idle'), ({ data }) => {
+    if (teamSave.status === 'saving') {
+      Alert.alert(
+        'Saving game',
+        'Wait for the last visit to save before leaving.',
+      );
+      return;
+    }
+    Alert.alert(
+      'Unsaved game changes',
+      teamSave.status === 'conflict'
+        ? 'A newer game was saved elsewhere. Leave and reopen it from Played Games.'
+        : 'You can stay and retry the save.',
+      [
+        { text: 'Stay', style: 'cancel' },
+        {
+          text: 'Discard unsaved changes',
+          style: 'destructive',
+          onPress: () => navigation.dispatch(data.action),
+        },
+      ],
+    );
+  });
+  const saveFeedback =
+    teamSave.status === 'failed' ? (
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => void teamSave.retry()}
+      >
+        <Text>Game save failed. Tap to retry.</Text>
+      </Pressable>
+    ) : teamSave.status === 'conflict' ? (
+      <Pressable accessibilityRole="button" onPress={() => navigation.goBack()}>
+        <Text>
+          A newer game was saved elsewhere. Reopen it from Played Games.
+        </Text>
+      </Pressable>
+    ) : teamSave.status === 'saving' ? (
+      <Text>Saving game…</Text>
+    ) : null;
 
   return (
     <FullScreenLayout style={styles.layout} mode="light" size="fullscreen">
@@ -138,11 +211,15 @@ export const NormalGameScreen: FC = () => {
             createScoreString={GameHelper.createScoreString}
           />
 
+          {teams && !controller.isGameFinished && (
+            <Text>{`${activeTeam?.name ?? ''} · Throwing: ${activeThrower?.name ?? ''} · Next: ${nextThrower?.name ?? ''}`}</Text>
+          )}
+          {!controller.isWinnerModalVisible && saveFeedback}
           <ScoreTable
             turns={controller.turns}
-            activeUserIndex={controller.activePlayerIndex}
             scoreTableRef={scoreTableRef}
             players={players}
+            teams={teams}
             startingScore={gameOptions.startingScore}
             currentTurn={controller.currentTurn}
             width={width}
@@ -154,9 +231,18 @@ export const NormalGameScreen: FC = () => {
       <Confetti timeout={5} size={2} ref={confettiRef} untilStopped />
 
       <WinnerModal
-        winnerName={players[controller.activePlayerIndex]?.name ?? ''}
+        saveFeedback={saveFeedback}
+        statsDisabled={Boolean(teams && teamSave.status !== 'idle')}
+        winnerName={
+          teams && activeTeam
+            ? `${activeTeam.name}: ${players
+                .filter(({ id }) => activeTeam.members.includes(id))
+                .map(({ name }) => name)
+                .join(', ')}`
+            : (players[controller.activePlayerIndex]?.name ?? '')
+        }
         onStatsPress={async () => {
-          if (!gameId) return;
+          if (!resultGameId || (teams && teamSave.status !== 'idle')) return;
           controller.setIsWinnerModalVisible(false);
           navigation.reset({
             index: 0,
@@ -166,17 +252,16 @@ export const NormalGameScreen: FC = () => {
               {
                 name: NORMAL_GAME_DETAIL_SCREEN,
                 params: {
-                  game: serializeGameParam(await GameService.getById(gameId)),
+                  game: serializeGameParam(
+                    await GameService.getById(resultGameId),
+                  ),
                 },
               },
             ],
           });
         }}
         onUndoPress={controller.undoThrow}
-        onExitPress={() => {
-          controller.setIsWinnerModalVisible(false);
-          navigation.popToTop();
-        }}
+        onExitPress={() => navigation.popToTop()}
         visible={controller.isWinnerModalVisible}
       />
 
