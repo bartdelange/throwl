@@ -35,15 +35,8 @@ export const useStyles = () => {
           marginBottom: '10%',
         },
         right: {
-          alignSelf: 'flex-end',
-          height: '100%',
+          alignItems: 'flex-end',
           width: '25%',
-        },
-        rightInner: {
-          position: 'absolute',
-          right: 0,
-          top: '50%',
-          transform: [{ translateY: '-50%' }],
         },
       }),
     [colors.onBackground, textSize],

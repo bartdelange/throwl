@@ -16,6 +16,7 @@ interface AppModalProps {
   subTitle?: string;
   customContent?: ReactNode;
   actions?: ReactNode;
+  contentPaddingHorizontal?: number;
   onDismiss?: () => void;
 }
 
@@ -28,6 +29,7 @@ export const AppModal: FC<AppModalProps> = ({
   customContent,
   onDismiss,
   actions,
+  contentPaddingHorizontal,
 }: AppModalProps) => {
   const { colors } = useAppTheme();
   const styles = useStyles();
@@ -39,7 +41,12 @@ export const AppModal: FC<AppModalProps> = ({
         onDismiss={onDismiss}
         contentContainerStyle={styles.modalContainer}
       >
-        <Surface style={styles.surface}>
+        <Surface
+          style={[
+            styles.surface,
+            { paddingHorizontal: contentPaddingHorizontal },
+          ]}
+        >
           <View style={styles.titleWrapper}>
             {titleIcon && (
               <MaterialDesignIcons

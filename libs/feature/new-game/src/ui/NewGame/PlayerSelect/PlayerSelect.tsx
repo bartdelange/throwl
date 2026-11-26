@@ -1,20 +1,11 @@
-import { RouteProp, useNavigation } from '@react-navigation/core';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useMemo, useState } from 'react';
-import {
-  FlatList,
-  TouchableOpacity,
-  useWindowDimensions,
-  View,
-} from 'react-native';
-import { Menu, Text } from 'react-native-paper';
-import { MaterialDesignIcons } from '@react-native-vector-icons/material-design-icons';
+import { FlatList, useWindowDimensions, View } from 'react-native';
+import { Button, IconButton, Text } from 'react-native-paper';
 import { AppModal, LogoButton, FormInput, AppHeader } from '@throwl/shared-ui';
 import {
-  DOUBLES_GAME_SCREEN,
   HOME_SCREEN,
-  NORMAL_GAME_SCREEN,
   RootStackParamList,
   serializePlayerParam,
 } from '@throwl/shared-constants';
@@ -24,8 +15,7 @@ import {
   GuestUser,
   MAX_GAME_PLAYERS,
   User,
-  TeamRoster,
-  validRoster,
+  teamCounts,
   validGuestName,
   gamePlayerId,
 } from '@throwl/shared-domain-models';
@@ -34,65 +24,48 @@ import { useAppTheme } from '@throwl/shared-theme';
 import { GameService } from '@throwl/shared-data-access-game';
 import { useStyles } from './PlayerSelect.styles';
 import { useNewGame } from '../../../feature/NewGameContext';
-import { TeamSetup, shuffled } from './TeamSetup';
+import { reconcileTeams, shuffled } from '../../../feature/team-arrangement';
+import { useStartGame } from '../../../feature/useStartGame';
+import { GameFlowStackNames, StepperParamList } from '../NewGame';
 import { NewGameScreenLayout } from '../NewGameScreenLayout';
 
 export const PlayerSelectScreen = () => {
   const { width } = useWindowDimensions();
   const navigator =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { state } = useNewGame();
-
-  const route = useRoute<RouteProp<RootStackParamList, 'NEW_GAME'>>();
+  const stepper = useNavigation<NativeStackNavigationProp<StepperParamList>>();
+  const { state, setState } = useNewGame();
+  const start = useStartGame();
   const { user } = useAuthContext();
-  const [selectedUsers, _setSelectedUsers] = useState<string[]>(
-    (route.params?.selectedUsers || []).slice(0, MAX_GAME_PLAYERS),
-  );
-  const [teams, setTeams] = useState<TeamRoster | undefined>(
-    route.params?.teams,
-  );
-  const [guestUsers, setGuestUsers] = useState<string[]>(
-    route.params?.guestUsers || [],
-  );
+  const { players: selectedUsers, guests: guestUsers } = state;
+  const isTeamGame = state.format === 'teams';
   const [addGuestOpen, setAddGuestOpen] = useState(false);
   const [guestName, setGuestName] = useState<string>('');
   const { colors } = useAppTheme();
-  const menuItemTheme = useMemo(
-    () => ({ colors: { onSurface: colors.onSurfaceVariant } }),
-    [colors],
-  );
-
   const setSelectedUsers = useCallback(
     (selectedUsers: string[] | ((current: string[]) => string[])) => {
-      if (Array.isArray(selectedUsers)) {
-        _setSelectedUsers(selectedUsers.slice(0, MAX_GAME_PLAYERS));
-      } else {
-        _setSelectedUsers((current) => {
-          return selectedUsers(current).slice(0, MAX_GAME_PLAYERS);
-        });
-      }
+      setState((current) => ({
+        ...current,
+        players: (Array.isArray(selectedUsers)
+          ? selectedUsers
+          : selectedUsers(current.players)
+        ).slice(0, MAX_GAME_PLAYERS),
+      }));
     },
-    [],
+    [setState],
   );
-  const [visible, setVisible] = useState(false);
   const styles = useStyles();
-  const openMenu = () => setVisible(true);
-  const closeMenu = () => setVisible(false);
-
-  const randomizeSelected = () => {
-    setVisible(false);
-    setSelectedUsers(shuffled(selectedUsers));
-  };
 
   const addGuest = useCallback(() => {
     if (validGuestName(guestName)) {
-      setGuestUsers((current) => {
-        return [...current, guestName];
-      });
+      setState((current) => ({
+        ...current,
+        guests: [...current.guests, guestName],
+      }));
       setGuestName('');
       setAddGuestOpen(false);
     }
-  }, [setGuestUsers, setGuestName, guestName]);
+  }, [setState, guestName]);
 
   const players = useMemo<(Omit<User, 'friends'> | GuestUser)[]>(() => {
     if (!user) {
@@ -124,10 +97,10 @@ export const PlayerSelectScreen = () => {
     return player ? [player] : [];
   });
   const selectedIds = selectedPlayers.map(gamePlayerId);
-  const rosterIsValid =
-    teams &&
+  const hasTeamCount = teamCounts(selectedIds.length).length > 0;
+  const validTeamPlayers =
     selectedIds.length === selectedUsers.length &&
-    validRoster(selectedIds, teams) &&
+    new Set(selectedIds).size === selectedIds.length &&
     selectedIds.every(
       (id) =>
         players.filter((player) => gamePlayerId(player) === id).length === 1,
@@ -135,41 +108,27 @@ export const PlayerSelectScreen = () => {
   const invalidGuest = selectedPlayers.find(
     (player) => player.type === 'guest_user' && !validGuestName(player.name),
   );
-  const canStart =
-    selectedPlayers.length > 0 && !invalidGuest && (!teams || rosterIsValid);
+  const canContinue =
+    selectedPlayers.length > 0 &&
+    !invalidGuest &&
+    (!isTeamGame || (hasTeamCount && validTeamPlayers));
   const startGameButton = (
     <LogoButton
-      label="GO"
+      label={isTeamGame ? 'Next' : 'GO'}
       size={Math.max(50, width * 0.1)}
-      disabled={!canStart}
+      disabled={!canContinue}
       onPress={() => {
-        if (!canStart) return;
-        navigator.setParams({ selectedUsers, guestUsers });
-        const mappedPlayers = selectedPlayers;
-        switch (state.options?.mode) {
-          case 'x01':
-            navigator.push(NORMAL_GAME_SCREEN, {
-              players: mappedPlayers.map(serializePlayerParam),
-              ...(teams ? { teams } : {}),
-              options: {
-                mode: 'x01',
-                startingScore: state.options.startingScore,
-              },
-            });
-            break;
-          case 'doubles':
-            navigator.push(DOUBLES_GAME_SCREEN, {
-              players: mappedPlayers.map(serializePlayerParam),
-              ...(teams ? { teams } : {}),
-              options: {
-                mode: 'doubles',
-                endOnInvalid: state.options.endOnInvalid,
-                skipBull: state.options.skipBull,
-                quickMatch: state.options.quickMatch,
-              },
-            });
-            break;
+        if (!canContinue) return;
+        const lineup = selectedPlayers.map(serializePlayerParam);
+        if (!isTeamGame) {
+          start(lineup);
+          return;
         }
+        setState((current) => ({
+          ...current,
+          teams: reconcileTeams(selectedIds, current.teams),
+        }));
+        stepper.push(GameFlowStackNames.TEAM_ARRANGEMENT, { players: lineup });
       }}
     />
   );
@@ -180,61 +139,60 @@ export const PlayerSelectScreen = () => {
         <AppHeader
           title="The Players"
           right={
-            <Menu
-              visible={visible}
-              onDismiss={closeMenu}
-              anchor={
-                <TouchableOpacity onPress={openMenu}>
-                  <MaterialDesignIcons
-                    name="menu"
-                    color="white"
-                    size={Math.max(50, width * 0.1)}
-                  />
-                </TouchableOpacity>
-              }
-            >
-              {!teams && (
-                <Menu.Item
-                  leadingIcon="dice-multiple"
-                  onPress={randomizeSelected}
-                  title="RANDOMIZE PLAYERS"
-                  theme={menuItemTheme}
-                />
-              )}
-              <Menu.Item
-                leadingIcon="account-multiple"
-                onPress={() => {
-                  setVisible(false);
-                  setSelectedUsers([]);
-                  setGuestUsers([]);
-                }}
-                title="CLEAR"
-                theme={menuItemTheme}
+            !isTeamGame ? (
+              <IconButton
+                accessibilityLabel="Randomize players"
+                icon="shuffle-variant"
+                iconColor={colors.onBackground}
+                disabled={selectedUsers.length < 2}
+                onPress={() => setSelectedUsers(shuffled(selectedUsers))}
               />
-              <Menu.Item
-                leadingIcon="account-edit"
-                onPress={() => {
-                  setVisible(false);
-                  setAddGuestOpen(true);
-                }}
-                title="ADD A GUEST"
-                theme={menuItemTheme}
-              />
-            </Menu>
+            ) : undefined
           }
         />
+        <View style={styles.actions}>
+          <Button
+            icon="account-plus-outline"
+            textColor={colors.onBackground}
+            onPress={() => setAddGuestOpen(true)}
+          >
+            Add guest
+          </Button>
+          {(selectedUsers.length > 0 || guestUsers.length > 0) && (
+            <Button
+              textColor={colors.secondary}
+              onPress={() => {
+                setState((current) => ({
+                  ...current,
+                  players: [],
+                  guests: [],
+                  teams: undefined,
+                }));
+              }}
+            >
+              Clear
+            </Button>
+          )}
+        </View>
+        {selectedUsers.length === MAX_GAME_PLAYERS && (
+          <Text style={styles.validation}>
+            Player limit reached ({MAX_GAME_PLAYERS}).
+          </Text>
+        )}
         {invalidGuest && (
           <Text>Guest names must be between 1 and 80 characters.</Text>
         )}
-        <TeamSetup
-          teams={teams}
-          players={selectedPlayers.map((player) => ({
-            id: gamePlayerId(player),
-            name: player.name,
-          }))}
-          rosterIsValid={Boolean(rosterIsValid)}
-          onChange={setTeams}
-        />
+        {isTeamGame && (
+          <Text style={styles.validation}>
+            {selectedIds.length} selected. Choose 4, 6 or 8 players for equal
+            teams.
+          </Text>
+        )}
+        {isTeamGame && hasTeamCount && !validTeamPlayers && (
+          <Text style={styles.validation}>
+            Choose players with distinct names or accounts.
+          </Text>
+        )}
         <View style={styles.playerList}>
           <FlatList<Omit<User, 'friends'> | GuestUser>
             data={players}
@@ -242,7 +200,7 @@ export const PlayerSelectScreen = () => {
             ListEmptyComponent={
               <Text style={styles.header}>
                 You have not added any friends yet, you can also add a guest
-                using the menu above
+                using Add guest above
               </Text>
             }
             renderItem={({ item: player }) => {
@@ -275,6 +233,7 @@ export const PlayerSelectScreen = () => {
         visible={addGuestOpen}
         titleIcon="account-edit"
         title="ADD A GUEST"
+        contentPaddingHorizontal={24}
         subTitle="Guest names must be between 1 and 80 characters."
         onDismiss={() => setAddGuestOpen(false)}
         actions={
