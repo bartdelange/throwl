@@ -82,7 +82,7 @@
     "jest-environment-jsdom": "^30.0.2",
     "jest-util": "^30.0.2",
     "jiti": "2.4.2",
-    "jsdom": "~22.1.0",
+    "jsdom": "~31.0.1",
     "metro-config": "~0.87.1",
     "metro-resolver": "~0.87.1",
     "nx": "22.3.3",
