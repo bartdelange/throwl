@@ -24,12 +24,16 @@ import {
   GuestUser,
   MAX_GAME_PLAYERS,
   User,
+  TeamRoster,
+  validRoster,
+  gamePlayerId,
 } from '@throwl/shared-domain-models';
 import { PlayerItem } from './components/PlayerItem/PlayerItem';
 import { useAppTheme } from '@throwl/shared-theme';
 import { GameService } from '@throwl/shared-data-access-game';
 import { useStyles } from './PlayerSelect.styles';
 import { useNewGame } from '../../../feature/NewGameContext';
+import { TeamSetup, shuffled } from './TeamSetup';
 import { NewGameScreenLayout } from '../NewGameScreenLayout';
 
 export const PlayerSelectScreen = () => {
@@ -42,6 +46,9 @@ export const PlayerSelectScreen = () => {
   const { user } = useAuthContext();
   const [selectedUsers, _setSelectedUsers] = useState<string[]>(
     (route.params?.selectedUsers || []).slice(0, MAX_GAME_PLAYERS),
+  );
+  const [teams, setTeams] = useState<TeamRoster | undefined>(
+    route.params?.teams,
   );
   const [guestUsers, setGuestUsers] = useState<string[]>(
     route.params?.guestUsers || [],
@@ -73,22 +80,7 @@ export const PlayerSelectScreen = () => {
 
   const randomizeSelected = () => {
     setVisible(false);
-    const newArray = selectedUsers.map((u) => u);
-    let currentIndex = newArray.length;
-    let randomIndex = 0;
-
-    while (currentIndex !== 0) {
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-
-      // And swap it with the current element.
-      [newArray[currentIndex], newArray[randomIndex]] = [
-        newArray[randomIndex],
-        newArray[currentIndex],
-      ];
-    }
-
-    setSelectedUsers(newArray);
+    setSelectedUsers(shuffled(selectedUsers));
   };
 
   const addGuest = useCallback(() => {
@@ -126,25 +118,33 @@ export const PlayerSelectScreen = () => {
     return <View />;
   }
 
+  const selectedPlayers = selectedUsers.flatMap((id) => {
+    const player = players.find((candidate) => gamePlayerId(candidate) === id);
+    return player ? [player] : [];
+  });
+  const selectedIds = selectedPlayers.map(gamePlayerId);
+  const rosterIsValid =
+    teams &&
+    selectedIds.length === selectedUsers.length &&
+    validRoster(selectedIds, teams) &&
+    selectedIds.every(
+      (id) =>
+        players.filter((player) => gamePlayerId(player) === id).length === 1,
+    );
   const startGameButton = (
     <LogoButton
       label="GO"
       size={Math.max(50, width * 0.1)}
-      disabled={!selectedUsers.length}
+      disabled={!selectedUsers.length || Boolean(teams && !rosterIsValid)}
       onPress={() => {
+        if (teams && !rosterIsValid) return;
         navigator.setParams({ selectedUsers, guestUsers });
-        const mappedPlayers = [
-          ...(selectedUsers
-            .map<
-              Omit<User, 'friends'> | GuestUser | undefined
-            >((selectedUser) => players.find((p) => GameService.stubPlayer(p).id === selectedUser))
-            .filter(Boolean) as (Omit<User, 'friends'> | GuestUser)[]),
-        ];
-
+        const mappedPlayers = selectedPlayers;
         switch (state.options?.mode) {
           case 'x01':
             navigator.push(NORMAL_GAME_SCREEN, {
               players: mappedPlayers.map(serializePlayerParam),
+              ...(teams ? { teams } : {}),
               options: {
                 mode: 'x01',
                 startingScore: state.options.startingScore,
@@ -154,6 +154,7 @@ export const PlayerSelectScreen = () => {
           case 'doubles':
             navigator.push(DOUBLES_GAME_SCREEN, {
               players: mappedPlayers.map(serializePlayerParam),
+              ...(teams ? { teams } : {}),
               options: {
                 mode: 'doubles',
                 endOnInvalid: state.options.endOnInvalid,
@@ -213,6 +214,15 @@ export const PlayerSelectScreen = () => {
               />
             </Menu>
           }
+        />
+        <TeamSetup
+          teams={teams}
+          players={selectedPlayers.map((player) => ({
+            id: gamePlayerId(player),
+            name: player.name,
+          }))}
+          rosterIsValid={Boolean(rosterIsValid)}
+          onChange={setTeams}
         />
         <View style={styles.playerList}>
           <FlatList<Omit<User, 'friends'> | GuestUser>
