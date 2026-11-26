@@ -238,8 +238,11 @@ describe('PlayedGamesScreen', () => {
       const alert = jest.spyOn(Alert, 'alert').mockImplementation();
       const { PlayedGamesScreen } = require('../../..');
       const { findByText, queryByText } = render(<PlayedGamesScreen />);
-      fireEvent.press(await findByText('Unfinished game'));
-      await waitFor(() => expect(queryByText('Unfinished game')).toBeNull());
+      const row = await findByText('Unfinished game');
+      await act(async () => {
+        fireEvent.press(row);
+      });
+      expect(queryByText('Unfinished game')).toBeNull();
       expect(alert).toHaveBeenCalledWith(
         'Game unavailable',
         expect.any(String),
