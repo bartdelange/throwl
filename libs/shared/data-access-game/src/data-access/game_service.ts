@@ -256,6 +256,9 @@ export class GameService extends FirebaseService {
     if (teams && !validRoster(players.map(gamePlayerId), teams)) {
       throw new Error('Invalid team roster');
     }
+    if (teams && !players.some(({ type }) => type === 'user')) {
+      throw new Error('A team game requires a registered player');
+    }
     const creatorId = getAuth().currentUser?.uid;
     if (!creatorId)
       throw new Error('A signed-in user is required to create a game');

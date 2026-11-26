@@ -131,13 +131,17 @@ export const PlayerSelectScreen = () => {
       (id) =>
         players.filter((player) => gamePlayerId(player) === id).length === 1,
     );
+  const hasRegisteredPlayer = selectedPlayers.some(
+    ({ type }) => type === 'user',
+  );
+  const teamCanStart = rosterIsValid && hasRegisteredPlayer;
   const startGameButton = (
     <LogoButton
       label="GO"
       size={Math.max(50, width * 0.1)}
-      disabled={!selectedUsers.length || Boolean(teams && !rosterIsValid)}
+      disabled={!selectedUsers.length || Boolean(teams && !teamCanStart)}
       onPress={() => {
-        if (teams && !rosterIsValid) return;
+        if (teams && !teamCanStart) return;
         navigator.setParams({ selectedUsers, guestUsers });
         const mappedPlayers = selectedPlayers;
         switch (state.options?.mode) {
@@ -215,6 +219,9 @@ export const PlayerSelectScreen = () => {
             </Menu>
           }
         />
+        {teams && !hasRegisteredPlayer && (
+          <Text>Include a registered player to save a team game.</Text>
+        )}
         <TeamSetup
           teams={teams}
           players={selectedPlayers.map((player) => ({

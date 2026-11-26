@@ -52,6 +52,7 @@ interface ScoreTableProps {
   players: (User | GuestUser)[];
   turns: Turn[];
   teams?: TeamRoster;
+  activeUserIndex: number;
   currentTurn: Turn;
   width: number;
   setDroppingOutUserIndex: (index: number) => void;
@@ -63,6 +64,7 @@ export const ScoreTable: FC<ScoreTableProps> = ({
   gameOptions,
   turns,
   teams,
+  activeUserIndex,
   currentTurn,
   width,
   setDroppingOutUserIndex,
@@ -93,7 +95,7 @@ export const ScoreTable: FC<ScoreTableProps> = ({
         </Col>
         <Col style={styles.scoreTableCol} size={1}>
           <Text style={[styles.scoreTableCell, styles.scoreTableCenterCell]}>
-            On curr. D.
+            {teams ? 'Target' : 'On curr. D.'}
           </Text>
         </Col>
       </Row>
@@ -106,7 +108,9 @@ export const ScoreTable: FC<ScoreTableProps> = ({
         style={styles.scoreTabelPlayerList}
         keyExtractor={({ id }) => id}
         renderItem={({ item: participant, index }) => {
-          const active = participant.members.includes(currentTurn.userId);
+          const active = teams
+            ? participant.members.includes(currentTurn.userId)
+            : activeUserIndex === index;
           const visits = participantVisits(turns, participant.members);
           const userScore = GameHelper.calculateInDoublesGameScoreStatsForUser(
             visits,

@@ -148,7 +148,15 @@ export const DoublesGameScreen: FC = () => {
     if (teamSave.status === 'saving') {
       Alert.alert(
         'Saving game',
-        'Wait for the last visit to save before leaving.',
+        'The last visit is still saving. Leaving now may lose unsaved changes.',
+        [
+          { text: 'Stay', style: 'cancel' },
+          {
+            text: 'Leave while saving',
+            style: 'destructive',
+            onPress: () => navigation.dispatch(data.action),
+          },
+        ],
       );
       return;
     }
@@ -189,6 +197,7 @@ export const DoublesGameScreen: FC = () => {
     <FullScreenLayout style={styles.layout} mode="light" size="fullscreen">
       <View style={styles.content}>
         <Pressable
+          disabled={teamSave.status === 'conflict'}
           onPress={() =>
             controller.onThrow({
               type: DartboardScoreType.Out,
@@ -198,7 +207,11 @@ export const DoublesGameScreen: FC = () => {
         >
           <View style={styles.dartboardWrapper}>
             <Text style={styles.missText}>MISS</Text>
-            <ClickableDartboard onClick={controller.onThrow} />
+            <ClickableDartboard
+              onClick={
+                teamSave.status === 'conflict' ? undefined : controller.onThrow
+              }
+            />
           </View>
         </Pressable>
 
@@ -219,6 +232,7 @@ export const DoublesGameScreen: FC = () => {
             scoreTableRef={scoreTableRef}
             players={players}
             teams={teams}
+            activeUserIndex={controller.activePlayerIndex}
             gameOptions={gameOptions}
             turns={controller.turns}
             currentTurn={controller.currentTurn}

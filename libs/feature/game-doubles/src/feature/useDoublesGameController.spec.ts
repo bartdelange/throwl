@@ -83,3 +83,57 @@ it('resumes a shared ladder and keeps earlier hits when the visit ends on a wron
   expect(result.current.currentTurn.userId).toBe('Jan');
   expect(result.current.turnNeeded[0]?.score).toBe(18);
 });
+
+it('wins immediately when the active player hits the team’s last target', () => {
+  const persistGame = jest.fn();
+  const hits = (userId: string, ...scores: number[]): Turn => ({
+    userId,
+    throws: scores.map((score) => ({ type: DartboardScoreType.Double, score })),
+    isValid: true,
+  });
+  const misses = (userId: string): Turn => ({
+    userId,
+    throws: [miss, miss, miss],
+    isValid: true,
+  });
+  const turns = [
+    hits('Jan', 20, 19, 18),
+    misses('Klaas'),
+    hits('Piet', 17, 16, 15),
+    misses('Bart'),
+    hits('Jan', 14, 13, 12),
+    misses('Klaas'),
+  ];
+  const { result } = renderHook(() =>
+    useDoublesGameController({
+      players: teamPlayers,
+      teams,
+      setPlayers: jest.fn(),
+      options: {
+        mode: 'doubles',
+        quickMatch: true,
+        skipBull: true,
+        endOnInvalid: true,
+      },
+      activeGame: { id: 'team', turns },
+      scoreTableRef: { current: null },
+      persistGame,
+    }),
+  );
+  expect(result.current.currentTurn.userId).toBe('Piet');
+  act(() =>
+    result.current.onThrow({ type: DartboardScoreType.Double, score: 11 }),
+  );
+  act(() =>
+    result.current.onThrow({ type: DartboardScoreType.Double, score: 10 }),
+  );
+  expect(result.current.isGameFinished).toBe(true);
+  expect(persistGame).toHaveBeenLastCalledWith(
+    [...turns, expect.objectContaining({ userId: 'Piet' })],
+    true,
+  );
+  act(() => result.current.undoThrow());
+  expect(result.current.currentTurn.userId).toBe('Piet');
+  expect(result.current.turnNeeded[1]?.score).toBe(10);
+  expect(persistGame).toHaveBeenLastCalledWith(turns, false);
+});

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 import {
   TeamRoster,
@@ -31,6 +31,11 @@ function moveEarlier<T>(items: T[], index: number): T[] {
   ];
   return reordered;
 }
+
+const styles = StyleSheet.create({
+  formats: { flexDirection: 'row', flexWrap: 'wrap' },
+  editor: { maxHeight: 200 },
+});
 
 interface TeamSetupProps {
   teams?: TeamRoster;
@@ -68,8 +73,9 @@ export function TeamSetup({
   return (
     <>
       {(availableTeamCounts.length > 0 || teams) && (
-        <View>
+        <View style={styles.formats}>
           <Button
+            mode={teams ? 'text' : 'contained'}
             onPress={() => {
               onChange(undefined);
               setSwapPlayer(undefined);
@@ -80,6 +86,7 @@ export function TeamSetup({
           {availableTeamCounts.map((count) => (
             <Button
               key={count}
+              mode={teams?.length === count ? 'contained' : 'text'}
               onPress={() => {
                 onChange(seedTeams(selectedIds, count));
                 setSwapPlayer(undefined);
@@ -99,54 +106,55 @@ export function TeamSetup({
         </View>
       )}
       {teams && rosterIsValid && (
-        <ScrollView
-          style={{ maxHeight: 260 }}
-          keyboardShouldPersistTaps="handled"
-        >
-          <Button
-            onPress={() => {
-              onChange(seedTeams(shuffled(selectedIds), teams.length));
-              setSwapPlayer(undefined);
-            }}
-          >
-            Shuffle teams
-          </Button>
-          <Text>Tap two players to swap their positions.</Text>
-          {teams.map(({ members }, teamIndex) => (
-            <View key={teamIndex}>
-              <Text>{`Team ${teamIndex + 1}`}</Text>
-              {teamIndex > 0 && (
-                <Button onPress={() => onChange(moveEarlier(teams, teamIndex))}>
-                  {`Move Team ${teamIndex + 1} earlier`}
-                </Button>
-              )}
-              {members.map((id, index) => (
-                <View key={id}>
-                  <Button
-                    mode={swapPlayer === id ? 'contained' : 'text'}
-                    onPress={() => selectMember(id)}
-                  >
-                    {playerName(id)}
-                  </Button>
-                  {index > 0 && (
-                    <Button
-                      onPress={() =>
-                        onChange(
-                          teams.map((team, position) =>
-                            position === teamIndex
-                              ? { members: moveEarlier(members, index) }
-                              : team,
-                          ),
-                        )
-                      }
-                    >{`Move ${playerName(id)} earlier`}</Button>
-                  )}
-                </View>
-              ))}
-            </View>
-          ))}
+        <>
           <Text>{`Throwing order: ${teamThrowingOrder(teams).map(playerName).join(' → ')}`}</Text>
-        </ScrollView>
+          <ScrollView style={styles.editor} keyboardShouldPersistTaps="handled">
+            <Button
+              onPress={() => {
+                onChange(seedTeams(shuffled(selectedIds), teams.length));
+                setSwapPlayer(undefined);
+              }}
+            >
+              Shuffle teams
+            </Button>
+            <Text>Tap two players to swap their positions.</Text>
+            {teams.map(({ members }, teamIndex) => (
+              <View key={teamIndex}>
+                <Text>{`Team ${teamIndex + 1}`}</Text>
+                {teamIndex > 0 && (
+                  <Button
+                    onPress={() => onChange(moveEarlier(teams, teamIndex))}
+                  >
+                    {`Move Team ${teamIndex + 1} earlier`}
+                  </Button>
+                )}
+                {members.map((id, index) => (
+                  <View key={id}>
+                    <Button
+                      mode={swapPlayer === id ? 'contained' : 'text'}
+                      onPress={() => selectMember(id)}
+                    >
+                      {playerName(id)}
+                    </Button>
+                    {index > 0 && (
+                      <Button
+                        onPress={() =>
+                          onChange(
+                            teams.map((team, position) =>
+                              position === teamIndex
+                                ? { members: moveEarlier(members, index) }
+                                : team,
+                            ),
+                          )
+                        }
+                      >{`Move ${playerName(id)} earlier`}</Button>
+                    )}
+                  </View>
+                ))}
+              </View>
+            ))}
+          </ScrollView>
+        </>
       )}
     </>
   );

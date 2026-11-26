@@ -97,3 +97,33 @@ it('uses a teammate’s remaining score for busts, checkout and winning undo', (
   });
   expect(persistGame).toHaveBeenLastCalledWith(start, false);
 });
+
+it('revalidates a reopened individual visit after undoing its bust dart', () => {
+  const persistGame = jest.fn();
+  const { result } = renderHook(() =>
+    useX01GameController({
+      players,
+      setPlayers: jest.fn(),
+      startingScore: 40,
+      finishers: { 22: [{ type: DartboardScoreType.Double, score: 11 }] },
+      scoreTableRef: { current: null },
+      persistGame,
+    }),
+  );
+  act(() =>
+    result.current.onThrow({ type: DartboardScoreType.Single, score: 18 }),
+  );
+  act(() =>
+    result.current.onThrow({ type: DartboardScoreType.Triple, score: 7 }),
+  );
+  expect(persistGame).toHaveBeenLastCalledWith(
+    [expect.objectContaining({ isValid: false })],
+    false,
+  );
+  act(() => result.current.undoThrow());
+  expect(result.current.currentTurn).toMatchObject({
+    userId: 'u1',
+    isValid: true,
+  });
+  expect(result.current.turnNeeded[1]?.score).toBe(11);
+});
