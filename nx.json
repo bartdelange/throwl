@@ -14,7 +14,16 @@
       "!{projectRoot}/src/test-setup.[jt]s",
       "!{projectRoot}/test-setup.[jt]s"
     ],
-    "sharedGlobals": []
+    "sharedGlobals": [],
+    "{projectRoot}/tsconfig.json": [
+      { "fileset": "{projectRoot}/tsconfig.json" }
+    ],
+    "{projectRoot}/tsconfig.lib.json": [
+      { "fileset": "{projectRoot}/tsconfig.lib.json" }
+    ],
+    "{projectRoot}/tsconfig.spec.json": [
+      { "fileset": "{projectRoot}/tsconfig.spec.json" }
+    ]
   },
   "targetDefaults": {
     "typecheck": {
