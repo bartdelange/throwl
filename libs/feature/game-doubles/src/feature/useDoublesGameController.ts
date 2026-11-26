@@ -264,15 +264,26 @@ export function useDoublesGameController<TPlayer extends PlayerBase>(args: {
     setIsWinnerModalVisible(false);
     setIsGameFinished(false);
 
-    void persistGame(nextTurns, false);
-  }, [turns, currentTurn, indexFor, scrollToPlayer, persistGame]);
+    if (didPopTurn || isGameFinished) void persistGame(nextTurns, false);
+  }, [
+    turns,
+    currentTurn,
+    indexFor,
+    scrollToPlayer,
+    persistGame,
+    isGameFinished,
+  ]);
 
   const dropOutUser = useCallback(
     (userId: string) => {
       if (teams || players.length <= 1) return;
 
       const leavingIndex = players.findIndex((p) => p.id === userId);
-      const nextIndex = leavingIndex === players.length - 1 ? 0 : leavingIndex;
+      if (leavingIndex < 0) return;
+      const nextIndex =
+        leavingIndex === activePlayerIndex
+          ? leavingIndex % (players.length - 1)
+          : activePlayerIndex - Number(leavingIndex < activePlayerIndex);
 
       const nextTurns = turns.filter((t) => t.userId !== userId);
       const nextPlayers = players.filter((p) => p.id !== userId);

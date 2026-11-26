@@ -8,15 +8,11 @@ import {
   deserializeGameParam,
   serializeGameParam,
 } from '@throwl/shared-constants';
-import {
-  useNavigation,
-  usePreventRemove,
-  useRoute,
-} from '@react-navigation/core';
+import { useNavigation, useRoute } from '@react-navigation/core';
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Dimensions, FlatList, Pressable, View } from 'react-native';
+import { Dimensions, FlatList, Pressable, View } from 'react-native';
 import Confetti from 'react-native-confetti';
 import { Text } from 'react-native-paper';
 import {
@@ -34,6 +30,7 @@ import {
   AppbarBackAction,
   TurnIndicatorBar,
   WinnerModal,
+  useGameSaveRecovery,
 } from '@throwl/shared-ui';
 import { FullScreenLayout } from '@throwl/shared-layouts';
 import { DartboardScoreType, Turn } from '@throwl/shared-domain-models';
@@ -144,60 +141,17 @@ export const NormalGameScreen: FC = () => {
   const nextThrower = players.find(({ id }) => id === nextId);
   const resultGameId = teams ? teamSave.id : gameId;
 
-  usePreventRemove(Boolean(teams && teamSave.status !== 'idle'), ({ data }) => {
-    if (teamSave.status === 'saving') {
-      Alert.alert(
-        'Saving game',
-        'The last visit is still saving. Leaving now may lose unsaved changes.',
-        [
-          { text: 'Stay', style: 'cancel' },
-          {
-            text: 'Leave while saving',
-            style: 'destructive',
-            onPress: () => navigation.dispatch(data.action),
-          },
-        ],
-      );
-      return;
-    }
-    Alert.alert(
-      'Unsaved game changes',
-      teamSave.status === 'conflict'
-        ? 'A newer game was saved elsewhere. Leave and reopen it from Played Games.'
-        : 'You can stay and retry the save.',
-      [
-        { text: 'Stay', style: 'cancel' },
-        {
-          text: 'Discard unsaved changes',
-          style: 'destructive',
-          onPress: () => navigation.dispatch(data.action),
-        },
-      ],
-    );
-  });
-  const saveFeedback =
-    teamSave.status === 'failed' ? (
-      <Pressable
-        accessibilityRole="button"
-        onPress={() => void teamSave.retry()}
-      >
-        <Text>Game save failed. Tap to retry.</Text>
-      </Pressable>
-    ) : teamSave.status === 'conflict' ? (
-      <Pressable accessibilityRole="button" onPress={() => navigation.goBack()}>
-        <Text>
-          A newer game was saved elsewhere. Reopen it from Played Games.
-        </Text>
-      </Pressable>
-    ) : teamSave.status === 'saving' ? (
-      <Text>Saving game…</Text>
-    ) : null;
+  const { saveFeedback, gameplayBlocked } = useGameSaveRecovery(
+    teamSave.status,
+    teamSave.retry,
+  );
+  const undoThrow = gameplayBlocked ? undefined : controller.undoThrow;
 
   return (
     <FullScreenLayout style={styles.layout} mode="light" size="fullscreen">
       <View style={styles.content}>
         <Pressable
-          disabled={teamSave.status === 'conflict'}
+          disabled={gameplayBlocked}
           onPress={(evt) =>
             controller.onThrow(
               { type: DartboardScoreType.Out, score: 0 },
@@ -208,9 +162,7 @@ export const NormalGameScreen: FC = () => {
           <View style={styles.dartboardWrapper}>
             <Text style={styles.missText}>MISS</Text>
             <ClickableDartboard
-              onClick={
-                teamSave.status === 'conflict' ? undefined : controller.onThrow
-              }
+              onClick={gameplayBlocked ? undefined : controller.onThrow}
             />
           </View>
         </Pressable>
@@ -220,7 +172,7 @@ export const NormalGameScreen: FC = () => {
             currentTurn={controller.currentTurn}
             turnNeeded={controller.turnNeeded}
             iconSize={iconSize}
-            undoThrow={controller.undoThrow}
+            undoThrow={undoThrow}
             createScoreString={GameHelper.createScoreString}
           />
 
@@ -274,7 +226,7 @@ export const NormalGameScreen: FC = () => {
             ],
           });
         }}
-        onUndoPress={controller.undoThrow}
+        onUndoPress={undoThrow}
         onExitPress={() => navigation.popToTop()}
         visible={controller.isWinnerModalVisible}
       />

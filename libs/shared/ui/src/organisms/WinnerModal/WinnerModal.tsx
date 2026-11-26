@@ -10,7 +10,7 @@ interface WinnerModalProps {
   visible: boolean;
   saveFeedback?: ReactNode;
   statsDisabled?: boolean;
-  onUndoPress: () => void;
+  onUndoPress?: () => void;
   onExitPress: () => void;
   onStatsPress: () => void;
 }
@@ -54,6 +54,7 @@ export const WinnerModal: FC<WinnerModalProps> = ({
             icon="restore"
             size={iconSize * 1.5}
             iconColor={colors.error}
+            disabled={!onUndoPress}
             onPress={onUndoPress}
             style={[styles.undoButton, styles.transparent]}
           />
