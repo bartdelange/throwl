@@ -166,9 +166,11 @@ export const ProfileScreen = () => {
     try {
       await UserService.updateName(user.id, name);
     } catch {
-      /* empty */
+      setError('Could not update your name. Please try again.');
+      setModalOpen(true);
+    } finally {
+      setWorking(false);
     }
-    setWorking(false);
   };
 
   return (

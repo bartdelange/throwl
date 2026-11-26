@@ -226,7 +226,10 @@ service cloud.firestore {
         && validUser(request.resource.data)
         && request.resource.data.email == request.auth.token.email;
       allow update: if isOwnUser(uid)
-        && validUser(request.resource.data)
+        && request.resource.data.keys().hasOnly(['email', 'name', 'friends'])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['email', 'name'])
+        && validEmail(request.resource.data.email)
+        && validName(request.resource.data.name)
         && request.resource.data.email == request.auth.token.email
         && validEmailChange(uid);
       allow delete: if false;

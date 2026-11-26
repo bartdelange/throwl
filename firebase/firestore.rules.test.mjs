@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict';
 import { createJiti } from 'jiti';
 import { fileURLToPath } from 'node:url';
 import { readFile } from 'node:fs/promises';
@@ -260,6 +261,35 @@ describe('authentication and users', () => {
     forged.update(doc(bob, 'users', 'alice'), { name: 'Mallory' });
     forged.update(doc(bob, 'publicProfiles', 'alice'), { name: 'Mallory' });
     await assertFails(forged.commit());
+  });
+
+  test('a name update preserves a legacy friends field without allowing edits to it', async () => {
+    await env.withSecurityRulesDisabled(async (context) => {
+      await updateDoc(doc(firestoreFor(context), 'users', 'alice'), {
+        friends: [],
+      });
+    });
+
+    const db = auth('alice', 'alice@example.test');
+    const user = doc(db, 'users', 'alice');
+    const profile = doc(db, 'publicProfiles', 'alice');
+
+    const batch = writeBatch(db);
+    batch.update(user, { name: 'Test B' });
+    batch.update(profile, { name: 'Test B' });
+    await assertSucceeds(batch.commit());
+
+    const privateSnapshot = await getDoc(user);
+    const publicSnapshot = await getDoc(profile);
+    assert.deepEqual(privateSnapshot.data(), {
+      email: 'alice@example.test',
+      friends: [],
+      name: 'Test B',
+    });
+    assert.equal(publicSnapshot.data().name, 'Test B');
+    await assertFails(updateDoc(user, { friends: ['bob'] }));
+    await assertFails(updateDoc(user, { friends: deleteField() }));
+    await assertFails(updateDoc(user, { unrelated: true }));
   });
 
   test('the real three-write email change batch is constrained', async () => {
