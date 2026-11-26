@@ -26,6 +26,7 @@ import {
   GameHelper,
   resolveParticipants,
   participantVisits,
+  getGameWinner,
 } from '@throwl/shared-domain-game-rules';
 import { GuestUser, User, X01Options } from '@throwl/shared-domain-models';
 import { GraphContainer } from './components/GraphContainer/GraphContainer';
@@ -54,10 +55,8 @@ export const NormalGameDetailScreen: FC = () => {
     game.players.map(GameService.stubPlayer),
     game.teams,
   );
-  const finishingVisit = game.finished ? game.turns.at(-1) : undefined;
-  const winningTeam = finishingVisit
-    ? lineup.participantFor(finishingVisit.userId)
-    : undefined;
+  const result = getGameWinner(game);
+  const finishingVisit = result?.visit;
 
   const textSize = Math.max(Dimensions.get('window').width * 0.04, 20);
   const styles = useStyles(textSize);
@@ -120,7 +119,11 @@ export const NormalGameDetailScreen: FC = () => {
                       <Accordion
                         key={side.id}
                         title={side.name}
-                        subtitle={side === winningTeam ? 'Winner' : summary}
+                        subtitle={
+                          side.id === result?.participant.id
+                            ? 'Winner'
+                            : summary
+                        }
                         open={selectedUserId === `team:${side.id}`}
                         onChange={() =>
                           setSelectedUserId(
@@ -183,7 +186,7 @@ export const NormalGameDetailScreen: FC = () => {
                       ? checkout !== undefined
                         ? `Checkout: ${checkout}`
                         : side?.name
-                      : userScore.score === 0
+                      : finishingVisit?.userId === parsedPlayer.id
                         ? 'Winner'
                         : `Remaining score: ${userScore.score}`
                   }
@@ -215,7 +218,9 @@ export const NormalGameDetailScreen: FC = () => {
                             ? finishedForTeam
                               ? 0
                               : -1
-                            : userScore.score
+                            : finishingVisit?.userId === parsedPlayer.id
+                              ? 0
+                              : -1
                         }
                       />
                     </View>

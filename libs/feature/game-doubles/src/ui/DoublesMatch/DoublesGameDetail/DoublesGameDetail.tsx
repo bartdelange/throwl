@@ -26,6 +26,7 @@ import {
   GameHelper,
   resolveParticipants,
   participantVisits,
+  getGameWinner,
 } from '@throwl/shared-domain-game-rules';
 import { DoublesOptions, GuestUser, User } from '@throwl/shared-domain-models';
 import { GraphContainer } from './components/GraphContainer/GraphContainer';
@@ -57,10 +58,8 @@ export const DoublesGameDetailScreen: FC = () => {
     game.players.map(GameService.stubPlayer),
     game.teams,
   );
-  const finishingVisit = game.finished ? game.turns.at(-1) : undefined;
-  const winningTeam = finishingVisit
-    ? lineup.participantFor(finishingVisit.userId)
-    : undefined;
+  const result = getGameWinner(game);
+  const finishingVisit = result?.visit;
 
   const textSize = Math.max(Dimensions.get('window').width * 0.04, 20);
   const styles = useStyles(textSize);
@@ -125,7 +124,11 @@ export const DoublesGameDetailScreen: FC = () => {
                       <Accordion
                         key={side.id}
                         title={side.name}
-                        subtitle={side === winningTeam ? 'Winner' : summary}
+                        subtitle={
+                          side.id === result?.participant.id
+                            ? 'Winner'
+                            : summary
+                        }
                         open={selectedUserId === `team:${side.id}`}
                         onChange={() =>
                           setSelectedUserId(
@@ -183,7 +186,7 @@ export const DoublesGameDetailScreen: FC = () => {
                       ? finishingVisit?.userId === parsedPlayer.id
                         ? 'Hit the final target'
                         : side?.name
-                      : neededDouble.isComplete
+                      : finishingVisit?.userId === parsedPlayer.id
                         ? 'Winner'
                         : `Still needed: ${neededDouble.next && GameHelper.createScoreString(neededDouble.next)}`
                   }

@@ -599,6 +599,9 @@ importers:
       '@throwl/shared-data-access-game':
         specifier: workspace:*
         version: link:../../shared/data-access-game
+      '@throwl/shared-domain-game-rules':
+        specifier: workspace:*
+        version: link:../../shared/domain/game-rules
       '@throwl/shared-domain-models':
         specifier: workspace:*
         version: link:../../shared/domain/models
