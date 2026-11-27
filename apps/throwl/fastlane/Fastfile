@@ -1,3 +1,8 @@
+require "base64"
+require "json"
+require "tmpdir"
+require "fileutils"
+
 default_platform(:ios)
 
 DEVELOPER_APP_IDENTIFIER = ENV.fetch("DEVELOPER_APP_IDENTIFIER", nil)
@@ -66,6 +71,26 @@ platform :ios do
       notify_external_testers: false
     )
   end
+
+  desc "Submit the approved TestFlight build for automatic release after App Review"
+  lane :submit_tested_build do |options|
+    notes = JSON.parse(File.read(options.fetch(:notes)))
+    deliver(
+      api_key: testflight_api_key,
+      app_identifier: DEVELOPER_APP_IDENTIFIER,
+      app_version: options.fetch(:version).to_s,
+      build_number: options.fetch(:build).to_s,
+      release_notes: notes.transform_values { |entry| entry.fetch("whatsNew") },
+      promotional_text: notes.filter { |_, entry| entry.key?("iosPromotionalText") }
+        .transform_values { |entry| entry.fetch("iosPromotionalText") },
+      skip_binary_upload: true,
+      skip_screenshots: true,
+      force: true,
+      run_precheck_before_submit: false,
+      automatic_release: true,
+      submit_for_review: true
+    )
+  end
 end
 
 platform :android do
@@ -103,5 +128,35 @@ platform :android do
       aab: options.fetch(:aab),
       track: "internal"
     )
+  end
+
+  desc "Promote the approved Play Internal build and send it for production review"
+  lane :submit_tested_build do |options|
+    code = Integer(options.fetch(:build))
+    Dir.mktmpdir("throwl-play-release") do |temporary|
+      metadata = File.join(temporary, "metadata")
+      credentials = File.join(temporary, "credentials.json")
+      File.write(credentials, Base64.strict_decode64(ENV.fetch("PLAY_CONFIG_JSON")), perm: 0o600)
+      JSON.parse(File.read(options.fetch(:notes))).each do |locale, entry|
+        directory = File.join(metadata, locale, "changelogs")
+        FileUtils.mkdir_p(directory)
+        File.write(File.join(directory, "#{code}.txt"), entry.fetch("whatsNew"))
+      end
+
+      upload_to_play_store(
+        json_key: credentials,
+        track: "internal",
+        track_promote_to: "production",
+        version_code: code,
+        metadata_path: metadata,
+        skip_upload_apk: true,
+        skip_upload_aab: true,
+        skip_upload_metadata: true,
+        skip_upload_images: true,
+        skip_upload_screenshots: true,
+        changes_not_sent_for_review: false,
+        rescue_changes_not_sent_for_review: false
+      )
+    end
   end
 end

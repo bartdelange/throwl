@@ -114,3 +114,116 @@ jobs:
       IOS_APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
       IOS_APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
       IOS_GOOGLE_SERVICE_INFO_PLIST_B64: ${{ secrets.IOS_GOOGLE_SERVICE_INFO_PLIST_B64 }}
+
+  prepare:
+    name: Submit both tested builds for store review
+    needs: [deploy_android, deploy_ios]
+    if: github.event_name == 'push' && github.ref_type == 'tag' && startsWith(github.ref_name, 'v') && !github.event.repository.fork
+    concurrency:
+      group: throwl-production-store-preparation
+      cancel-in-progress: false
+    runs-on: macos-latest
+    environment: store-review
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Require recorded store-review approval
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/approvals" \
+            | jq -e 'any(.[]; .state == "approved" and any(.environments[]; .name == "store-review"))' >/dev/null || {
+              echo 'Configure required reviewers for the store-review environment and approve this run before preparing the stores.'
+              exit 1
+            }
+
+      - name: Read the tested release and validate its store notes
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo 'Enter a version tag such as v5.1.2.'; exit 1; }
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/master
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases" \
+            | jq -e '[.[][] | select(.tag_name == env.RELEASE_TAG and .draft)] | if length == 1 then .[0] else error("Expected one GitHub draft for this tag") end' \
+            > "$RUNNER_TEMP/draft.json"
+          jq -er '[
+            .body | match("<!-- throwl-store-notes -->\\s*```json\\r?\\n([\\s\\S]*?)\\r?\\n```"; "g") | .captures[0].string
+          ] | if length == 1 then .[0] | fromjson else error("Keep one store-notes JSON block in the draft") end
+            | if .["en-US"] and all(to_entries[];
+                (.key | test("^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$")) and
+                (.value.whatsNew | type == "string" and test("\\S") and length <= 500) and
+                (.value | if has("iosPromotionalText") then
+                  .iosPromotionalText | type == "string" and length <= 170
+                else true end))
+              then . else error("Fill in the store notes and check the locale and text lengths") end' \
+            "$RUNNER_TEMP/draft.json" > "$RUNNER_TEMP/store-notes.json"
+
+          version=$(jq -er .version apps/throwl/package.json)
+          gradle=apps/throwl/android/app/build.gradle
+          xcode=apps/throwl/ios/Throwl.xcodeproj/project.pbxproj
+          android_build=$(awk '$1 == "versionCode" { print $2 }' "$gradle")
+          ios_build=$(awk '$1 == "CURRENT_PROJECT_VERSION" { gsub(/;/, "", $3); print $3 }' "$xcode" | sort -u)
+          android_version=$(awk '$1 == "versionName" { gsub(/"/, "", $2); print $2 }' "$gradle")
+          ios_version=$(awk '$1 == "MARKETING_VERSION" { gsub(/;/, "", $3); print $3 }' "$xcode" | sort -u)
+          [[ "$RELEASE_TAG" == "v$version" && "$android_version" == "$version" && "$ios_version" == "$version" ]]
+          [[ "$android_build" =~ ^[0-9]+$ && "$ios_build" =~ ^[0-9]+$ ]]
+          {
+            echo "id=$(jq -er .id "$RUNNER_TEMP/draft.json")"
+            echo "version=$version"
+            echo "ios_build=$ios_build"
+            echo "android_build=$android_build"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@145243922b4465b78e04dd66294782c7de45901f # v1.345.0
+        with:
+          working-directory: apps/throwl
+          bundler-cache: true
+
+      - name: Submit tested iOS build to App Review
+        id: ios
+        continue-on-error: true
+        working-directory: apps/throwl
+        run: bundle exec fastlane ios submit_tested_build "version:$VERSION" "build:$BUILD_NUMBER" "notes:$RUNNER_TEMP/store-notes.json"
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+          BUILD_NUMBER: ${{ steps.release.outputs.ios_build }}
+          DEVELOPER_APP_IDENTIFIER: ${{ secrets.DEVELOPER_APP_IDENTIFIER }}
+          APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
+          APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+          APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
+
+      - name: Submit tested Android build for production review
+        id: android
+        continue-on-error: true
+        working-directory: apps/throwl
+        run: bundle exec fastlane android submit_tested_build "build:$BUILD_NUMBER" "notes:$RUNNER_TEMP/store-notes.json"
+        env:
+          BUILD_NUMBER: ${{ steps.release.outputs.android_build }}
+          PLAY_CONFIG_JSON: ${{ secrets.PLAY_CONFIG_JSON }}
+
+      - name: Record both store results in the GitHub draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ steps.release.outputs.id }}
+          IOS_OUTCOME: ${{ steps.ios.outcome }}
+          ANDROID_OUTCOME: ${{ steps.android.outcome }}
+        run: |
+          printf '### Store preparation\n\n- iOS: %s\n- Android: %s\n' "$IOS_OUTCOME" "$ANDROID_OUTCOME" >> "$GITHUB_STEP_SUMMARY"
+          [[ "$IOS_OUTCOME" == success && "$ANDROID_OUTCOME" == success ]] || exit 1
+          gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" > "$RUNNER_TEMP/current-draft.json"
+          jq -e --slurpfile original "$RUNNER_TEMP/draft.json" '
+            if .draft and .body == $original[0].body then
+              {body: ("<!-- throwl-store-status: ready -->\n**Both builds were submitted to their stores for review.** Each store publishes after approval.\n\n" +
+                (.body | sub("^<!-- throwl-store-status: (pending|ready) -->\\s*\\*\\*[^\\r\\n]*\\s*"; "")))}
+            else error("The GitHub draft changed during store preparation; update its status manually") end
+          ' "$RUNNER_TEMP/current-draft.json" > "$RUNNER_TEMP/ready.json"
+          gh api --method PATCH "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" \
+            --input "$RUNNER_TEMP/ready.json" --jq .html_url

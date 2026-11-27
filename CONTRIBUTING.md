@@ -113,3 +113,39 @@ eligible caches from `master`.
 To check encrypted bundle creation on GitHub without uploading to the stores,
 run the release workflow manually with `publish: false`. That run requires
 release signing and the artifact secret, and retains the encrypted bundles.
+
+### Prepare production store submissions
+
+Run the usual release target with a GitHub token so release-it creates a
+draft directly:
+
+```sh
+GITHUB_TOKEN="$(gh auth token)" pnpm nx run @throwl/throwl:release
+```
+
+On GitHub, edit the draft's changelog and store notes before approving.
+Enter `whatsNew` (up to 500 characters per locale) and optional
+`iosPromotionalText` (up to 170 characters). Omit the promotional text field to
+preserve existing text or use an empty string to clear it.
+
+The same tag workflow validates, builds, and uploads both candidate builds,
+then waits at **Review deployments**. Test the exact TestFlight and Play
+Internal builds before approving `store-review` in that run.
+
+Before the first release, configure the `store-review` GitHub environment with
+required reviewers, allow version tags, and allow self-review if you cut and
+approve releases yourself. The job checks the run's approval history before
+writing to either store. The App Store Connect key needs permission to submit
+versions for review, and the Play service account needs permission to edit production
+releases. The workflow reuses the existing Actions credentials.
+
+Approving the job submits both tested builds for production review. Apple
+releases automatically after approval. For Google to publish automatically
+after approval, turn off Managed publishing in Play Console. Before
+approving, check that Play has no active production review or rollout.
+Fastlane's promotion uses Google's default handling for an existing review.
+Each store can approve and publish on its own schedule.
+
+After both lanes succeed, the workflow records their outcomes on the GitHub
+draft. Publish that draft separately. If one lane fails, check both store
+consoles before retrying because the other lane may have already succeeded.
