@@ -98,7 +98,7 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "{projectRoot}",
-        "command": "pnpm run release"
+        "command": "release-it"
       }
     },
     "deploy:android": {

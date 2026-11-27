@@ -6,7 +6,7 @@
   "git": {
     "commitMessage": "chore(release): v${version}",
     "tagName": "v${version}",
-    "changelog": "node ../../scripts/store-release.mjs notes"
+    "changelog": "cat fastlane/store-release-notes.md"
   },
   "github": {
     "release": true,

@@ -1,11 +1,8 @@
-import { execFileSync } from 'node:child_process';
 import { readFile, writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 
-const pending = '<!-- throwl-store-status: pending -->';
-const ready = '<!-- throwl-store-status: ready -->';
-const readyText =
-  '**Both stores are ready to submit.** Open App Store Connect and Play Console to send each release for review.';
+const ready =
+  '<!-- throwl-store-status: ready -->\n**Both stores are ready to submit.** Open App Store Connect and Play Console to send each release for review.';
 
 function singleMatch(text, pattern, message) {
   const matches = [...text.matchAll(pattern)];
@@ -16,7 +13,7 @@ function singleMatch(text, pattern, message) {
 export function readStoreNotes(body) {
   const json = singleMatch(
     body,
-    /<!-- throwl-store-notes -->\r?\n```json\r?\n([\s\S]*?)\r?\n```/g,
+    /<!-- throwl-store-notes -->\s*```json\r?\n([\s\S]*?)\r?\n```/g,
     'Keep exactly one store-notes JSON block in the GitHub draft.',
   );
   const notes = JSON.parse(json);
@@ -90,38 +87,12 @@ export function readReleaseIdentity(tag, appVersion, gradle, xcode) {
   return { version: appVersion, androidBuild, iosBuild: iosBuilds[0] };
 }
 
-const pendingText =
-  '**Production review drafts have not been prepared.** Test the uploaded builds, then run Prepare store submissions.';
-
-const pendingHeader = `${pending}\n${pendingText}`;
-const readyHeader = `${ready}\n${readyText}`;
-
-export function withDraftStatus(body) {
-  return body.startsWith(pendingHeader) ? body : `${pendingHeader}\n\n${body}`;
-}
-
-export function draftTemplate() {
-  return withDraftStatus(`## Changes
-
-<!-- throwl-store-notes -->
-\`\`\`json
-{
-  "en-US": {
-    "whatsNew": "",
-    "iosPromotionalText": ""
-  }
-}
-\`\`\`
-
-`);
-}
-
 export function markReady(body) {
-  if (body.startsWith(readyHeader)) return body;
-  if (!body.startsWith(pendingHeader)) {
-    throw new Error('The draft is missing its store status header.');
-  }
-  return readyHeader + body.slice(pendingHeader.length);
+  const notes = body.replace(
+    /^<!-- throwl-store-status: (?:pending|ready) -->\s*(?:\*\*(?:Production review drafts have not been prepared|Both stores are ready to submit)\.\*\*[^\r\n]*\s*)?/,
+    '',
+  );
+  return `${ready}\n\n${notes}`;
 }
 
 if (
@@ -129,30 +100,21 @@ if (
   import.meta.url === pathToFileURL(process.argv[1]).href
 ) {
   const [command, source, output] = process.argv.slice(2);
-  if (command === 'notes') {
-    process.stdout.write(
-      await readFile(process.env.THROWL_RELEASE_NOTES_FILE, 'utf8'),
-    );
-  } else if (command === 'snapshot') {
+  if (command === 'snapshot') {
     const release = JSON.parse(await readFile(source, 'utf8'));
     if (!release.draft || release.tag_name !== process.env.RELEASE_TAG) {
       throw new Error(
         'Expected the GitHub draft for the selected release tag.',
       );
     }
-    markReady(release.body);
-    if (!/^v\d+\.\d+\.\d+$/.test(release.tag_name)) {
-      throw new Error('Expected a version tag such as v5.1.2.');
-    }
-    const taggedFile = (path) =>
-      execFileSync('git', ['show', `refs/tags/${release.tag_name}:${path}`], {
-        encoding: 'utf8',
-      });
     const identity = readReleaseIdentity(
       release.tag_name,
-      JSON.parse(taggedFile('apps/throwl/package.json')).version,
-      taggedFile('apps/throwl/android/app/build.gradle'),
-      taggedFile('apps/throwl/ios/Throwl.xcodeproj/project.pbxproj'),
+      JSON.parse(await readFile('apps/throwl/package.json', 'utf8')).version,
+      await readFile('apps/throwl/android/app/build.gradle', 'utf8'),
+      await readFile(
+        'apps/throwl/ios/Throwl.xcodeproj/project.pbxproj',
+        'utf8',
+      ),
     );
     await writeFile(
       output,
@@ -173,6 +135,6 @@ if (
     }
     await writeFile(output, JSON.stringify({ body: markReady(snapshot.body) }));
   } else {
-    throw new Error('Expected notes, snapshot or ready.');
+    throw new Error('Expected snapshot or ready.');
   }
 }

@@ -116,15 +116,17 @@ release signing and the artifact secret, and retains the encrypted bundles.
 
 ### Prepare production store submissions
 
-The release target opens `VISUAL` or `EDITOR` for your changelog and store notes
-before bumping and tagging the app. It creates a GitHub draft with your text.
-For noninteractive use, set `THROWL_RELEASE_NOTES_FILE` to the absolute path to
-a Markdown file containing the notes block. Enter `whatsNew` for each store
-locale (500 characters maximum) and optional `iosPromotionalText` (170
-characters maximum).
-Use an empty string to clear promotional text or omit it to preserve the store's
-existing text. You can edit the notes on GitHub before approval. Leave the
-status header intact.
+Run the usual release target with a GitHub token so release-it creates a
+draft directly:
+
+```sh
+GITHUB_TOKEN="$(gh auth token)" pnpm nx run @throwl/throwl:release
+```
+
+On GitHub, edit the draft's changelog and store notes before approving.
+Enter `whatsNew` (up to 500 characters per locale) and optional
+`iosPromotionalText` (up to 170 characters). Omit the promotional text field to
+preserve existing text or use an empty string to clear it.
 
 The same tag workflow validates, builds, and uploads both candidate builds,
 then waits at **Review deployments**. Test the exact TestFlight and Play
