@@ -5,6 +5,13 @@ module StoreReview
   PLAY_DRAFT_STATE = 'RELEASE_LIFECYCLE_STATE_NOT_SENT_FOR_REVIEW'
   PLAY_PACKAGE = 'com.throwl'
 
+  def self.wait_for_store
+    6.times.any? do |attempt|
+      sleep(5) if attempt.positive?
+      yield
+    end
+  end
+
   def self.prepare_ios(app, api, release)
     version_name = release.fetch('version')
     build_number = release.fetch('iosBuild')
@@ -57,8 +64,7 @@ module StoreReview
       draft.add_app_store_version_to_review_items(app_store_version_id: version.id)
     end
 
-    confirmed = 6.times.any? do |attempt|
-      sleep(5) if attempt.positive?
+    confirmed = wait_for_store do
       selected = app.get_app_store_versions(filter: version_filter, includes: 'build').first
       selected&.build&.id == build.id &&
         selected.release_type == MANUAL_RELEASE &&
@@ -116,8 +122,7 @@ module StoreReview
       end
     end
 
-    saved = 6.times.any? do |attempt|
-      sleep(5) if attempt.positive?
+    saved = wait_for_store do
       Array(service.list_application_track_releases(production).releases).any? do |item|
         item.release_name == version &&
           item.release_lifecycle_state == PLAY_DRAFT_STATE &&

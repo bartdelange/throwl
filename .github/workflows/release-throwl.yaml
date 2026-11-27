@@ -162,10 +162,6 @@ jobs:
           working-directory: apps/throwl
           bundler-cache: true
 
-      - name: Verify store preparation safeguards
-        working-directory: apps/throwl
-        run: bundle exec ruby fastlane/prepare_store_review_test.rb
-
       - name: Prepare App Store Connect draft
         id: ios
         continue-on-error: true

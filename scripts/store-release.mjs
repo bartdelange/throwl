@@ -1,140 +1,120 @@
 import { readFile, writeFile } from 'node:fs/promises';
-import { pathToFileURL } from 'node:url';
 
-const ready =
-  '<!-- throwl-store-status: ready -->\n**Both stores are ready to submit.** Open App Store Connect and Play Console to send each release for review.';
+const [command, source, output, currentDraft] = process.argv.slice(2);
+const readJson = async (path) => JSON.parse(await readFile(path, 'utf8'));
+const snapshot = await readJson(source);
 
-function singleMatch(text, pattern, message) {
-  const matches = [...text.matchAll(pattern)];
-  if (matches.length !== 1) throw new Error(message);
-  return matches[0][1];
-}
+function storeNotes(body) {
+  const blocks = [
+    ...body.matchAll(
+      /<!-- throwl-store-notes -->\s*```json\r?\n([\s\S]*?)\r?\n```/g,
+    ),
+  ];
+  if (blocks.length !== 1)
+    throw new Error('Keep one store-notes JSON block in the GitHub draft.');
 
-export function readStoreNotes(body) {
-  const json = singleMatch(
-    body,
-    /<!-- throwl-store-notes -->\s*```json\r?\n([\s\S]*?)\r?\n```/g,
-    'Keep exactly one store-notes JSON block in the GitHub draft.',
-  );
-  const notes = JSON.parse(json);
-  if (!notes?.['en-US'] || Array.isArray(notes)) {
-    throw new Error('Store notes must include en-US.');
-  }
-
+  const notes = JSON.parse(blocks[0][1]);
+  if (!notes?.['en-US']) throw new Error('Store notes must include en-US.');
   for (const [locale, entry] of Object.entries(notes)) {
+    const { whatsNew, iosPromotionalText } = entry ?? {};
     if (
       !/^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/.test(locale) ||
-      !entry ||
-      typeof entry !== 'object'
-    ) {
-      throw new Error(`Invalid store locale or entry: ${locale}`);
-    }
-    const text = entry.whatsNew;
-    if (typeof text !== 'string' || !text.trim() || [...text].length > 500) {
-      throw new Error(`${locale} What’s New must contain 1–500 characters.`);
-    }
-    if (
-      entry.iosPromotionalText !== undefined &&
-      (typeof entry.iosPromotionalText !== 'string' ||
-        [...entry.iosPromotionalText].length > 170)
+      typeof whatsNew !== 'string' ||
+      !whatsNew.trim() ||
+      [...whatsNew].length > 500
     ) {
       throw new Error(
-        `${locale} iOS promotional text must be at most 170 characters.`,
+        `Invalid locale or What’s New text for ${locale} (maximum 500 characters).`,
+      );
+    }
+    if (
+      iosPromotionalText !== undefined &&
+      (typeof iosPromotionalText !== 'string' ||
+        [...iosPromotionalText].length > 170)
+    ) {
+      throw new Error(
+        `${locale} iOS promotional text must contain at most 170 characters.`,
       );
     }
   }
   return notes;
 }
 
-export function readReleaseIdentity(tag, appVersion, gradle, xcode) {
-  if (!/^v\d+\.\d+\.\d+$/.test(tag) || tag !== `v${appVersion}`) {
-    throw new Error('The release tag and app package version must match.');
-  }
-  const androidBuild = singleMatch(
-    gradle,
-    /^\s*versionCode\s+(\d+)\s*$/gm,
-    'Expected one Android version code.',
-  );
-  const androidVersion = singleMatch(
-    gradle,
-    /^\s*versionName\s+"([^"]+)"\s*$/gm,
-    'Expected one Android version name.',
-  );
-  const iosBuilds = [
-    ...new Set(
-      [...xcode.matchAll(/^\s*CURRENT_PROJECT_VERSION\s*=\s*(\d+);\s*$/gm)].map(
-        (match) => match[1],
-      ),
-    ),
-  ];
-  if (iosBuilds.length !== 1) throw new Error('iOS build numbers must agree.');
-  const iosVersions = [
-    ...new Set(
-      [...xcode.matchAll(/^\s*MARKETING_VERSION\s*=\s*([\d.]+);\s*$/gm)].map(
-        (match) => match[1],
-      ),
-    ),
-  ];
-  if (
-    androidVersion !== appVersion ||
-    iosVersions.length !== 1 ||
-    iosVersions[0] !== appVersion
-  ) {
+function nativeValue(file, pattern, field) {
+  const values = new Set([...file.matchAll(pattern)].map((match) => match[1]));
+  if (values.size !== 1)
     throw new Error(
-      'The native marketing versions must match the tagged app version.',
+      `Expected one value for ${field} in the tagged build settings.`,
     );
-  }
-  return { version: appVersion, androidBuild, iosBuild: iosBuilds[0] };
+  return values.values().next().value;
 }
 
-export function markReady(body) {
-  const notes = body.replace(
+let result;
+if (command === 'snapshot') {
+  const { version } = await readJson('apps/throwl/package.json');
+  if (
+    !snapshot.draft ||
+    snapshot.tag_name !== process.env.RELEASE_TAG ||
+    snapshot.tag_name !== `v${version}`
+  ) {
+    throw new Error(
+      'Expected the GitHub draft matching the tagged app version.',
+    );
+  }
+
+  const gradle = await readFile('apps/throwl/android/app/build.gradle', 'utf8');
+  const xcode = await readFile(
+    'apps/throwl/ios/Throwl.xcodeproj/project.pbxproj',
+    'utf8',
+  );
+  const androidVersion = nativeValue(
+    gradle,
+    /^\s*versionName\s+"([^"]+)"\s*$/gm,
+    'Android version',
+  );
+  const iosVersion = nativeValue(
+    xcode,
+    /^\s*MARKETING_VERSION\s*=\s*([\d.]+);\s*$/gm,
+    'iOS version',
+  );
+  if (androidVersion !== version || iosVersion !== version)
+    throw new Error('Native versions must match the tag.');
+
+  result = {
+    id: snapshot.id,
+    body: snapshot.body,
+    version,
+    androidBuild: nativeValue(
+      gradle,
+      /^\s*versionCode\s+(\d+)\s*$/gm,
+      'Android build',
+    ),
+    iosBuild: nativeValue(
+      xcode,
+      /^\s*CURRENT_PROJECT_VERSION\s*=\s*(\d+);\s*$/gm,
+      'iOS build',
+    ),
+    notes: storeNotes(snapshot.body),
+  };
+} else if (command === 'ready') {
+  const draft = await readJson(currentDraft);
+  if (
+    !draft.draft ||
+    draft.id !== snapshot.id ||
+    draft.body !== snapshot.body
+  ) {
+    throw new Error(
+      'The GitHub draft changed during preparation. Rerun with the current notes.',
+    );
+  }
+  const body = draft.body.replace(
     /^<!-- throwl-store-status: (?:pending|ready) -->\s*(?:\*\*(?:Production review drafts have not been prepared|Both stores are ready to submit)\.\*\*[^\r\n]*\s*)?/,
     '',
   );
-  return `${ready}\n\n${notes}`;
+  result = {
+    body: `<!-- throwl-store-status: ready -->\n**Both stores are ready to submit.** Open App Store Connect and Play Console to send each release for review.\n\n${body}`,
+  };
+} else {
+  throw new Error('Expected snapshot or ready.');
 }
-
-if (
-  process.argv[1] &&
-  import.meta.url === pathToFileURL(process.argv[1]).href
-) {
-  const [command, source, output] = process.argv.slice(2);
-  if (command === 'snapshot') {
-    const release = JSON.parse(await readFile(source, 'utf8'));
-    if (!release.draft || release.tag_name !== process.env.RELEASE_TAG) {
-      throw new Error(
-        'Expected the GitHub draft for the selected release tag.',
-      );
-    }
-    const identity = readReleaseIdentity(
-      release.tag_name,
-      JSON.parse(await readFile('apps/throwl/package.json', 'utf8')).version,
-      await readFile('apps/throwl/android/app/build.gradle', 'utf8'),
-      await readFile(
-        'apps/throwl/ios/Throwl.xcodeproj/project.pbxproj',
-        'utf8',
-      ),
-    );
-    await writeFile(
-      output,
-      JSON.stringify({
-        ...identity,
-        id: release.id,
-        body: release.body,
-        notes: readStoreNotes(release.body),
-      }),
-    );
-  } else if (command === 'ready') {
-    const snapshot = JSON.parse(await readFile(source, 'utf8'));
-    const current = JSON.parse(await readFile(process.argv[5], 'utf8'));
-    if (!current.draft || current.body !== snapshot.body) {
-      throw new Error(
-        'The GitHub draft changed during preparation. Rerun with the current notes.',
-      );
-    }
-    await writeFile(output, JSON.stringify({ body: markReady(snapshot.body) }));
-  } else {
-    throw new Error('Expected snapshot or ready.');
-  }
-}
+await writeFile(output, JSON.stringify(result));

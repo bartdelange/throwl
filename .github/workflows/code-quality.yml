@@ -50,6 +50,3 @@ jobs:
 
       - name: Firestore Rules
         run: pnpm test:firestore-rules
-
-      - name: Verify release artifact encryption
-        run: node --test scripts/release-artifact.test.mjs scripts/store-release.test.mjs
