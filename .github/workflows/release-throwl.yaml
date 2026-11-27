@@ -114,3 +114,87 @@ jobs:
       IOS_APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
       IOS_APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
       IOS_GOOGLE_SERVICE_INFO_PLIST_B64: ${{ secrets.IOS_GOOGLE_SERVICE_INFO_PLIST_B64 }}
+
+  prepare:
+    name: Prepare iOS and Android for manual review submission
+    needs: [deploy_android, deploy_ios]
+    if: github.event_name == 'push' && github.ref_type == 'tag' && startsWith(github.ref_name, 'v') && !github.event.repository.fork
+    concurrency:
+      group: throwl-production-store-preparation
+      cancel-in-progress: false
+    runs-on: ubuntu-24.04
+    environment: store-review
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Require recorded store-review approval
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/approvals" \
+            | jq -e 'any(.[]; .state == "approved" and any(.environments[]; .name == "store-review"))' >/dev/null || {
+              echo 'Configure required reviewers for the store-review environment and approve this run before preparing the stores.'
+              exit 1
+            }
+
+      - name: Read the tested release and validate its store notes
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo 'Enter a version tag such as v5.1.2.'; exit 1; }
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/master
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases" \
+            | jq -e '[.[][] | select(.tag_name == env.RELEASE_TAG and .draft)] | if length == 1 then .[0] else error("Expected one GitHub draft for this tag") end' \
+            > "$RUNNER_TEMP/draft.json"
+          node scripts/store-release.mjs snapshot "$RUNNER_TEMP/draft.json" "$RUNNER_TEMP/store-release.json"
+          echo "id=$(jq -er .id "$RUNNER_TEMP/store-release.json")" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@145243922b4465b78e04dd66294782c7de45901f # v1.345.0
+        with:
+          working-directory: apps/throwl
+          bundler-cache: true
+
+      - name: Verify store preparation safeguards
+        working-directory: apps/throwl
+        run: bundle exec ruby fastlane/prepare_store_review_test.rb
+
+      - name: Prepare App Store Connect draft
+        id: ios
+        continue-on-error: true
+        working-directory: apps/throwl
+        run: bundle exec ruby fastlane/prepare_store_review.rb ios "$RUNNER_TEMP/store-release.json"
+        env:
+          DEVELOPER_APP_IDENTIFIER: ${{ secrets.DEVELOPER_APP_IDENTIFIER }}
+          APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
+          APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+          APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
+
+      - name: Prepare Play Console production release
+        id: android
+        continue-on-error: true
+        working-directory: apps/throwl
+        run: bundle exec ruby fastlane/prepare_store_review.rb android "$RUNNER_TEMP/store-release.json"
+        env:
+          PLAY_CONFIG_JSON: ${{ secrets.PLAY_CONFIG_JSON }}
+
+      - name: Mark the GitHub draft ready when both stores confirm
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ steps.release.outputs.id }}
+          IOS_OUTCOME: ${{ steps.ios.outcome }}
+          ANDROID_OUTCOME: ${{ steps.android.outcome }}
+        run: |
+          printf '### Store preparation\n\n- iOS: %s\n- Android: %s\n' "$IOS_OUTCOME" "$ANDROID_OUTCOME" >> "$GITHUB_STEP_SUMMARY"
+          [[ "$IOS_OUTCOME" == success && "$ANDROID_OUTCOME" == success ]] || exit 1
+          gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" > "$RUNNER_TEMP/current-draft.json"
+          node scripts/store-release.mjs ready "$RUNNER_TEMP/store-release.json" "$RUNNER_TEMP/ready.json" "$RUNNER_TEMP/current-draft.json"
+          gh api --method PATCH "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" \
+            --input "$RUNNER_TEMP/ready.json" --jq .html_url

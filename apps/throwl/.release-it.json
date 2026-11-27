@@ -5,10 +5,12 @@
   },
   "git": {
     "commitMessage": "chore(release): v${version}",
-    "tagName": "v${version}"
+    "tagName": "v${version}",
+    "changelog": "node ../../scripts/store-release.mjs notes"
   },
   "github": {
-    "release": true
+    "release": true,
+    "draft": true
   },
   "hooks": {
     "after:bump": "nx run throwl:syncNativeVersions --args=\"--version=${version}\""

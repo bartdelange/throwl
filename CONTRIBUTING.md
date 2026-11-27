@@ -113,3 +113,33 @@ eligible caches from `master`.
 To check encrypted bundle creation on GitHub without uploading to the stores,
 run the release workflow manually with `publish: false`. That run requires
 release signing and the artifact secret, and retains the encrypted bundles.
+
+### Prepare production store submissions
+
+The release target opens `VISUAL` or `EDITOR` for your changelog and store notes
+before bumping and tagging the app. It creates a GitHub draft with your text.
+For noninteractive use, set `THROWL_RELEASE_NOTES_FILE` to the absolute path to
+a Markdown file containing the notes block. Enter `whatsNew` for each store
+locale (500 characters maximum) and optional `iosPromotionalText` (170
+characters maximum).
+Use an empty string to clear promotional text or omit it to preserve the store's
+existing text. You can edit the notes on GitHub before approval. Leave the
+status header intact.
+
+The same tag workflow validates, builds, and uploads both candidate builds,
+then waits at **Review deployments**. Test the exact TestFlight and Play
+Internal builds before approving `store-review` in that run.
+
+Before the first release, configure the `store-review` GitHub environment with
+required reviewers, allow version tags, and allow self-review if you cut and
+approve releases yourself. The job checks the run's approval history before
+writing to either store. The App Store Connect key needs permission to manage versions and review
+drafts, and the Play service account needs permission to edit production
+releases. The workflow reuses the existing Actions credentials.
+
+The workflow reports each store separately and marks the GitHub draft ready
+only after both stores confirm the exact builds are prepared. Submit for
+review manually in each store. The workflow leaves the GitHub release in
+draft so a maintainer can publish it at the appropriate time. Apple manual
+release after approval is set on the prepared version. Use Play managed
+publishing if Play should also wait for a manual rollout after review.

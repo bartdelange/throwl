@@ -3,7 +3,7 @@
   "version": "5.1.1",
   "private": true,
   "scripts": {
-    "release": "release-it"
+    "release": "node ../../scripts/throwl-release.mjs"
   },
   "dependencies": {
     "@freakycoder/react-native-helpers": "^2.5.1",
