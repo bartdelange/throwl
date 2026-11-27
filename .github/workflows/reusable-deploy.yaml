@@ -17,7 +17,14 @@ on:
         required: true
         description: One of `apps/throwl/ios` or `apps/throwl/android`
 
+      publish:
+        type: boolean
+        required: true
+
     secrets:
+      RELEASE_ARTIFACT_KEY:
+        required: true
+
       # iOS
       IOS_APP_STORE_CONNECT_TEAM_ID:
       IOS_DEVELOPER_APP_ID:
@@ -43,14 +50,13 @@ permissions:
   contents: read
 
 jobs:
-  build_and_deploy:
-    name: Build and Deploy to ${{ inputs.store }}
+  build:
+    name: Build for ${{ inputs.store }}
+    outputs:
+      artifact_id: ${{ steps.bundle.outputs.artifact-id }}
     runs-on: ${{ inputs.os }}
     permissions:
       contents: read
-    concurrency:
-      group: ${{ github.workflow }}-${{ inputs.os }}-${{ inputs.working_directory }}
-      cancel-in-progress: true
 
     steps:
       - name: Checkout repository
@@ -61,6 +67,11 @@ jobs:
         with:
           bundle: true
 
+      - name: Check release artifact key
+        run: node scripts/release-artifact.mjs check
+        env:
+          RELEASE_ARTIFACT_KEY: ${{ secrets.RELEASE_ARTIFACT_KEY }}
+
       #region Android
       - name: Use JAVA 22
         if: ${{ endsWith(inputs.working_directory, '/android') }}
@@ -68,6 +79,13 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '22.0.2'
+
+      - name: Cache Gradle dependencies
+        if: ${{ endsWith(inputs.working_directory, '/android') }}
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6
+        with:
+          cache-provider: basic
+          cache-read-only: false
 
       - name: Configure Keystore
         if: ${{ endsWith(inputs.working_directory, '/android') }}
@@ -96,20 +114,6 @@ jobs:
           KEYSTORE_KEY_ALIAS: ${{ secrets.ANDROID_KEYSTORE_KEY_ALIAS }}
           KEYSTORE_KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_KEY_PASSWORD }}
           KEYSTORE_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_STORE_PASSWORD }}
-
-      - name: Create Google Play Config file
-        if: ${{ endsWith(inputs.working_directory, '/android') }}
-        working-directory: ${{ inputs.working_directory }}
-        run: |
-          python3 - <<'PY'
-          import base64, os, pathlib
-
-          wd = pathlib.Path(".")
-          play_b64 = os.environ["PLAY_CONFIG_JSON"]
-          (wd / "playstore_config.json").write_bytes(base64.b64decode(play_b64))
-          PY
-        env:
-          PLAY_CONFIG_JSON: ${{ secrets.ANDROID_PLAY_CONFIG_JSON }}
 
       - name: Create google-services.json (Firebase)
         if: ${{ endsWith(inputs.working_directory, '/android') }}
@@ -153,15 +157,22 @@ jobs:
         uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
         with:
           xcode-version: latest-stable
+      - name: Cache CocoaPods downloads
+        if: ${{ endsWith(inputs.working_directory, '/ios') }}
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/Library/Caches/CocoaPods
+          key: cocoapods-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('apps/throwl/Gemfile.lock', 'apps/throwl/ios/Podfile.lock') }}
+          restore-keys: cocoapods-${{ runner.os }}-${{ runner.arch }}-
       #endregion
 
-      - name: Distribute app to ${{ inputs.store }} 🚀
+      - name: Build signed store bundle
         working-directory: apps/throwl
         run: |
           if [[ "${{ inputs.working_directory }}" == *"/ios" ]]; then
-            bundle exec fastlane ios beta
+            bundle exec fastlane ios beta upload:false
           else
-            bundle exec fastlane android beta
+            bundle exec fastlane android beta upload:false
           fi
         env:
           # iOS (only set when iOS)
@@ -175,3 +186,106 @@ jobs:
           APPLE_KEY_ID: ${{ (endsWith(inputs.working_directory, '/ios') && secrets.IOS_APPLE_KEY_ID) || '' }}
           APPLE_ISSUER_ID: ${{ (endsWith(inputs.working_directory, '/ios') && secrets.IOS_APPLE_ISSUER_ID) || '' }}
           APPLE_KEY_CONTENT: ${{ (endsWith(inputs.working_directory, '/ios') && secrets.IOS_APPLE_KEY_CONTENT) || '' }}
+
+      - name: Encrypt signed bundle
+        run: |
+          if [[ "$APP_PLATFORM" == ios ]]; then
+            bundle=apps/throwl/fastlane/output/Throwl.ipa
+          else
+            bundle=apps/throwl/android/app/build/outputs/bundle/release/app-release.aab
+          fi
+          node scripts/release-artifact.mjs encrypt "$bundle" "$RUNNER_TEMP/release-bundle.enc"
+        env:
+          APP_PLATFORM: ${{ endsWith(inputs.working_directory, '/ios') && 'ios' || 'android' }}
+          RELEASE_ARTIFACT_KEY: ${{ secrets.RELEASE_ARTIFACT_KEY }}
+          RELEASE_ARTIFACT_CONTEXT: ${{ github.run_id }}:${{ github.sha }}:${{ inputs.working_directory }}
+
+      - name: Retain encrypted bundle for upload retries
+        id: bundle
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: release-${{ endsWith(inputs.working_directory, '/ios') && 'ios' || 'android' }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-bundle.enc
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+
+  upload:
+    name: Upload to ${{ inputs.store }}
+    needs: build
+    if: inputs.publish
+    runs-on: ${{ inputs.os }}
+    concurrency:
+      group: store-upload-${{ inputs.working_directory }}
+      cancel-in-progress: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@145243922b4465b78e04dd66294782c7de45901f # v1.345.0
+        with:
+          working-directory: apps/throwl
+          bundler-cache: true
+
+      - name: Download exact bundle from build job
+        env:
+          BUILD_ARTIFACT_ID: ${{ needs.build.outputs.artifact_id }}
+        run: test -n "$BUILD_ARTIFACT_ID"
+
+      - name: Download encrypted bundle
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          artifact-ids: ${{ needs.build.outputs.artifact_id }}
+          path: ${{ runner.temp }}/release-artifact
+
+      - name: Decrypt signed bundle
+        run: |
+          node scripts/release-artifact.mjs decrypt "$RUNNER_TEMP/release-artifact/release-bundle.enc" "$RUNNER_TEMP/$BUNDLE_NAME"
+        env:
+          BUNDLE_NAME: ${{ endsWith(inputs.working_directory, '/ios') && 'Throwl.ipa' || 'app-release.aab' }}
+          RELEASE_ARTIFACT_KEY: ${{ secrets.RELEASE_ARTIFACT_KEY }}
+          RELEASE_ARTIFACT_CONTEXT: ${{ github.run_id }}:${{ github.sha }}:${{ inputs.working_directory }}
+
+      - name: Use latest Xcode
+        if: ${{ endsWith(inputs.working_directory, '/ios') }}
+        uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
+        with:
+          xcode-version: latest-stable
+
+      - name: Upload to TestFlight
+        if: ${{ endsWith(inputs.working_directory, '/ios') }}
+        working-directory: apps/throwl
+        run: bundle exec fastlane ios upload "ipa:$RUNNER_TEMP/Throwl.ipa"
+        env:
+          DEVELOPER_APP_IDENTIFIER: ${{ secrets.IOS_DEVELOPER_APP_IDENTIFIER }}
+          APP_STORE_CONNECT_TEAM_ID: ${{ secrets.IOS_APP_STORE_CONNECT_TEAM_ID }}
+          FASTLANE_APPLE_ID: ${{ secrets.IOS_FASTLANE_APPLE_ID }}
+          APPLE_KEY_ID: ${{ secrets.IOS_APPLE_KEY_ID }}
+          APPLE_ISSUER_ID: ${{ secrets.IOS_APPLE_ISSUER_ID }}
+          APPLE_KEY_CONTENT: ${{ secrets.IOS_APPLE_KEY_CONTENT }}
+
+      - name: Create Google Play Config file
+        if: ${{ endsWith(inputs.working_directory, '/android') }}
+        working-directory: ${{ inputs.working_directory }}
+        run: |
+          python3 - <<'PY'
+          import base64, os, pathlib
+
+          wd = pathlib.Path(".")
+          play_b64 = os.environ["PLAY_CONFIG_JSON"]
+          (wd / "playstore_config.json").write_bytes(base64.b64decode(play_b64))
+          PY
+        env:
+          PLAY_CONFIG_JSON: ${{ secrets.ANDROID_PLAY_CONFIG_JSON }}
+
+      - name: Upload to Play Internal
+        if: ${{ endsWith(inputs.working_directory, '/android') }}
+        working-directory: apps/throwl
+        run: bundle exec fastlane android upload "aab:$RUNNER_TEMP/app-release.aab"

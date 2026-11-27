@@ -3,7 +3,6 @@ description: Install the pinned Node, pnpm, Ruby, and optional Bundler dependenc
 
 inputs:
   bundle:
-    type: boolean
     required: true
 
 runs:
