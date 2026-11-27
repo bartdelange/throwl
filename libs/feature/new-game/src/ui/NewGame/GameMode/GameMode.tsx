@@ -1,13 +1,39 @@
-import { FC } from 'react';
+import { type ComponentProps, FC } from 'react';
 import { useNavigation } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GameFlowStackNames, StepperParamList } from '../NewGame';
 import { getDefaultOptions, useNewGame } from '../../../feature/NewGameContext';
 import { LogoButton, AppHeader } from '@throwl/shared-ui';
 import { SegmentedButtons, Text } from 'react-native-paper';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { useAppTheme } from '@throwl/shared-theme';
 import { NewGameScreenLayout } from '../NewGameScreenLayout';
+
+function GameModePills({
+  buttons,
+  ...props
+}: ComponentProps<typeof SegmentedButtons>) {
+  const { colors, roundness } = useAppTheme();
+  if (Platform.OS !== 'ios') {
+    return <SegmentedButtons {...props} buttons={buttons} />;
+  }
+
+  // Draw one rounded outline on iOS so adjacent native borders cannot bleed
+  // into the neighboring segment.
+  return (
+    <SegmentedButtons
+      {...props}
+      style={[
+        styles.pillOutline,
+        { borderColor: colors.outline, borderRadius: roundness * 5 },
+      ]}
+      buttons={buttons.map((button) => ({
+        ...button,
+        style: styles.pillSegment,
+      }))}
+    />
+  );
+}
 
 export const GameModeScreen: FC = () => {
   const navigation =
@@ -27,7 +53,7 @@ export const GameModeScreen: FC = () => {
     >
       <AppHeader title="Game Mode" />
       <View style={styles.mode}>
-        <SegmentedButtons
+        <GameModePills
           value={state.mode}
           onValueChange={(mode) => {
             if (mode === 'x01' || mode === 'doubles') {
@@ -53,7 +79,7 @@ export const GameModeScreen: FC = () => {
         </Text>
       </View>
       <View style={styles.format}>
-        <SegmentedButtons
+        <GameModePills
           value={state.format}
           onValueChange={(format) => {
             if (format === 'individual' || format === 'teams') {
@@ -90,4 +116,13 @@ export const GameModeScreen: FC = () => {
 const styles = StyleSheet.create({
   mode: { gap: 12, marginVertical: 16 },
   format: { gap: 12 },
+  pillOutline: { borderWidth: 1, overflow: 'hidden' },
+  pillSegment: {
+    borderWidth: 0,
+    borderRadius: 0,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+  },
 });
