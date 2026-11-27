@@ -38,6 +38,14 @@ Build (and optionally upload) a TestFlight release bundle
 
 Upload an existing signed IPA to TestFlight
 
+### ios submit_tested_build
+
+```sh
+[bundle exec] fastlane ios submit_tested_build
+```
+
+Submit the approved TestFlight build for automatic release after App Review
+
 ---
 
 ## Android
@@ -65,6 +73,14 @@ Build (and optionally upload) a Beta/Release bundle
 ```
 
 Upload an existing signed AAB to Play Internal
+
+### android submit_tested_build
+
+```sh
+[bundle exec] fastlane android submit_tested_build
+```
+
+Promote the approved Play Internal build and send it for production review
 
 ---
 
