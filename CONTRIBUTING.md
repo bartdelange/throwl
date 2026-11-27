@@ -104,8 +104,12 @@ workflow run. The successful build job's artifact ID selects the original
 bundle. If the artifact expired or the key was rotated, rerun the build too.
 Keep the key stable while any upload retries are pending.
 
-For a build-only check or to warm native dependency caches for future tags,
-run the release workflow manually on `master` with `publish: false`. This still
-requires release signing and the artifact secret, and produces an encrypted
-bundle, but skips both store upload jobs. GitHub scopes tag caches to the tag
-that created them and can restore eligible caches from the default branch.
+Pushes to `master` that change the app, dependencies, or release tooling validate
+and build both platforms. These runs use release signing and warm native caches
+without retaining bundles or uploading to the stores. A newer qualifying push
+cancels an older post-merge run. Tag releases run independently and can restore
+eligible caches from `master`.
+
+To check encrypted bundle creation on GitHub without uploading to the stores,
+run the release workflow manually with `publish: false`. That run requires
+release signing and the artifact secret, and retains the encrypted bundles.

@@ -2,8 +2,21 @@ name: Distribute app to Android & iOS stores 🚀
 
 on:
   push:
+    branches: [master]
     tags:
       - '*'
+    paths:
+      - 'apps/throwl/**'
+      - 'libs/**'
+      - 'scripts/**'
+      - '.github/actions/**'
+      - '.github/workflows/release-throwl.yaml'
+      - '.github/workflows/reusable-deploy.yaml'
+      - '.nvmrc'
+      - 'package.json'
+      - 'pnpm-*.yaml'
+      - 'nx.json'
+      - 'tsconfig*.json'
   workflow_dispatch:
     inputs:
       deploy:
@@ -19,6 +32,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.event_name == 'push' && github.ref_type == 'branch' && 'master-native-build' || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'push' && github.ref_type == 'branch' }}
 
 jobs:
   validate:
@@ -62,7 +79,7 @@ jobs:
       os: ubuntu-24.04
       working_directory: apps/throwl/android
       store: Google Play Store
-      publish: ${{ github.event_name != 'workflow_dispatch' || inputs.publish }}
+      publish: ${{ (github.event_name == 'push' && github.ref_type == 'tag') || (github.event_name == 'workflow_dispatch' && inputs.publish) }}
     secrets:
       RELEASE_ARTIFACT_KEY: ${{ secrets.RELEASE_ARTIFACT_KEY }}
       ANDROID_KEYSTORE_FILE: ${{ secrets.ANDROID_KEYSTORE_FILE }}
@@ -83,7 +100,7 @@ jobs:
       os: macos-latest
       working_directory: apps/throwl/ios
       store: TestFlight
-      publish: ${{ github.event_name != 'workflow_dispatch' || inputs.publish }}
+      publish: ${{ (github.event_name == 'push' && github.ref_type == 'tag') || (github.event_name == 'workflow_dispatch' && inputs.publish) }}
     secrets:
       RELEASE_ARTIFACT_KEY: ${{ secrets.RELEASE_ARTIFACT_KEY }}
       IOS_APP_STORE_CONNECT_TEAM_ID: ${{ secrets.APP_STORE_CONNECT_TEAM_ID }}

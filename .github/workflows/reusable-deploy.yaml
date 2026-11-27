@@ -68,6 +68,7 @@ jobs:
           bundle: true
 
       - name: Check release artifact key
+        if: inputs.publish || github.event_name == 'workflow_dispatch'
         run: node scripts/release-artifact.mjs check
         env:
           RELEASE_ARTIFACT_KEY: ${{ secrets.RELEASE_ARTIFACT_KEY }}
@@ -188,6 +189,7 @@ jobs:
           APPLE_KEY_CONTENT: ${{ (endsWith(inputs.working_directory, '/ios') && secrets.IOS_APPLE_KEY_CONTENT) || '' }}
 
       - name: Encrypt signed bundle
+        if: inputs.publish || github.event_name == 'workflow_dispatch'
         run: |
           if [[ "$APP_PLATFORM" == ios ]]; then
             bundle=apps/throwl/fastlane/output/Throwl.ipa
@@ -201,6 +203,7 @@ jobs:
           RELEASE_ARTIFACT_CONTEXT: ${{ github.run_id }}:${{ github.sha }}:${{ inputs.working_directory }}
 
       - name: Retain encrypted bundle for upload retries
+        if: inputs.publish || github.event_name == 'workflow_dispatch'
         id: bundle
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
