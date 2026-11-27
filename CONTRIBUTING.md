@@ -135,13 +135,18 @@ Internal builds before approving `store-review` in that run.
 Before the first release, configure the `store-review` GitHub environment with
 required reviewers, allow version tags, and allow self-review if you cut and
 approve releases yourself. The job checks the run's approval history before
-writing to either store. The App Store Connect key needs permission to manage versions and review
-drafts, and the Play service account needs permission to edit production
+writing to either store. The App Store Connect key needs permission to submit
+versions for review, and the Play service account needs permission to edit production
 releases. The workflow reuses the existing Actions credentials.
 
-The workflow reports each store separately and marks the GitHub draft ready
-only after both stores confirm the exact builds are prepared. Submit for
-review manually in each store. The workflow leaves the GitHub release in
-draft so a maintainer can publish it at the appropriate time. Apple manual
-release after approval is set on the prepared version. Use Play managed
-publishing if Play should also wait for a manual rollout after review.
+Approving the job submits the tested iOS build to App Review and sets manual
+App Store release after approval. On Google Play it promotes the tested build
+to production with changes left unsent. Before approving, check that Play has
+no active production review or rollout. Fastlane's promotion uses Google's
+default handling for an existing review. In Play Console, send the changes
+for review manually. Use managed publishing if Play should wait for a manual
+rollout after review.
+
+After both lanes succeed, the workflow records their outcomes on the GitHub
+draft. Publish that draft separately. If one lane fails, check both store
+consoles before retrying because the other lane may have already succeeded.
