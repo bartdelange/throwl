@@ -87,3 +87,29 @@ so the owner should protect that tag namespace and `master` with GitHub rulesets
 
 App Check is optional post-publication abuse hardening. Firestore Security Rules,
 not App Check, remain the authorization boundary.
+
+### Release build retries
+
+Before merging the release workflow change, a maintainer must provision the
+`RELEASE_ARTIFACT_KEY` GitHub Actions repository secret once. From an
+authenticated checkout, generate it without printing it:
+
+```sh
+openssl rand -hex 32 | gh secret set RELEASE_ARTIFACT_KEY
+```
+
+The build job stores only the encrypted signed bundle, for seven days. If store
+upload fails, fix the store issue and choose **Re-run failed jobs** on the same
+workflow run. The successful build job's artifact ID selects the original
+bundle. If the artifact expired or the key was rotated, rerun the build too.
+Keep the key stable while any upload retries are pending.
+
+Pushes to `master` that change the app, dependencies, or release tooling validate
+and build both platforms. These runs use release signing and warm native caches
+without retaining bundles or uploading to the stores. A newer qualifying push
+cancels an older post-merge run. Tag releases run independently and can restore
+eligible caches from `master`.
+
+To check encrypted bundle creation on GitHub without uploading to the stores,
+run the release workflow manually with `publish: false`. That run requires
+release signing and the artifact secret, and retains the encrypted bundles.

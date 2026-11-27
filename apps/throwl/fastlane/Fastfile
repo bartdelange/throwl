@@ -5,6 +5,16 @@ APPLE_ISSUER_ID = ENV.fetch("APPLE_ISSUER_ID", nil)
 APPLE_KEY_ID = ENV.fetch("APPLE_KEY_ID", nil)
 APPLE_KEY_CONTENT = ENV.fetch("APPLE_KEY_CONTENT", nil)
 
+def testflight_api_key
+  app_store_connect_api_key(
+    key_id: APPLE_KEY_ID,
+    issuer_id: APPLE_ISSUER_ID,
+    key_content: APPLE_KEY_CONTENT,
+    duration: 1200,
+    in_house: false
+  )
+end
+
 platform :ios do
   desc "Bump marketing version and build number"
   lane :bump_version do |options|
@@ -16,26 +26,18 @@ platform :ios do
   end
 
   desc "Build (and optionally upload) a TestFlight release bundle"
-  lane :beta do
+  lane :beta do |options|
     setup_ci
 
     cocoapods(
-      clean_install: true,
+      deployment: true,
       podfile: "ios/Podfile"
-    )
-
-    api_key = app_store_connect_api_key(
-      key_id: APPLE_KEY_ID,
-      issuer_id: APPLE_ISSUER_ID,
-      key_content: APPLE_KEY_CONTENT,
-      duration: 1200,
-      in_house: false
     )
 
     match(
       type: "appstore",
       app_identifier: DEVELOPER_APP_IDENTIFIER,
-      api_key: api_key
+      api_key: testflight_api_key
     )
 
     build_app(
@@ -43,11 +45,20 @@ platform :ios do
       workspace: "ios/Throwl.xcworkspace",
       clean: true,
       export_method: "app-store",
-      output_directory: "fastlane/output"
+      output_directory: "fastlane/output",
+      output_name: "Throwl.ipa"
     )
 
+    if options.fetch(:upload, true).to_s.downcase == "true"
+      upload(ipa: lane_context[SharedValues::IPA_OUTPUT_PATH])
+    end
+  end
+
+  desc "Upload an existing signed IPA to TestFlight"
+  lane :upload do |options|
     upload_to_testflight(
-      api_key: api_key,
+      ipa: options.fetch(:ipa),
+      api_key: testflight_api_key,
       app_identifier: DEVELOPER_APP_IDENTIFIER,
       skip_waiting_for_build_processing: true,
       skip_submission: true,
@@ -69,7 +80,7 @@ platform :android do
 
   desc "Build (and optionally upload) a Beta/Release bundle"
   lane :beta do |options|
-    upload = options.fetch(:upload, ENV.fetch("UPLOAD", "true")).to_s.downcase == "true"
+    should_upload = options.fetch(:upload, ENV.fetch("UPLOAD", "true")).to_s.downcase == "true"
 
     gradle(
       project_dir: "android",
@@ -78,14 +89,19 @@ platform :android do
 
     aab_path = "android/app/build/outputs/bundle/release/app-release.aab"
 
-    if upload
-      upload_to_play_store(
-        aab: aab_path,
-        track: "internal"
-      )
+    if should_upload
+      upload(aab: aab_path)
     else
       UI.important("UPLOAD=false -> skipping upload_to_play_store (dry run)")
       UI.message("Built AAB should be at: #{aab_path}")
     end
+  end
+
+  desc "Upload an existing signed AAB to Play Internal"
+  lane :upload do |options|
+    upload_to_play_store(
+      aab: options.fetch(:aab),
+      track: "internal"
+    )
   end
 end

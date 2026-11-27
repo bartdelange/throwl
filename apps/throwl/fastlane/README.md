@@ -30,6 +30,14 @@ Bump marketing version and build number
 
 Build (and optionally upload) a TestFlight release bundle
 
+### ios upload
+
+```sh
+[bundle exec] fastlane ios upload
+```
+
+Upload an existing signed IPA to TestFlight
+
 ---
 
 ## Android
@@ -49,6 +57,14 @@ Bump versionName and versionCode
 ```
 
 Build (and optionally upload) a Beta/Release bundle
+
+### android upload
+
+```sh
+[bundle exec] fastlane android upload
+```
+
+Upload an existing signed AAB to Play Internal
 
 ---
 
