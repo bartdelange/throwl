@@ -82,8 +82,8 @@ Actual release tasks fail clearly unless release signing is configured. iOS
 store signing and all Fastlane deployment credentials are maintainer-only.
 
 Branch from `master`, follow the existing gitmoji/commitlint style, and include
-screenshots for visual changes. Releases currently trigger on every tag (`*`),
-so the owner should protect that tag namespace and `master` with GitHub rulesets.
+screenshots for visual changes. Publishing a GitHub release starts distribution
+for its version tag. Protect version tags and `master` with GitHub rulesets.
 
 App Check is optional post-publication abuse hardening. Firestore Security Rules,
 not App Check, remain the authorization boundary.
@@ -107,7 +107,7 @@ Keep the key stable while any upload retries are pending.
 Pushes to `master` that change the app, dependencies, or release tooling validate
 and build both platforms. These runs use release signing and warm native caches
 without retaining bundles or uploading to the stores. A newer qualifying push
-cancels an older post-merge run. Tag releases run independently and can restore
+cancels an older post-merge run. Published releases run independently and can restore
 eligible caches from `master`.
 
 To check encrypted bundle creation on GitHub without uploading to the stores,
@@ -123,13 +123,15 @@ draft directly:
 GITHUB_TOKEN="$(gh auth token)" pnpm nx run @throwl/throwl:release
 ```
 
-On GitHub, edit the draft's changelog and store notes before approving.
+On GitHub, edit the draft's changelog and store notes, then publish it.
 Enter `whatsNew` (up to 500 characters per locale) and optional
 `iosPromotionalText` (up to 170 characters). Omit the promotional text field to
 preserve existing text or use an empty string to clear it.
 
-The same tag workflow validates, builds, and uploads both candidate builds,
-then waits at **Review deployments**. Test the exact TestFlight and Play
+Publishing starts one workflow. It validates the notes as published, builds
+the tagged commit, uploads both candidate builds, and waits at **Review
+deployments**. Edits to the GitHub release after publishing do not change the
+notes in that run. Test the exact TestFlight and Play
 Internal builds before approving `store-review` in that run.
 
 Before the first release, configure the `store-review` GitHub environment with
@@ -146,6 +148,6 @@ approving, check that Play has no active production review or rollout.
 Fastlane's promotion uses Google's default handling for an existing review.
 Each store can approve and publish on its own schedule.
 
-After both lanes succeed, the workflow records their outcomes on the GitHub
-draft. Publish that draft separately. If one lane fails, check both store
-consoles before retrying because the other lane may have already succeeded.
+The Actions summary records each submission outcome. If one lane fails, check
+both store consoles before retrying because the other lane may have already
+succeeded.
