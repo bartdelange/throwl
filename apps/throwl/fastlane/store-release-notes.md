@@ -1,6 +1,6 @@
 <!-- throwl-store-status: pending -->
 
-**Production review drafts have not been prepared.** Add the release notes, test both builds, and approve the workflow.
+**Store review is pending.** Add the release notes, test both builds, and approve the workflow to submit them.
 
 ## Changes
 

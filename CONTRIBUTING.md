@@ -139,13 +139,12 @@ writing to either store. The App Store Connect key needs permission to submit
 versions for review, and the Play service account needs permission to edit production
 releases. The workflow reuses the existing Actions credentials.
 
-Approving the job submits the tested iOS build to App Review and sets manual
-App Store release after approval. On Google Play it promotes the tested build
-to production with changes left unsent. Before approving, check that Play has
-no active production review or rollout. Fastlane's promotion uses Google's
-default handling for an existing review. In Play Console, send the changes
-for review manually. Use managed publishing if Play should wait for a manual
-rollout after review.
+Approving the job submits both tested builds for production review. Apple
+releases automatically after approval. For Google to publish automatically
+after approval, turn off Managed publishing in Play Console. Before
+approving, check that Play has no active production review or rollout.
+Fastlane's promotion uses Google's default handling for an existing review.
+Each store can approve and publish on its own schedule.
 
 After both lanes succeed, the workflow records their outcomes on the GitHub
 draft. Publish that draft separately. If one lane fails, check both store

@@ -116,7 +116,7 @@ jobs:
       IOS_GOOGLE_SERVICE_INFO_PLIST_B64: ${{ secrets.IOS_GOOGLE_SERVICE_INFO_PLIST_B64 }}
 
   prepare:
-    name: Submit iOS for review and prepare Google Play production
+    name: Submit both tested builds for store review
     needs: [deploy_android, deploy_ios]
     if: github.event_name == 'push' && github.ref_type == 'tag' && startsWith(github.ref_name, 'v') && !github.event.repository.fork
     concurrency:
@@ -200,11 +200,11 @@ jobs:
           APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
           APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
 
-      - name: Prepare Play Console production release
+      - name: Submit tested Android build for production review
         id: android
         continue-on-error: true
         working-directory: apps/throwl
-        run: bundle exec fastlane android prepare_tested_build "build:$BUILD_NUMBER" "notes:$RUNNER_TEMP/store-notes.json"
+        run: bundle exec fastlane android submit_tested_build "build:$BUILD_NUMBER" "notes:$RUNNER_TEMP/store-notes.json"
         env:
           BUILD_NUMBER: ${{ steps.release.outputs.android_build }}
           PLAY_CONFIG_JSON: ${{ secrets.PLAY_CONFIG_JSON }}
@@ -221,7 +221,7 @@ jobs:
           gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" > "$RUNNER_TEMP/current-draft.json"
           jq -e --slurpfile original "$RUNNER_TEMP/draft.json" '
             if .draft and .body == $original[0].body then
-              {body: ("<!-- throwl-store-status: ready -->\n**iOS submitted for App Review. Android prepared for manual submission in Play Console.**\n\n" +
+              {body: ("<!-- throwl-store-status: ready -->\n**Both builds were submitted to their stores for review.** Each store publishes after approval.\n\n" +
                 (.body | sub("^<!-- throwl-store-status: (pending|ready) -->\\s*\\*\\*[^\\r\\n]*\\s*"; "")))}
             else error("The GitHub draft changed during store preparation; update its status manually") end
           ' "$RUNNER_TEMP/current-draft.json" > "$RUNNER_TEMP/ready.json"

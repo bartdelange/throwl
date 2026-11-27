@@ -72,7 +72,7 @@ platform :ios do
     )
   end
 
-  desc "Submit the approved TestFlight build for App Review with manual release"
+  desc "Submit the approved TestFlight build for automatic release after App Review"
   lane :submit_tested_build do |options|
     notes = JSON.parse(File.read(options.fetch(:notes)))
     deliver(
@@ -87,7 +87,7 @@ platform :ios do
       skip_screenshots: true,
       force: true,
       run_precheck_before_submit: false,
-      automatic_release: false,
+      automatic_release: true,
       submit_for_review: true
     )
   end
@@ -130,8 +130,8 @@ platform :android do
     )
   end
 
-  desc "Promote the approved Play Internal build to production without sending it for review"
-  lane :prepare_tested_build do |options|
+  desc "Promote the approved Play Internal build and send it for production review"
+  lane :submit_tested_build do |options|
     code = Integer(options.fetch(:build))
     Dir.mktmpdir("throwl-play-release") do |temporary|
       metadata = File.join(temporary, "metadata")
@@ -154,7 +154,7 @@ platform :android do
         skip_upload_metadata: true,
         skip_upload_images: true,
         skip_upload_screenshots: true,
-        changes_not_sent_for_review: true,
+        changes_not_sent_for_review: false,
         rescue_changes_not_sent_for_review: false
       )
     end
