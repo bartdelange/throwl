@@ -62,8 +62,8 @@ the complete development guidelines and contributor-owned Firebase setup, see
 
 - Node.js `24.18.0` (the version in `.nvmrc`)
 - Corepack and pnpm `10.24.0` (declared in `package.json`)
-- Android Studio, the Android SDK, and JDK 17 or newer for Android
-- Current Xcode command-line tools, Ruby, Bundler, and CocoaPods for iOS
+- Android Studio, Android SDK Platform 37, and JDK 17 or newer for Android
+- Xcode 27.2 (iOS SDK 27.2), Ruby, Bundler, and CocoaPods for iOS release builds
 
 ### Install and run
 

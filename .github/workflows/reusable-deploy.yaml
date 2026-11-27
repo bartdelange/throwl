@@ -153,11 +153,11 @@ jobs:
         env:
           GOOGLE_SERVICE_INFO_PLIST_B64: ${{ secrets.IOS_GOOGLE_SERVICE_INFO_PLIST_B64 }}
 
-      - name: Use latest xcode
+      - name: Use Xcode 27.2
         if: ${{ endsWith(inputs.working_directory, '/ios') }}
         uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
         with:
-          xcode-version: latest-stable
+          xcode-version: '27.2'
       - name: Cache CocoaPods downloads
         if: ${{ endsWith(inputs.working_directory, '/ios') }}
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -256,11 +256,11 @@ jobs:
           RELEASE_ARTIFACT_KEY: ${{ secrets.RELEASE_ARTIFACT_KEY }}
           RELEASE_ARTIFACT_CONTEXT: ${{ github.run_id }}:${{ github.sha }}:${{ inputs.working_directory }}
 
-      - name: Use latest Xcode
+      - name: Use Xcode 27.2
         if: ${{ endsWith(inputs.working_directory, '/ios') }}
         uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
         with:
-          xcode-version: latest-stable
+          xcode-version: '27.2'
 
       - name: Upload to TestFlight
         if: ${{ endsWith(inputs.working_directory, '/ios') }}
